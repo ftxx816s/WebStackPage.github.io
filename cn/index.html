@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#09111f">
-<title>飞天小象 · 私人导航</title>
+<title>飞天小象 · 私人导航 V14</title>
 <meta name="description" content="飞天小象私人导航">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https: http:; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -744,7 +744,7 @@ body.sort-mode .grid.sort-over{outline:1px dashed rgba(116,135,255,.42);outline-
     </section>
 
     <div id="content"></div>
-    <div class="footer">© 2026 飞天小象私人导航 · V13</div>
+    <div class="footer">© 2026 飞天小象私人导航 · V14</div>
   </main>
 </div>
 
@@ -757,7 +757,7 @@ body.sort-mode .grid.sort-over{outline:1px dashed rgba(116,135,255,.42);outline-
     </div>
   </div>
   <div class="drawer-body">
-    <div class="admin-note">当前是单文件版，新增内容保存在浏览器本地。本版会自动迁移旧数据，并对异常配置自动修复。<br><span id="storageUsage">正在计算本地数据占用…</span></div>
+    <div class="admin-note">V14 同步升级版：当前保留 V13 全部本地数据结构，并加入云同步接口层。部署同步服务器后，可实现账号登录、多设备自动同步。<br><span id="storageUsage">正在计算本地数据占用…</span></div>
 
     <form id="addForm">
       <div class="form-grid">
@@ -2182,6 +2182,43 @@ window.addEventListener("scroll",()=>{
   __fxScrollTimer=setTimeout(()=>document.documentElement.classList.remove("is-scrolling"),110);
 },{passive:true});
 
+
+/* ===================== V14 · Sync Architecture =====================
+   V13 数据结构保留。
+   这里增加统一同步入口，后端 API 接入后无需重构页面。
+*/
+const FX_SYNC={
+  version:"V14",
+  enabled:false,
+  user:null,
+  endpoint:"",
+  getPayload(){
+    return {
+      version:this.version,
+      time:Date.now(),
+      theme:localStorage.getItem(KEYS.theme),
+      favorites:[...state.favorites],
+      recents:state.recents,
+      custom:state.custom,
+      categoryOverrides:state.categoryOverrides,
+      iconOverrides:state.iconOverrides,
+      hiddenSites:[...state.hiddenSites],
+      siteEdits:state.siteEdits,
+      customCategories:state.customCategories,
+      categoryOrder:state.categoryOrder,
+      categoryIconOverrides:state.categoryIconOverrides,
+      siteOrder:state.siteOrder
+    };
+  },
+  async push(){
+    if(!this.enabled||!this.endpoint)return false;
+    return false;
+  },
+  async pull(){
+    if(!this.enabled||!this.endpoint)return false;
+    return false;
+  }
+};
 </script>
 </body>
 </html>
