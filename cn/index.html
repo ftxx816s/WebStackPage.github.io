@@ -115,18 +115,6 @@ html[data-theme="light"] .sidebar{box-shadow:12px 0 42px rgba(96,111,145,.07)}
 .pill{padding:6px 9px;border-radius:999px;border:1px solid var(--line);background:var(--soft);color:var(--muted);font-size:11px}
 
 /* Quick search overlay */
-.quick-result{
-  position:absolute;left:12px;right:12px;top:79px;z-index:30;display:none;max-height:360px;overflow:auto;padding:8px;border-radius:17px
-}
-.quick-result.show{display:block}
-.quick-item{display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:12px;border:1px solid transparent}
-.quick-item:hover,.quick-item.active{background:var(--soft2);border-color:var(--line)}
-.quick-icon{position:relative;width:34px;height:34px;flex:0 0 34px;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:var(--soft);display:grid;place-items:center}
-.quick-icon span{position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:11px;font-weight:900}
-.quick-icon img{position:absolute;z-index:2;width:21px;height:21px;object-fit:contain;border-radius:4px}
-.quick-info{min-width:0;flex:1}.quick-name{font-size:13px;font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.quick-domain{font-size:10px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.quick-kbd{font-size:10px;color:var(--muted);padding:3px 6px;border:1px solid var(--line);border-radius:7px}
 
 /* Sections & cards */
 .section{margin:29px 0;scroll-margin-top:20px}
@@ -185,7 +173,7 @@ html[data-theme="light"] .sidebar{box-shadow:12px 0 42px rgba(96,111,145,.07)}
 }
 @media(max-width:650px){
   .grid{grid-template-columns:1fr}.hero h1{font-size:35px}.hero p{font-size:13px}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.hide-sm{display:none}
-  .search-row{height:55px;padding:0 11px}.search-input{font-size:14px}.quick-result{left:10px;right:10px;top:74px}.custom-item{grid-template-columns:auto minmax(0,1fr)}.custom-buttons{grid-column:2}
+  .search-row{height:55px;padding:0 11px}.search-input{font-size:14px}.custom-item{grid-template-columns:auto minmax(0,1fr)}.custom-buttons{grid-column:2}
 }
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 
@@ -225,22 +213,20 @@ html[data-theme="light"] .card.glass{
 }
 
 /* Real favicon = neutral glass shell. Color is only fallback when favicon cannot be fetched. */
-.site-icon,.custom-mini-icon,.quick-icon{
+.site-icon,.custom-mini-icon{
   background:rgba(255,255,255,.045);
   border-color:var(--line);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
 }
 html[data-theme="light"] .site-icon,
-html[data-theme="light"] .custom-mini-icon,
-html[data-theme="light"] .quick-icon{
+html[data-theme="light"] .custom-mini-icon{
   background:rgba(255,255,255,.78);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 3px 10px rgba(71,88,119,.04);
 }
 .site-fallback.is-hidden{display:none}
 .site-icon img{width:27px;height:27px;border-radius:6px;object-fit:contain;filter:none}
 .custom-mini-icon img{width:24px;height:24px;border-radius:5px;object-fit:contain}
-.quick-icon img{width:22px;height:22px;border-radius:5px;object-fit:contain}
-.site-icon.fallback-mode,.custom-mini-icon.fallback-mode,.quick-icon.fallback-mode{
+.site-icon.fallback-mode,.custom-mini-icon.fallback-mode{
   border-color:rgba(116,135,255,.20);
 }
 
@@ -301,6 +287,58 @@ html.is-scrolling .card:hover{transform:none!important}
   .card{transition:transform .11s ease,border-color .11s ease,box-shadow .11s ease}
 }
 
+
+/* ===================== V8 · 分类移动 ===================== */
+.move-preview{
+  margin-top:14px;
+  min-height:62px;
+  padding:13px 14px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:var(--soft);
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.7;
+}
+.move-preview strong{color:var(--text)}
+.move-preview .move-line{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.move-preview .move-arrow{
+  display:inline-grid;
+  place-items:center;
+  width:27px;
+  height:27px;
+  border-radius:9px;
+  border:1px solid rgba(116,135,255,.24);
+  background:var(--accent-soft);
+  color:var(--accent);
+  font-weight:900;
+}
+.move-preview .move-note{
+  margin-top:6px;
+  color:var(--muted-2);
+  font-size:11px;
+}
+
+
+/* ===================== V9 · 直接展示搜索结果 ===================== */
+.search-wrap{overflow:visible}
+.search-panel{position:relative}
+body.searching .hero{margin-bottom:18px}
+body.searching .section{margin-top:18px}
+body.searching .section-head{margin-bottom:12px}
+body.searching #content{
+  animation:searchFade .14s ease-out;
+}
+@keyframes searchFade{
+  from{opacity:.55;transform:translateY(4px)}
+  to{opacity:1;transform:none}
+}
+
 </style>
 </head>
 <body>
@@ -352,7 +390,7 @@ html.is-scrolling .card:hover{transform:none!important}
     <section class="hero glass">
       <span class="eyebrow">✦ FEITIANXIAOXIANG · PRIVATE START PAGE</span>
       <h1>找到你要去的地方。</h1>
-      <p>收藏统一整理，输入名称、域名或关键词即可快速定位。</p>
+      <p>收藏统一整理，输入名称、域名或关键词，下方直接显示匹配结果。</p>
 
       <div class="search-wrap">
         <div class="search-panel glass-strong">
@@ -365,9 +403,7 @@ html.is-scrolling .card:hover{transform:none!important}
             <span class="pill"><b id="siteCount">0</b> 个网站</span>
             <span class="pill"><b id="catCount">0</b> 个分类</span>
             <span class="pill">Ctrl / ⌘ + K 搜索</span>
-            <span class="pill">↑ ↓ 选择 · Enter 打开</span>
           </div>
-          <div class="quick-result glass-strong" id="quickResult"></div>
         </div>
       </div>
     </section>
@@ -411,6 +447,38 @@ html.is-scrolling .card:hover{transform:none!important}
     </form>
 
     <div class="admin-divider"></div>
+
+    <div class="custom-title-row">
+      <h3>分类移动</h3>
+      <span class="custom-count" id="movedCount">0 个已调整</span>
+    </div>
+    <div class="admin-note">
+      可修改全部网站的分类，包括最初导入的收藏夹网站。这里只覆盖“分类”，不会修改网址、名称或图标。
+    </div>
+
+    <div class="form-grid">
+      <div class="field full">
+        <label>搜索网站</label>
+        <input id="moveSearch" placeholder="输入网站名称、域名或当前分类">
+      </div>
+      <div class="field full">
+        <label>选择网站</label>
+        <select id="moveSiteSelect"></select>
+      </div>
+      <div class="field full">
+        <label>移动到分类</label>
+        <select id="moveCategorySelect"></select>
+      </div>
+    </div>
+
+    <div class="admin-actions">
+      <button class="btn primary" type="button" id="moveCategoryBtn">移动分类</button>
+      <button class="btn" type="button" id="restoreCategoryBtn">恢复默认分类</button>
+    </div>
+
+    <div class="move-preview" id="movePreview"></div>
+
+    <div class="admin-divider"></div>
     <div class="custom-title-row"><h3>我的新增</h3><span class="custom-count" id="customCount">0 个</span></div>
     <div id="customList"></div>
   </div>
@@ -425,14 +493,15 @@ const CATEGORIES=[{"name":"常用入口","icon":"⌘","count":9},{"name":"AI 助
 const ICON_MAP={"all":"⌂","favorite":"★","recent":"↺","常用入口":"⌘","AI 助手":"✦","AI 图像·视频":"◉","设计·灵感":"✎","素材·字体·PPT":"▣","图片·文档工具":"◫","开发·技术":"⌨","软件·系统":"⌬","网络·测速·IP":"◎","VPN·代理·节点":"↯","影音·游戏":"▶","学习·知识":"✧","政务·法律":"§","购物·账号·订阅":"◌","其他收藏":"···"};
 
 /* Stable storage + migration from previous versions */
-const KEYS={theme:"fxnav_theme",favorites:"fxnav_favorites",recents:"fxnav_recents",custom:"fxnav_custom"};
+const KEYS={theme:"fxnav_theme",favorites:"fxnav_favorites",recents:"fxnav_recents",custom:"fxnav_custom",categoryOverrides:"fxnav_category_overrides"};
 const LEGACY={
   theme:["feitianxiaoxiang_theme_v5","dumbo_theme_v4","dumbo_theme_v3","dumbo_theme_v2","dumbo_theme"],
   favorites:["feitianxiaoxiang_favorites_v5","dumbo_favorites"],
   recents:["feitianxiaoxiang_recents_v5","dumbo_recents"],
-  custom:["feitianxiaoxiang_custom_v5","dumbo_custom"]
+  custom:["feitianxiaoxiang_custom_v5","dumbo_custom"],
+  categoryOverrides:[]
 };
-function migrateOne(key,legacy){
+function migrateOne(key,legacy=[]){
   if(localStorage.getItem(key)!==null)return;
   for(const old of legacy){const v=localStorage.getItem(old);if(v!==null){localStorage.setItem(key,v);break;}}
 }
@@ -443,14 +512,19 @@ const state={
   filter:"all",query:"",quickIndex:-1,pendingIconData:"",
   favorites:new Set(JSON.parse(localStorage.getItem(KEYS.favorites)||"[]")),
   recents:JSON.parse(localStorage.getItem(KEYS.recents)||"[]"),
-  custom:JSON.parse(localStorage.getItem(KEYS.custom)||"[]")
+  custom:JSON.parse(localStorage.getItem(KEYS.custom)||"[]"),
+  categoryOverrides:JSON.parse(localStorage.getItem(KEYS.categoryOverrides)||"{}")
 };
 function save(){
   localStorage.setItem(KEYS.favorites,JSON.stringify([...state.favorites]));
   localStorage.setItem(KEYS.recents,JSON.stringify(state.recents.slice(0,30)));
   localStorage.setItem(KEYS.custom,JSON.stringify(state.custom));
+  localStorage.setItem(KEYS.categoryOverrides,JSON.stringify(state.categoryOverrides));
 }
 function allSites(){return [...BUILTIN_SITES,...state.custom]}
+function effectiveCategory(site){return state.categoryOverrides[site.id]||site.category}
+function categoryCount(name){return allSites().filter(site=>effectiveCategory(site)===name).length}
+function movedCount(){return Object.keys(state.categoryOverrides).length}
 function safeDomain(url){try{return new URL(url).hostname.replace(/^www\./,"")}catch{return ""}}
 function hashCode(str){let h=0;for(let i=0;i<str.length;i++)h=str.charCodeAt(i)+((h<<5)-h);return Math.abs(h)}
 function gradientFor(str){
@@ -536,9 +610,9 @@ function filteredSites(){
   const map=new Map(allSites().map(s=>[s.id,s]));let arr=allSites();
   if(state.filter==="favorite")arr=arr.filter(s=>state.favorites.has(s.id));
   else if(state.filter==="recent")arr=state.recents.map(id=>map.get(id)).filter(Boolean);
-  else if(state.filter!=="all")arr=arr.filter(s=>s.category===state.filter);
+  else if(state.filter!=="all")arr=arr.filter(s=>effectiveCategory(s)===state.filter);
   const q=state.query.trim().toLowerCase();
-  if(q)arr=arr.filter(s=>(`${s.name} ${s.domain} ${s.fullTitle||""} ${s.category}`).toLowerCase().includes(q));
+  if(q)arr=arr.filter(s=>(`${s.name} ${s.domain} ${s.fullTitle||""} ${effectiveCategory(s)}`).toLowerCase().includes(q));
   return arr;
 }
 function sectionBlock(cat,items,icon){
@@ -556,43 +630,40 @@ function render(){
   else if(state.filter==="recent")content.append(visible.length?sectionBlock("最近访问",visible,"↺"):emptyBlock("还没有最近访问记录"));
   else if(state.filter!=="all"){const c=CATEGORIES.find(x=>x.name===state.filter);content.append(visible.length?sectionBlock(state.filter,visible,c?.icon||"•"):emptyBlock("这个分类还没有网站"))}
   else{
-    CATEGORIES.forEach(c=>{const g=visible.filter(s=>s.category===c.name);if(g.length)content.append(sectionBlock(c.name,g,c.icon))});
-    const extra=[...new Set(state.custom.map(x=>x.category))].filter(x=>!CATEGORIES.some(c=>c.name===x));
-    extra.forEach(cat=>{const g=visible.filter(s=>s.category===cat);if(g.length)content.append(sectionBlock(cat,g,"＋"))});
+    CATEGORIES.forEach(c=>{const g=visible.filter(s=>effectiveCategory(s)===c.name);if(g.length)content.append(sectionBlock(c.name,g,c.icon))});
+    const extra=[...new Set(allSites().map(x=>effectiveCategory(x)))].filter(x=>!CATEGORIES.some(c=>c.name===x));
+    extra.forEach(cat=>{const g=visible.filter(s=>effectiveCategory(s)===cat);if(g.length)content.append(sectionBlock(cat,g,"＋"))});
   }
-  updateCounts();renderQuickResults();
+  updateCounts();
 }
 function updateCounts(){
-  $("#allCount").textContent=allSites().length;$("#favCount").textContent=state.favorites.size;$("#recentCount").textContent=state.recents.length;
-  $("#siteCount").textContent=allSites().length;$("#catCount").textContent=new Set(allSites().map(s=>s.category)).size;$("#customCount").textContent=state.custom.length+" 个";
+  $("#allCount").textContent=allSites().length;
+  $("#favCount").textContent=state.favorites.size;
+  $("#recentCount").textContent=state.recents.length;
+  $("#siteCount").textContent=allSites().length;
+  $("#catCount").textContent=new Set(allSites().map(s=>effectiveCategory(s))).size;
+  $("#customCount").textContent=state.custom.length+" 个";
+  if($("#movedCount"))$("#movedCount").textContent=movedCount()+" 个已调整";
+  updateNavCounts();
+}
+function updateNavCounts(){
+  $$("#categoryNav .nav-btn").forEach(btn=>{
+    const el=btn.querySelector(".nav-count");
+    if(el)el.textContent=categoryCount(btn.dataset.filter);
+  });
 }
 function buildNav(){
   const box=$("#categoryNav");box.innerHTML="";
   CATEGORIES.forEach(c=>{const b=document.createElement("button");b.className="nav-btn";b.dataset.filter=c.name;
     const i=document.createElement("span");i.className="nav-icon";i.textContent=c.icon||"•";const n=document.createElement("span");n.className="nav-name";n.textContent=c.name;
-    const count=document.createElement("span");count.className="nav-count";count.textContent=c.count;b.append(i,n,count);box.append(b)});
+    const count=document.createElement("span");count.className="nav-count";count.textContent=categoryCount(c.name);b.append(i,n,count);box.append(b)});
   $$(".nav-btn").forEach(btn=>btn.onclick=()=>{
-    state.filter=btn.dataset.filter;state.query="";$("#searchInput").value="";$("#clearSearch").classList.remove("show");
-    $$(".nav-btn").forEach(x=>x.classList.toggle("active",x===btn));hideQuick();render();$("#sidebar").classList.remove("show");window.scrollTo({top:0,behavior:"smooth"});
+    state.filter=btn.dataset.filter;state.query="";$("#searchInput").value="";$("#clearSearch").classList.remove("show");document.body.classList.remove("searching");
+    $$(".nav-btn").forEach(x=>x.classList.toggle("active",x===btn));render();$("#sidebar").classList.remove("show");window.scrollTo({top:0,behavior:"smooth"});
   });
 }
-function renderQuickResults(){
-  const box=$("#quickResult"),q=state.query.trim();box.innerHTML="";state.quickIndex=-1;if(!q){hideQuick();return}
-  const items=filteredSites().slice(0,8);if(!items.length){hideQuick();return}
-  items.forEach((site,idx)=>{
-    const a=document.createElement("a");a.className="quick-item";a.href=site.url;a.target="_blank";a.rel="noopener noreferrer";a.dataset.index=idx;a.onclick=()=>recordRecent(site.id);
-    const qi=document.createElement("div");qi.className="quick-icon";const colors=gradientFor(site.domain+site.name);const fb=document.createElement("span");fb.textContent=(site.name||"?").charAt(0).toUpperCase();fb.style.background=`linear-gradient(135deg,${colors[0]},${colors[1]})`;qi.append(fb);
-    const src=iconSources(site)[0];if(src){const img=document.createElement("img");img.src=src;img.onerror=()=>img.remove();qi.append(img)}
-    const info=document.createElement("div");info.className="quick-info";const n=document.createElement("div");n.className="quick-name";n.textContent=site.name;const d=document.createElement("div");d.className="quick-domain";d.textContent=site.domain||safeDomain(site.url);info.append(n,d);
-    const k=document.createElement("span");k.className="quick-kbd";k.textContent="↵";a.append(qi,info,k);box.append(a)
-  });
-  box.classList.add("show");
-}
-function hideQuick(){$("#quickResult").classList.remove("show")}
-function moveQuick(delta){const items=$$("#quickResult .quick-item");if(!items.length)return;state.quickIndex=(state.quickIndex+delta+items.length)%items.length;items.forEach((x,i)=>x.classList.toggle("active",i===state.quickIndex));items[state.quickIndex].scrollIntoView({block:"nearest"})}
-function activateQuick(){const items=$$("#quickResult .quick-item");if(state.quickIndex>=0&&items[state.quickIndex])items[state.quickIndex].click()}
 function buildCategorySelect(){const sel=$("#newCategory");sel.innerHTML="";CATEGORIES.forEach(c=>{const o=document.createElement("option");o.value=c.name;o.textContent=c.name;sel.append(o)})}
-function openDrawer(){$("#drawer").classList.add("show");$("#backdrop").classList.add("show");renderCustomList();refreshIconPreview()}
+function openDrawer(){$("#drawer").classList.add("show");$("#backdrop").classList.add("show");renderCustomList();buildMoveCategorySelect();buildMoveSiteOptions();refreshIconPreview()}
 function closeDrawer(){$("#drawer").classList.remove("show");$("#backdrop").classList.remove("show")}
 function refreshIconPreview(){
   const box=$("#iconPreview");box.innerHTML="";const name=$("#newName").value.trim()||"新",url=$("#newUrl").value.trim(),iconUrl=$("#newIconUrl").value.trim();
@@ -603,37 +674,191 @@ function renderCustomList(){
   if(!state.custom.length){const p=document.createElement("p");p.style.color="var(--muted)";p.style.fontSize="12px";p.textContent="还没有手动新增的网站。";box.append(p);return}
   state.custom.forEach(site=>{
     const row=document.createElement("div");row.className="custom-item";row.append(createSiteIcon(site,"custom-mini-icon"));
-    const grow=document.createElement("div");grow.className="custom-grow";const b=document.createElement("b");b.textContent=site.name;const s=document.createElement("small");s.textContent=`${site.category} · ${site.domain}`;grow.append(b,s);
+    const grow=document.createElement("div");grow.className="custom-grow";const b=document.createElement("b");b.textContent=site.name;const s=document.createElement("small");s.textContent=`${effectiveCategory(site)} · ${site.domain}`;grow.append(b,s);
     const actions=document.createElement("div");actions.className="custom-buttons";
     const edit=document.createElement("button");edit.className="mini-btn";edit.textContent="编辑";edit.onclick=()=>{
       const name=prompt("网站名称",site.name);if(name===null)return;const url=prompt("网址",site.url);if(url===null)return;const iconUrl=prompt("图标地址（可留空）",site.iconUrl||"");if(iconUrl===null)return;
       try{const u=new URL(url);if(!/^https?:$/.test(u.protocol))throw 0;site.name=name.trim()||site.name;site.url=u.href;site.domain=u.hostname.replace(/^www\./,"");site.iconUrl=iconUrl.trim();save();render();renderCustomList();toast("已更新")}catch{alert("请输入有效的 http/https 网址")}
     };
-    const del=document.createElement("button");del.className="mini-btn danger";del.textContent="删除";del.onclick=()=>{if(confirm(`删除「${site.name}」？`)){state.custom=state.custom.filter(x=>x.id!==site.id);state.favorites.delete(site.id);save();render();renderCustomList()}};
+    const del=document.createElement("button");del.className="mini-btn danger";del.textContent="删除";del.onclick=()=>{if(confirm(`删除「${site.name}」？`)){state.custom=state.custom.filter(x=>x.id!==site.id);state.favorites.delete(site.id);delete state.categoryOverrides[site.id];save();buildNav();render();renderCustomList();buildMoveSiteOptions()}};
     actions.append(edit,del);row.append(grow,actions);box.append(row)
   });
 }
+
+function buildMoveCategorySelect(){
+  const sel=$("#moveCategorySelect");
+  if(!sel)return;
+  const current=sel.value;
+  sel.innerHTML="";
+  CATEGORIES.forEach(c=>{
+    const o=document.createElement("option");
+    o.value=c.name;
+    o.textContent=c.name;
+    sel.append(o);
+  });
+  if(current&&CATEGORIES.some(c=>c.name===current))sel.value=current;
+}
+function buildMoveSiteOptions(){
+  const sel=$("#moveSiteSelect");
+  if(!sel)return;
+  const old=sel.value;
+  const q=($("#moveSearch")?.value||"").trim().toLowerCase();
+  const list=allSites()
+    .filter(site=>{
+      if(!q)return true;
+      return (`${site.name} ${site.domain} ${effectiveCategory(site)}`).toLowerCase().includes(q);
+    })
+    .sort((a,b)=>{
+      const ca=effectiveCategory(a),cb=effectiveCategory(b);
+      return ca.localeCompare(cb,"zh-CN")||a.name.localeCompare(b.name,"zh-CN");
+    });
+
+  sel.innerHTML="";
+  list.forEach(site=>{
+    const o=document.createElement("option");
+    o.value=site.id;
+    o.textContent=`${site.name} · ${site.domain} 【${effectiveCategory(site)}】`;
+    sel.append(o);
+  });
+
+  if(old&&list.some(site=>site.id===old))sel.value=old;
+  if(!sel.value&&list.length)sel.value=list[0].id;
+
+  const selected=getMoveSite();
+  if(selected&&$("#moveCategorySelect"))$("#moveCategorySelect").value=effectiveCategory(selected);
+  updateMovePreview();
+}
+function getMoveSite(){
+  const id=$("#moveSiteSelect")?.value;
+  return allSites().find(site=>site.id===id)||null;
+}
+function updateMovePreview(){
+  const box=$("#movePreview");
+  if(!box)return;
+  const site=getMoveSite();
+
+  if(!site){
+    box.innerHTML="没有匹配的网站";
+    return;
+  }
+
+  const current=effectiveCategory(site);
+  const target=$("#moveCategorySelect")?.value||current;
+  box.innerHTML="";
+
+  const line=document.createElement("div");
+  line.className="move-line";
+
+  const name=document.createElement("strong");
+  name.textContent=site.name;
+
+  const from=document.createElement("span");
+  from.textContent=current;
+
+  const arrow=document.createElement("span");
+  arrow.className="move-arrow";
+  arrow.textContent="→";
+
+  const to=document.createElement("strong");
+  to.textContent=target;
+
+  line.append(name,from,arrow,to);
+  box.append(line);
+
+  const note=document.createElement("div");
+  note.className="move-note";
+  note.textContent=state.categoryOverrides[site.id]
+    ? `默认分类：${site.category} · 当前已手动调整`
+    : `默认分类：${site.category}`;
+  box.append(note);
+}
+function moveSelectedCategory(){
+  const site=getMoveSite();
+  if(!site)return toast("请先选择网站");
+  const target=$("#moveCategorySelect").value;
+
+  if(target===site.category)delete state.categoryOverrides[site.id];
+  else state.categoryOverrides[site.id]=target;
+
+  save();
+  buildNav();
+  render();
+  buildMoveSiteOptions();
+  renderCustomList();
+  toast(`「${site.name}」已移动到「${target}」`);
+}
+function restoreSelectedCategory(){
+  const site=getMoveSite();
+  if(!site)return toast("请先选择网站");
+
+  if(state.categoryOverrides[site.id]){
+    delete state.categoryOverrides[site.id];
+    save();
+    buildNav();
+    render();
+    buildMoveSiteOptions();
+    renderCustomList();
+    toast(`已恢复到默认分类「${site.category}」`);
+  }else{
+    $("#moveCategorySelect").value=site.category;
+    updateMovePreview();
+    toast("当前已经是默认分类");
+  }
+}
+
 function applyTheme(){
   const saved=localStorage.getItem(KEYS.theme);const theme=saved||((window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light");
   document.documentElement.dataset.theme=theme;updateThemeButton()
 }
 function updateThemeButton(){$("#themeBtn").textContent=document.documentElement.dataset.theme==="dark"?"☀":"☾"}
 
-applyTheme();buildNav();buildCategorySelect();render();refreshIconPreview();
+applyTheme();buildNav();buildCategorySelect();buildMoveCategorySelect();buildMoveSiteOptions();render();refreshIconPreview();
 
-$("#searchInput").addEventListener("input",e=>{state.query=e.target.value;$("#clearSearch").classList.toggle("show",!!state.query);render()});
-$("#searchInput").addEventListener("keydown",e=>{
-  if(e.key==="ArrowDown"){e.preventDefault();moveQuick(1)}else if(e.key==="ArrowUp"){e.preventDefault();moveQuick(-1)}
-  else if(e.key==="Enter"&&state.quickIndex>=0){e.preventDefault();activateQuick()}else if(e.key==="Escape"){state.query="";e.target.value="";$("#clearSearch").classList.remove("show");render()}
+$("#searchInput").addEventListener("input",e=>{
+  state.query=e.target.value;
+  $("#clearSearch").classList.toggle("show",!!state.query);
+  document.body.classList.toggle("searching",!!state.query.trim());
+  render();
 });
-$("#clearSearch").onclick=()=>{state.query="";$("#searchInput").value="";$("#clearSearch").classList.remove("show");render();$("#searchInput").focus()};
+$("#searchInput").addEventListener("keydown",e=>{
+  if(e.key==="Escape"&&state.query){
+    state.query="";
+    e.target.value="";
+    $("#clearSearch").classList.remove("show");
+    document.body.classList.remove("searching");
+    render();
+  }else if(e.key==="Enter"){
+    const results=filteredSites();
+    if(results.length===1){
+      recordRecent(results[0].id);
+      window.open(results[0].url,"_blank","noopener");
+    }
+  }
+});
+$("#clearSearch").onclick=()=>{
+  state.query="";
+  $("#searchInput").value="";
+  $("#clearSearch").classList.remove("show");
+  document.body.classList.remove("searching");
+  render();
+  $("#searchInput").focus();
+};
 document.addEventListener("keydown",e=>{
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();$("#searchInput").focus();$("#searchInput").select()}
   if(e.key==="Escape"&&!document.activeElement.matches("#searchInput")){closeDrawer();$("#sidebar").classList.remove("show")}
 });
-document.addEventListener("click",e=>{if(!e.target.closest(".search-panel"))hideQuick()});
 $("#themeBtn").onclick=()=>{const next=document.documentElement.dataset.theme==="dark"?"light":"dark";document.documentElement.dataset.theme=next;localStorage.setItem(KEYS.theme,next);updateThemeButton()};
 $("#mobileMenuBtn").onclick=()=>$("#sidebar").classList.toggle("show");$("#manageBtn").onclick=openDrawer;$("#closeDrawer").onclick=closeDrawer;$("#backdrop").onclick=closeDrawer;
+$("#moveSearch").addEventListener("input",buildMoveSiteOptions);
+$("#moveSiteSelect").addEventListener("change",()=>{
+  const site=getMoveSite();
+  if(site)$("#moveCategorySelect").value=effectiveCategory(site);
+  updateMovePreview();
+});
+$("#moveCategorySelect").addEventListener("change",updateMovePreview);
+$("#moveCategoryBtn").onclick=moveSelectedCategory;
+$("#restoreCategoryBtn").onclick=restoreSelectedCategory;
+
 ["newName","newUrl","newIconUrl"].forEach(id=>$("#"+id).addEventListener("input",refreshIconPreview));
 $("#newIconFile").addEventListener("change",e=>{
   const file=e.target.files?.[0];if(!file)return;if(file.size>1024*1024){alert("图标建议小于 1MB");e.target.value="";return}
@@ -647,12 +872,12 @@ $("#addForm").addEventListener("submit",e=>{
   }catch{alert("请输入有效的 http:// 或 https:// 网址")}
 });
 $("#exportBtn").onclick=()=>{
-  const blob=new Blob([JSON.stringify({version:6,favorites:[...state.favorites],recents:state.recents,custom:state.custom},null,2)],{type:"application/json"});
+  const blob=new Blob([JSON.stringify({version:8,favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides},null,2)],{type:"application/json"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="feitianxiaoxiang-nav-backup.json";a.click();URL.revokeObjectURL(a.href)
 };
 $("#importBtn").onclick=()=>$("#importFile").click();
 $("#importFile").addEventListener("change",async e=>{
-  const file=e.target.files?.[0];if(!file)return;try{const d=JSON.parse(await file.text());state.custom=Array.isArray(d.custom)?d.custom:[];state.recents=Array.isArray(d.recents)?d.recents:[];state.favorites=new Set(Array.isArray(d.favorites)?d.favorites:[]);save();render();renderCustomList();toast("配置已导入")}catch{alert("配置文件无效")}e.target.value=""
+  const file=e.target.files?.[0];if(!file)return;try{const d=JSON.parse(await file.text());state.custom=Array.isArray(d.custom)?d.custom:[];state.recents=Array.isArray(d.recents)?d.recents:[];state.favorites=new Set(Array.isArray(d.favorites)?d.favorites:[]);state.categoryOverrides=(d.categoryOverrides&&typeof d.categoryOverrides==="object")?d.categoryOverrides:{};save();buildNav();render();renderCustomList();buildMoveSiteOptions();toast("配置已导入")}catch{alert("配置文件无效")}e.target.value=""
 });
 const toTop=$("#toTop");window.addEventListener("scroll",()=>toTop.classList.toggle("show",scrollY>500),{passive:true});toTop.onclick=()=>window.scrollTo({top:0,behavior:"smooth"});
 
