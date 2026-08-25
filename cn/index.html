@@ -527,6 +527,94 @@ html[data-theme="light"] .category-context{
   .context-tip{display:none}
 }
 
+
+/* ===================== V11 · 删除 + 自定义图标 ===================== */
+.context-tools{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:6px;
+  margin-top:9px;
+  padding-top:9px;
+  border-top:1px solid var(--line);
+}
+.context-tool{
+  height:38px;
+  padding:0 10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  background:var(--soft);
+  color:var(--text);
+  font-size:11px;
+  font-weight:750;
+}
+.context-tool:hover{
+  background:var(--soft2);
+  border-color:var(--line2);
+}
+.context-tool.danger{
+  color:#ff8294;
+  border-color:rgba(255,113,135,.20);
+}
+.context-tool.danger:hover{
+  background:rgba(255,113,135,.08);
+  border-color:rgba(255,113,135,.34);
+}
+.context-tool.full{grid-column:1/-1}
+.context-tool[hidden]{display:none}
+.context-tool-icon{
+  width:20px;
+  height:20px;
+  display:grid;
+  place-items:center;
+  border-radius:7px;
+  background:var(--soft2);
+  font-size:10px;
+}
+.deleted-item{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  gap:10px;
+  align-items:center;
+  padding:10px 0;
+  border-bottom:1px solid var(--line);
+}
+.deleted-item:last-child{border-bottom:0}
+.deleted-copy{min-width:0}
+.deleted-copy b{
+  display:block;
+  font-size:12px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.deleted-copy small{
+  display:block;
+  margin-top:4px;
+  color:var(--muted);
+  font-size:10px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.restore-site-btn{
+  height:32px;
+  padding:0 10px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:var(--soft);
+  color:var(--text);
+  font-size:11px;
+  font-weight:700;
+}
+.restore-site-btn:hover{background:var(--soft2)}
+@media(max-width:650px){
+  .context-tools{grid-template-columns:1fr 1fr}
+}
+
 </style>
 </head>
 <body>
@@ -597,7 +685,7 @@ html[data-theme="light"] .category-context{
     </section>
 
     <div id="content"></div>
-    <div class="footer">© 2026 飞天小象私人导航 · V10</div>
+    <div class="footer">© 2026 飞天小象私人导航 · V11</div>
   </main>
 </div>
 
@@ -669,6 +757,11 @@ html[data-theme="light"] .category-context{
     <div class="admin-divider"></div>
     <div class="custom-title-row"><h3>我的新增</h3><span class="custom-count" id="customCount">0 个</span></div>
     <div id="customList"></div>
+
+    <div class="admin-divider"></div>
+    <div class="custom-title-row"><h3>已删除网站</h3><span class="custom-count" id="deletedCount">0 个</span></div>
+    <div class="admin-note">右键菜单删除的网站会先从导航中隐藏，可在这里恢复。</div>
+    <div id="deletedList"></div>
   </div>
 </aside>
 
@@ -676,6 +769,7 @@ html[data-theme="light"] .category-context{
 <div class="toast" id="toast"></div>
 
 <div class="category-context" id="categoryContext" role="menu" aria-hidden="true"></div>
+<input type="file" id="contextIconFile" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml,image/x-icon,.ico" hidden>
 
 
 <script>
@@ -684,13 +778,15 @@ const CATEGORIES=[{"name":"常用入口","icon":"⌘","count":9},{"name":"AI 助
 const ICON_MAP={"all":"⌂","favorite":"★","recent":"↺","常用入口":"⌘","AI 助手":"✦","AI 图像·视频":"◉","设计·灵感":"✎","素材·字体·PPT":"▣","图片·文档工具":"◫","开发·技术":"⌨","软件·系统":"⌬","网络·测速·IP":"◎","VPN·代理·节点":"↯","影音·游戏":"▶","学习·知识":"✧","政务·法律":"§","购物·账号·订阅":"◌","其他收藏":"···"};
 
 /* Stable storage + migration from previous versions */
-const KEYS={theme:"fxnav_theme",favorites:"fxnav_favorites",recents:"fxnav_recents",custom:"fxnav_custom",categoryOverrides:"fxnav_category_overrides"};
+const KEYS={theme:"fxnav_theme",favorites:"fxnav_favorites",recents:"fxnav_recents",custom:"fxnav_custom",categoryOverrides:"fxnav_category_overrides",iconOverrides:"fxnav_icon_overrides",hiddenSites:"fxnav_hidden_sites"};
 const LEGACY={
   theme:["feitianxiaoxiang_theme_v5","dumbo_theme_v4","dumbo_theme_v3","dumbo_theme_v2","dumbo_theme"],
   favorites:["feitianxiaoxiang_favorites_v5","dumbo_favorites"],
   recents:["feitianxiaoxiang_recents_v5","dumbo_recents"],
   custom:["feitianxiaoxiang_custom_v5","dumbo_custom"],
-  categoryOverrides:[]
+  categoryOverrides:[],
+  iconOverrides:[],
+  hiddenSites:[]
 };
 function migrateOne(key,legacy=[]){
   if(localStorage.getItem(key)!==null)return;
@@ -704,15 +800,27 @@ const state={
   favorites:new Set(JSON.parse(localStorage.getItem(KEYS.favorites)||"[]")),
   recents:JSON.parse(localStorage.getItem(KEYS.recents)||"[]"),
   custom:JSON.parse(localStorage.getItem(KEYS.custom)||"[]"),
-  categoryOverrides:JSON.parse(localStorage.getItem(KEYS.categoryOverrides)||"{}")
+  categoryOverrides:JSON.parse(localStorage.getItem(KEYS.categoryOverrides)||"{}"),
+  iconOverrides:JSON.parse(localStorage.getItem(KEYS.iconOverrides)||"{}"),
+  hiddenSites:new Set(JSON.parse(localStorage.getItem(KEYS.hiddenSites)||"[]"))
 };
 function save(){
-  localStorage.setItem(KEYS.favorites,JSON.stringify([...state.favorites]));
-  localStorage.setItem(KEYS.recents,JSON.stringify(state.recents.slice(0,30)));
-  localStorage.setItem(KEYS.custom,JSON.stringify(state.custom));
-  localStorage.setItem(KEYS.categoryOverrides,JSON.stringify(state.categoryOverrides));
+  try{
+    localStorage.setItem(KEYS.favorites,JSON.stringify([...state.favorites]));
+    localStorage.setItem(KEYS.recents,JSON.stringify(state.recents.slice(0,30)));
+    localStorage.setItem(KEYS.custom,JSON.stringify(state.custom));
+    localStorage.setItem(KEYS.categoryOverrides,JSON.stringify(state.categoryOverrides));
+    localStorage.setItem(KEYS.iconOverrides,JSON.stringify(state.iconOverrides));
+    localStorage.setItem(KEYS.hiddenSites,JSON.stringify([...state.hiddenSites]));
+    return true;
+  }catch(err){
+    console.error(err);
+    toast("浏览器本地存储空间不足");
+    return false;
+  }
 }
-function allSites(){return [...BUILTIN_SITES,...state.custom]}
+function rawSites(){return [...BUILTIN_SITES,...state.custom]}
+function allSites(){return rawSites().filter(site=>!state.hiddenSites.has(site.id))}
 function effectiveCategory(site){return state.categoryOverrides[site.id]||site.category}
 function categoryCount(name){return allSites().filter(site=>effectiveCategory(site)===name).length}
 function movedCount(){return Object.keys(state.categoryOverrides).length}
@@ -724,6 +832,7 @@ function gradientFor(str){
 }
 function iconSources(site){
   const out=[];
+  if(state.iconOverrides?.[site.id])out.push(state.iconOverrides[site.id]);
   if(site.icon)out.push(site.icon);
   if(site.iconUrl)out.push(site.iconUrl);
   const d=site.domain||safeDomain(site.url);
@@ -861,7 +970,8 @@ function updateCounts(){
   $("#recentCount").textContent=state.recents.length;
   $("#siteCount").textContent=allSites().length;
   $("#catCount").textContent=new Set(allSites().map(s=>effectiveCategory(s))).size;
-  $("#customCount").textContent=state.custom.length+" 个";
+  $("#customCount").textContent=state.custom.filter(site=>!state.hiddenSites.has(site.id)).length+" 个";
+  if($("#deletedCount"))$("#deletedCount").textContent=state.hiddenSites.size+" 个";
   if($("#movedCount"))$("#movedCount").textContent=movedCount()+" 个已调整";
   updateNavCounts();
 }
@@ -890,16 +1000,19 @@ function buildNav(){
   syncNavActive();
 }
 function buildCategorySelect(){const sel=$("#newCategory");sel.innerHTML="";CATEGORIES.forEach(c=>{const o=document.createElement("option");o.value=c.name;o.textContent=c.name;sel.append(o)})}
-function openDrawer(){$("#drawer").classList.add("show");$("#backdrop").classList.add("show");renderCustomList();buildMoveCategorySelect();buildMoveSiteOptions();refreshIconPreview()}
+function openDrawer(){$("#drawer").classList.add("show");$("#backdrop").classList.add("show");renderCustomList();renderDeletedList();buildMoveCategorySelect();buildMoveSiteOptions();refreshIconPreview()}
 function closeDrawer(){$("#drawer").classList.remove("show");$("#backdrop").classList.remove("show")}
 function refreshIconPreview(){
   const box=$("#iconPreview");box.innerHTML="";const name=$("#newName").value.trim()||"新",url=$("#newUrl").value.trim(),iconUrl=$("#newIconUrl").value.trim();
   box.append(createSiteIcon({name,url,domain:safeDomain(url),icon:state.pendingIconData||"",iconUrl},"custom-mini-icon"));
 }
 function renderCustomList(){
-  const box=$("#customList");box.innerHTML="";$("#customCount").textContent=state.custom.length+" 个";
-  if(!state.custom.length){const p=document.createElement("p");p.style.color="var(--muted)";p.style.fontSize="12px";p.textContent="还没有手动新增的网站。";box.append(p);return}
-  state.custom.forEach(site=>{
+  const box=$("#customList");
+  box.innerHTML="";
+  const visibleCustom=state.custom.filter(site=>!state.hiddenSites.has(site.id));
+  $("#customCount").textContent=visibleCustom.length+" 个";
+  if(!visibleCustom.length){const p=document.createElement("p");p.style.color="var(--muted)";p.style.fontSize="12px";p.textContent="还没有手动新增的网站。";box.append(p);return}
+  visibleCustom.forEach(site=>{
     const row=document.createElement("div");row.className="custom-item";row.append(createSiteIcon(site,"custom-mini-icon"));
     const grow=document.createElement("div");grow.className="custom-grow";const b=document.createElement("b");b.textContent=site.name;const s=document.createElement("small");s.textContent=`${effectiveCategory(site)} · ${site.domain}`;grow.append(b,s);
     const actions=document.createElement("div");actions.className="custom-buttons";
@@ -907,7 +1020,7 @@ function renderCustomList(){
       const name=prompt("网站名称",site.name);if(name===null)return;const url=prompt("网址",site.url);if(url===null)return;const iconUrl=prompt("图标地址（可留空）",site.iconUrl||"");if(iconUrl===null)return;
       try{const u=new URL(url);if(!/^https?:$/.test(u.protocol))throw 0;site.name=name.trim()||site.name;site.url=u.href;site.domain=u.hostname.replace(/^www\./,"");site.iconUrl=iconUrl.trim();save();render();renderCustomList();toast("已更新")}catch{alert("请输入有效的 http/https 网址")}
     };
-    const del=document.createElement("button");del.className="mini-btn danger";del.textContent="删除";del.onclick=()=>{if(confirm(`删除「${site.name}」？`)){state.custom=state.custom.filter(x=>x.id!==site.id);state.favorites.delete(site.id);delete state.categoryOverrides[site.id];save();buildNav();render();renderCustomList();buildMoveSiteOptions()}};
+    const del=document.createElement("button");del.className="mini-btn danger";del.textContent="删除";del.onclick=()=>{if(confirm(`删除「${site.name}」？\n\n可在“已删除网站”中恢复。`)){state.hiddenSites.add(site.id);state.favorites.delete(site.id);state.recents=state.recents.filter(id=>id!==site.id);save();buildNav();render();renderCustomList();renderDeletedList();buildMoveSiteOptions()}};
     actions.append(edit,del);row.append(grow,actions);box.append(row)
   });
 }
@@ -1149,10 +1262,45 @@ function buildCategoryContext(site){
 
   const tip=document.createElement("span");
   tip.className="context-tip";
-  tip.textContent="右键图标快速分类";
-
+  tip.textContent="右键图标快速管理";
   footer.append(restore,tip);
-  menu.append(head,label,grid,footer);
+
+  const tools=document.createElement("div");
+  tools.className="context-tools";
+
+  const iconBtn=document.createElement("button");
+  iconBtn.type="button";
+  iconBtn.className="context-tool";
+  iconBtn.innerHTML='<span class="context-tool-icon">▧</span><span>自定义图标</span>';
+  iconBtn.onclick=e=>{
+    e.preventDefault();
+    e.stopPropagation();
+    chooseContextIcon(site);
+  };
+
+  const resetIcon=document.createElement("button");
+  resetIcon.type="button";
+  resetIcon.className="context-tool";
+  resetIcon.hidden=!state.iconOverrides[site.id];
+  resetIcon.innerHTML='<span class="context-tool-icon">↺</span><span>恢复默认图标</span>';
+  resetIcon.onclick=e=>{
+    e.preventDefault();
+    e.stopPropagation();
+    resetContextIcon(site);
+  };
+
+  const deleteBtn=document.createElement("button");
+  deleteBtn.type="button";
+  deleteBtn.className="context-tool danger full";
+  deleteBtn.innerHTML='<span class="context-tool-icon">×</span><span>删除网站</span>';
+  deleteBtn.onclick=e=>{
+    e.preventDefault();
+    e.stopPropagation();
+    deleteContextSite(site);
+  };
+
+  tools.append(iconBtn,resetIcon,deleteBtn);
+  menu.append(head,label,grid,footer,tools);
 }
 
 function openCategoryContext(e,site){
@@ -1203,6 +1351,186 @@ function restoreContextCategory(site){
   toast(`「${site.name}」已恢复到「${site.category}」`);
 }
 
+
+let pendingContextIconSiteId="";
+
+function chooseContextIcon(site){
+  pendingContextIconSiteId=site.id;
+  closeCategoryContext();
+  const input=$("#contextIconFile");
+  input.value="";
+  input.click();
+}
+
+function readFileAsDataURL(file){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>resolve(reader.result);
+    reader.onerror=()=>reject(new Error("读取图标失败"));
+    reader.readAsDataURL(file);
+  });
+}
+
+function loadImageFromDataURL(dataUrl){
+  return new Promise((resolve,reject)=>{
+    const img=new Image();
+    img.onload=()=>resolve(img);
+    img.onerror=()=>reject(new Error("图标格式无法识别"));
+    img.src=dataUrl;
+  });
+}
+
+async function optimizeIconFile(file){
+  if(!file)throw new Error("没有选择文件");
+  if(file.size>2*1024*1024)throw new Error("图标文件不能超过 2MB");
+
+  const original=await readFileAsDataURL(file);
+
+  try{
+    const img=await loadImageFromDataURL(original);
+    const size=128;
+    const canvas=document.createElement("canvas");
+    canvas.width=size;
+    canvas.height=size;
+    const ctx=canvas.getContext("2d");
+    ctx.clearRect(0,0,size,size);
+
+    const pad=8;
+    const max=size-pad*2;
+    const ratio=Math.min(max/img.naturalWidth,max/img.naturalHeight);
+    const w=Math.max(1,Math.round(img.naturalWidth*ratio));
+    const h=Math.max(1,Math.round(img.naturalHeight*ratio));
+    const x=Math.round((size-w)/2);
+    const y=Math.round((size-h)/2);
+
+    ctx.imageSmoothingEnabled=true;
+    ctx.imageSmoothingQuality="high";
+    ctx.drawImage(img,x,y,w,h);
+
+    const webp=canvas.toDataURL("image/webp",.90);
+    if(webp&&webp.startsWith("data:image/webp"))return webp;
+    return canvas.toDataURL("image/png");
+  }catch{
+    if(file.size<=500*1024)return original;
+    throw new Error("此图标无法压缩，请换 PNG / JPG / WebP，建议小于 500KB");
+  }
+}
+
+async function applyContextIconFile(file){
+  const siteId=pendingContextIconSiteId;
+  pendingContextIconSiteId="";
+  const site=rawSites().find(x=>x.id===siteId);
+  if(!site)return;
+
+  try{
+    const data=await optimizeIconFile(file);
+    const old=state.iconOverrides[site.id];
+    state.iconOverrides[site.id]=data;
+
+    if(!save()){
+      if(old)state.iconOverrides[site.id]=old;
+      else delete state.iconOverrides[site.id];
+      return;
+    }
+
+    render();
+    renderCustomList();
+    renderDeletedList();
+    toast(`「${site.name}」图标已更新`);
+  }catch(err){
+    alert(err?.message||"图标设置失败");
+  }
+}
+
+function resetContextIcon(site){
+  if(!state.iconOverrides[site.id]){
+    closeCategoryContext();
+    return;
+  }
+
+  delete state.iconOverrides[site.id];
+  save();
+  closeCategoryContext();
+  render();
+  renderCustomList();
+  toast(`「${site.name}」已恢复默认图标`);
+}
+
+function deleteContextSite(site){
+  closeCategoryContext();
+  if(!confirm(`删除「${site.name}」？\n\n删除后会从导航中隐藏，可在“管理导航 → 已删除网站”里恢复。`))return;
+
+  state.hiddenSites.add(site.id);
+  state.favorites.delete(site.id);
+  state.recents=state.recents.filter(id=>id!==site.id);
+
+  save();
+  buildNav();
+  render();
+  renderCustomList();
+  renderDeletedList();
+  buildMoveSiteOptions();
+  toast(`已删除「${site.name}」`);
+}
+
+function restoreDeletedSite(siteId){
+  const site=rawSites().find(x=>x.id===siteId);
+  if(!site)return;
+
+  state.hiddenSites.delete(siteId);
+  save();
+  buildNav();
+  render();
+  renderCustomList();
+  renderDeletedList();
+  buildMoveSiteOptions();
+  toast(`已恢复「${site.name}」`);
+}
+
+function renderDeletedList(){
+  const box=$("#deletedList");
+  const count=$("#deletedCount");
+  if(!box||!count)return;
+
+  const deleted=rawSites().filter(site=>state.hiddenSites.has(site.id));
+  count.textContent=deleted.length+" 个";
+  box.innerHTML="";
+
+  if(!deleted.length){
+    const p=document.createElement("p");
+    p.style.color="var(--muted)";
+    p.style.fontSize="12px";
+    p.textContent="没有已删除的网站。";
+    box.append(p);
+    return;
+  }
+
+  deleted.forEach(site=>{
+    const row=document.createElement("div");
+    row.className="deleted-item";
+
+    row.append(createSiteIcon(site,"custom-mini-icon"));
+
+    const copy=document.createElement("div");
+    copy.className="deleted-copy";
+    const name=document.createElement("b");
+    name.textContent=site.name;
+    const meta=document.createElement("small");
+    meta.textContent=`${effectiveCategory(site)} · ${site.domain||safeDomain(site.url)}`;
+    copy.append(name,meta);
+
+    const restore=document.createElement("button");
+    restore.type="button";
+    restore.className="restore-site-btn";
+    restore.textContent="恢复";
+    restore.onclick=()=>restoreDeletedSite(site.id);
+
+    row.append(copy,restore);
+    box.append(row);
+  });
+}
+
+
 function syncNavActive(){
   $$(".nav-btn").forEach(btn=>{
     btn.classList.toggle("active",btn.dataset.filter===state.filter);
@@ -1215,7 +1543,7 @@ function applyTheme(){
 }
 function updateThemeButton(){$("#themeBtn").textContent=document.documentElement.dataset.theme==="dark"?"☀":"☾"}
 
-applyTheme();buildNav();buildCategorySelect();buildMoveCategorySelect();buildMoveSiteOptions();render();refreshIconPreview();
+applyTheme();buildNav();buildCategorySelect();buildMoveCategorySelect();buildMoveSiteOptions();render();renderDeletedList();refreshIconPreview();
 
 $("#searchInput").addEventListener("input",e=>{
   state.query=e.target.value;
@@ -1262,6 +1590,12 @@ $("#moveCategorySelect").addEventListener("change",updateMovePreview);
 $("#moveCategoryBtn").onclick=moveSelectedCategory;
 $("#restoreCategoryBtn").onclick=restoreSelectedCategory;
 
+$("#contextIconFile").addEventListener("change",e=>{
+  const file=e.target.files?.[0];
+  if(file)applyContextIconFile(file);
+  e.target.value="";
+});
+
 ["newName","newUrl","newIconUrl"].forEach(id=>$("#"+id).addEventListener("input",refreshIconPreview));
 $("#newIconFile").addEventListener("change",e=>{
   const file=e.target.files?.[0];if(!file)return;if(file.size>1024*1024){alert("图标建议小于 1MB");e.target.value="";return}
@@ -1275,12 +1609,12 @@ $("#addForm").addEventListener("submit",e=>{
   }catch{alert("请输入有效的 http:// 或 https:// 网址")}
 });
 $("#exportBtn").onclick=()=>{
-  const blob=new Blob([JSON.stringify({version:10,favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides},null,2)],{type:"application/json"});
+  const blob=new Blob([JSON.stringify({version:11,favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides,iconOverrides:state.iconOverrides,hiddenSites:[...state.hiddenSites]},null,2)],{type:"application/json"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="feitianxiaoxiang-nav-backup.json";a.click();URL.revokeObjectURL(a.href)
 };
 $("#importBtn").onclick=()=>$("#importFile").click();
 $("#importFile").addEventListener("change",async e=>{
-  const file=e.target.files?.[0];if(!file)return;try{const d=JSON.parse(await file.text());state.custom=Array.isArray(d.custom)?d.custom:[];state.recents=Array.isArray(d.recents)?d.recents:[];state.favorites=new Set(Array.isArray(d.favorites)?d.favorites:[]);state.categoryOverrides=(d.categoryOverrides&&typeof d.categoryOverrides==="object")?d.categoryOverrides:{};save();buildNav();render();renderCustomList();buildMoveSiteOptions();toast("配置已导入")}catch{alert("配置文件无效")}e.target.value=""
+  const file=e.target.files?.[0];if(!file)return;try{const d=JSON.parse(await file.text());state.custom=Array.isArray(d.custom)?d.custom:[];state.recents=Array.isArray(d.recents)?d.recents:[];state.favorites=new Set(Array.isArray(d.favorites)?d.favorites:[]);state.categoryOverrides=(d.categoryOverrides&&typeof d.categoryOverrides==="object")?d.categoryOverrides:{};state.iconOverrides=(d.iconOverrides&&typeof d.iconOverrides==="object")?d.iconOverrides:{};state.hiddenSites=new Set(Array.isArray(d.hiddenSites)?d.hiddenSites:[]);save();buildNav();render();renderCustomList();renderDeletedList();buildMoveSiteOptions();toast("配置已导入")}catch{alert("配置文件无效")}e.target.value=""
 });
 const toTop=$("#toTop");window.addEventListener("scroll",()=>toTop.classList.toggle("show",scrollY>500),{passive:true});toTop.onclick=()=>window.scrollTo({top:0,behavior:"smooth"});
 
