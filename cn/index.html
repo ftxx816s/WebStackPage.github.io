@@ -6,6 +6,8 @@
 <meta name="theme-color" content="#09111f">
 <title>飞天小象 · 私人导航</title>
 <meta name="description" content="飞天小象私人导航">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https: http:; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
 <style>
 :root{
   --sidebar-w:264px;
@@ -615,6 +617,62 @@ html[data-theme="light"] .category-context{
   .context-tools{grid-template-columns:1fr 1fr}
 }
 
+
+/* ===================== V12 · 稳定性 / 安全 / 交互优化 ===================== */
+.card{padding:0!important}
+.card-link{
+  display:flex;align-items:center;gap:12px;min-width:0;flex:1;
+  min-height:78px;padding:14px 38px 14px 15px;border-radius:inherit;
+}
+.card-link:focus-visible{outline:2px solid rgba(116,135,255,.72);outline-offset:-2px}
+.star{z-index:4}
+.site-icon{touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.storage-ok{color:var(--good)}
+.storage-warn{color:#f4b84a}
+.storage-danger{color:var(--danger)}
+.deleted-actions{margin-top:-4px;margin-bottom:8px}
+.danger-text{color:var(--danger)!important}
+.context-tool.copy-url{grid-column:1/-1}
+.longpress-ring{
+  position:absolute;inset:3px;border-radius:11px;pointer-events:none;z-index:5;
+  border:2px solid rgba(116,135,255,.72);opacity:0;transform:scale(.88);
+}
+.site-icon.longpressing .longpress-ring{animation:fxLongPress .52s linear forwards}
+@keyframes fxLongPress{from{opacity:.2;transform:scale(.88)}to{opacity:1;transform:scale(1)}}
+@media(max-width:650px){
+  .card-link{padding-right:42px}
+}
+
+
+/* ===================== V13 · 编辑 / 分类管理 / 拖拽排序 ===================== */
+.sort-handle{position:absolute;left:7px;top:50%;width:24px;height:38px;transform:translateY(-50%);display:none;place-items:center;border:1px solid var(--line);border-radius:9px;background:var(--soft2);color:var(--muted);font-size:14px;font-weight:900;cursor:grab;z-index:6;user-select:none}
+body.sort-mode .sort-handle{display:grid}
+body.sort-mode .card{padding-left:38px;cursor:grab}
+body.sort-mode .card-link,body.sort-mode .star{pointer-events:none}
+body.sort-mode .card[draggable="true"]{outline:1px dashed rgba(116,135,255,.18);outline-offset:-4px}
+body.sort-mode .card.dragging{opacity:.42;transform:scale(.985);box-shadow:none!important}
+body.sort-mode .grid.sort-over{outline:1px dashed rgba(116,135,255,.42);outline-offset:5px;border-radius:16px}
+#sortModeBtn.active{color:#fff;border-color:rgba(116,135,255,.34);background:linear-gradient(135deg,rgba(116,135,255,.80),rgba(164,92,246,.75))}
+.category-manager-list{margin-top:14px;border:1px solid var(--line);border-radius:15px;overflow:hidden;background:var(--soft)}
+.category-manager-item{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;gap:9px;align-items:center;min-height:50px;padding:8px 10px;border-bottom:1px solid var(--line);background:transparent}
+.category-manager-item:last-child{border-bottom:0}.category-manager-item.dragging{opacity:.38}
+.category-drag{width:25px;height:32px;display:grid;place-items:center;color:var(--muted2);cursor:grab;user-select:none;font-size:14px}
+.category-manager-icon{width:31px;height:31px;display:grid;place-items:center;border:1px solid var(--line);border-radius:10px;background:var(--soft2);font-size:11px;font-weight:900}
+.category-manager-copy{min-width:0}.category-manager-copy b{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.category-manager-copy small{display:block;margin-top:3px;color:var(--muted);font-size:10px}
+.category-manager-actions{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.cat-mini{height:30px;padding:0 8px;border:1px solid var(--line);border-radius:9px;background:var(--soft);color:var(--text);font-size:10px}
+.cat-mini:hover{background:var(--soft2)}.cat-mini.danger{color:var(--danger)}.cat-mini[disabled]{opacity:.35;cursor:not-allowed}
+.site-editor-backdrop{position:fixed;inset:0;z-index:310;display:grid;place-items:center;padding:18px;background:rgba(2,7,16,.56);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .14s ease,visibility .14s}
+.site-editor-backdrop.show{opacity:1;visibility:visible;pointer-events:auto}
+.site-editor{width:min(560px,100%);max-height:min(720px,calc(100vh - 36px));overflow:auto;border-radius:22px;transform:translateY(8px) scale(.99);transition:transform .14s ease}
+.site-editor-backdrop.show .site-editor{transform:none}
+.site-editor-head{position:sticky;top:0;z-index:2;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:18px 20px;border-bottom:1px solid var(--line);background:var(--glass-strong);backdrop-filter:blur(18px)}
+.site-editor-head h2{margin:0;font-size:20px}.site-editor-head p{margin:4px 0 0;color:var(--muted);font-size:11px}.site-editor-body{padding:20px}
+.site-editor-preview{margin-top:14px;display:flex;align-items:center;gap:12px;color:var(--muted);font-size:11px}#editSitePreview{min-width:44px;min-height:44px}
+.context-tool.edit-site{grid-column:1/-1;color:var(--text);border-color:rgba(116,135,255,.22);background:var(--accent-soft)}
+.context-tool.edit-site:hover{border-color:rgba(116,135,255,.38)}
+@media(max-width:650px){.site-editor-backdrop{padding:8px}.site-editor{max-height:calc(100vh - 16px);border-radius:18px}.category-manager-item{grid-template-columns:auto auto minmax(0,1fr)}.category-manager-actions{grid-column:3;justify-content:flex-start}}
+
 </style>
 </head>
 <body>
@@ -658,6 +716,7 @@ html[data-theme="light"] .category-context{
     <div class="topbar">
       <button class="btn icon mobile-menu" id="mobileMenuBtn" aria-label="菜单">☰</button>
       <div style="display:flex;gap:9px;margin-left:auto">
+        <button class="btn hide-sm" id="sortModeBtn" title="拖拽网站调整顺序">↕ 排序</button>
         <button class="btn hide-sm" id="manageBtn">＋ 管理导航</button>
         <button class="btn icon" id="themeBtn" aria-label="切换主题">☾</button>
       </div>
@@ -685,7 +744,7 @@ html[data-theme="light"] .category-context{
     </section>
 
     <div id="content"></div>
-    <div class="footer">© 2026 飞天小象私人导航 · V11</div>
+    <div class="footer">© 2026 飞天小象私人导航 · V13</div>
   </main>
 </div>
 
@@ -693,12 +752,12 @@ html[data-theme="light"] .category-context{
 <aside class="drawer" id="drawer">
   <div class="drawer-head">
     <div class="drawer-head-row">
-      <div class="drawer-title"><h2>管理导航</h2><p>新增、编辑、备份你的私人收藏</p></div>
+      <div class="drawer-title"><h2>管理导航</h2><p>网站编辑 · 分类管理 · 拖拽排序 · 备份</p></div>
       <button class="btn icon" id="closeDrawer">×</button>
     </div>
   </div>
   <div class="drawer-body">
-    <div class="admin-note">当前是单文件版，新增内容保存在浏览器本地。本版会自动迁移前几版的新增网站、收藏和最近访问，替换 HTML 后尽量保留你的数据。</div>
+    <div class="admin-note">当前是单文件版，新增内容保存在浏览器本地。本版会自动迁移旧数据，并对异常配置自动修复。<br><span id="storageUsage">正在计算本地数据占用…</span></div>
 
     <form id="addForm">
       <div class="form-grid">
@@ -721,6 +780,32 @@ html[data-theme="light"] .category-context{
         <input type="file" id="importFile" accept="application/json" hidden>
       </div>
     </form>
+
+    <div class="admin-divider"></div>
+
+    <div class="custom-title-row">
+      <h3>分类管理</h3>
+      <span class="custom-count" id="categoryManageCount">0 个分类</span>
+    </div>
+    <div class="admin-note">
+      可新增自定义分类、修改分类图标和调整分类顺序。自定义分类可重命名或删除；有网站的分类需先把网站移动出去再删除。
+    </div>
+    <div class="form-grid">
+      <div class="field">
+        <label>新分类名称</label>
+        <input id="newCategoryName" maxlength="24" placeholder="例如：工作常用">
+      </div>
+      <div class="field">
+        <label>分类图标</label>
+        <input id="newCategoryGlyph" maxlength="4" placeholder="例如：◆">
+      </div>
+    </div>
+    <div class="admin-actions">
+      <button class="btn primary" type="button" id="addCategoryBtn">＋ 新增分类</button>
+      <button class="btn" type="button" id="resetCategoryOrderBtn">恢复分类排序</button>
+      <button class="btn" type="button" id="resetSiteOrderBtn">恢复网站排序</button>
+    </div>
+    <div class="category-manager-list" id="categoryManagerList"></div>
 
     <div class="admin-divider"></div>
 
@@ -760,7 +845,11 @@ html[data-theme="light"] .category-context{
 
     <div class="admin-divider"></div>
     <div class="custom-title-row"><h3>已删除网站</h3><span class="custom-count" id="deletedCount">0 个</span></div>
-    <div class="admin-note">右键菜单删除的网站会先从导航中隐藏，可在这里恢复。</div>
+    <div class="admin-note">右键菜单删除的网站会先从导航中隐藏，可在这里恢复。内置网站不会被真正破坏。</div>
+    <div class="admin-actions deleted-actions">
+      <button class="btn" type="button" id="restoreAllDeletedBtn">全部恢复</button>
+      <button class="btn danger-text" type="button" id="purgeDeletedCustomBtn">清理已删除的自建网站</button>
+    </div>
     <div id="deletedList"></div>
   </div>
 </aside>
@@ -768,8 +857,37 @@ html[data-theme="light"] .category-context{
 <button class="to-top" id="toTop" aria-label="回到顶部">↑</button>
 <div class="toast" id="toast"></div>
 
+<div class="site-editor-backdrop" id="siteEditorBackdrop" aria-hidden="true">
+  <div class="site-editor glass-strong" role="dialog" aria-modal="true" aria-labelledby="siteEditorTitle">
+    <div class="site-editor-head">
+      <div>
+        <h2 id="siteEditorTitle">编辑网站</h2>
+        <p id="siteEditorMeta">修改名称、网址、图标地址和分类</p>
+      </div>
+      <button class="btn icon" type="button" id="closeSiteEditor">×</button>
+    </div>
+    <div class="site-editor-body">
+      <div class="form-grid">
+        <div class="field full"><label>网站名称</label><input id="editSiteName" maxlength="80"></div>
+        <div class="field full"><label>网址</label><input id="editSiteUrl" placeholder="https://example.com"></div>
+        <div class="field full"><label>分类</label><select id="editSiteCategory"></select></div>
+        <div class="field full"><label>图标地址（可选）</label><input id="editSiteIconUrl" placeholder="https://example.com/favicon.ico"></div>
+      </div>
+      <div class="site-editor-preview">
+        <span>预览</span>
+        <div id="editSitePreview"></div>
+      </div>
+      <div class="admin-actions">
+        <button class="btn primary" type="button" id="saveSiteEditor">保存修改</button>
+        <button class="btn" type="button" id="restoreSiteInfoBtn">恢复原始名称/网址</button>
+        <button class="btn" type="button" id="cancelSiteEditor">取消</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="category-context" id="categoryContext" role="menu" aria-hidden="true"></div>
-<input type="file" id="contextIconFile" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml,image/x-icon,.ico" hidden>
+<input type="file" id="contextIconFile" accept="image/png,image/jpeg,image/webp,image/gif,image/x-icon,image/vnd.microsoft.icon,.ico" hidden>
 
 
 <script>
@@ -778,7 +896,36 @@ const CATEGORIES=[{"name":"常用入口","icon":"⌘","count":9},{"name":"AI 助
 const ICON_MAP={"all":"⌂","favorite":"★","recent":"↺","常用入口":"⌘","AI 助手":"✦","AI 图像·视频":"◉","设计·灵感":"✎","素材·字体·PPT":"▣","图片·文档工具":"◫","开发·技术":"⌨","软件·系统":"⌬","网络·测速·IP":"◎","VPN·代理·节点":"↯","影音·游戏":"▶","学习·知识":"✧","政务·法律":"§","购物·账号·订阅":"◌","其他收藏":"···"};
 
 /* Stable storage + migration from previous versions */
-const KEYS={theme:"fxnav_theme",favorites:"fxnav_favorites",recents:"fxnav_recents",custom:"fxnav_custom",categoryOverrides:"fxnav_category_overrides",iconOverrides:"fxnav_icon_overrides",hiddenSites:"fxnav_hidden_sites"};
+
+const STORE={
+  get(key){try{return localStorage.getItem(key)}catch{return null}},
+  set(key,value){try{localStorage.setItem(key,value);return true}catch{return false}},
+  remove(key){try{localStorage.removeItem(key);return true}catch{return false}}
+};
+function parseStored(key,fallback){
+  const raw=STORE.get(key);
+  if(raw===null)return fallback;
+  try{return JSON.parse(raw)}catch{return fallback}
+}
+function cloneJSON(v){return JSON.parse(JSON.stringify(v))}
+function validHttpUrl(value){
+  try{const u=new URL(String(value||"").trim());return /^https?:$/.test(u.protocol)?u:null}catch{return null}
+}
+function validIconValue(value){
+  const v=String(value||"").trim();
+  if(!v)return "";
+  if(/^https?:\/\//i.test(v))return v.length<=4096?v:"";
+  if(/^data:image\/(?:png|jpe?g|webp|gif|x-icon|vnd\.microsoft\.icon);base64,/i.test(v))return v.length<=700000?v:"";
+  return "";
+}
+function canonicalUrl(value){
+  const u=validHttpUrl(value);if(!u)return "";
+  u.hash="";
+  if(u.pathname!=="/")u.pathname=u.pathname.replace(/\/+$/,"");
+  return u.href;
+}
+
+const KEYS={theme:"fxnav_theme",favorites:"fxnav_favorites",recents:"fxnav_recents",custom:"fxnav_custom",categoryOverrides:"fxnav_category_overrides",iconOverrides:"fxnav_icon_overrides",hiddenSites:"fxnav_hidden_sites",siteEdits:"fxnav_site_edits",customCategories:"fxnav_custom_categories",categoryOrder:"fxnav_category_order",categoryIconOverrides:"fxnav_category_icon_overrides",siteOrder:"fxnav_site_order"};
 const LEGACY={
   theme:["feitianxiaoxiang_theme_v5","dumbo_theme_v4","dumbo_theme_v3","dumbo_theme_v2","dumbo_theme"],
   favorites:["feitianxiaoxiang_favorites_v5","dumbo_favorites"],
@@ -786,44 +933,130 @@ const LEGACY={
   custom:["feitianxiaoxiang_custom_v5","dumbo_custom"],
   categoryOverrides:[],
   iconOverrides:[],
-  hiddenSites:[]
+  hiddenSites:[],
+  siteEdits:[],
+  customCategories:[],
+  categoryOrder:[],
+  categoryIconOverrides:[],
+  siteOrder:[]
 };
 function migrateOne(key,legacy=[]){
-  if(localStorage.getItem(key)!==null)return;
-  for(const old of legacy){const v=localStorage.getItem(old);if(v!==null){localStorage.setItem(key,v);break;}}
+  if(STORE.get(key)!==null)return;
+  for(const old of legacy){const v=STORE.get(old);if(v!==null){STORE.set(key,v);break;}}
 }
 Object.keys(KEYS).forEach(k=>migrateOne(KEYS[k],LEGACY[k]));
 
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const state={
-  filter:"all",query:"",quickIndex:-1,pendingIconData:"",
-  favorites:new Set(JSON.parse(localStorage.getItem(KEYS.favorites)||"[]")),
-  recents:JSON.parse(localStorage.getItem(KEYS.recents)||"[]"),
-  custom:JSON.parse(localStorage.getItem(KEYS.custom)||"[]"),
-  categoryOverrides:JSON.parse(localStorage.getItem(KEYS.categoryOverrides)||"{}"),
-  iconOverrides:JSON.parse(localStorage.getItem(KEYS.iconOverrides)||"{}"),
-  hiddenSites:new Set(JSON.parse(localStorage.getItem(KEYS.hiddenSites)||"[]"))
+  filter:"all",query:"",pendingIconData:"",
+  favorites:new Set(Array.isArray(parseStored(KEYS.favorites,[]))?parseStored(KEYS.favorites,[]):[]),
+  recents:Array.isArray(parseStored(KEYS.recents,[]))?parseStored(KEYS.recents,[]):[],
+  custom:Array.isArray(parseStored(KEYS.custom,[]))?parseStored(KEYS.custom,[]):[],
+  categoryOverrides:(parseStored(KEYS.categoryOverrides,{})&&typeof parseStored(KEYS.categoryOverrides,{})==="object")?parseStored(KEYS.categoryOverrides,{}):{},
+  iconOverrides:(parseStored(KEYS.iconOverrides,{})&&typeof parseStored(KEYS.iconOverrides,{})==="object")?parseStored(KEYS.iconOverrides,{}):{},
+  hiddenSites:new Set(Array.isArray(parseStored(KEYS.hiddenSites,[]))?parseStored(KEYS.hiddenSites,[]):[]),
+  siteEdits:(parseStored(KEYS.siteEdits,{})&&typeof parseStored(KEYS.siteEdits,{})==="object")?parseStored(KEYS.siteEdits,{}):{},
+  customCategories:Array.isArray(parseStored(KEYS.customCategories,[]))?parseStored(KEYS.customCategories,[]):[],
+  categoryOrder:Array.isArray(parseStored(KEYS.categoryOrder,[]))?parseStored(KEYS.categoryOrder,[]):[],
+  categoryIconOverrides:(parseStored(KEYS.categoryIconOverrides,{})&&typeof parseStored(KEYS.categoryIconOverrides,{})==="object")?parseStored(KEYS.categoryIconOverrides,{}):{},
+  siteOrder:(parseStored(KEYS.siteOrder,{})&&typeof parseStored(KEYS.siteOrder,{})==="object")?parseStored(KEYS.siteOrder,{}):{},
+  sortMode:false
 };
 function save(){
+  const entries=[
+    [KEYS.favorites,JSON.stringify([...state.favorites])],
+    [KEYS.recents,JSON.stringify(state.recents.slice(0,30))],
+    [KEYS.custom,JSON.stringify(state.custom)],
+    [KEYS.categoryOverrides,JSON.stringify(state.categoryOverrides)],
+    [KEYS.iconOverrides,JSON.stringify(state.iconOverrides)],
+    [KEYS.hiddenSites,JSON.stringify([...state.hiddenSites])]
+  ];
+  const previous=new Map(entries.map(([k])=>[k,STORE.get(k)]));
   try{
-    localStorage.setItem(KEYS.favorites,JSON.stringify([...state.favorites]));
-    localStorage.setItem(KEYS.recents,JSON.stringify(state.recents.slice(0,30)));
-    localStorage.setItem(KEYS.custom,JSON.stringify(state.custom));
-    localStorage.setItem(KEYS.categoryOverrides,JSON.stringify(state.categoryOverrides));
-    localStorage.setItem(KEYS.iconOverrides,JSON.stringify(state.iconOverrides));
-    localStorage.setItem(KEYS.hiddenSites,JSON.stringify([...state.hiddenSites]));
+    for(const [k,v] of entries){
+      if(!STORE.set(k,v))throw new Error("storage");
+    }
+    updateStorageUsage();
     return true;
   }catch(err){
-    console.error(err);
-    toast("浏览器本地存储空间不足");
+    for(const [k,v] of previous){
+      if(v===null)STORE.remove(k);else STORE.set(k,v);
+    }
+    try{
+      state.favorites=new Set(previous.get(KEYS.favorites)?JSON.parse(previous.get(KEYS.favorites)):[]);
+      state.recents=previous.get(KEYS.recents)?JSON.parse(previous.get(KEYS.recents)):[];
+      state.custom=previous.get(KEYS.custom)?JSON.parse(previous.get(KEYS.custom)):[];
+      state.categoryOverrides=previous.get(KEYS.categoryOverrides)?JSON.parse(previous.get(KEYS.categoryOverrides)):{};
+      state.iconOverrides=previous.get(KEYS.iconOverrides)?JSON.parse(previous.get(KEYS.iconOverrides)):{};
+      state.hiddenSites=new Set(previous.get(KEYS.hiddenSites)?JSON.parse(previous.get(KEYS.hiddenSites)):[]);
+    }catch{}
+    toast("本地存储空间不足，修改未保存");
+    updateStorageUsage();
     return false;
   }
 }
 function rawSites(){return [...BUILTIN_SITES,...state.custom]}
 function allSites(){return rawSites().filter(site=>!state.hiddenSites.has(site.id))}
 function effectiveCategory(site){return state.categoryOverrides[site.id]||site.category}
+
+function sanitizeState(){
+  const builtinIds=new Set(BUILTIN_SITES.map(s=>s.id));
+  const used=new Set(builtinIds);
+  const cleanCustom=[];
+  for(const item of state.custom){
+    if(!item||typeof item!=="object")continue;
+    const u=validHttpUrl(item.url);
+    const name=String(item.name||"").trim();
+    if(!u||!name)continue;
+    let id=String(item.id||"");
+    if(!id||used.has(id))id="c"+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+    used.add(id);
+    cleanCustom.push({
+      ...item,id,name,url:u.href,domain:u.hostname.replace(/^www\./,""),
+      category:String(item.category||CATEGORIES[0]?.name||"常用入口"),
+      icon:validIconValue(item.icon),
+      iconUrl:validIconValue(item.iconUrl)
+    });
+  }
+  state.custom=cleanCustom;
+  const ids=new Set([...BUILTIN_SITES.map(s=>s.id),...state.custom.map(s=>s.id)]);
+  state.hiddenSites=new Set([...state.hiddenSites].filter(id=>ids.has(id)));
+  state.favorites=new Set([...state.favorites].filter(id=>ids.has(id)&&!state.hiddenSites.has(id)));
+  state.recents=[...new Set(state.recents)].filter(id=>ids.has(id)&&!state.hiddenSites.has(id)).slice(0,30);
+
+  const catNames=new Set(CATEGORIES.map(c=>c.name));
+  const baseById=new Map([...BUILTIN_SITES,...state.custom].map(s=>[s.id,s]));
+  const cleanCats={};
+  for(const [id,cat] of Object.entries(state.categoryOverrides||{})){
+    const base=baseById.get(id);
+    if(base&&catNames.has(cat)&&cat!==base.category)cleanCats[id]=cat;
+  }
+  state.categoryOverrides=cleanCats;
+
+  const cleanIcons={};
+  for(const [id,val] of Object.entries(state.iconOverrides||{})){
+    if(ids.has(id)){
+      const safe=validIconValue(val);
+      if(safe)cleanIcons[id]=safe;
+    }
+  }
+  state.iconOverrides=cleanIcons;
+}
+function storageBytes(){
+  let chars=0;
+  Object.values(KEYS).forEach(k=>{const v=STORE.get(k);if(v)chars+=v.length});
+  return chars*2;
+}
+function updateStorageUsage(){
+  const el=$("#storageUsage");if(!el)return;
+  const bytes=storageBytes();
+  const kb=bytes/1024;
+  el.className=kb>3500?"storage-danger":kb>2200?"storage-warn":"storage-ok";
+  el.textContent=`本地配置占用约 ${kb<1024?kb.toFixed(0)+" KB":(kb/1024).toFixed(2)+" MB"}。图标上传过多时建议定期导出备份。`;
+}
+
 function categoryCount(name){return allSites().filter(site=>effectiveCategory(site)===name).length}
-function movedCount(){return Object.keys(state.categoryOverrides).length}
+function movedCount(){return Object.keys(state.categoryOverrides).filter(id=>rawSites().some(s=>s.id===id)).length}
 function safeDomain(url){try{return new URL(url).hostname.replace(/^www\./,"")}catch{return ""}}
 function hashCode(str){let h=0;for(let i=0;i<str.length;i++)h=str.charCodeAt(i)+((h<<5)-h);return Math.abs(h)}
 function gradientFor(str){
@@ -832,9 +1065,12 @@ function gradientFor(str){
 }
 function iconSources(site){
   const out=[];
-  if(state.iconOverrides?.[site.id])out.push(state.iconOverrides[site.id]);
-  if(site.icon)out.push(site.icon);
-  if(site.iconUrl)out.push(site.iconUrl);
+  const override=validIconValue(state.iconOverrides?.[site.id]);
+  const own=validIconValue(site.icon);
+  const urlIcon=validIconValue(site.iconUrl);
+  if(override)out.push(override);
+  if(own)out.push(own);
+  if(urlIcon)out.push(urlIcon);
   const d=site.domain||safeDomain(site.url);
   if(d){
     try{
@@ -869,6 +1105,7 @@ function createSiteIcon(site,className="site-icon"){
   const img=document.createElement("img");
   img.alt="";
   img.decoding="async";
+  img.referrerPolicy="no-referrer";
   img.loading="lazy";
   let i=0;
 
@@ -897,50 +1134,84 @@ function createSiteIcon(site,className="site-icon"){
 function toast(msg){const el=$("#toast");el.textContent=msg;el.classList.add("show");clearTimeout(window.__toast);window.__toast=setTimeout(()=>el.classList.remove("show"),1800)}
 function recordRecent(id){state.recents=[id,...state.recents.filter(x=>x!==id)].slice(0,30);save();updateCounts()}
 function toggleFavorite(id){state.favorites.has(id)?state.favorites.delete(id):state.favorites.add(id);save();render()}
+let suppressCardClickUntil=0;
+function attachQuickManage(target,link,site){
+  target.addEventListener("contextmenu",e=>{
+    e.preventDefault();e.stopPropagation();openCategoryContext(e,site);
+  });
+  let timer=0,startX=0,startY=0;
+  const cancel=()=>{clearTimeout(timer);timer=0;target.classList.remove("longpressing")};
+  target.addEventListener("pointerdown",e=>{
+    if(e.pointerType!=="touch")return;
+    startX=e.clientX;startY=e.clientY;
+    target.classList.add("longpressing");
+    timer=setTimeout(()=>{
+      suppressCardClickUntil=Date.now()+700;
+      openCategoryContext({clientX:startX,clientY:startY},site);
+      target.classList.remove("longpressing");
+      if(navigator.vibrate)navigator.vibrate(12);
+    },520);
+  },{passive:true});
+  target.addEventListener("pointermove",e=>{
+    if(timer&&Math.hypot(e.clientX-startX,e.clientY-startY)>10)cancel();
+  },{passive:true});
+  ["pointerup","pointercancel","pointerleave"].forEach(type=>target.addEventListener(type,cancel,{passive:true}));
+  link.addEventListener("keydown",e=>{
+    if(e.key==="ContextMenu"||(e.shiftKey&&e.key==="F10")){
+      e.preventDefault();
+      const r=target.getBoundingClientRect();
+      openCategoryContext({clientX:r.left+r.width/2,clientY:r.top+r.height/2},site);
+    }
+  });
+}
 function createCard(site){
-  const a=document.createElement("a");
-  a.className="card glass";
-  a.href=site.url;
-  a.target="_blank";
-  a.rel="noopener noreferrer";
-  a.title=site.fullTitle||site.name;
-  a.onclick=()=>recordRecent(site.id);
+  const card=document.createElement("div");
+  card.className="card glass";
+
+  const link=document.createElement("a");
+  link.className="card-link";
+  link.href=site.url;
+  link.target="_blank";
+  link.rel="noopener noreferrer";
+  link.referrerPolicy="no-referrer";
+  link.title=site.fullTitle||site.name;
+  link.onclick=e=>{
+    if(Date.now()<suppressCardClickUntil){e.preventDefault();return}
+    recordRecent(site.id);
+  };
 
   const siteIcon=createSiteIcon(site);
-  siteIcon.title="右键更改分类";
-  siteIcon.setAttribute("aria-label",`${site.name}，右键更改分类`);
-  siteIcon.addEventListener("contextmenu",e=>{
-    e.preventDefault();
-    e.stopPropagation();
-    openCategoryContext(e,site);
-  });
+  siteIcon.title="右键 / 长按：管理网站";
+  const ring=document.createElement("span");ring.className="longpress-ring";siteIcon.append(ring);
+  attachQuickManage(siteIcon,link,site);
 
-  const copy=document.createElement("div");
-  copy.className="site-copy";
-  const n=document.createElement("div");
-  n.className="site-name";
-  n.textContent=site.name;
-  const d=document.createElement("div");
-  d.className="site-domain";
-  d.textContent=site.domain||safeDomain(site.url);
+  const copy=document.createElement("div");copy.className="site-copy";
+  const n=document.createElement("div");n.className="site-name";n.textContent=site.name;
+  const d=document.createElement("div");d.className="site-domain";d.textContent=site.domain||safeDomain(site.url);
   copy.append(n,d);
+  link.append(siteIcon,copy);
 
   const star=document.createElement("button");
   star.type="button";
   star.className="star"+(state.favorites.has(site.id)?" on":"");
   star.textContent=state.favorites.has(site.id)?"★":"☆";
+  star.title=state.favorites.has(site.id)?"取消收藏":"收藏";
+  star.setAttribute("aria-label",star.title);
   star.onclick=e=>{e.preventDefault();e.stopPropagation();toggleFavorite(site.id)};
 
-  a.append(siteIcon,copy,star);
-  return a;
+  card.append(link,star);
+  return card;
 }
 function filteredSites(){
   const map=new Map(allSites().map(s=>[s.id,s]));let arr=allSites();
   if(state.filter==="favorite")arr=arr.filter(s=>state.favorites.has(s.id));
   else if(state.filter==="recent")arr=state.recents.map(id=>map.get(id)).filter(Boolean);
   else if(state.filter!=="all")arr=arr.filter(s=>effectiveCategory(s)===state.filter);
-  const q=state.query.trim().toLowerCase();
-  if(q)arr=arr.filter(s=>(`${s.name} ${s.domain} ${s.fullTitle||""} ${effectiveCategory(s)}`).toLowerCase().includes(q));
+  const tokens=state.query.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  if(tokens.length)arr=arr.filter(s=>{
+    const hay=(`${s.name} ${s.domain} ${s.fullTitle||""} ${effectiveCategory(s)}`).toLowerCase();
+    return tokens.every(t=>hay.includes(t));
+  });
   return arr;
 }
 function sectionBlock(cat,items,icon){
@@ -1000,7 +1271,7 @@ function buildNav(){
   syncNavActive();
 }
 function buildCategorySelect(){const sel=$("#newCategory");sel.innerHTML="";CATEGORIES.forEach(c=>{const o=document.createElement("option");o.value=c.name;o.textContent=c.name;sel.append(o)})}
-function openDrawer(){$("#drawer").classList.add("show");$("#backdrop").classList.add("show");renderCustomList();renderDeletedList();buildMoveCategorySelect();buildMoveSiteOptions();refreshIconPreview()}
+function openDrawer(){updateStorageUsage();$("#drawer").classList.add("show");$("#backdrop").classList.add("show");renderCustomList();renderDeletedList();buildMoveCategorySelect();buildMoveSiteOptions();refreshIconPreview()}
 function closeDrawer(){$("#drawer").classList.remove("show");$("#backdrop").classList.remove("show")}
 function refreshIconPreview(){
   const box=$("#iconPreview");box.innerHTML="";const name=$("#newName").value.trim()||"新",url=$("#newUrl").value.trim(),iconUrl=$("#newIconUrl").value.trim();
@@ -1018,7 +1289,16 @@ function renderCustomList(){
     const actions=document.createElement("div");actions.className="custom-buttons";
     const edit=document.createElement("button");edit.className="mini-btn";edit.textContent="编辑";edit.onclick=()=>{
       const name=prompt("网站名称",site.name);if(name===null)return;const url=prompt("网址",site.url);if(url===null)return;const iconUrl=prompt("图标地址（可留空）",site.iconUrl||"");if(iconUrl===null)return;
-      try{const u=new URL(url);if(!/^https?:$/.test(u.protocol))throw 0;site.name=name.trim()||site.name;site.url=u.href;site.domain=u.hostname.replace(/^www\./,"");site.iconUrl=iconUrl.trim();save();render();renderCustomList();toast("已更新")}catch{alert("请输入有效的 http/https 网址")}
+      try{
+        const u=validHttpUrl(url);if(!u)throw new Error("请输入有效的 http/https 网址");
+        const safeIcon=iconUrl.trim()?validIconValue(iconUrl.trim()):"";
+        if(iconUrl.trim()&&!safeIcon)throw new Error("图标地址只支持 http/https 图片地址");
+        const duplicate=rawSites().find(x=>x.id!==site.id&&canonicalUrl(x.url)===canonicalUrl(u.href));
+        if(duplicate)throw new Error(`这个网址已经存在：${duplicate.name}`);
+        site.name=name.trim()||site.name;site.url=u.href;site.domain=u.hostname.replace(/^www\./,"");site.iconUrl=safeIcon;
+        if(!save())return;
+        render();renderCustomList();toast("已更新")
+      }catch(err){alert(err?.message||"更新失败")}
     };
     const del=document.createElement("button");del.className="mini-btn danger";del.textContent="删除";del.onclick=()=>{if(confirm(`删除「${site.name}」？\n\n可在“已删除网站”中恢复。`)){state.hiddenSites.add(site.id);state.favorites.delete(site.id);state.recents=state.recents.filter(id=>id!==site.id);save();buildNav();render();renderCustomList();renderDeletedList();buildMoveSiteOptions()}};
     actions.append(edit,del);row.append(grow,actions);box.append(row)
@@ -1282,11 +1562,22 @@ function buildCategoryContext(site){
   resetIcon.type="button";
   resetIcon.className="context-tool";
   resetIcon.hidden=!state.iconOverrides[site.id];
+  if(resetIcon.hidden)iconBtn.classList.add("full");
   resetIcon.innerHTML='<span class="context-tool-icon">↺</span><span>恢复默认图标</span>';
   resetIcon.onclick=e=>{
     e.preventDefault();
     e.stopPropagation();
     resetContextIcon(site);
+  };
+
+  const copyBtn=document.createElement("button");
+  copyBtn.type="button";
+  copyBtn.className="context-tool copy-url";
+  copyBtn.innerHTML='<span class="context-tool-icon">⧉</span><span>复制网址</span>';
+  copyBtn.onclick=async e=>{
+    e.preventDefault();e.stopPropagation();
+    try{await navigator.clipboard.writeText(site.url);closeCategoryContext();toast("网址已复制")}
+    catch{prompt("复制网址",site.url)}
   };
 
   const deleteBtn=document.createElement("button");
@@ -1299,7 +1590,7 @@ function buildCategoryContext(site){
     deleteContextSite(site);
   };
 
-  tools.append(iconBtn,resetIcon,deleteBtn);
+  tools.append(iconBtn,resetIcon,copyBtn,deleteBtn);
   menu.append(head,label,grid,footer,tools);
 }
 
@@ -1383,11 +1674,14 @@ function loadImageFromDataURL(dataUrl){
 async function optimizeIconFile(file){
   if(!file)throw new Error("没有选择文件");
   if(file.size>2*1024*1024)throw new Error("图标文件不能超过 2MB");
-
+  const allowed=new Set(["image/png","image/jpeg","image/webp","image/gif","image/x-icon","image/vnd.microsoft.icon"]);
+  const extOk=/\.ico$/i.test(file.name||"");
+  if(file.type&&!allowed.has(file.type)&&!extOk)throw new Error("仅支持 PNG / JPG / WebP / GIF / ICO，不接受 SVG");
   const original=await readFileAsDataURL(file);
 
   try{
     const img=await loadImageFromDataURL(original);
+    if(img.naturalWidth*img.naturalHeight>30000000)throw new Error("图片尺寸过大");
     const size=128;
     const canvas=document.createElement("canvas");
     canvas.width=size;
@@ -1541,15 +1835,210 @@ function applyTheme(){
   const saved=localStorage.getItem(KEYS.theme);const theme=saved||((window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light");
   document.documentElement.dataset.theme=theme;updateThemeButton()
 }
-function updateThemeButton(){$("#themeBtn").textContent=document.documentElement.dataset.theme==="dark"?"☀":"☾"}
+function updateThemeButton(){
+  const dark=document.documentElement.dataset.theme==="dark";
+  $("#themeBtn").textContent=dark?"☀":"☾";
+  const meta=document.querySelector('meta[name="theme-color"]');
+  if(meta)meta.content=dark?"#09111f":"#eef3ff";
+}
 
-applyTheme();buildNav();buildCategorySelect();buildMoveCategorySelect();buildMoveSiteOptions();render();renderDeletedList();refreshIconPreview();
 
+/* ===================== V13 · 核心数据层 ===================== */
+let editingSiteId="",draggedSiteId="",siteDropCommitted=false,draggedCategoryName="";
+function builtinById(id){return BUILTIN_SITES.find(s=>s.id===id)||null}
+function isBuiltinSite(id){return !!builtinById(id)}
+function cleanCategoryGlyph(v){const x=String(v||"").trim();return x?Array.from(x).slice(0,4).join(""):"•"}
+function allCategories(){
+  const base=CATEGORIES.map(c=>({name:c.name,icon:cleanCategoryGlyph(state.categoryIconOverrides?.[c.name]||c.icon),builtin:true}));
+  const customs=(Array.isArray(state.customCategories)?state.customCategories:[]).map(c=>({name:String(c.name||"").trim(),icon:cleanCategoryGlyph(c.icon),builtin:false})).filter(c=>c.name);
+  const map=new Map([...base,...customs].map(c=>[c.name,c])),ordered=[],used=new Set();
+  for(const name of state.categoryOrder||[])if(map.has(name)&&!used.has(name)){ordered.push(map.get(name));used.add(name)}
+  for(const c of map.values())if(!used.has(c.name))ordered.push(c);
+  return ordered;
+}
+function categoryByName(name){return allCategories().find(c=>c.name===name)||null}
+function defaultCategoryName(){return allCategories()[0]?.name||"常用入口"}
+function applySiteEdit(site){
+  const edit=state.siteEdits?.[site.id];if(!edit)return site;
+  const u=validHttpUrl(edit.url)||validHttpUrl(site.url),name=String(edit.name||site.name).trim()||site.name;
+  return {...site,name,url:u?u.href:site.url,domain:u?u.hostname.replace(/^www\./,""):site.domain,fullTitle:name,iconUrl:validIconValue(edit.iconUrl)||site.iconUrl||""};
+}
+function rawSites(){return [...BUILTIN_SITES.map(applySiteEdit),...state.custom]}
+function allSites(){return rawSites().filter(site=>!state.hiddenSites.has(site.id))}
+function effectiveCategory(site){const cat=state.categoryOverrides[site.id]||site.category;return categoryByName(cat)?cat:defaultCategoryName()}
+function orderedSites(items,category){
+  const order=Array.isArray(state.siteOrder?.[category])?state.siteOrder[category]:[];if(!order.length)return [...items];
+  const rank=new Map(order.map((id,i)=>[id,i])),original=new Map(items.map((s,i)=>[s.id,i]));
+  return [...items].sort((a,b)=>(rank.has(a.id)?rank.get(a.id):Number.MAX_SAFE_INTEGER)-(rank.has(b.id)?rank.get(b.id):Number.MAX_SAFE_INTEGER)||(original.get(a.id)-original.get(b.id)));
+}
+function save(){
+  const entries=[[KEYS.favorites,JSON.stringify([...state.favorites])],[KEYS.recents,JSON.stringify(state.recents.slice(0,30))],[KEYS.custom,JSON.stringify(state.custom)],[KEYS.categoryOverrides,JSON.stringify(state.categoryOverrides)],[KEYS.iconOverrides,JSON.stringify(state.iconOverrides)],[KEYS.hiddenSites,JSON.stringify([...state.hiddenSites])],[KEYS.siteEdits,JSON.stringify(state.siteEdits)],[KEYS.customCategories,JSON.stringify(state.customCategories)],[KEYS.categoryOrder,JSON.stringify(state.categoryOrder)],[KEYS.categoryIconOverrides,JSON.stringify(state.categoryIconOverrides)],[KEYS.siteOrder,JSON.stringify(state.siteOrder)]];
+  const previous=new Map(entries.map(([k])=>[k,STORE.get(k)]));
+  try{for(const [k,v] of entries)if(!STORE.set(k,v))throw new Error("storage");updateStorageUsage();return true}
+  catch{
+    for(const [k,v] of previous){if(v===null)STORE.remove(k);else STORE.set(k,v)}
+    try{
+      state.favorites=new Set(previous.get(KEYS.favorites)?JSON.parse(previous.get(KEYS.favorites)):[]);
+      state.recents=previous.get(KEYS.recents)?JSON.parse(previous.get(KEYS.recents)):[];
+      state.custom=previous.get(KEYS.custom)?JSON.parse(previous.get(KEYS.custom)):[];
+      state.categoryOverrides=previous.get(KEYS.categoryOverrides)?JSON.parse(previous.get(KEYS.categoryOverrides)):{};
+      state.iconOverrides=previous.get(KEYS.iconOverrides)?JSON.parse(previous.get(KEYS.iconOverrides)):{};
+      state.hiddenSites=new Set(previous.get(KEYS.hiddenSites)?JSON.parse(previous.get(KEYS.hiddenSites)):[]);
+      state.siteEdits=previous.get(KEYS.siteEdits)?JSON.parse(previous.get(KEYS.siteEdits)):{};
+      state.customCategories=previous.get(KEYS.customCategories)?JSON.parse(previous.get(KEYS.customCategories)):[];
+      state.categoryOrder=previous.get(KEYS.categoryOrder)?JSON.parse(previous.get(KEYS.categoryOrder)):[];
+      state.categoryIconOverrides=previous.get(KEYS.categoryIconOverrides)?JSON.parse(previous.get(KEYS.categoryIconOverrides)):{};
+      state.siteOrder=previous.get(KEYS.siteOrder)?JSON.parse(previous.get(KEYS.siteOrder)):{};
+    }catch{}
+    toast("本地存储空间不足，修改未保存");updateStorageUsage();return false;
+  }
+}
+function sanitizeState(){
+  const baseCategoryNames=new Set(CATEGORIES.map(c=>c.name)),seenCustomCats=new Set();
+  state.customCategories=(Array.isArray(state.customCategories)?state.customCategories:[]).map(c=>{const name=String(c?.name||"").trim().slice(0,24);if(!name||baseCategoryNames.has(name)||seenCustomCats.has(name))return null;seenCustomCats.add(name);return {name,icon:cleanCategoryGlyph(c.icon)}}).filter(Boolean);
+  const categoryNames=new Set([...CATEGORIES.map(c=>c.name),...state.customCategories.map(c=>c.name)]);
+  state.categoryIconOverrides=Object.fromEntries(Object.entries(state.categoryIconOverrides||{}).filter(([name])=>baseCategoryNames.has(name)).map(([name,icon])=>[name,cleanCategoryGlyph(icon)]));
+  state.categoryOrder=[...new Set(Array.isArray(state.categoryOrder)?state.categoryOrder:[])].filter(n=>categoryNames.has(n));for(const name of categoryNames)if(!state.categoryOrder.includes(name))state.categoryOrder.push(name);
+  const builtinIds=new Set(BUILTIN_SITES.map(s=>s.id)),cleanEdits={};
+  for(const [id,edit] of Object.entries(state.siteEdits||{})){if(!builtinIds.has(id)||!edit||typeof edit!=="object")continue;const base=builtinById(id),u=validHttpUrl(edit.url||base.url),name=String(edit.name||base.name).trim().slice(0,80);if(!u||!name)continue;const iconUrl=validIconValue(edit.iconUrl);if(name!==base.name||canonicalUrl(u.href)!==canonicalUrl(base.url)||iconUrl)cleanEdits[id]={name,url:u.href,iconUrl}}
+  state.siteEdits=cleanEdits;
+  const used=new Set(builtinIds),cleanCustom=[];
+  for(const item of Array.isArray(state.custom)?state.custom:[]){if(!item||typeof item!=="object")continue;const u=validHttpUrl(item.url),name=String(item.name||"").trim().slice(0,80);if(!u||!name)continue;let id=String(item.id||"");if(!id||used.has(id))id="c"+Date.now().toString(36)+Math.random().toString(36).slice(2,7);used.add(id);const category=categoryNames.has(String(item.category||""))?String(item.category):defaultCategoryName();cleanCustom.push({...item,id,name,url:u.href,domain:u.hostname.replace(/^www\./,""),category,icon:validIconValue(item.icon),iconUrl:validIconValue(item.iconUrl)})}
+  state.custom=cleanCustom;
+  const ids=new Set([...builtinIds,...state.custom.map(s=>s.id)]);
+  state.hiddenSites=new Set([...state.hiddenSites].filter(id=>ids.has(id)));state.favorites=new Set([...state.favorites].filter(id=>ids.has(id)&&!state.hiddenSites.has(id)));state.recents=[...new Set(state.recents)].filter(id=>ids.has(id)&&!state.hiddenSites.has(id)).slice(0,30);
+  const baseById=new Map([...BUILTIN_SITES,...state.custom].map(s=>[s.id,s])),cleanCats={};
+  for(const [id,cat] of Object.entries(state.categoryOverrides||{})){const base=baseById.get(id);if(base&&categoryNames.has(cat)&&cat!==base.category)cleanCats[id]=cat}
+  state.categoryOverrides=cleanCats;
+  const cleanIcons={};for(const [id,val] of Object.entries(state.iconOverrides||{})){if(ids.has(id)){const safe=validIconValue(val);if(safe)cleanIcons[id]=safe}}state.iconOverrides=cleanIcons;
+  const cleanOrder={};for(const [cat,list] of Object.entries(state.siteOrder||{})){if(!categoryNames.has(cat)||!Array.isArray(list))continue;const clean=[...new Set(list)].filter(id=>ids.has(id));if(clean.length)cleanOrder[cat]=clean}state.siteOrder=cleanOrder;
+  if(state.filter!=="all"&&state.filter!=="favorite"&&state.filter!=="recent"&&!categoryNames.has(state.filter))state.filter="all";
+}
+function categoryCount(name){return allSites().filter(site=>effectiveCategory(site)===name).length}
+function movedCount(){return Object.keys(state.categoryOverrides).filter(id=>rawSites().some(s=>s.id===id)).length}
+
+/* V13 view */
+function sectionBlock(cat,items,icon){
+  const isRealCategory=!!categoryByName(cat),sorted=isRealCategory?orderedSites(items,cat):items;
+  const sec=document.createElement("section");sec.className="section";sec.dataset.category=isRealCategory?cat:"";
+  const head=document.createElement("div");head.className="section-head";const title=document.createElement("div");title.className="section-title";
+  const badge=document.createElement("span");badge.className="section-badge";badge.textContent=icon||"•";const h=document.createElement("h2");h.textContent=cat;const small=document.createElement("small");small.textContent="· "+sorted.length;h.append(small);title.append(badge,h);head.append(title);sec.append(head);
+  const grid=document.createElement("div");grid.className="grid";grid.dataset.category=isRealCategory?cat:"";
+  sorted.forEach(site=>{const card=createCard(site);card.dataset.siteId=site.id;if(isRealCategory){card.draggable=!!state.sortMode;const handle=document.createElement("span");handle.className="sort-handle";handle.textContent="⋮⋮";handle.title="拖拽排序";card.append(handle);bindSiteDrag(card,grid,site)}grid.append(card)});
+  if(isRealCategory)bindGridDrop(grid,cat);sec.append(grid);return sec;
+}
+function render(){
+  const content=$("#content");content.innerHTML="";const visible=filteredSites();
+  if(state.query.trim())content.append(visible.length?sectionBlock("搜索结果",visible,"⌕"):emptyBlock("没有找到匹配的网站"));
+  else if(state.filter==="favorite")content.append(visible.length?sectionBlock("我的收藏",visible,"★"):emptyBlock("还没有收藏网站"));
+  else if(state.filter==="recent")content.append(visible.length?sectionBlock("最近访问",visible,"↺"):emptyBlock("还没有最近访问记录"));
+  else if(state.filter!=="all"){const c=categoryByName(state.filter);content.append(visible.length?sectionBlock(state.filter,visible,c?.icon||"•"):emptyBlock("这个分类还没有网站"))}
+  else allCategories().forEach(c=>{const g=visible.filter(s=>effectiveCategory(s)===c.name);if(g.length)content.append(sectionBlock(c.name,g,c.icon))});
+  document.body.classList.toggle("sort-mode",!!state.sortMode);const sortBtn=$("#sortModeBtn");if(sortBtn){sortBtn.classList.toggle("active",!!state.sortMode);sortBtn.textContent=state.sortMode?"✓ 完成排序":"↕ 排序"}updateCounts();
+}
+function buildNav(){
+  const box=$("#categoryNav");box.innerHTML="";
+  allCategories().forEach(c=>{const b=document.createElement("button");b.className="nav-btn";b.dataset.filter=c.name;const i=document.createElement("span");i.className="nav-icon";i.textContent=c.icon||"•";const n=document.createElement("span");n.className="nav-name";n.textContent=c.name;const count=document.createElement("span");count.className="nav-count";count.textContent=categoryCount(c.name);b.append(i,n,count);box.append(b)});
+  $$(".nav-btn").forEach(btn=>btn.onclick=()=>{state.filter=btn.dataset.filter;state.query="";$("#searchInput").value="";$("#clearSearch").classList.remove("show");document.body.classList.remove("searching");syncNavActive();render();$("#sidebar").classList.remove("show");window.scrollTo({top:0,behavior:"smooth"})});syncNavActive();
+}
+function fillCategorySelect(sel,current=""){if(!sel)return;sel.innerHTML="";allCategories().forEach(c=>{const o=document.createElement("option");o.value=c.name;o.textContent=c.name;sel.append(o)});if(current&&categoryByName(current))sel.value=current}
+function buildCategorySelect(){fillCategorySelect($("#newCategory"))}
+function buildMoveCategorySelect(){const sel=$("#moveCategorySelect");if(!sel)return;fillCategorySelect(sel,sel.value)}
+function openDrawer(){updateStorageUsage();$("#drawer").classList.add("show");$("#backdrop").classList.add("show");renderCategoryManager();renderCustomList();renderDeletedList();buildCategorySelect();buildMoveCategorySelect();buildMoveSiteOptions();refreshIconPreview()}
+
+/* V13 editor */
+function openSiteEditor(siteOrId){
+  const site=typeof siteOrId==="string"?rawSites().find(s=>s.id===siteOrId):siteOrId;if(!site)return;closeCategoryContext();editingSiteId=site.id;
+  $("#editSiteName").value=site.name||"";$("#editSiteUrl").value=site.url||"";$("#editSiteIconUrl").value=state.siteEdits?.[site.id]?.iconUrl||site.iconUrl||"";fillCategorySelect($("#editSiteCategory"),effectiveCategory(site));
+  $("#siteEditorMeta").textContent=isBuiltinSite(site.id)?"内置收藏 · 修改会以覆盖配置保存":"我的新增 · 可直接修改";$("#restoreSiteInfoBtn").hidden=!isBuiltinSite(site.id)||!state.siteEdits[site.id];refreshSiteEditorPreview();
+  $("#siteEditorBackdrop").classList.add("show");$("#siteEditorBackdrop").setAttribute("aria-hidden","false");setTimeout(()=>$("#editSiteName").focus(),20);
+}
+function closeSiteEditor(){editingSiteId="";$("#siteEditorBackdrop").classList.remove("show");$("#siteEditorBackdrop").setAttribute("aria-hidden","true")}
+function refreshSiteEditorPreview(){const box=$("#editSitePreview");if(!box)return;box.innerHTML="";const name=$("#editSiteName").value.trim()||"新",url=$("#editSiteUrl").value.trim(),iconUrl=validIconValue($("#editSiteIconUrl").value.trim()),original=rawSites().find(s=>s.id===editingSiteId);box.append(createSiteIcon({id:editingSiteId||"preview",name,url,domain:safeDomain(url),icon:original?.icon||"",iconUrl},"custom-mini-icon"))}
+function saveSiteEditor(){
+  const current=rawSites().find(s=>s.id===editingSiteId);if(!current)return;
+  const name=$("#editSiteName").value.trim(),u=validHttpUrl($("#editSiteUrl").value.trim()),iconRaw=$("#editSiteIconUrl").value.trim(),iconUrl=iconRaw?validIconValue(iconRaw):"",category=$("#editSiteCategory").value;
+  if(!name)return alert("网站名称不能为空");if(!u)return alert("请输入有效的 http/https 网址");if(iconRaw&&!iconUrl)return alert("图标地址只支持 http/https 图片地址");if(!categoryByName(category))return alert("分类无效");
+  const duplicate=rawSites().find(s=>s.id!==current.id&&canonicalUrl(s.url)===canonicalUrl(u.href));if(duplicate)return alert(`这个网址已经存在：${duplicate.name}`);
+  if(isBuiltinSite(current.id)){const base=builtinById(current.id),edit={name:name.slice(0,80),url:u.href,iconUrl},unchanged=edit.name===base.name&&canonicalUrl(edit.url)===canonicalUrl(base.url)&&!edit.iconUrl;if(unchanged)delete state.siteEdits[current.id];else state.siteEdits[current.id]=edit;if(category===base.category)delete state.categoryOverrides[current.id];else state.categoryOverrides[current.id]=category}
+  else{const target=state.custom.find(s=>s.id===current.id);if(!target)return;target.name=name.slice(0,80);target.url=u.href;target.domain=u.hostname.replace(/^www\./,"");target.fullTitle=target.name;target.iconUrl=iconUrl;if(category===target.category)delete state.categoryOverrides[target.id];else state.categoryOverrides[target.id]=category}
+  if(!save())return;closeSiteEditor();buildNav();render();renderCustomList();buildMoveSiteOptions();renderDeletedList();toast("网站信息已更新");
+}
+function restoreSiteInfo(){if(!editingSiteId||!isBuiltinSite(editingSiteId))return;delete state.siteEdits[editingSiteId];if(!save())return;const id=editingSiteId,site=rawSites().find(s=>s.id===id);if(site)openSiteEditor(site);buildNav();render();renderDeletedList();toast("已恢复原始名称和网址")}
+function renderCustomList(){
+  const box=$("#customList");box.innerHTML="";const visibleCustom=state.custom.filter(site=>!state.hiddenSites.has(site.id));$("#customCount").textContent=visibleCustom.length+" 个";
+  if(!visibleCustom.length){const p=document.createElement("p");p.style.color="var(--muted)";p.style.fontSize="12px";p.textContent="还没有手动新增的网站。";box.append(p);return}
+  visibleCustom.forEach(baseSite=>{const site=rawSites().find(s=>s.id===baseSite.id)||baseSite,row=document.createElement("div");row.className="custom-item";row.append(createSiteIcon(site,"custom-mini-icon"));const grow=document.createElement("div");grow.className="custom-grow";const b=document.createElement("b");b.textContent=site.name;const sm=document.createElement("small");sm.textContent=`${effectiveCategory(site)} · ${site.domain||safeDomain(site.url)}`;grow.append(b,sm);const actions=document.createElement("div");actions.className="custom-buttons";const edit=document.createElement("button");edit.className="mini-btn";edit.textContent="编辑";edit.onclick=()=>openSiteEditor(site);const del=document.createElement("button");del.className="mini-btn danger";del.textContent="删除";del.onclick=()=>{if(confirm(`删除「${site.name}」？\\n\\n可在“已删除网站”中恢复。`)){state.hiddenSites.add(site.id);state.favorites.delete(site.id);state.recents=state.recents.filter(id=>id!==site.id);save();buildNav();render();renderCustomList();renderDeletedList();buildMoveSiteOptions()}};actions.append(edit,del);row.append(grow,actions);box.append(row)});
+}
+
+function updateCounts(){
+  $("#allCount").textContent=allSites().length;
+  $("#favCount").textContent=state.favorites.size;
+  $("#recentCount").textContent=state.recents.length;
+  $("#siteCount").textContent=allSites().length;
+  $("#catCount").textContent=allCategories().length;
+  $("#customCount").textContent=state.custom.filter(site=>!state.hiddenSites.has(site.id)).length+" 个";
+  if($("#deletedCount"))$("#deletedCount").textContent=state.hiddenSites.size+" 个";
+  if($("#movedCount"))$("#movedCount").textContent=movedCount()+" 个已调整";
+  if($("#categoryManageCount"))$("#categoryManageCount").textContent=allCategories().length+" 个分类";
+  updateNavCounts();
+}
+
+/* V13 categories */
+function renderCategoryManager(){
+  const box=$("#categoryManagerList");if(!box)return;box.innerHTML="";const cats=allCategories();$("#categoryManageCount").textContent=cats.length+" 个分类";
+  cats.forEach((cat,index)=>{const row=document.createElement("div");row.className="category-manager-item";row.draggable=true;row.dataset.category=cat.name;const drag=document.createElement("span");drag.className="category-drag";drag.textContent="⋮⋮";drag.title="拖拽调整分类顺序";const icon=document.createElement("span");icon.className="category-manager-icon";icon.textContent=cat.icon;const copy=document.createElement("div");copy.className="category-manager-copy";const b=document.createElement("b");b.textContent=cat.name;const sm=document.createElement("small");sm.textContent=`${cat.builtin?"内置分类":"自定义分类"} · ${categoryCount(cat.name)} 个网站`;copy.append(b,sm);const actions=document.createElement("div");actions.className="category-manager-actions";const up=document.createElement("button");up.className="cat-mini";up.textContent="↑";up.disabled=index===0;up.onclick=()=>moveCategoryStep(cat.name,-1);const down=document.createElement("button");down.className="cat-mini";down.textContent="↓";down.disabled=index===cats.length-1;down.onclick=()=>moveCategoryStep(cat.name,1);const iconBtn=document.createElement("button");iconBtn.className="cat-mini";iconBtn.textContent="图标";iconBtn.onclick=()=>editCategoryIcon(cat);actions.append(up,down,iconBtn);if(!cat.builtin){const rename=document.createElement("button");rename.className="cat-mini";rename.textContent="重命名";rename.onclick=()=>renameCustomCategory(cat.name);const del=document.createElement("button");del.className="cat-mini danger";del.textContent="删除";del.onclick=()=>deleteCustomCategory(cat.name);actions.append(rename,del)}row.append(drag,icon,copy,actions);bindCategoryDrag(row);box.append(row)});
+}
+function addCustomCategory(){const name=$("#newCategoryName").value.trim().slice(0,24),icon=cleanCategoryGlyph($("#newCategoryGlyph").value);if(!name)return alert("请输入分类名称");if(categoryByName(name))return alert("这个分类已经存在");state.customCategories.push({name,icon});state.categoryOrder.push(name);if(!save()){state.customCategories=state.customCategories.filter(c=>c.name!==name);state.categoryOrder=state.categoryOrder.filter(n=>n!==name);return}$("#newCategoryName").value="";$("#newCategoryGlyph").value="";refreshCategoryUI();toast(`已新增分类「${name}」`)}
+function editCategoryIcon(cat){const value=prompt(`修改「${cat.name}」图标（1~4 个字符）`,cat.icon||"•");if(value===null)return;const icon=cleanCategoryGlyph(value);if(cat.builtin)state.categoryIconOverrides[cat.name]=icon;else{const item=state.customCategories.find(c=>c.name===cat.name);if(item)item.icon=icon}if(!save())return;refreshCategoryUI();toast("分类图标已更新")}
+function renameCustomCategory(oldName){const item=state.customCategories.find(c=>c.name===oldName);if(!item)return;const input=prompt("新的分类名称",oldName);if(input===null)return;const next=String(input).trim().slice(0,24);if(!next||next===oldName)return;if(categoryByName(next))return alert("这个分类已经存在");item.name=next;state.categoryOrder=state.categoryOrder.map(n=>n===oldName?next:n);if(state.siteOrder[oldName]){state.siteOrder[next]=state.siteOrder[oldName];delete state.siteOrder[oldName]}state.custom.forEach(site=>{if(site.category===oldName)site.category=next});for(const id of Object.keys(state.categoryOverrides))if(state.categoryOverrides[id]===oldName)state.categoryOverrides[id]=next;if(state.filter===oldName)state.filter=next;if(!save())return;refreshCategoryUI();toast(`已重命名为「${next}」`)}
+function deleteCustomCategory(name){const count=rawSites().filter(site=>effectiveCategory(site)===name).length;if(count)return alert(`「${name}」还有 ${count} 个网站（包含已删除/隐藏的网站），请先把这些网站移动到其他分类。`);if(!confirm(`删除分类「${name}」？`))return;state.customCategories=state.customCategories.filter(c=>c.name!==name);state.categoryOrder=state.categoryOrder.filter(n=>n!==name);delete state.siteOrder[name];if(state.filter===name)state.filter="all";if(!save())return;refreshCategoryUI();toast("分类已删除")}
+function refreshCategoryUI(){buildNav();buildCategorySelect();buildMoveCategorySelect();buildMoveSiteOptions();renderCategoryManager();render();renderCustomList();if(editingSiteId){const s=rawSites().find(x=>x.id===editingSiteId);if(s)fillCategorySelect($("#editSiteCategory"),effectiveCategory(s))}}
+function moveCategoryStep(name,delta){const order=allCategories().map(c=>c.name),i=order.indexOf(name),j=i+delta;if(i<0||j<0||j>=order.length)return;[order[i],order[j]]=[order[j],order[i]];state.categoryOrder=order;if(!save())return;refreshCategoryUI()}
+function bindCategoryDrag(row){
+  row.addEventListener("dragstart",e=>{draggedCategoryName=row.dataset.category;row.classList.add("dragging");e.dataTransfer.effectAllowed="move";e.dataTransfer.setData("text/plain",draggedCategoryName)});
+  row.addEventListener("dragend",()=>{row.classList.remove("dragging");draggedCategoryName=""});
+  row.addEventListener("dragover",e=>{if(!draggedCategoryName||draggedCategoryName===row.dataset.category)return;e.preventDefault();const box=$("#categoryManagerList"),moving=[...box.children].find(x=>x.dataset.category===draggedCategoryName);if(!moving)return;const r=row.getBoundingClientRect();box.insertBefore(moving,e.clientY<r.top+r.height/2?row:row.nextSibling)});
+  row.addEventListener("drop",e=>{if(!draggedCategoryName)return;e.preventDefault();state.categoryOrder=[...$("#categoryManagerList").querySelectorAll(".category-manager-item")].map(x=>x.dataset.category);save();refreshCategoryUI()});
+}
+
+/* V13 site sort */
+function bindSiteDrag(card,grid,site){card.addEventListener("dragstart",e=>{if(!state.sortMode){e.preventDefault();return}draggedSiteId=site.id;siteDropCommitted=false;card.classList.add("dragging");e.dataTransfer.effectAllowed="move";e.dataTransfer.setData("text/plain",site.id)});card.addEventListener("dragend",()=>{card.classList.remove("dragging");$$(".grid.sort-over").forEach(g=>g.classList.remove("sort-over"));if(!siteDropCommitted)render();draggedSiteId=""})}
+function nearestCard(grid,x,y){const cards=[...grid.querySelectorAll(".card:not(.dragging)")];let best=null,dist=Infinity,before=true;for(const card of cards){const r=card.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,d=(x-cx)*(x-cx)+(y-cy)*(y-cy);if(d<dist){dist=d;best=card;before=(y<cy)||(Math.abs(y-cy)<r.height*.28&&x<cx)}}return {best,before}}
+function bindGridDrop(grid,targetCategory){
+  grid.addEventListener("dragover",e=>{if(!state.sortMode||!draggedSiteId)return;e.preventDefault();e.dataTransfer.dropEffect="move";grid.classList.add("sort-over");const dragging=$$(".card.dragging").find(c=>c.dataset.siteId===draggedSiteId);if(!dragging)return;const {best,before}=nearestCard(grid,e.clientX,e.clientY);if(!best)grid.append(dragging);else grid.insertBefore(dragging,before?best:best.nextSibling)});
+  grid.addEventListener("dragleave",e=>{if(!grid.contains(e.relatedTarget))grid.classList.remove("sort-over")});
+  grid.addEventListener("drop",e=>{if(!state.sortMode||!draggedSiteId)return;e.preventDefault();siteDropCommitted=true;const site=rawSites().find(s=>s.id===draggedSiteId);if(!site)return render();for(const cat of Object.keys(state.siteOrder)){state.siteOrder[cat]=state.siteOrder[cat].filter(id=>id!==site.id);if(!state.siteOrder[cat].length)delete state.siteOrder[cat]}if(targetCategory===site.category)delete state.categoryOverrides[site.id];else state.categoryOverrides[site.id]=targetCategory;state.siteOrder[targetCategory]=[...grid.querySelectorAll(".card[data-site-id]")].map(card=>card.dataset.siteId);if(!save())return render();buildNav();render();renderCustomList();buildMoveSiteOptions();toast("排序已保存")});
+}
+function toggleSortMode(){state.sortMode=!state.sortMode;render();toast(state.sortMode?"排序模式：拖动卡片可排序，也可拖到其他分类":"排序已完成")}
+function resetSiteOrder(){if(!Object.keys(state.siteOrder).length)return toast("当前没有自定义网站排序");if(!confirm("恢复所有网站的默认排序？\\n\\n分类移动不会受影响。"))return;state.siteOrder={};save();render();toast("网站排序已恢复")}
+function resetCategoryOrder(){state.categoryOrder=[...CATEGORIES.map(c=>c.name),...state.customCategories.map(c=>c.name)];if(!save())return;refreshCategoryUI();toast("分类排序已恢复")}
+
+/* V13 context menu */
+function buildCategoryContext(site){
+  const menu=$("#categoryContext");menu.innerHTML="";
+  const head=document.createElement("div");head.className="context-head";const iconWrap=document.createElement("div");iconWrap.className="context-head-icon";const icon=createSiteIcon(site,"custom-mini-icon");while(icon.firstChild)iconWrap.append(icon.firstChild);const copy=document.createElement("div");copy.className="context-head-copy";const name=document.createElement("div");name.className="context-head-name";name.textContent=site.name;const cat=document.createElement("div");cat.className="context-head-category";cat.textContent=`当前分类：${effectiveCategory(site)}`;copy.append(name,cat);head.append(iconWrap,copy);
+  const label=document.createElement("div");label.className="context-label";label.textContent="移动到分类";const grid=document.createElement("div");grid.className="context-grid";const current=effectiveCategory(site);
+  allCategories().forEach(c=>{const btn=document.createElement("button");btn.type="button";btn.className="context-item"+(c.name===current?" current":"");const ci=document.createElement("span");ci.className="context-cat-icon";ci.textContent=c.icon||"•";const cn=document.createElement("span");cn.className="context-cat-name";cn.textContent=c.name;btn.append(ci,cn);if(c.name===current){const check=document.createElement("span");check.className="context-check";check.textContent="✓";btn.append(check)}btn.onclick=e=>{e.preventDefault();e.stopPropagation();applyContextCategory(site,c.name)};grid.append(btn)});
+  const footer=document.createElement("div");footer.className="context-footer";const restore=document.createElement("button");restore.type="button";restore.className="context-restore";restore.textContent=`恢复默认：${site.category}`;restore.hidden=!state.categoryOverrides[site.id];restore.onclick=e=>{e.preventDefault();e.stopPropagation();restoreContextCategory(site)};const tip=document.createElement("span");tip.className="context-tip";tip.textContent="右键 / 长按管理";footer.append(restore,tip);
+  const tools=document.createElement("div");tools.className="context-tools";
+  const editBtn=document.createElement("button");editBtn.type="button";editBtn.className="context-tool edit-site";editBtn.innerHTML='<span class="context-tool-icon">✎</span><span>编辑网站信息</span>';editBtn.onclick=e=>{e.preventDefault();e.stopPropagation();openSiteEditor(site)};
+  const iconBtn=document.createElement("button");iconBtn.type="button";iconBtn.className="context-tool";iconBtn.innerHTML='<span class="context-tool-icon">▧</span><span>自定义图标</span>';iconBtn.onclick=e=>{e.preventDefault();e.stopPropagation();chooseContextIcon(site)};
+  const resetIcon=document.createElement("button");resetIcon.type="button";resetIcon.className="context-tool";resetIcon.hidden=!state.iconOverrides[site.id];if(resetIcon.hidden)iconBtn.classList.add("full");resetIcon.innerHTML='<span class="context-tool-icon">↺</span><span>恢复默认图标</span>';resetIcon.onclick=e=>{e.preventDefault();e.stopPropagation();resetContextIcon(site)};
+  const copyBtn=document.createElement("button");copyBtn.type="button";copyBtn.className="context-tool copy-url";copyBtn.innerHTML='<span class="context-tool-icon">⧉</span><span>复制网址</span>';copyBtn.onclick=async e=>{e.preventDefault();e.stopPropagation();try{await navigator.clipboard.writeText(site.url);closeCategoryContext();toast("网址已复制")}catch{prompt("复制网址",site.url)}};
+  const deleteBtn=document.createElement("button");deleteBtn.type="button";deleteBtn.className="context-tool danger full";deleteBtn.innerHTML='<span class="context-tool-icon">×</span><span>删除网站</span>';deleteBtn.onclick=e=>{e.preventDefault();e.stopPropagation();deleteContextSite(site)};
+  tools.append(editBtn,iconBtn,resetIcon,copyBtn,deleteBtn);menu.append(head,label,grid,footer,tools);
+}
+
+sanitizeState();save();applyTheme();buildNav();buildCategorySelect();buildMoveCategorySelect();buildMoveSiteOptions();render();renderCategoryManager();renderDeletedList();refreshIconPreview();updateStorageUsage();
+
+let searchRenderRAF=0;
 $("#searchInput").addEventListener("input",e=>{
   state.query=e.target.value;
   $("#clearSearch").classList.toggle("show",!!state.query);
   document.body.classList.toggle("searching",!!state.query.trim());
-  render();
+  cancelAnimationFrame(searchRenderRAF);
+  searchRenderRAF=requestAnimationFrame(render);
 });
 $("#searchInput").addEventListener("keydown",e=>{
   if(e.key==="Escape"&&state.query){
@@ -1580,6 +2069,16 @@ document.addEventListener("keydown",e=>{
 });
 $("#themeBtn").onclick=()=>{const next=document.documentElement.dataset.theme==="dark"?"light":"dark";document.documentElement.dataset.theme=next;localStorage.setItem(KEYS.theme,next);updateThemeButton()};
 $("#mobileMenuBtn").onclick=()=>$("#sidebar").classList.toggle("show");$("#manageBtn").onclick=openDrawer;$("#closeDrawer").onclick=closeDrawer;$("#backdrop").onclick=closeDrawer;
+$("#sortModeBtn").onclick=toggleSortMode;
+$("#addCategoryBtn").onclick=addCustomCategory;
+$("#resetCategoryOrderBtn").onclick=resetCategoryOrder;
+$("#resetSiteOrderBtn").onclick=resetSiteOrder;
+$("#closeSiteEditor").onclick=closeSiteEditor;
+$("#cancelSiteEditor").onclick=closeSiteEditor;
+$("#saveSiteEditor").onclick=saveSiteEditor;
+$("#restoreSiteInfoBtn").onclick=restoreSiteInfo;
+$("#siteEditorBackdrop").addEventListener("pointerdown",e=>{if(e.target===$("#siteEditorBackdrop"))closeSiteEditor()});
+["editSiteName","editSiteUrl","editSiteIconUrl"].forEach(id=>$("#"+id).addEventListener("input",refreshSiteEditorPreview));
 $("#moveSearch").addEventListener("input",buildMoveSiteOptions);
 $("#moveSiteSelect").addEventListener("change",()=>{
   const site=getMoveSite();
@@ -1597,27 +2096,72 @@ $("#contextIconFile").addEventListener("change",e=>{
 });
 
 ["newName","newUrl","newIconUrl"].forEach(id=>$("#"+id).addEventListener("input",refreshIconPreview));
-$("#newIconFile").addEventListener("change",e=>{
-  const file=e.target.files?.[0];if(!file)return;if(file.size>1024*1024){alert("图标建议小于 1MB");e.target.value="";return}
-  const r=new FileReader();r.onload=()=>{state.pendingIconData=r.result;refreshIconPreview()};r.readAsDataURL(file)
+$("#newIconFile").addEventListener("change",async e=>{
+  const file=e.target.files?.[0];if(!file)return;
+  try{state.pendingIconData=await optimizeIconFile(file);refreshIconPreview()}
+  catch(err){alert(err?.message||"图标处理失败")}
+  e.target.value="";
 });
 $("#addForm").addEventListener("submit",e=>{
-  e.preventDefault();const name=$("#newName").value.trim(),url=$("#newUrl").value.trim(),category=$("#newCategory").value,iconUrl=$("#newIconUrl").value.trim();
-  try{const u=new URL(url);if(!/^https?:$/.test(u.protocol))throw 0;
-    state.custom.push({id:"c"+Date.now(),name,url:u.href,category,domain:u.hostname.replace(/^www\./,""),fullTitle:name,icon:state.pendingIconData||"",iconUrl});
-    save();e.target.reset();state.pendingIconData="";refreshIconPreview();render();renderCustomList();toast("已添加到导航")
-  }catch{alert("请输入有效的 http:// 或 https:// 网址")}
+  e.preventDefault();
+  const name=$("#newName").value.trim();
+  const url=$("#newUrl").value.trim();
+  const category=$("#newCategory").value;
+  const iconUrlRaw=$("#newIconUrl").value.trim();
+  try{
+    const u=validHttpUrl(url);if(!u)throw new Error("请输入有效的 http:// 或 https:// 网址");
+    const iconUrl=iconUrlRaw?validIconValue(iconUrlRaw):"";
+    if(iconUrlRaw&&!iconUrl)throw new Error("图标地址只支持 http/https 图片地址");
+    const canon=canonicalUrl(u.href);
+    const duplicate=rawSites().find(s=>canonicalUrl(s.url)===canon);
+    if(duplicate)throw new Error(`这个网址已经存在：${duplicate.name}`);
+    const id=crypto?.randomUUID?"c"+crypto.randomUUID():"c"+Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+    const site={id,name:name||u.hostname,url:u.href,category,domain:u.hostname.replace(/^www\./,""),fullTitle:name||u.hostname,icon:validIconValue(state.pendingIconData),iconUrl};
+    state.custom.push(site);
+    if(!save()){state.custom=state.custom.filter(x=>x.id!==id);return}
+    e.target.reset();state.pendingIconData="";refreshIconPreview();buildNav();render();renderCustomList();buildMoveSiteOptions();toast("已添加到导航");
+  }catch(err){alert(err?.message||"添加失败")}
 });
 $("#exportBtn").onclick=()=>{
-  const blob=new Blob([JSON.stringify({version:11,favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides,iconOverrides:state.iconOverrides,hiddenSites:[...state.hiddenSites]},null,2)],{type:"application/json"});
-  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="feitianxiaoxiang-nav-backup.json";a.click();URL.revokeObjectURL(a.href)
+  const payload={version:13,favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides,iconOverrides:state.iconOverrides,hiddenSites:[...state.hiddenSites],siteEdits:state.siteEdits,customCategories:state.customCategories,categoryOrder:state.categoryOrder,categoryIconOverrides:state.categoryIconOverrides,siteOrder:state.siteOrder};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);const ds=new Date().toISOString().slice(0,10).replaceAll("-","");a.download=`feitianxiaoxiang-nav-backup-v13-${ds}.json`;a.click();URL.revokeObjectURL(a.href);
 };
 $("#importBtn").onclick=()=>$("#importFile").click();
 $("#importFile").addEventListener("change",async e=>{
-  const file=e.target.files?.[0];if(!file)return;try{const d=JSON.parse(await file.text());state.custom=Array.isArray(d.custom)?d.custom:[];state.recents=Array.isArray(d.recents)?d.recents:[];state.favorites=new Set(Array.isArray(d.favorites)?d.favorites:[]);state.categoryOverrides=(d.categoryOverrides&&typeof d.categoryOverrides==="object")?d.categoryOverrides:{};state.iconOverrides=(d.iconOverrides&&typeof d.iconOverrides==="object")?d.iconOverrides:{};state.hiddenSites=new Set(Array.isArray(d.hiddenSites)?d.hiddenSites:[]);save();buildNav();render();renderCustomList();renderDeletedList();buildMoveSiteOptions();toast("配置已导入")}catch{alert("配置文件无效")}e.target.value=""
+  const file=e.target.files?.[0];if(!file)return;
+  try{
+    if(file.size>4*1024*1024)throw new Error("备份文件过大，拒绝导入");
+    const d=JSON.parse(await file.text());if(!d||typeof d!=="object")throw new Error("配置格式无效");
+    if(!confirm("导入配置会覆盖当前浏览器里的网站修改、分类、排序、收藏、自定义图标和删除状态。继续？"))return;
+    const snapshot={custom:cloneJSON(state.custom),recents:[...state.recents],favorites:new Set(state.favorites),categoryOverrides:cloneJSON(state.categoryOverrides),iconOverrides:cloneJSON(state.iconOverrides),hiddenSites:new Set(state.hiddenSites),siteEdits:cloneJSON(state.siteEdits),customCategories:cloneJSON(state.customCategories),categoryOrder:[...state.categoryOrder],categoryIconOverrides:cloneJSON(state.categoryIconOverrides),siteOrder:cloneJSON(state.siteOrder)};
+    state.custom=Array.isArray(d.custom)?d.custom:[];state.recents=Array.isArray(d.recents)?d.recents:[];state.favorites=new Set(Array.isArray(d.favorites)?d.favorites:[]);state.categoryOverrides=(d.categoryOverrides&&typeof d.categoryOverrides==="object"&&!Array.isArray(d.categoryOverrides))?d.categoryOverrides:{};state.iconOverrides=(d.iconOverrides&&typeof d.iconOverrides==="object"&&!Array.isArray(d.iconOverrides))?d.iconOverrides:{};state.hiddenSites=new Set(Array.isArray(d.hiddenSites)?d.hiddenSites:[]);state.siteEdits=(d.siteEdits&&typeof d.siteEdits==="object"&&!Array.isArray(d.siteEdits))?d.siteEdits:{};state.customCategories=Array.isArray(d.customCategories)?d.customCategories:[];state.categoryOrder=Array.isArray(d.categoryOrder)?d.categoryOrder:[];state.categoryIconOverrides=(d.categoryIconOverrides&&typeof d.categoryIconOverrides==="object"&&!Array.isArray(d.categoryIconOverrides))?d.categoryIconOverrides:{};state.siteOrder=(d.siteOrder&&typeof d.siteOrder==="object"&&!Array.isArray(d.siteOrder))?d.siteOrder:{};
+    sanitizeState();
+    if(!save()){Object.assign(state,{custom:snapshot.custom,recents:snapshot.recents,favorites:snapshot.favorites,categoryOverrides:snapshot.categoryOverrides,iconOverrides:snapshot.iconOverrides,hiddenSites:snapshot.hiddenSites,siteEdits:snapshot.siteEdits,customCategories:snapshot.customCategories,categoryOrder:snapshot.categoryOrder,categoryIconOverrides:snapshot.categoryIconOverrides,siteOrder:snapshot.siteOrder});throw new Error("导入数据超过浏览器本地存储容量，已恢复原配置")}
+    refreshCategoryUI();renderDeletedList();updateStorageUsage();toast("V13 配置已导入");
+  }catch(err){alert(err?.message||"配置文件无效")}finally{e.target.value=""}
 });
+
+$("#restoreAllDeletedBtn").onclick=()=>{
+  if(!state.hiddenSites.size)return toast("没有已删除的网站");
+  if(!confirm(`恢复全部 ${state.hiddenSites.size} 个已删除网站？`))return;
+  state.hiddenSites.clear();save();buildNav();render();renderCustomList();renderDeletedList();buildMoveSiteOptions();toast("已全部恢复");
+};
+$("#purgeDeletedCustomBtn").onclick=()=>{
+  const ids=state.custom.filter(s=>state.hiddenSites.has(s.id)).map(s=>s.id);
+  if(!ids.length)return toast("没有可清理的自建网站");
+  if(!confirm(`彻底清理 ${ids.length} 个已删除的自建网站？\\n\\n此操作不能在页面内恢复，请先导出配置备份。`))return;
+  const set=new Set(ids);
+  state.custom=state.custom.filter(s=>!set.has(s.id));
+  ids.forEach(id=>{state.hiddenSites.delete(id);delete state.categoryOverrides[id];delete state.iconOverrides[id];delete state.siteEdits[id];state.favorites.delete(id)});
+  for(const cat of Object.keys(state.siteOrder))state.siteOrder[cat]=state.siteOrder[cat].filter(id=>!set.has(id));
+  state.recents=state.recents.filter(id=>!set.has(id));
+  save();buildNav();render();renderCustomList();renderDeletedList();buildMoveSiteOptions();toast("已清理");
+};
+
 const toTop=$("#toTop");window.addEventListener("scroll",()=>toTop.classList.toggle("show",scrollY>500),{passive:true});toTop.onclick=()=>window.scrollTo({top:0,behavior:"smooth"});
 
+
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("#siteEditorBackdrop")?.classList.contains("show"))closeSiteEditor()});
 
 /* V10 context menu closing behavior */
 document.addEventListener("pointerdown",e=>{
@@ -1628,7 +2172,7 @@ document.addEventListener("keydown",e=>{
   if(e.key==="Escape"&&$("#categoryContext")?.classList.contains("show"))closeCategoryContext();
 });
 window.addEventListener("resize",closeCategoryContext,{passive:true});
-window.addEventListener("scroll",closeCategoryContext,{passive:true,capture:true});
+window.addEventListener("scroll",closeCategoryContext,{passive:true});
 
 /* V7 scroll performance helper */
 let __fxScrollTimer=0;
