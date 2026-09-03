@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#09111f">
-<title>飞天小象 · 私人导航 V15.1 HD</title>
-<meta name="description" content="飞天小象私人导航">
+<title>私人导航工具箱 · V15.2</title>
+<meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https: http:; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
 <style>
@@ -855,33 +855,197 @@ html[data-theme="light"] .site-icon.favicon-mode{
   }
 }
 
+
+/* ===================== V15.2 · Brand + Hover Polish ===================== */
+
+/* 左上角改为无头像底框的品牌型 Logo */
+.brand{
+  gap:10px!important;
+  padding:8px 8px 19px!important;
+}
+.brand-mark{
+  width:45px;
+  height:39px;
+  flex:0 0 45px;
+  display:grid;
+  place-items:center;
+  background:transparent;
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+}
+.brand-mark svg{
+  width:45px;
+  height:35px;
+  overflow:visible;
+  filter:drop-shadow(0 7px 12px rgba(118,91,244,.20));
+}
+.brand-copy{
+  min-width:0;
+}
+.brand-copy b{
+  display:block;
+  font-size:15.5px!important;
+  line-height:1.16!important;
+  letter-spacing:-.018em!important;
+  white-space:nowrap;
+}
+.brand-copy small{
+  display:block;
+  margin-top:4px;
+  font-size:8.4px!important;
+  line-height:1.2;
+  letter-spacing:.055em!important;
+  color:var(--muted)!important;
+  white-space:nowrap;
+}
+html[data-theme="light"] .brand-mark svg{
+  filter:drop-shadow(0 7px 12px rgba(103,86,224,.16));
+}
+
+/* 卡片悬浮：明显，但不浮夸；只在有真正鼠标 hover 的设备启用 */
+.card{
+  overflow:hidden;
+}
+.card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  opacity:0;
+  background:
+    radial-gradient(180px 90px at 16% 14%,rgba(116,135,255,.13),transparent 72%),
+    linear-gradient(115deg,rgba(116,135,255,.035),rgba(164,92,246,.025));
+  transition:opacity .18s ease;
+}
+.card-link,.star{
+  position:relative;
+  z-index:1;
+}
+.site-icon,
+.site-name,
+.site-domain{
+  transition:
+    transform .18s cubic-bezier(.2,.8,.2,1),
+    color .16s ease,
+    border-color .16s ease,
+    box-shadow .18s ease,
+    background .18s ease;
+}
+
+@media (hover:hover) and (pointer:fine){
+  .card{
+    transition:
+      transform .18s cubic-bezier(.2,.8,.2,1),
+      border-color .17s ease,
+      box-shadow .18s ease,
+      background .17s ease!important;
+  }
+  .card:hover{
+    transform:translateY(-4px)!important;
+    border-color:rgba(116,135,255,.34)!important;
+    background:rgba(16,25,43,.78)!important;
+    box-shadow:
+      0 17px 34px rgba(0,0,0,.16),
+      0 0 0 1px rgba(116,135,255,.035) inset!important;
+  }
+  .card:hover::before{
+    opacity:1;
+  }
+  .card:hover .site-icon{
+    transform:translateY(-1px) scale(1.07);
+    border-color:rgba(116,135,255,.28)!important;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.09),
+      0 8px 18px rgba(38,53,102,.18)!important;
+  }
+  .card:hover .site-name{
+    transform:translateX(2px);
+    color:#fff;
+  }
+  .card:hover .site-domain{
+    transform:translateX(2px);
+    color:#aab8d2;
+  }
+  .card:hover .star{
+    opacity:1;
+    transform:scale(1.08);
+  }
+}
+
+html[data-theme="light"] .card::before{
+  background:
+    radial-gradient(180px 90px at 16% 14%,rgba(116,135,255,.10),transparent 72%),
+    linear-gradient(115deg,rgba(116,135,255,.035),rgba(164,92,246,.02));
+}
+@media (hover:hover) and (pointer:fine){
+  html[data-theme="light"] .card:hover{
+    background:rgba(255,255,255,.96)!important;
+    border-color:rgba(98,116,238,.27)!important;
+    box-shadow:
+      0 17px 34px rgba(72,89,126,.13),
+      0 0 0 1px rgba(116,135,255,.025) inset!important;
+  }
+  html[data-theme="light"] .card:hover .site-name{
+    color:#1f2a44;
+  }
+  html[data-theme="light"] .card:hover .site-domain{
+    color:#6d7c96;
+  }
+}
+
+/* 滚动中依然关闭 hover 绘制，保持 V15.1 的流畅度 */
+html.is-scrolling .card::before{opacity:0!important}
+html.is-scrolling .card:hover .site-icon,
+html.is-scrolling .card:hover .site-name,
+html.is-scrolling .card:hover .site-domain{
+  transform:none!important;
+}
+
+/* 手机侧栏品牌略放大，识别更清楚 */
+@media(max-width:980px){
+  .brand-mark{
+    width:48px;
+    flex-basis:48px;
+  }
+  .brand-mark svg{width:48px;height:37px}
+  .brand-copy b{font-size:16px!important}
+}
+
 </style>
 </head>
 <body>
 <div class="app">
   <aside class="sidebar" id="sidebar">
     <div class="brand">
-      <div class="brand-logo" aria-hidden="true">
-        <svg viewBox="0 0 64 64" fill="none">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 54 42" fill="none">
           <defs>
-            <linearGradient id="elephantStroke" x1="9" y1="10" x2="56" y2="55" gradientUnits="userSpaceOnUse">
-              <stop stop-color="#FFFFFF"/>
-              <stop offset="1" stop-color="#DDE5FF"/>
+            <linearGradient id="navToolGradientA" x1="5" y1="34" x2="45" y2="5" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#A956F7"/>
+              <stop offset=".46" stop-color="#7B63F6"/>
+              <stop offset="1" stop-color="#5F8BFF"/>
+            </linearGradient>
+            <linearGradient id="navToolGradientB" x1="10" y1="5" x2="48" y2="37" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#C267FA"/>
+              <stop offset=".52" stop-color="#8562F7"/>
+              <stop offset="1" stop-color="#547DFA"/>
             </linearGradient>
           </defs>
-          <path d="M17 25C11 20 8 15 7 10c8 1 14 5 19 11" stroke="url(#elephantStroke)" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M16 33c-5 0-9-2-12-5 6-2 11-2 16 1" stroke="url(#elephantStroke)" stroke-width="3.2" stroke-linecap="round"/>
-          <path d="M23 22c4-7 10-11 18-10 9 1 15 8 15 17v8c0 8-6 14-14 14H32c-8 0-14-6-14-14v-5c0-4 2-8 5-10Z"
-                stroke="url(#elephantStroke)" stroke-width="3.8" stroke-linejoin="round"/>
-          <path d="M31 23c-5 1-8 5-8 10 0 5 3 9 8 10 2-7 2-14 0-20Z"
-                stroke="url(#elephantStroke)" stroke-width="3.2" stroke-linejoin="round"/>
-          <path d="M50 29v12c0 7 3 10 7 10 3 0 5-2 5-5"
-                stroke="url(#elephantStroke)" stroke-width="3.8" stroke-linecap="round"/>
-          <circle cx="43" cy="26" r="2.1" fill="#fff"/>
-          <path d="M31 51v5M43 51v5" stroke="url(#elephantStroke)" stroke-width="3.2" stroke-linecap="round"/>
+          <path d="M8.8 28.8 18 17.1a5.7 5.7 0 0 1 8.9-.1l2.8 3.3-9.5 11.9a7.35 7.35 0 0 1-11.4-3.4Z"
+                fill="url(#navToolGradientA)"/>
+          <path d="m24.1 13.8 4-5.1a7.35 7.35 0 0 1 11.6 0l5.5 7a5.72 5.72 0 0 1-.1 7.2l-2.9 3.4-9.3-11.7a5.72 5.72 0 0 0-8.8-.8Z"
+                fill="url(#navToolGradientB)"/>
+          <path d="m29.6 22.6 4.7-5.8 9 11.4a5.7 5.7 0 0 1-.3 7.5 7.35 7.35 0 0 1-10.9-.8l-5.2-6.6 2.7-5.7Z"
+                fill="url(#navToolGradientA)"/>
+          <circle cx="26.2" cy="23.1" r="3.35" fill="#DCA7FF"/>
         </svg>
       </div>
-      <div class="brand-copy"><b>飞天小象</b><small>PRIVATE NAV · 私人导航</small></div>
+      <div class="brand-copy">
+        <b>私人导航工具箱</b>
+        <small>PRIVATE NAV TOOLBOX</small>
+      </div>
     </div>
 
     <div class="side-label">快速访问</div>
@@ -891,7 +1055,7 @@ html[data-theme="light"] .site-icon.favicon-mode{
 
     <div class="side-label">分类</div>
     <div id="categoryNav"></div>
-    <div class="sidebar-bottom">飞天小象私人导航<br>收藏不再散落，常用内容一处抵达。</div>
+    <div class="sidebar-bottom">私人导航工具箱<br>收藏不再散落，常用内容一处抵达。</div>
   </aside>
 
   <main class="main">
@@ -905,7 +1069,7 @@ html[data-theme="light"] .site-icon.favicon-mode{
     </div>
 
     <section class="hero glass">
-      <span class="eyebrow">✦ FEITIANXIAOXIANG · PRIVATE START PAGE</span>
+      <span class="eyebrow">✦ PRIVATE NAV TOOLBOX · START PAGE</span>
       <h1>找到你要去的地方。</h1>
       <p>收藏夹已按网页功能重新整理，输入名称、域名或关键词即可快速定位。</p>
 
@@ -926,7 +1090,7 @@ html[data-theme="light"] .site-icon.favicon-mode{
     </section>
 
     <div id="content"></div>
-    <div class="footer">© 2026 飞天小象私人导航 · V15.1 HD</div>
+    <div class="footer">© 2026 私人导航工具箱 · V15.2</div>
   </main>
 </div>
 
@@ -939,7 +1103,7 @@ html[data-theme="light"] .site-icon.favicon-mode{
     </div>
   </div>
   <div class="drawer-body">
-    <div class="admin-note">V15.1 HD 图标优化版：内置 191 个网站，优先加载高清站点图标，自动跳过过小 favicon，低清源失败时使用干净的字母图标兜底。你之前手动新增的网站仍会保留。当前本地修改仍保存在浏览器；云同步需在 Worker API 正式接入后启用。<br><span id="storageUsage">正在计算本地数据占用…</span></div>
+    <div class="admin-note">V15.2 品牌与交互优化版：内置 191 个网站，保留高清图标系统，并升级顶部品牌标识与桌面端卡片悬浮反馈。你之前手动新增的网站仍会保留。当前本地修改仍保存在浏览器；云同步需在 Worker API 正式接入后启用。<br><span id="storageUsage">正在计算本地数据占用…</span></div>
 
     <form id="addForm">
       <div class="form-grid">
@@ -2430,7 +2594,7 @@ $("#importFile").addEventListener("change",async e=>{
     state.custom=Array.isArray(d.custom)?d.custom:[];state.recents=Array.isArray(d.recents)?d.recents:[];state.favorites=new Set(Array.isArray(d.favorites)?d.favorites:[]);state.categoryOverrides=(d.categoryOverrides&&typeof d.categoryOverrides==="object"&&!Array.isArray(d.categoryOverrides))?d.categoryOverrides:{};state.iconOverrides=(d.iconOverrides&&typeof d.iconOverrides==="object"&&!Array.isArray(d.iconOverrides))?d.iconOverrides:{};state.hiddenSites=new Set(Array.isArray(d.hiddenSites)?d.hiddenSites:[]);state.siteEdits=(d.siteEdits&&typeof d.siteEdits==="object"&&!Array.isArray(d.siteEdits))?d.siteEdits:{};state.customCategories=Array.isArray(d.customCategories)?d.customCategories:[];state.categoryOrder=Array.isArray(d.categoryOrder)?d.categoryOrder:[];state.categoryIconOverrides=(d.categoryIconOverrides&&typeof d.categoryIconOverrides==="object"&&!Array.isArray(d.categoryIconOverrides))?d.categoryIconOverrides:{};state.siteOrder=(d.siteOrder&&typeof d.siteOrder==="object"&&!Array.isArray(d.siteOrder))?d.siteOrder:{};
     sanitizeState();
     if(!save()){Object.assign(state,{custom:snapshot.custom,recents:snapshot.recents,favorites:snapshot.favorites,categoryOverrides:snapshot.categoryOverrides,iconOverrides:snapshot.iconOverrides,hiddenSites:snapshot.hiddenSites,siteEdits:snapshot.siteEdits,customCategories:snapshot.customCategories,categoryOrder:snapshot.categoryOrder,categoryIconOverrides:snapshot.categoryIconOverrides,siteOrder:snapshot.siteOrder});throw new Error("导入数据超过浏览器本地存储容量，已恢复原配置")}
-    refreshCategoryUI();renderDeletedList();updateStorageUsage();toast("V15.1 配置已导入");
+    refreshCategoryUI();renderDeletedList();updateStorageUsage();toast("V15.2 配置已导入");
   }catch(err){alert(err?.message||"配置文件无效")}finally{e.target.value=""}
 });
 
@@ -2507,7 +2671,7 @@ document.addEventListener("keydown",e=>{
    这里增加统一同步入口，后端 API 接入后无需重构页面。
 */
 const FX_SYNC={
-  version:"V15.1",
+  version:"V15.2",
   enabled:false,
   user:null,
   endpoint:"",
