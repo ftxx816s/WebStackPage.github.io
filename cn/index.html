@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#09111f">
-<title>私人导航工具箱 · V15.2</title>
+<title>私人导航工具箱 · V15.3 UI Pro</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https: http:; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -1013,6 +1013,238 @@ html.is-scrolling .card:hover .site-domain{
   .brand-copy b{font-size:16px!important}
 }
 
+
+/* ===================== V15.3 UI Pro ===================== */
+:root{
+  --ui-ease:cubic-bezier(.2,.8,.2,1);
+}
+
+/* unified tool cluster */
+.tool-cluster{
+  display:inline-flex;
+  align-items:center;
+  gap:3px;
+  margin-left:auto;
+  padding:4px;
+  border:1px solid var(--line);
+  border-radius:15px;
+  background:rgba(14,22,38,.72);
+  box-shadow:0 8px 24px rgba(0,0,0,.07);
+}
+.tool-btn{
+  height:34px;
+  padding:0 11px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  border:0;
+  border-radius:10px;
+  background:transparent;
+  color:var(--muted);
+  font:inherit;
+  font-size:12px;
+  font-weight:760;
+  transition:background .15s ease,color .15s ease,transform .15s ease;
+}
+.tool-btn:hover{background:var(--soft2);color:var(--text)}
+.tool-btn:active{transform:scale(.97)}
+.tool-btn.active{background:rgba(116,135,255,.13);color:#cfd6ff}
+.tool-btn.icon-only{width:34px;padding:0;font-size:15px}
+.tool-glyph{font-size:13px;color:var(--muted)}
+html[data-theme="light"] .tool-cluster{background:rgba(255,255,255,.79);box-shadow:0 8px 24px rgba(73,89,119,.065)}
+
+/* Hero: more useful, less empty */
+.hero{
+  padding:34px 38px!important;
+  margin-bottom:27px!important;
+}
+.hero-layout{
+  position:relative;
+  z-index:2;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(280px,330px);
+  gap:clamp(24px,3vw,48px);
+  align-items:stretch;
+}
+.hero-primary{min-width:0;align-self:center}
+.hero h1{font-size:clamp(39px,4.5vw,58px)!important;margin-top:16px!important}
+.hero p{margin-bottom:20px!important}
+.search-wrap{width:100%!important;max-width:930px}
+.search-panel{padding:10px!important;border-radius:20px!important}
+.search-row{height:56px!important}
+.search-info{margin-top:9px!important}
+
+.hero-recent{
+  min-height:238px;
+  align-self:stretch;
+  display:flex;
+  flex-direction:column;
+  padding:17px;
+  border:1px solid rgba(116,135,255,.13);
+  border-radius:21px;
+  background:rgba(9,17,31,.37);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035);
+}
+.hero-recent-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
+.hero-recent-head strong{display:block;margin-top:3px;font-size:14px;letter-spacing:-.01em}
+.hero-recent-kicker{font-size:8.5px;letter-spacing:.15em;color:var(--muted2);font-weight:850}
+.hero-recent-more{border:0;background:transparent;color:var(--muted);font-size:10px;padding:4px 2px;border-radius:8px}
+.hero-recent-more:hover{color:var(--text)}
+.hero-recent-list{display:grid;gap:7px;min-height:0}
+.hero-quick{
+  position:relative;
+  width:100%;
+  min-width:0;
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:9px;
+  padding:8px 9px;
+  border:1px solid transparent;
+  border-radius:13px;
+  background:rgba(255,255,255,.025);
+  color:var(--text);
+  text-align:left;
+  transition:transform .15s var(--ui-ease),background .15s ease,border-color .15s ease;
+}
+.hero-quick:hover{transform:translateX(2px);background:rgba(116,135,255,.075);border-color:rgba(116,135,255,.11)}
+.hero-quick .custom-mini-icon{width:34px;height:34px;flex-basis:34px;border-radius:10px}
+.hero-quick .custom-mini-icon img{width:22px!important;height:22px!important}
+.hero-quick-copy{min-width:0}
+.hero-quick-name{display:block;font-size:11.5px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hero-quick-domain{display:block;margin-top:3px;color:var(--muted);font-size:8.8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hero-quick-arrow{color:var(--muted2);font-size:12px;transition:transform .15s ease,color .15s ease}
+.hero-quick:hover .hero-quick-arrow{transform:translateX(2px);color:var(--muted)}
+.hero-recent-empty{display:grid;place-items:center;flex:1;min-height:150px;text-align:center;color:var(--muted2);font-size:11px;line-height:1.7}
+html[data-theme="light"] .hero-recent{background:rgba(255,255,255,.47);border-color:rgba(70,88,123,.075)}
+html[data-theme="light"] .hero-quick{background:rgba(255,255,255,.44)}
+html[data-theme="light"] .hero-quick:hover{background:rgba(116,135,255,.07)}
+
+/* Compact floating search after Hero leaves viewport */
+.compact-bar{
+  position:fixed;
+  z-index:43;
+  top:12px;
+  left:calc(var(--sidebar-w) + clamp(18px,3vw,44px));
+  right:clamp(18px,3vw,44px);
+  height:52px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:6px 7px 6px 10px;
+  border:1px solid rgba(116,135,255,.15);
+  border-radius:17px;
+  background:rgba(9,17,31,.91);
+  box-shadow:0 14px 38px rgba(0,0,0,.18);
+  opacity:0;
+  pointer-events:none;
+  transform:translateY(-12px) scale(.985);
+  transition:opacity .17s ease,transform .17s var(--ui-ease);
+}
+.compact-bar.show{opacity:1;pointer-events:auto;transform:none}
+.compact-search{min-width:0;flex:1;display:flex;align-items:center;height:39px;padding:0 11px;border-radius:12px;background:rgba(255,255,255,.045);border:1px solid var(--line)}
+.compact-search-icon{margin-right:9px;color:var(--muted);font-size:13px}
+.compact-search input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:var(--text);font:inherit;font-size:12.5px}
+.compact-search input::placeholder{color:var(--muted2)}
+.compact-hint{margin-left:8px;color:var(--muted2);font-size:9px;border:1px solid var(--line);border-radius:7px;padding:3px 5px}
+.compact-actions{display:flex;align-items:center;gap:4px}
+.compact-count{padding:0 7px;color:var(--muted);font-size:10px;white-space:nowrap}
+.compact-action{width:36px;height:36px;border:0;border-radius:10px;background:transparent;color:var(--muted);font:inherit;font-size:14px}
+.compact-action:hover{background:var(--soft2);color:var(--text)}
+html[data-theme="light"] .compact-bar{background:rgba(249,251,255,.94);box-shadow:0 14px 34px rgba(75,91,126,.13)}
+html[data-theme="light"] .compact-search{background:rgba(255,255,255,.78)}
+
+/* Sidebar active sliding indicator */
+.sidebar{isolation:isolate}
+.nav-active-indicator{
+  position:absolute;
+  z-index:4;
+  left:6px;
+  top:0;
+  width:3px;
+  height:36px;
+  border-radius:999px;
+  background:linear-gradient(180deg,#8c78ff,#a95cf4);
+  box-shadow:0 0 14px rgba(137,103,246,.42);
+  opacity:0;
+  pointer-events:none;
+  transform:translate3d(0,0,0);
+  transition:transform .25s var(--ui-ease),height .22s var(--ui-ease),opacity .16s ease;
+}
+.nav-active-indicator.ready{opacity:1}
+.nav-btn{position:relative}
+.nav-btn.active{background:linear-gradient(90deg,rgba(116,135,255,.155),rgba(164,92,246,.075))!important}
+
+/* Section transition on category/filter switch */
+#content.view-transition-in{animation:v153ContentIn .16s var(--ui-ease) both}
+@keyframes v153ContentIn{from{opacity:.58;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+/* Mouse-follow glow: one delegated pointer handler, no listener per card */
+.card::before{
+  background:
+    radial-gradient(220px 120px at var(--mx,18%) var(--my,18%),rgba(116,135,255,.16),transparent 70%),
+    linear-gradient(115deg,rgba(116,135,255,.03),rgba(164,92,246,.022))!important;
+}
+html[data-theme="light"] .card::before{
+  background:
+    radial-gradient(220px 120px at var(--mx,18%) var(--my,18%),rgba(116,135,255,.105),transparent 70%),
+    linear-gradient(115deg,rgba(116,135,255,.025),rgba(164,92,246,.016))!important;
+}
+
+/* More polished light theme contrast */
+html[data-theme="light"]{
+  --text:#172136;
+  --muted:#66748d;
+  --muted2:#8a96aa;
+  --line:rgba(42,58,88,.095);
+  --line2:rgba(42,58,88,.15);
+  --soft:rgba(88,106,140,.046);
+  --soft2:rgba(88,106,140,.075);
+}
+html[data-theme="light"] body{
+  background:
+    radial-gradient(800px 520px at 82% -8%,rgba(111,126,255,.095),transparent 62%),
+    radial-gradient(700px 500px at 22% 30%,rgba(73,205,178,.045),transparent 67%),
+    #f5f8fd!important;
+}
+html[data-theme="light"] .section-badge{background:linear-gradient(135deg,rgba(116,135,255,.12),rgba(164,92,246,.075))}
+
+/* Initial entrance: short and cheap */
+body:not(.page-ready) .hero{opacity:0;transform:translateY(7px)}
+body.page-ready .hero{opacity:1;transform:none;transition:opacity .26s ease,transform .26s var(--ui-ease)}
+
+/* Mobile: shorter Hero, no right panel, compact bar stays useful */
+@media(max-width:1100px){
+  .hero-layout{grid-template-columns:minmax(0,1fr) minmax(250px,285px);gap:22px}
+}
+@media(max-width:980px){
+  .hero{padding:24px 18px 19px!important;margin-bottom:23px!important}
+  .hero-layout{display:block}
+  .hero-recent{display:none}
+  .hero h1{font-size:clamp(34px,8vw,44px)!important;margin:14px 0 7px!important}
+  .hero p{margin-bottom:16px!important}
+  .compact-bar{left:14px;right:14px;top:10px}
+  .compact-count{display:none}
+  .tool-cluster{margin-left:auto}
+}
+@media(max-width:650px){
+  .hero{padding:21px 16px 16px!important;border-radius:24px!important}
+  .hero h1{font-size:34px!important;line-height:1.04!important}
+  .hero p{font-size:12.5px!important;line-height:1.5}
+  .eyebrow{font-size:9px;padding:6px 9px}
+  .search-panel{padding:8px!important}
+  .search-info .pill:last-child{display:none}
+  .compact-bar{height:50px;padding-left:8px}
+  .compact-hint,.compact-actions .hide-sm{display:none}
+  .compact-search{height:37px}
+}
+@media(prefers-reduced-motion:reduce){
+  #content.view-transition-in{animation:none!important}
+  body:not(.page-ready) .hero,body.page-ready .hero{opacity:1!important;transform:none!important;transition:none!important}
+  .compact-bar{transition:none!important}
+}
+
 </style>
 </head>
 <body>
@@ -1047,6 +1279,7 @@ html.is-scrolling .card:hover .site-domain{
         <small>PRIVATE NAV TOOLBOX</small>
       </div>
     </div>
+    <span class="nav-active-indicator" id="navActiveIndicator" aria-hidden="true"></span>
 
     <div class="side-label">快速访问</div>
     <button class="nav-btn active" data-filter="all"><span class="nav-icon">⌂</span><span class="nav-name">全部网站</span><span class="nav-count" id="allCount">0</span></button>
@@ -1061,36 +1294,64 @@ html.is-scrolling .card:hover .site-domain{
   <main class="main">
     <div class="topbar">
       <button class="btn icon mobile-menu" id="mobileMenuBtn" aria-label="菜单">☰</button>
-      <div style="display:flex;gap:9px;margin-left:auto">
-        <button class="btn hide-sm" id="sortModeBtn" title="拖拽网站调整顺序">↕ 排序</button>
-        <button class="btn hide-sm" id="manageBtn">＋ 管理导航</button>
-        <button class="btn icon" id="themeBtn" aria-label="切换主题">☾</button>
+      <div class="tool-cluster" aria-label="页面工具">
+        <button class="tool-btn hide-sm" id="sortModeBtn" title="拖拽网站调整顺序"><span class="tool-glyph">↕</span><span>排序</span></button>
+        <button class="tool-btn hide-sm" id="manageBtn"><span class="tool-glyph">＋</span><span>管理导航</span></button>
+        <button class="tool-btn icon-only" id="themeBtn" aria-label="切换主题">☾</button>
+      </div>
+    </div>
+    <div class="compact-bar" id="compactBar" aria-hidden="true">
+      <div class="compact-search">
+        <span class="compact-search-icon">⌕</span>
+        <input id="compactSearchInput" autocomplete="off" spellcheck="false" placeholder="搜索网站、域名或关键词…" aria-label="紧凑搜索">
+        <span class="compact-hint">⌘ K</span>
+      </div>
+      <div class="compact-actions">
+        <span class="compact-count"><b id="compactSiteCount">0</b> 个网站</span>
+        <button class="compact-action hide-sm" id="compactSortBtn" title="排序">↕</button>
+        <button class="compact-action" id="compactManageBtn" title="管理导航">＋</button>
+        <button class="compact-action" id="compactThemeBtn" title="切换主题">☾</button>
       </div>
     </div>
 
-    <section class="hero glass">
-      <span class="eyebrow">✦ PRIVATE NAV TOOLBOX · START PAGE</span>
-      <h1>找到你要去的地方。</h1>
-      <p>收藏夹已按网页功能重新整理，输入名称、域名或关键词即可快速定位。</p>
+    <section class="hero glass" id="hero">
+      <div class="hero-layout">
+        <div class="hero-primary">
+          <span class="eyebrow">✦ PRIVATE NAV TOOLBOX · START PAGE</span>
+          <h1>找到你要去的地方。</h1>
+          <p>收藏夹已按网页功能重新整理，输入名称、域名或关键词即可快速定位。</p>
 
-      <div class="search-wrap">
-        <div class="search-panel glass-strong">
-          <div class="search-row">
-            <span class="search-symbol">⌕</span>
-            <input id="searchInput" class="search-input" autocomplete="off" spellcheck="false" placeholder="站内搜索：网站名称、域名、关键词…">
-            <button class="clear-search" id="clearSearch" aria-label="清空搜索">×</button>
-          </div>
-          <div class="search-info">
-            <span class="pill"><b id="siteCount">0</b> 个网站</span>
-            <span class="pill"><b id="catCount">0</b> 个分类</span>
-            <span class="pill">Ctrl / ⌘ + K 搜索</span>
+          <div class="search-wrap">
+            <div class="search-panel glass-strong">
+              <div class="search-row">
+                <span class="search-symbol">⌕</span>
+                <input id="searchInput" class="search-input" autocomplete="off" spellcheck="false" placeholder="站内搜索：网站名称、域名、关键词…">
+                <button class="clear-search" id="clearSearch" aria-label="清空搜索">×</button>
+              </div>
+              <div class="search-info">
+                <span class="pill"><b id="siteCount">0</b> 个网站</span>
+                <span class="pill"><b id="catCount">0</b> 个分类</span>
+                <span class="pill">Ctrl / ⌘ + K 搜索</span>
+              </div>
+            </div>
           </div>
         </div>
+
+        <aside class="hero-recent" aria-label="最近使用">
+          <div class="hero-recent-head">
+            <div>
+              <span class="hero-recent-kicker">QUICK ACCESS</span>
+              <strong id="heroRecentTitle">最近使用</strong>
+            </div>
+            <button type="button" class="hero-recent-more" id="heroRecentMore">查看全部</button>
+          </div>
+          <div class="hero-recent-list" id="heroRecentList"></div>
+        </aside>
       </div>
     </section>
 
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V15.2</div>
+    <div class="footer">© 2026 私人导航工具箱 · V15.3 UI Pro</div>
   </main>
 </div>
 
@@ -1103,7 +1364,7 @@ html.is-scrolling .card:hover .site-domain{
     </div>
   </div>
   <div class="drawer-body">
-    <div class="admin-note">V15.2 品牌与交互优化版：内置 191 个网站，保留高清图标系统，并升级顶部品牌标识与桌面端卡片悬浮反馈。你之前手动新增的网站仍会保留。当前本地修改仍保存在浏览器；云同步需在 Worker API 正式接入后启用。<br><span id="storageUsage">正在计算本地数据占用…</span></div>
+    <div class="admin-note">V15.3 UI Pro：内置 191 个网站，重构首页 Hero、增加最近使用与滚动紧凑搜索栏，并优化侧栏选中反馈、工具栏、卡片微交互和移动端布局。你之前手动新增的网站仍会保留。当前本地修改仍保存在浏览器；云同步需在 Worker API 正式接入后启用。<br><span id="storageUsage">正在计算本地数据占用…</span></div>
 
     <form id="addForm">
       <div class="form-grid">
@@ -1532,7 +1793,7 @@ function createSiteIcon(site,className="site-icon"){
   return wrap;
 }
 function toast(msg){const el=$("#toast");el.textContent=msg;el.classList.add("show");clearTimeout(window.__toast);window.__toast=setTimeout(()=>el.classList.remove("show"),1800)}
-function recordRecent(id){state.recents=[id,...state.recents.filter(x=>x!==id)].slice(0,30);save();updateCounts()}
+function recordRecent(id){state.recents=[id,...state.recents.filter(x=>x!==id)].slice(0,30);save();updateCounts();renderHeroRecent()}
 function toggleFavorite(id){state.favorites.has(id)?state.favorites.delete(id):state.favorites.add(id);save();render()}
 let suppressCardClickUntil=0;
 function attachQuickManage(target,link,site){
@@ -2374,6 +2635,80 @@ function sanitizeState(){
 function categoryCount(name){return allSites().filter(site=>effectiveCategory(site)===name).length}
 function movedCount(){return Object.keys(state.categoryOverrides).filter(id=>rawSites().some(s=>s.id===id)).length}
 
+
+/* ===================== V15.3 UI Pro helpers ===================== */
+function getHeroRecentSites(){
+  const pool=allSites().filter(site=>!state.hiddenSites.has(site.id));
+  const byId=new Map(pool.map(site=>[site.id,site]));
+  const picked=[];
+  const seen=new Set();
+  const take=id=>{const site=byId.get(id);if(site&&!seen.has(id)){seen.add(id);picked.push(site)}};
+  state.recents.forEach(take);
+  [...state.favorites].forEach(take);
+  pool.forEach(site=>{if(picked.length<4)take(site.id)});
+  return picked.slice(0,4);
+}
+
+function renderHeroRecent(){
+  const box=$("#heroRecentList");if(!box)return;
+  box.innerHTML="";
+  const title=$("#heroRecentTitle"),more=$("#heroRecentMore");
+  const hasRecent=state.recents.some(id=>rawSites().some(s=>s.id===id&&!state.hiddenSites.has(id)));
+  const hasFavorite=[...state.favorites].some(id=>rawSites().some(s=>s.id===id&&!state.hiddenSites.has(id)));
+  const mode=hasRecent?"recent":hasFavorite?"favorite":"quick";
+  if(title)title.textContent=mode==="recent"?"最近使用":mode==="favorite"?"我的收藏":"快捷入口";
+  if(more){more.dataset.mode=mode;more.textContent=mode==="quick"?"全部网站":"查看全部"}
+  const sites=getHeroRecentSites();
+  if(!sites.length){const empty=document.createElement("div");empty.className="hero-recent-empty";empty.textContent="访问过的网站会出现在这里";box.append(empty);return}
+  sites.forEach(site=>{
+    const btn=document.createElement("button");btn.type="button";btn.className="hero-quick";btn.title=site.name;
+    btn.append(createSiteIcon(site,"custom-mini-icon"));
+    const copy=document.createElement("span");copy.className="hero-quick-copy";
+    const name=document.createElement("span");name.className="hero-quick-name";name.textContent=site.name;
+    const domain=document.createElement("span");domain.className="hero-quick-domain";domain.textContent=site.domain||safeDomain(site.url);
+    copy.append(name,domain);
+    const arrow=document.createElement("span");arrow.className="hero-quick-arrow";arrow.textContent="↗";
+    btn.append(copy,arrow);
+    btn.onclick=()=>{recordRecent(site.id);window.open(site.url,"_blank","noopener")};
+    box.append(btn);
+  });
+}
+
+function updateNavIndicator(){
+  const indicator=$("#navActiveIndicator"),active=$(".nav-btn.active"),sidebar=$("#sidebar");
+  if(!indicator||!active||!sidebar)return;
+  const y=active.offsetTop+(active.offsetHeight-36)/2;
+  indicator.style.height="36px";
+  indicator.style.transform=`translate3d(0,${Math.round(y)}px,0)`;
+  indicator.classList.add("ready");
+}
+
+let __contentAnimRAF=0;
+function animateContentIn(){
+  const content=$("#content");if(!content)return;
+  content.classList.remove("view-transition-in");
+  cancelAnimationFrame(__contentAnimRAF);
+  __contentAnimRAF=requestAnimationFrame(()=>content.classList.add("view-transition-in"));
+}
+
+function setSearchQuery(value,{focus=false,animate=false}={}){
+  state.query=String(value||"");
+  const main=$("#searchInput"),compact=$("#compactSearchInput"),clear=$("#clearSearch");
+  if(main&&main.value!==state.query)main.value=state.query;
+  if(compact&&compact.value!==state.query)compact.value=state.query;
+  clear?.classList.toggle("show",!!state.query);
+  document.body.classList.toggle("searching",!!state.query.trim());
+  render();
+  if(animate)animateContentIn();
+  if(focus){const target=$("#compactBar")?.classList.contains("show")?compact:main;target?.focus();target?.select()}
+}
+
+function syncCompactControls(){
+  const count=$("#compactSiteCount");if(count)count.textContent=allSites().length;
+  const sort=$("#compactSortBtn");if(sort){sort.classList.toggle("active",!!state.sortMode);sort.textContent=state.sortMode?"✓":"↕";sort.title=state.sortMode?"完成排序":"排序"}
+  const compactTheme=$("#compactThemeBtn"),mainTheme=$("#themeBtn");if(compactTheme&&mainTheme)compactTheme.textContent=mainTheme.textContent;
+}
+
 /* V13 view */
 function sectionBlock(cat,items,icon){
   const isRealCategory=!!categoryByName(cat),sorted=isRealCategory?orderedSites(items,cat):items;
@@ -2384,19 +2719,19 @@ function sectionBlock(cat,items,icon){
   sorted.forEach(site=>{const card=createCard(site);card.dataset.siteId=site.id;if(isRealCategory){card.draggable=!!state.sortMode;const handle=document.createElement("span");handle.className="sort-handle";handle.textContent="⋮⋮";handle.title="拖拽排序";card.append(handle);bindSiteDrag(card,grid,site)}grid.append(card)});
   if(isRealCategory)bindGridDrop(grid,cat);sec.append(grid);return sec;
 }
-function render(){
+function render(opts={}){
   const content=$("#content");content.innerHTML="";const visible=filteredSites();
   if(state.query.trim())content.append(visible.length?sectionBlock("搜索结果",visible,"⌕"):emptyBlock("没有找到匹配的网站"));
   else if(state.filter==="favorite")content.append(visible.length?sectionBlock("我的收藏",visible,"★"):emptyBlock("还没有收藏网站"));
   else if(state.filter==="recent")content.append(visible.length?sectionBlock("最近访问",visible,"↺"):emptyBlock("还没有最近访问记录"));
   else if(state.filter!=="all"){const c=categoryByName(state.filter);content.append(visible.length?sectionBlock(state.filter,visible,c?.icon||"•"):emptyBlock("这个分类还没有网站"))}
   else allCategories().forEach(c=>{const g=visible.filter(s=>effectiveCategory(s)===c.name);if(g.length)content.append(sectionBlock(c.name,g,c.icon))});
-  document.body.classList.toggle("sort-mode",!!state.sortMode);const sortBtn=$("#sortModeBtn");if(sortBtn){sortBtn.classList.toggle("active",!!state.sortMode);sortBtn.textContent=state.sortMode?"✓ 完成排序":"↕ 排序"}updateCounts();
+  document.body.classList.toggle("sort-mode",!!state.sortMode);const sortBtn=$("#sortModeBtn");if(sortBtn){sortBtn.classList.toggle("active",!!state.sortMode);sortBtn.innerHTML=state.sortMode?'<span class="tool-glyph">✓</span><span>完成排序</span>':'<span class="tool-glyph">↕</span><span>排序</span>'}updateCounts();renderHeroRecent();syncCompactControls();if(opts.animate)animateContentIn();
 }
 function buildNav(){
   const box=$("#categoryNav");box.innerHTML="";
   allCategories().forEach(c=>{const b=document.createElement("button");b.className="nav-btn";b.dataset.filter=c.name;const i=document.createElement("span");i.className="nav-icon";i.textContent=c.icon||"•";const n=document.createElement("span");n.className="nav-name";n.textContent=c.name;const count=document.createElement("span");count.className="nav-count";count.textContent=categoryCount(c.name);b.append(i,n,count);box.append(b)});
-  $$(".nav-btn").forEach(btn=>btn.onclick=()=>{state.filter=btn.dataset.filter;state.query="";$("#searchInput").value="";$("#clearSearch").classList.remove("show");document.body.classList.remove("searching");syncNavActive();render();$("#sidebar").classList.remove("show");window.scrollTo({top:0,behavior:"smooth"})});syncNavActive();
+  $$(".nav-btn").forEach(btn=>btn.onclick=()=>{state.filter=btn.dataset.filter;state.query="";$("#searchInput").value="";const compact=$("#compactSearchInput");if(compact)compact.value="";$("#clearSearch").classList.remove("show");document.body.classList.remove("searching");syncNavActive();render({animate:true});$("#sidebar").classList.remove("show");window.scrollTo({top:0,behavior:"smooth"});setTimeout(updateNavIndicator,20)});syncNavActive();requestAnimationFrame(updateNavIndicator);
 }
 function fillCategorySelect(sel,current=""){if(!sel)return;sel.innerHTML="";allCategories().forEach(c=>{const o=document.createElement("option");o.value=c.name;o.textContent=c.name;sel.append(o)});if(current&&categoryByName(current))sel.value=current}
 function buildCategorySelect(){fillCategorySelect($("#newCategory"))}
@@ -2438,7 +2773,9 @@ function updateCounts(){
   if($("#deletedCount"))$("#deletedCount").textContent=state.hiddenSites.size+" 个";
   if($("#movedCount"))$("#movedCount").textContent=movedCount()+" 个已调整";
   if($("#categoryManageCount"))$("#categoryManageCount").textContent=allCategories().length+" 个分类";
+  if($("#compactSiteCount"))$("#compactSiteCount").textContent=allSites().length;
   updateNavCounts();
+  requestAnimationFrame(updateNavIndicator);
 }
 
 /* V13 categories */
@@ -2490,43 +2827,52 @@ function buildCategoryContext(site){
 const __v15Migrated=migrateBuiltinDataV15();sanitizeState();if(save()&&__v15Migrated)STORE.set(V15_BUILTIN_DATA_KEY,V15_BUILTIN_DATA_VERSION);applyTheme();buildNav();buildCategorySelect();buildMoveCategorySelect();buildMoveSiteOptions();render();renderCategoryManager();renderDeletedList();refreshIconPreview();updateStorageUsage();
 
 let searchRenderRAF=0;
-$("#searchInput").addEventListener("input",e=>{
-  state.query=e.target.value;
-  $("#clearSearch").classList.toggle("show",!!state.query);
-  document.body.classList.toggle("searching",!!state.query.trim());
+function queueSearchRender(value){
+  state.query=value;
+  const main=$("#searchInput"),compact=$("#compactSearchInput");
+  if(main&&main.value!==value)main.value=value;
+  if(compact&&compact.value!==value)compact.value=value;
+  $("#clearSearch").classList.toggle("show",!!value);
+  document.body.classList.toggle("searching",!!value.trim());
   cancelAnimationFrame(searchRenderRAF);
   searchRenderRAF=requestAnimationFrame(render);
-});
-$("#searchInput").addEventListener("keydown",e=>{
+}
+$("#searchInput").addEventListener("input",e=>queueSearchRender(e.target.value));
+$("#compactSearchInput").addEventListener("input",e=>queueSearchRender(e.target.value));
+
+function handleSearchKeydown(e){
   if(e.key==="Escape"&&state.query){
-    state.query="";
-    e.target.value="";
-    $("#clearSearch").classList.remove("show");
-    document.body.classList.remove("searching");
-    render();
+    queueSearchRender("");
+    e.currentTarget.value="";
   }else if(e.key==="Enter"){
     const results=filteredSites();
-    if(results.length===1){
-      recordRecent(results[0].id);
-      window.open(results[0].url,"_blank","noopener");
-    }
+    if(results.length===1){recordRecent(results[0].id);window.open(results[0].url,"_blank","noopener")}
   }
-});
-$("#clearSearch").onclick=()=>{
-  state.query="";
-  $("#searchInput").value="";
-  $("#clearSearch").classList.remove("show");
-  document.body.classList.remove("searching");
-  render();
-  $("#searchInput").focus();
-};
+}
+$("#searchInput").addEventListener("keydown",handleSearchKeydown);
+$("#compactSearchInput").addEventListener("keydown",handleSearchKeydown);
+$("#clearSearch").onclick=()=>{setSearchQuery("",{focus:true})};
+
 document.addEventListener("keydown",e=>{
-  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();$("#searchInput").focus();$("#searchInput").select()}
-  if(e.key==="Escape"&&!document.activeElement.matches("#searchInput")){closeDrawer();$("#sidebar").classList.remove("show")}
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){
+    e.preventDefault();
+    const target=$("#compactBar").classList.contains("show")?$("#compactSearchInput"):$("#searchInput");
+    target.focus();target.select();
+  }
+  if(e.key==="Escape"&&!document.activeElement.matches("#searchInput,#compactSearchInput")){closeDrawer();$("#sidebar").classList.remove("show")}
 });
-$("#themeBtn").onclick=()=>{const next=document.documentElement.dataset.theme==="dark"?"light":"dark";document.documentElement.dataset.theme=next;localStorage.setItem(KEYS.theme,next);updateThemeButton()};
-$("#mobileMenuBtn").onclick=()=>$("#sidebar").classList.toggle("show");$("#manageBtn").onclick=openDrawer;$("#closeDrawer").onclick=closeDrawer;$("#backdrop").onclick=closeDrawer;
+
+function toggleThemeV153(){const next=document.documentElement.dataset.theme==="dark"?"light":"dark";document.documentElement.dataset.theme=next;localStorage.setItem(KEYS.theme,next);updateThemeButton();syncCompactControls()}
+$("#themeBtn").onclick=toggleThemeV153;
+$("#compactThemeBtn").onclick=toggleThemeV153;
+$("#mobileMenuBtn").onclick=()=>$("#sidebar").classList.toggle("show");
+$("#manageBtn").onclick=openDrawer;
+$("#compactManageBtn").onclick=openDrawer;
+$("#closeDrawer").onclick=closeDrawer;
+$("#backdrop").onclick=closeDrawer;
 $("#sortModeBtn").onclick=toggleSortMode;
+$("#compactSortBtn").onclick=toggleSortMode;
+$("#heroRecentMore").onclick=e=>{const mode=e.currentTarget.dataset.mode||"recent";state.filter=mode==="favorite"?"favorite":mode==="quick"?"all":"recent";state.query="";$("#searchInput").value="";$("#compactSearchInput").value="";syncNavActive();render({animate:true});window.scrollTo({top:0,behavior:"smooth"});requestAnimationFrame(updateNavIndicator)};
 $("#addCategoryBtn").onclick=addCustomCategory;
 $("#resetCategoryOrderBtn").onclick=resetCategoryOrder;
 $("#resetSiteOrderBtn").onclick=resetSiteOrder;
@@ -2580,8 +2926,8 @@ $("#addForm").addEventListener("submit",e=>{
   }catch(err){alert(err?.message||"添加失败")}
 });
 $("#exportBtn").onclick=()=>{
-  const payload={version:"15.1",favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides,iconOverrides:state.iconOverrides,hiddenSites:[...state.hiddenSites],siteEdits:state.siteEdits,customCategories:state.customCategories,categoryOrder:state.categoryOrder,categoryIconOverrides:state.categoryIconOverrides,siteOrder:state.siteOrder};
-  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);const ds=new Date().toISOString().slice(0,10).replaceAll("-","");a.download=`feitianxiaoxiang-nav-backup-v15.1-${ds}.json`;a.click();URL.revokeObjectURL(a.href);
+  const payload={version:"15.3",favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides,iconOverrides:state.iconOverrides,hiddenSites:[...state.hiddenSites],siteEdits:state.siteEdits,customCategories:state.customCategories,categoryOrder:state.categoryOrder,categoryIconOverrides:state.categoryIconOverrides,siteOrder:state.siteOrder};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);const ds=new Date().toISOString().slice(0,10).replaceAll("-","");a.download=`feitianxiaoxiang-nav-backup-v15.3-${ds}.json`;a.click();URL.revokeObjectURL(a.href);
 };
 $("#importBtn").onclick=()=>$("#importFile").click();
 $("#importFile").addEventListener("change",async e=>{
@@ -2594,7 +2940,7 @@ $("#importFile").addEventListener("change",async e=>{
     state.custom=Array.isArray(d.custom)?d.custom:[];state.recents=Array.isArray(d.recents)?d.recents:[];state.favorites=new Set(Array.isArray(d.favorites)?d.favorites:[]);state.categoryOverrides=(d.categoryOverrides&&typeof d.categoryOverrides==="object"&&!Array.isArray(d.categoryOverrides))?d.categoryOverrides:{};state.iconOverrides=(d.iconOverrides&&typeof d.iconOverrides==="object"&&!Array.isArray(d.iconOverrides))?d.iconOverrides:{};state.hiddenSites=new Set(Array.isArray(d.hiddenSites)?d.hiddenSites:[]);state.siteEdits=(d.siteEdits&&typeof d.siteEdits==="object"&&!Array.isArray(d.siteEdits))?d.siteEdits:{};state.customCategories=Array.isArray(d.customCategories)?d.customCategories:[];state.categoryOrder=Array.isArray(d.categoryOrder)?d.categoryOrder:[];state.categoryIconOverrides=(d.categoryIconOverrides&&typeof d.categoryIconOverrides==="object"&&!Array.isArray(d.categoryIconOverrides))?d.categoryIconOverrides:{};state.siteOrder=(d.siteOrder&&typeof d.siteOrder==="object"&&!Array.isArray(d.siteOrder))?d.siteOrder:{};
     sanitizeState();
     if(!save()){Object.assign(state,{custom:snapshot.custom,recents:snapshot.recents,favorites:snapshot.favorites,categoryOverrides:snapshot.categoryOverrides,iconOverrides:snapshot.iconOverrides,hiddenSites:snapshot.hiddenSites,siteEdits:snapshot.siteEdits,customCategories:snapshot.customCategories,categoryOrder:snapshot.categoryOrder,categoryIconOverrides:snapshot.categoryIconOverrides,siteOrder:snapshot.siteOrder});throw new Error("导入数据超过浏览器本地存储容量，已恢复原配置")}
-    refreshCategoryUI();renderDeletedList();updateStorageUsage();toast("V15.2 配置已导入");
+    refreshCategoryUI();renderDeletedList();updateStorageUsage();toast("V15.3 配置已导入");
   }catch(err){alert(err?.message||"配置文件无效")}finally{e.target.value=""}
 });
 
@@ -2639,6 +2985,13 @@ function handleWindowScroll(){
       toTop.classList.toggle("show",shouldShowTop);
     }
 
+    const hero=$("#hero"),compactBar=$("#compactBar");
+    const compactShouldShow=hero?hero.getBoundingClientRect().bottom<72:window.scrollY>300;
+    if(compactBar){
+      compactBar.classList.toggle("show",compactShouldShow);
+      compactBar.setAttribute("aria-hidden",compactShouldShow?"false":"true");
+    }
+
     const menu=$("#categoryContext");
     if(menu?.classList.contains("show"))closeCategoryContext();
 
@@ -2666,12 +3019,28 @@ document.addEventListener("keydown",e=>{
 });
 
 
-/* ===================== V15.1 · Sync Architecture =====================
+
+/* V15.3 delegated mouse-follow glow */
+let __cardGlowRAF=0,__cardGlowTarget=null,__cardGlowX=0,__cardGlowY=0;
+if(window.matchMedia?.("(hover:hover) and (pointer:fine)").matches){
+  $("#content").addEventListener("pointermove",e=>{
+    const card=e.target.closest(".card");if(!card)return;
+    const r=card.getBoundingClientRect();
+    __cardGlowTarget=card;__cardGlowX=((e.clientX-r.left)/r.width*100).toFixed(1)+"%";__cardGlowY=((e.clientY-r.top)/r.height*100).toFixed(1)+"%";
+    if(__cardGlowRAF)return;
+    __cardGlowRAF=requestAnimationFrame(()=>{__cardGlowRAF=0;if(__cardGlowTarget){__cardGlowTarget.style.setProperty("--mx",__cardGlowX);__cardGlowTarget.style.setProperty("--my",__cardGlowY)}});
+  },{passive:true});
+}
+
+window.addEventListener("resize",()=>requestAnimationFrame(updateNavIndicator),{passive:true});
+requestAnimationFrame(()=>{document.body.classList.add("page-ready");renderHeroRecent();syncCompactControls();updateNavIndicator()});
+
+/* ===================== V15.3 · Sync Architecture =====================
    V13 数据结构保留。
    这里增加统一同步入口，后端 API 接入后无需重构页面。
 */
 const FX_SYNC={
-  version:"V15.2",
+  version:"V15.3",
   enabled:false,
   user:null,
   endpoint:"",
