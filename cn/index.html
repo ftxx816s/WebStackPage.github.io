@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#09111f">
-<title>私人导航工具箱 · V17.2 iOS Motion</title>
+<title>私人导航工具箱 · V17.3 Perspective Morph</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https: http:; connect-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -2823,6 +2823,150 @@ body.manager-ios-animating .drawer .site-icon{
   .drawer,.backdrop,.site-editor,.site-editor-backdrop,.command-panel,.command-backdrop,.category-context{animation:none!important;transition:none!important}
 }
 
+
+
+/* ===================== V17.3 · Perspective Morph / Folding Window =====================
+   参考“页面折叠 / 缩放飞入”的视觉：实际管理面板不参与大幅 3D 变形，
+   只让一个轻量 GPU Ghost 做透视折叠动画，末段再与真实面板交叉淡入。
+   这样比直接扭曲整个复杂管理 DOM 更丝滑。
+*/
+:root{
+  --v173-spring:cubic-bezier(.16,1,.3,1);
+  --v173-close:cubic-bezier(.4,0,.2,1);
+}
+body.v173-transitioning{overflow:hidden!important}
+body.v173-transitioning .drawer *{
+  pointer-events:none!important;
+}
+.drawer.v173-stage{
+  opacity:0!important;
+  transform:none!important;
+  visibility:visible!important;
+  pointer-events:none!important;
+}
+.drawer.v173-crossfade{
+  visibility:visible!important;
+  pointer-events:none!important;
+}
+.manager-fold-ghost{
+  position:fixed;
+  z-index:610;
+  display:block;
+  overflow:hidden;
+  pointer-events:none;
+  background:#091322;
+  border:1px solid rgba(132,148,255,.18);
+  border-radius:28px;
+  box-shadow:-20px 22px 72px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.045);
+  transform-origin:100% 0%;
+  will-change:transform,opacity,clip-path,border-radius;
+  contain:layout paint style;
+  isolation:isolate;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+}
+.manager-fold-ghost::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(640px 300px at 100% 0%,rgba(91,112,230,.19),transparent 68%),
+    linear-gradient(180deg,rgba(255,255,255,.025),transparent 28%);
+  pointer-events:none;
+}
+.manager-fold-ghost::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(105deg,transparent 18%,rgba(255,255,255,.09) 48%,transparent 74%);
+  transform:translateX(-140%);
+  animation:v173GhostSheen .72s ease-out both;
+  opacity:.55;
+  pointer-events:none;
+}
+@keyframes v173GhostSheen{to{transform:translateX(140%)}}
+.manager-fold-ghost .g-head{
+  height:78px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 22px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  background:rgba(9,19,34,.97);
+}
+.manager-fold-ghost .g-title{
+  display:grid;
+  gap:7px;
+}
+.manager-fold-ghost .g-title b{
+  width:110px;height:13px;border-radius:999px;background:rgba(240,244,255,.82);
+}
+.manager-fold-ghost .g-title i{
+  width:178px;height:7px;border-radius:999px;background:rgba(158,171,208,.32);
+}
+.manager-fold-ghost .g-close{
+  width:34px;height:34px;border-radius:12px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.035);
+}
+.manager-fold-ghost .g-body{
+  display:grid;
+  gap:14px;
+  padding:18px 20px 24px;
+}
+.manager-fold-ghost .g-metrics{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
+}
+.manager-fold-ghost .g-metric,
+.manager-fold-ghost .g-block{
+  border:1px solid rgba(116,135,255,.10);
+  background:rgba(255,255,255,.025);
+  border-radius:16px;
+}
+.manager-fold-ghost .g-metric{height:70px}
+.manager-fold-ghost .g-block{height:96px}
+.manager-fold-ghost .g-block.tall{height:132px}
+.manager-fold-ghost .g-row{
+  display:grid;
+  grid-template-columns:38px 1fr 72px;
+  align-items:center;
+  gap:12px;
+  height:52px;
+  padding:0 12px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.045);
+  background:rgba(255,255,255,.018);
+}
+.manager-fold-ghost .g-row::before{content:"";width:32px;height:32px;border-radius:10px;background:linear-gradient(145deg,rgba(116,135,255,.26),rgba(164,92,246,.17))}
+.manager-fold-ghost .g-row::after{content:"";width:64px;height:25px;border-radius:9px;background:rgba(255,255,255,.045)}
+.manager-fold-ghost .g-row span{height:8px;border-radius:999px;background:rgba(190,201,232,.28)}
+.manager-fold-ghost .g-fold-highlight{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(115deg,transparent 22%,rgba(255,255,255,.18) 47%,rgba(151,168,255,.08) 51%,transparent 73%);
+  mix-blend-mode:screen;
+  opacity:0;
+}
+body.v173-transitioning .app{
+  transform-origin:50% 12%;
+}
+.backdrop.v173-backdrop{
+  visibility:visible!important;
+  pointer-events:auto!important;
+  background:rgba(2,7,16,.58)!important;
+  opacity:0;
+}
+
+@media(max-width:760px){
+  .manager-fold-ghost{border-radius:24px}
+  .manager-fold-ghost .g-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .manager-fold-ghost .g-body{padding:15px 15px 20px}
+}
+@media(prefers-reduced-motion:reduce){
+  .manager-fold-ghost{display:none!important}
+}
+
 </style>
 </head>
 <body>
@@ -2934,7 +3078,7 @@ body.manager-ios-animating .drawer .site-icon{
     </section>
 
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V17.2</div>
+    <div class="footer">© 2026 私人导航工具箱 · V17.3</div>
   </main>
 </div>
 
@@ -5631,7 +5775,7 @@ if(__sidebarV158){
    这里增加统一同步入口，后端 API 接入后无需重构页面。
 */
 const FX_SYNC={
-  version:"V17.2",
+  version:"V17.3",
   enabled:false,
   user:null,
   endpoint:"",
@@ -6209,6 +6353,220 @@ window.__fxCloudSchedulePush=scheduleDataSyncV17;
   // 页面稳定后偷偷预渲染管理数据。用户真正点击时通常只剩纯 GPU 动画。
   managerDirty=true;
   setTimeout(()=>scheduleIdleRefresh(900),180);
+})();
+
+
+
+/* ===================== V17.3 · Perspective Morph Runtime ===================== */
+(function(){
+  const drawer=document.getElementById('drawer');
+  const backdrop=document.getElementById('backdrop');
+  const body=document.body;
+  const app=document.querySelector('.app');
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let ghost=null;
+  let activeAnimations=[];
+  let lastTrigger=document.getElementById('manageBtn');
+  let busy=false;
+
+  function stopAll(){
+    activeAnimations.forEach(a=>{try{a.cancel()}catch{}});
+    activeAnimations=[];
+    if(ghost){ghost.remove();ghost=null}
+  }
+
+  function makeGhost(rect){
+    const g=document.createElement('div');
+    g.className='manager-fold-ghost';
+    Object.assign(g.style,{
+      left:rect.left+'px',top:rect.top+'px',width:rect.width+'px',height:rect.height+'px'
+    });
+    g.innerHTML=`
+      <div class="g-head"><div class="g-title"><b></b><i></i></div><div class="g-close"></div></div>
+      <div class="g-body">
+        <div class="g-metrics"><div class="g-metric"></div><div class="g-metric"></div><div class="g-metric"></div><div class="g-metric"></div></div>
+        <div class="g-block"></div>
+        <div class="g-row"><span></span></div>
+        <div class="g-row"><span></span></div>
+        <div class="g-block tall"></div>
+      </div>
+      <div class="g-fold-highlight"></div>`;
+    document.body.appendChild(g);
+    return g;
+  }
+
+  function getTriggerRect(trigger){
+    const fallback=document.getElementById('manageBtn')||document.getElementById('compactManageBtn');
+    const el=(trigger&&trigger.getBoundingClientRect)?trigger:fallback;
+    const r=el?.getBoundingClientRect?.();
+    if(r&&r.width&&r.height)return r;
+    return {left:innerWidth-150,top:20,right:innerWidth-20,bottom:58,width:130,height:38};
+  }
+
+  function getDrawerRect(){
+    const r=drawer.getBoundingClientRect();
+    if(r.width&&r.height)return r;
+    const mobile=matchMedia('(max-width:760px)').matches;
+    return mobile
+      ? {left:8,top:8,right:innerWidth-8,bottom:innerHeight-8,width:innerWidth-16,height:innerHeight-16}
+      : {left:Math.max(12,innerWidth-Math.min(760,innerWidth-24)-12),top:12,right:innerWidth-12,bottom:innerHeight-12,width:Math.min(760,innerWidth-24),height:innerHeight-24};
+  }
+
+  function transformFromTo(source,target){
+    const sx=Math.max(.035,source.width/target.width);
+    const sy=Math.max(.025,source.height/target.height);
+    const dx=source.right-target.right;
+    const dy=source.top-target.top;
+    return {sx,sy,dx,dy};
+  }
+
+  function wait(animation){return animation.finished.catch(()=>{})}
+
+  async function openPerspective(trigger){
+    if(busy||drawer.classList.contains('show'))return;
+    busy=true;lastTrigger=trigger||lastTrigger;
+    stopAll();
+    body.classList.add('manager-ios-open','manager-ios-animating','v173-transitioning');
+
+    // 只确保面板布局可测，不让复杂管理 DOM 参与飞行动画。
+    drawer.classList.add('show','v173-stage','ios-motion-lock');
+    backdrop.classList.add('show','v173-backdrop');
+    const target=getDrawerRect();
+    const source=getTriggerRect(lastTrigger);
+    const t=transformFromTo(source,target);
+
+    if(reduce){
+      drawer.classList.remove('v173-stage','ios-motion-lock');
+      backdrop.classList.remove('v173-backdrop');
+      backdrop.style.opacity='1';
+      body.classList.remove('manager-ios-animating','v173-transitioning');
+      busy=false;return;
+    }
+
+    ghost=makeGhost(target);
+    const highlight=ghost.querySelector('.g-fold-highlight');
+    const start=`translate3d(${t.dx}px,${t.dy}px,0) scale(${t.sx},${t.sy}) perspective(1200px) rotateY(-8deg) rotateX(3deg)`;
+    const k1=`translate3d(${t.dx*.66}px,${t.dy*.58}px,0) scale(${Math.max(t.sx*3.1,.22)},${Math.max(t.sy*3.8,.16)}) perspective(1200px) rotateY(-56deg) rotateX(8deg) skewY(-2deg)`;
+    const k2=`translate3d(${t.dx*.24}px,${t.dy*.18}px,0) scale(.72,.67) perspective(1200px) rotateY(-34deg) rotateX(3deg)`;
+    const k3='translate3d(-5px,-1px,0) scale(.988,1.006) perspective(1200px) rotateY(-5deg) rotateX(.4deg)';
+    const end='translate3d(0,0,0) scale(1) perspective(1200px) rotateY(0deg) rotateX(0deg)';
+
+    const ghostAnim=ghost.animate([
+      {transform:start,opacity:.42,clipPath:'polygon(0 0,100% 0,100% 100%,0 100%)',borderRadius:'12px',offset:0},
+      {transform:k1,opacity:.88,clipPath:'polygon(0 0,100% 7%,72% 100%,13% 84%)',borderRadius:'18px',offset:.28},
+      {transform:k2,opacity:1,clipPath:'polygon(0 0,100% 0,94% 100%,0 91%)',borderRadius:'24px',offset:.58},
+      {transform:k3,opacity:1,clipPath:'polygon(0 0,100% 0,100% 100%,0 100%)',borderRadius:'29px',offset:.84},
+      {transform:end,opacity:1,clipPath:'polygon(0 0,100% 0,100% 100%,0 100%)',borderRadius:'28px',offset:1}
+    ],{duration:620,easing:'cubic-bezier(.16,1,.3,1)',fill:'both'});
+
+    const shine=highlight.animate([
+      {opacity:0,transform:'translateX(-18%)',offset:0},
+      {opacity:.8,transform:'translateX(0)',offset:.42},
+      {opacity:.18,transform:'translateX(8%)',offset:.76},
+      {opacity:0,transform:'translateX(15%)',offset:1}
+    ],{duration:590,easing:'ease-out',fill:'both'});
+
+    const backAnim=backdrop.animate([{opacity:0},{opacity:.94,offset:.75},{opacity:1}],{duration:430,easing:'ease-out',fill:'both'});
+    const appAnim=app?.animate([
+      {transform:'translate3d(0,0,0) scale(1)',opacity:1},
+      {transform:'translate3d(-3px,1px,0) scale(.994)',opacity:.985}
+    ],{duration:430,easing:'cubic-bezier(.2,.8,.2,1)',fill:'both'});
+    activeAnimations=[ghostAnim,shine,backAnim].concat(appAnim?[appAnim]:[]);
+
+    // 最后 110ms 用真实面板交叉淡入，复杂内容不做 3D 变形。
+    setTimeout(()=>{
+      if(!drawer.classList.contains('show'))return;
+      drawer.classList.remove('v173-stage');
+      drawer.classList.add('v173-crossfade');
+      const a=drawer.animate([{opacity:0},{opacity:1}],{duration:120,easing:'ease-out',fill:'both'});
+      activeAnimations.push(a);
+    },500);
+
+    await wait(ghostAnim);
+    if(ghost){ghost.remove();ghost=null}
+    drawer.classList.remove('v173-stage','v173-crossfade','ios-motion-lock');
+    drawer.style.opacity='';
+    backdrop.classList.remove('v173-backdrop');
+    backdrop.style.opacity='';
+    body.classList.remove('manager-ios-animating','v173-transitioning');
+    activeAnimations=[];
+    busy=false;
+  }
+
+  async function closePerspective(){
+    if(busy||!drawer.classList.contains('show'))return;
+    busy=true;stopAll();
+    body.classList.add('manager-ios-animating','v173-transitioning');
+    drawer.classList.add('ios-motion-lock');
+    const target=getDrawerRect();
+    const source=getTriggerRect(lastTrigger);
+    const t=transformFromTo(source,target);
+
+    if(reduce){
+      drawer.classList.remove('show','ios-motion-lock');
+      backdrop.classList.remove('show');
+      body.classList.remove('manager-ios-open','manager-ios-animating','v173-transitioning');
+      busy=false;return;
+    }
+
+    ghost=makeGhost(target);
+    const start='translate3d(0,0,0) scale(1) perspective(1200px) rotateY(0deg) rotateX(0deg)';
+    const k1='translate3d(-4px,0,0) scale(.99,.995) perspective(1200px) rotateY(-7deg)';
+    const k2=`translate3d(${t.dx*.27}px,${t.dy*.20}px,0) scale(.72,.66) perspective(1200px) rotateY(-38deg) rotateX(4deg)`;
+    const k3=`translate3d(${t.dx*.72}px,${t.dy*.64}px,0) scale(${Math.max(t.sx*2.7,.19)},${Math.max(t.sy*3.2,.14)}) perspective(1200px) rotateY(-58deg) rotateX(8deg) skewY(-2deg)`;
+    const end=`translate3d(${t.dx}px,${t.dy}px,0) scale(${t.sx},${t.sy}) perspective(1200px) rotateY(-10deg) rotateX(3deg)`;
+
+    drawer.animate([{opacity:1},{opacity:0}],{duration:90,easing:'ease-in',fill:'both'});
+    const ghostAnim=ghost.animate([
+      {transform:start,opacity:1,clipPath:'polygon(0 0,100% 0,100% 100%,0 100%)',borderRadius:'28px',offset:0},
+      {transform:k1,opacity:1,clipPath:'polygon(0 0,100% 0,100% 100%,0 100%)',offset:.18},
+      {transform:k2,opacity:.98,clipPath:'polygon(0 0,100% 0,94% 100%,0 90%)',borderRadius:'24px',offset:.46},
+      {transform:k3,opacity:.82,clipPath:'polygon(0 0,100% 8%,72% 100%,14% 83%)',borderRadius:'18px',offset:.72},
+      {transform:end,opacity:.08,clipPath:'polygon(0 0,100% 0,100% 100%,0 100%)',borderRadius:'11px',offset:1}
+    ],{duration:500,easing:'cubic-bezier(.4,0,.2,1)',fill:'both'});
+    const backAnim=backdrop.animate([{opacity:1},{opacity:0}],{duration:380,easing:'ease-in',fill:'both'});
+    const appAnim=app?.animate([
+      {transform:'translate3d(-3px,1px,0) scale(.994)',opacity:.985},
+      {transform:'translate3d(0,0,0) scale(1)',opacity:1}
+    ],{duration:390,easing:'cubic-bezier(.4,0,.2,1)',fill:'both'});
+    activeAnimations=[ghostAnim,backAnim].concat(appAnim?[appAnim]:[]);
+    await wait(ghostAnim);
+    if(ghost){ghost.remove();ghost=null}
+    drawer.classList.remove('show','ios-motion-lock','v173-stage','v173-crossfade');
+    drawer.style.opacity='';
+    backdrop.classList.remove('show','v173-backdrop');
+    backdrop.style.opacity='';
+    app?.getAnimations().forEach(a=>{try{a.cancel()}catch{}});
+    app?.style.removeProperty('transform');
+    app?.style.removeProperty('opacity');
+    body.classList.remove('manager-ios-open','manager-ios-animating','v173-transitioning');
+    activeAnimations=[];busy=false;
+  }
+
+  // 覆盖 V17.2 打开/关闭逻辑。传入触发按钮，动画会从按钮位置“折叠飞出”。
+  openDrawer=function(trigger){return openPerspective(trigger)};
+  closeDrawer=closePerspective;
+
+  function rebind(id,handler){
+    const old=document.getElementById(id);if(!old)return null;
+    const fresh=old.cloneNode(true);old.replaceWith(fresh);
+    fresh.addEventListener('click',e=>handler(e.currentTarget));
+    return fresh;
+  }
+  const manage=rebind('manageBtn',openPerspective);
+  const compact=rebind('compactManageBtn',openPerspective);
+  const mobile=rebind('mobileManageBtn',openPerspective);
+  lastTrigger=manage||compact||mobile||lastTrigger;
+
+  const close=document.getElementById('closeDrawer');
+  if(close){
+    const fresh=close.cloneNode(true);close.replaceWith(fresh);fresh.addEventListener('click',closePerspective);
+  }
+  if(backdrop)backdrop.onclick=closePerspective;
+
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'&&drawer.classList.contains('show')){e.preventDefault();closePerspective()}
+  },true);
 })();
 
 </script>
