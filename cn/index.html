@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#09111f">
-<title>私人导航工具箱 · V17.3 Perspective Morph</title>
+<title>私人导航工具箱 · V17.4 Native Morph</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https: http:; connect-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -2825,147 +2825,200 @@ body.manager-ios-animating .drawer .site-icon{
 
 
 
-/* ===================== V17.3 · Perspective Morph / Folding Window =====================
-   参考“页面折叠 / 缩放飞入”的视觉：实际管理面板不参与大幅 3D 变形，
-   只让一个轻量 GPU Ghost 做透视折叠动画，末段再与真实面板交叉淡入。
-   这样比直接扭曲整个复杂管理 DOM 更丝滑。
+/* ===================== V17.4 · Native View Transition Morph =====================
+   目标：
+   1) 不再使用“Ghost 假面板”，避免假动画结束后真实面板突然静止的错觉。
+   2) 使用浏览器原生 View Transition 快照，把“管理导航按钮”直接形变成“管理导航面板”。
+   3) 打开管理导航时，整张主页面本身也向后缩进/左移，形成真正空间层次。
+   4) 左侧分类点击也使用同类折叠/展开过渡。
 */
 :root{
-  --v173-spring:cubic-bezier(.16,1,.3,1);
-  --v173-close:cubic-bezier(.4,0,.2,1);
+  --v174-spring:cubic-bezier(.16,1,.3,1);
+  --v174-soft:cubic-bezier(.22,1,.36,1);
+  --v174-close:cubic-bezier(.4,0,.2,1);
+  --v174-category-origin-y:50%;
 }
-body.v173-transitioning{overflow:hidden!important}
-body.v173-transitioning .drawer *{
-  pointer-events:none!important;
+body.v174-vt-running{overflow:hidden!important}
+body.v174-vt-running .drawer *{pointer-events:none!important}
+body.v174-manager-open{overflow:hidden!important}
+body.v174-manager-open .app{
+  transform:translate3d(-42px,8px,0) scale(.968);
+  transform-origin:50% 16%;
 }
-.drawer.v173-stage{
-  opacity:0!important;
-  transform:none!important;
-  visibility:visible!important;
-  pointer-events:none!important;
+body:not(.v174-manager-open) .app{
+  transform:translate3d(0,0,0) scale(1);
 }
-.drawer.v173-crossfade{
-  visibility:visible!important;
-  pointer-events:none!important;
-}
-.manager-fold-ghost{
-  position:fixed;
-  z-index:610;
-  display:block;
-  overflow:hidden;
-  pointer-events:none;
-  background:#091322;
-  border:1px solid rgba(132,148,255,.18);
-  border-radius:28px;
-  box-shadow:-20px 22px 72px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.045);
-  transform-origin:100% 0%;
-  will-change:transform,opacity,clip-path,border-radius;
-  contain:layout paint style;
-  isolation:isolate;
+.app{
   backface-visibility:hidden;
   -webkit-backface-visibility:hidden;
+  will-change:transform;
 }
-.manager-fold-ghost::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:
-    radial-gradient(640px 300px at 100% 0%,rgba(91,112,230,.19),transparent 68%),
-    linear-gradient(180deg,rgba(255,255,255,.025),transparent 28%);
-  pointer-events:none;
+body.v174-vt-running .app,
+body.v174-vt-running .drawer,
+body.v174-vt-running .backdrop{
+  transition:none!important;
 }
-.manager-fold-ghost::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(105deg,transparent 18%,rgba(255,255,255,.09) 48%,transparent 74%);
-  transform:translateX(-140%);
-  animation:v173GhostSheen .72s ease-out both;
-  opacity:.55;
-  pointer-events:none;
-}
-@keyframes v173GhostSheen{to{transform:translateX(140%)}}
-.manager-fold-ghost .g-head{
-  height:78px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 22px;
-  border-bottom:1px solid rgba(255,255,255,.06);
-  background:rgba(9,19,34,.97);
-}
-.manager-fold-ghost .g-title{
-  display:grid;
-  gap:7px;
-}
-.manager-fold-ghost .g-title b{
-  width:110px;height:13px;border-radius:999px;background:rgba(240,244,255,.82);
-}
-.manager-fold-ghost .g-title i{
-  width:178px;height:7px;border-radius:999px;background:rgba(158,171,208,.32);
-}
-.manager-fold-ghost .g-close{
-  width:34px;height:34px;border-radius:12px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.035);
-}
-.manager-fold-ghost .g-body{
-  display:grid;
-  gap:14px;
-  padding:18px 20px 24px;
-}
-.manager-fold-ghost .g-metrics{
-  display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:10px;
-}
-.manager-fold-ghost .g-metric,
-.manager-fold-ghost .g-block{
-  border:1px solid rgba(116,135,255,.10);
-  background:rgba(255,255,255,.025);
-  border-radius:16px;
-}
-.manager-fold-ghost .g-metric{height:70px}
-.manager-fold-ghost .g-block{height:96px}
-.manager-fold-ghost .g-block.tall{height:132px}
-.manager-fold-ghost .g-row{
-  display:grid;
-  grid-template-columns:38px 1fr 72px;
-  align-items:center;
-  gap:12px;
-  height:52px;
-  padding:0 12px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,.045);
-  background:rgba(255,255,255,.018);
-}
-.manager-fold-ghost .g-row::before{content:"";width:32px;height:32px;border-radius:10px;background:linear-gradient(145deg,rgba(116,135,255,.26),rgba(164,92,246,.17))}
-.manager-fold-ghost .g-row::after{content:"";width:64px;height:25px;border-radius:9px;background:rgba(255,255,255,.045)}
-.manager-fold-ghost .g-row span{height:8px;border-radius:999px;background:rgba(190,201,232,.28)}
-.manager-fold-ghost .g-fold-highlight{
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  background:linear-gradient(115deg,transparent 22%,rgba(255,255,255,.18) 47%,rgba(151,168,255,.08) 51%,transparent 73%);
-  mix-blend-mode:screen;
-  opacity:0;
-}
-body.v173-transitioning .app{
-  transform-origin:50% 12%;
-}
-.backdrop.v173-backdrop{
+body.v174-manager-open .drawer{
   visibility:visible!important;
   pointer-events:auto!important;
+  transform:none!important;
+  opacity:1!important;
+}
+body.v174-manager-open .backdrop{
+  visibility:visible!important;
+  pointer-events:auto!important;
+  opacity:1!important;
   background:rgba(2,7,16,.58)!important;
-  opacity:0;
+}
+
+/* View Transition 本身不做默认交叉淡入，全部由下面命名快照控制 */
+::view-transition-old(root),
+::view-transition-new(root){
+  animation:none!important;
+  mix-blend-mode:normal!important;
+}
+
+/* 主页面向后缩进 / 回来 */
+::view-transition-group(v174PageStage){
+  animation-duration:560ms;
+  animation-timing-function:var(--v174-spring);
+  z-index:1;
+}
+::view-transition-old(v174PageStage),
+::view-transition-new(v174PageStage){
+  mix-blend-mode:normal;
+  animation:none;
+}
+
+/* 管理按钮 <-> 管理面板 形变 */
+::view-transition-group(v174ManagerMorph){
+  z-index:900;
+  animation-duration:620ms;
+  animation-timing-function:var(--v174-spring);
+  transform-origin:100% 0%;
+}
+::view-transition-image-pair(v174ManagerMorph){
+  isolation:isolate;
+  overflow:visible;
+  perspective:1400px;
+}
+::view-transition-old(v174ManagerMorph),
+::view-transition-new(v174ManagerMorph){
+  mix-blend-mode:normal;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+  transform-origin:100% 0%;
+}
+::view-transition-old(v174ManagerMorph){
+  animation:v174-manager-old-out 320ms cubic-bezier(.45,0,.55,1) both;
+}
+::view-transition-new(v174ManagerMorph){
+  animation:v174-manager-new-in 620ms var(--v174-spring) both;
+}
+@keyframes v174-manager-old-out{
+  0%{opacity:1;transform:perspective(1400px) rotateY(0) rotateX(0) scale(1);filter:brightness(1)}
+  58%{opacity:.92;transform:perspective(1400px) rotateY(-34deg) rotateX(5deg) scale(.92,.82);filter:brightness(1.12)}
+  100%{opacity:0;transform:perspective(1400px) rotateY(-58deg) rotateX(8deg) scale(.76,.58);filter:brightness(.92)}
+}
+@keyframes v174-manager-new-in{
+  0%{
+    opacity:.08;
+    transform:perspective(1400px) rotateY(-62deg) rotateX(9deg) scale(.28,.18) translate3d(42px,-26px,0);
+    clip-path:polygon(0 0,100% 8%,72% 100%,13% 84%);
+    filter:brightness(1.22)
+  }
+  38%{
+    opacity:.9;
+    transform:perspective(1400px) rotateY(-34deg) rotateX(4deg) scale(.74,.66) translate3d(16px,-8px,0);
+    clip-path:polygon(0 0,100% 0,94% 100%,0 91%);
+    filter:brightness(1.08)
+  }
+  78%{
+    opacity:1;
+    transform:perspective(1400px) rotateY(-4.5deg) rotateX(.4deg) scale(.994,1.006) translate3d(-3px,-1px,0);
+    clip-path:polygon(0 0,100% 0,100% 100%,0 100%);
+    filter:brightness(1.02)
+  }
+  100%{
+    opacity:1;
+    transform:perspective(1400px) rotateY(0) rotateX(0) scale(1) translate3d(0,0,0);
+    clip-path:polygon(0 0,100% 0,100% 100%,0 100%);
+    filter:brightness(1)
+  }
+}
+
+/* 关闭时使用 body class 反转动画方向 */
+body.v174-closing::view-transition-old(v174ManagerMorph){
+  animation:v174-manager-close-old 480ms var(--v174-close) both;
+}
+body.v174-closing::view-transition-new(v174ManagerMorph){
+  animation:v174-manager-close-new 480ms var(--v174-close) both;
+}
+@keyframes v174-manager-close-old{
+  0%{opacity:1;transform:perspective(1400px) rotateY(0) scale(1);clip-path:polygon(0 0,100% 0,100% 100%,0 100%)}
+  52%{opacity:.95;transform:perspective(1400px) rotateY(-38deg) rotateX(5deg) scale(.70,.63);clip-path:polygon(0 0,100% 0,94% 100%,0 91%)}
+  100%{opacity:.05;transform:perspective(1400px) rotateY(-60deg) rotateX(8deg) scale(.28,.18);clip-path:polygon(0 0,100% 8%,72% 100%,13% 84%)}
+}
+@keyframes v174-manager-close-new{
+  0%{opacity:.12;transform:perspective(1400px) rotateY(-45deg) scale(.74)}
+  68%{opacity:.92;transform:perspective(1400px) rotateY(-6deg) scale(1.03)}
+  100%{opacity:1;transform:perspective(1400px) rotateY(0) scale(1)}
+}
+
+/* 左侧分类点击：内容从左侧按钮方向折叠切换 */
+::view-transition-group(v174CategoryStage){
+  z-index:50;
+  animation-duration:430ms;
+  animation-timing-function:var(--v174-soft);
+}
+::view-transition-image-pair(v174CategoryStage){
+  overflow:visible;
+  perspective:1200px;
+}
+::view-transition-old(v174CategoryStage),
+::view-transition-new(v174CategoryStage){
+  mix-blend-mode:normal;
+  transform-origin:0 var(--v174-category-origin-y);
+  backface-visibility:hidden;
+}
+::view-transition-old(v174CategoryStage){
+  animation:v174-category-out 240ms cubic-bezier(.4,0,.8,.2) both;
+}
+::view-transition-new(v174CategoryStage){
+  animation:v174-category-in 430ms var(--v174-soft) both;
+}
+@keyframes v174-category-out{
+  0%{opacity:1;transform:perspective(1200px) translate3d(0,0,0) rotateY(0) scale(1);clip-path:polygon(0 0,100% 0,100% 100%,0 100%)}
+  100%{opacity:.05;transform:perspective(1200px) translate3d(34px,0,0) rotateY(-18deg) scale(.976);clip-path:polygon(0 0,90% 4%,100% 95%,0 100%)}
+}
+@keyframes v174-category-in{
+  0%{opacity:.08;transform:perspective(1200px) translate3d(-54px,0,0) rotateY(22deg) scale(.955);clip-path:polygon(0 5%,88% 0,100% 96%,0 100%)}
+  68%{opacity:1;transform:perspective(1200px) translate3d(4px,0,0) rotateY(-2.5deg) scale(1.004);clip-path:polygon(0 0,100% 0,100% 100%,0 100%)}
+  100%{opacity:1;transform:perspective(1200px) translate3d(0,0,0) rotateY(0) scale(1);clip-path:polygon(0 0,100% 0,100% 100%,0 100%)}
+}
+
+/* 非 View Transition 浏览器 fallback */
+@keyframes v174-fallback-manager-in{
+  0%{opacity:.08;transform:perspective(1200px) translate3d(52px,-18px,0) rotateY(-18deg) scale(.92)}
+  78%{opacity:1;transform:perspective(1200px) translate3d(-3px,0,0) rotateY(-2deg) scale(1.006)}
+  100%{opacity:1;transform:none}
+}
+@keyframes v174-fallback-category-in{
+  0%{opacity:.15;transform:translate3d(-34px,0,0) scale(.98)}
+  100%{opacity:1;transform:none}
 }
 
 @media(max-width:760px){
-  .manager-fold-ghost{border-radius:24px}
-  .manager-fold-ghost .g-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .manager-fold-ghost .g-body{padding:15px 15px 20px}
+  body.v174-manager-open .app{transform:translate3d(0,-10px,0) scale(.965)}
+  ::view-transition-group(v174ManagerMorph){animation-duration:540ms}
 }
 @media(prefers-reduced-motion:reduce){
-  .manager-fold-ghost{display:none!important}
+  body.v174-manager-open .app{transform:none!important}
+  ::view-transition-group(v174ManagerMorph),
+  ::view-transition-group(v174CategoryStage),
+  ::view-transition-group(v174PageStage){animation-duration:1ms!important}
 }
+
 
 </style>
 </head>
@@ -3078,7 +3131,7 @@ body.v173-transitioning .app{
     </section>
 
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V17.3</div>
+    <div class="footer">© 2026 私人导航工具箱 · V17.4</div>
   </main>
 </div>
 
@@ -5775,7 +5828,7 @@ if(__sidebarV158){
    这里增加统一同步入口，后端 API 接入后无需重构页面。
 */
 const FX_SYNC={
-  version:"V17.3",
+  version:"V17.4",
   enabled:false,
   user:null,
   endpoint:"",
@@ -6357,195 +6410,160 @@ window.__fxCloudSchedulePush=scheduleDataSyncV17;
 
 
 
-/* ===================== V17.3 · Perspective Morph Runtime ===================== */
+/* ===================== V17.4 · Native View Transition Runtime ===================== */
 (function(){
   const drawer=document.getElementById('drawer');
   const backdrop=document.getElementById('backdrop');
   const body=document.body;
   const app=document.querySelector('.app');
+  const content=document.getElementById('content');
+  const sidebar=document.getElementById('sidebar');
   const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let ghost=null;
-  let activeAnimations=[];
-  let lastTrigger=document.getElementById('manageBtn');
-  let busy=false;
+  const canVT=typeof document.startViewTransition==='function'&&!reduce;
+  let lastTrigger=document.getElementById('manageBtn')||document.getElementById('compactManageBtn');
+  let managerBusy=false;
+  let categoryBusy=false;
 
-  function stopAll(){
-    activeAnimations.forEach(a=>{try{a.cancel()}catch{}});
-    activeAnimations=[];
-    if(ghost){ghost.remove();ghost=null}
+  function clearVTNames(){
+    [drawer,app,content,lastTrigger].forEach(el=>{if(el)el.style.viewTransitionName=''});
+    document.querySelectorAll('.nav-btn').forEach(el=>el.style.viewTransitionName='');
   }
 
-  function makeGhost(rect){
-    const g=document.createElement('div');
-    g.className='manager-fold-ghost';
-    Object.assign(g.style,{
-      left:rect.left+'px',top:rect.top+'px',width:rect.width+'px',height:rect.height+'px'
+  async function openManagerV174(trigger){
+    if(managerBusy||drawer.classList.contains('show'))return;
+    managerBusy=true;
+    lastTrigger=trigger?.currentTarget||trigger||lastTrigger||document.getElementById('manageBtn');
+    body.classList.remove('v174-closing');
+
+    // 保留 V17.2 的“空闲预渲染”成果，点击时不再做重型 DOM 计算。
+    updateStorageUsage();
+    if(typeof ensureManagerUpgrades==='function')ensureManagerUpgrades();
+    if(typeof renderManagerMetrics==='function')renderManagerMetrics();
+
+    if(!canVT){
+      body.classList.add('manager-ios-open','v174-manager-open');
+      drawer.classList.add('show');
+      backdrop.classList.add('show');
+      drawer.animate([{opacity:.08,transform:'perspective(1200px) translate3d(52px,-18px,0) rotateY(-18deg) scale(.92)'},{opacity:1,transform:'none'}],{duration:430,easing:'cubic-bezier(.16,1,.3,1)'});
+      app?.animate([{transform:'translate3d(0,0,0) scale(1)'},{transform:matchMedia('(max-width:760px)').matches?'translate3d(0,-10px,0) scale(.965)':'translate3d(-42px,8px,0) scale(.968)'}],{duration:430,easing:'cubic-bezier(.16,1,.3,1)',fill:'forwards'});
+      managerBusy=false;
+      return;
+    }
+
+    body.classList.add('v174-vt-running');
+    if(lastTrigger)lastTrigger.style.viewTransitionName='v174ManagerMorph';
+    if(app)app.style.viewTransitionName='v174PageStage';
+
+    const vt=document.startViewTransition(()=>{
+      if(lastTrigger)lastTrigger.style.viewTransitionName='';
+      drawer.style.viewTransitionName='v174ManagerMorph';
+      body.classList.add('manager-ios-open','v174-manager-open');
+      drawer.classList.add('show');
+      backdrop.classList.add('show');
+      drawer.classList.remove('v173-stage','v173-crossfade','ios-motion-lock');
     });
-    g.innerHTML=`
-      <div class="g-head"><div class="g-title"><b></b><i></i></div><div class="g-close"></div></div>
-      <div class="g-body">
-        <div class="g-metrics"><div class="g-metric"></div><div class="g-metric"></div><div class="g-metric"></div><div class="g-metric"></div></div>
-        <div class="g-block"></div>
-        <div class="g-row"><span></span></div>
-        <div class="g-row"><span></span></div>
-        <div class="g-block tall"></div>
-      </div>
-      <div class="g-fold-highlight"></div>`;
-    document.body.appendChild(g);
-    return g;
+
+    try{await vt.finished}catch{}
+    clearVTNames();
+    body.classList.remove('v174-vt-running');
+    managerBusy=false;
   }
 
-  function getTriggerRect(trigger){
-    const fallback=document.getElementById('manageBtn')||document.getElementById('compactManageBtn');
-    const el=(trigger&&trigger.getBoundingClientRect)?trigger:fallback;
-    const r=el?.getBoundingClientRect?.();
-    if(r&&r.width&&r.height)return r;
-    return {left:innerWidth-150,top:20,right:innerWidth-20,bottom:58,width:130,height:38};
-  }
+  async function closeManagerV174(){
+    if(managerBusy||!drawer.classList.contains('show'))return;
+    managerBusy=true;
+    body.classList.add('v174-closing');
 
-  function getDrawerRect(){
-    const r=drawer.getBoundingClientRect();
-    if(r.width&&r.height)return r;
-    const mobile=matchMedia('(max-width:760px)').matches;
-    return mobile
-      ? {left:8,top:8,right:innerWidth-8,bottom:innerHeight-8,width:innerWidth-16,height:innerHeight-16}
-      : {left:Math.max(12,innerWidth-Math.min(760,innerWidth-24)-12),top:12,right:innerWidth-12,bottom:innerHeight-12,width:Math.min(760,innerWidth-24),height:innerHeight-24};
-  }
-
-  function transformFromTo(source,target){
-    const sx=Math.max(.035,source.width/target.width);
-    const sy=Math.max(.025,source.height/target.height);
-    const dx=source.right-target.right;
-    const dy=source.top-target.top;
-    return {sx,sy,dx,dy};
-  }
-
-  function wait(animation){return animation.finished.catch(()=>{})}
-
-  async function openPerspective(trigger){
-    if(busy||drawer.classList.contains('show'))return;
-    busy=true;lastTrigger=trigger||lastTrigger;
-    stopAll();
-    body.classList.add('manager-ios-open','manager-ios-animating','v173-transitioning');
-
-    // 只确保面板布局可测，不让复杂管理 DOM 参与飞行动画。
-    drawer.classList.add('show','v173-stage','ios-motion-lock');
-    backdrop.classList.add('show','v173-backdrop');
-    const target=getDrawerRect();
-    const source=getTriggerRect(lastTrigger);
-    const t=transformFromTo(source,target);
-
-    if(reduce){
-      drawer.classList.remove('v173-stage','ios-motion-lock');
-      backdrop.classList.remove('v173-backdrop');
-      backdrop.style.opacity='1';
-      body.classList.remove('manager-ios-animating','v173-transitioning');
-      busy=false;return;
+    if(!canVT){
+      const a=drawer.animate([{opacity:1,transform:'none'},{opacity:.05,transform:'perspective(1200px) translate3d(46px,-12px,0) rotateY(-14deg) scale(.93)'}],{duration:300,easing:'cubic-bezier(.4,0,.2,1)'});
+      backdrop.animate([{opacity:1},{opacity:0}],{duration:250,easing:'ease-in'});
+      app?.animate([{transform:getComputedStyle(app).transform},{transform:'none'}],{duration:320,easing:'cubic-bezier(.4,0,.2,1)',fill:'forwards'});
+      try{await a.finished}catch{}
+      drawer.classList.remove('show');backdrop.classList.remove('show');
+      body.classList.remove('manager-ios-open','v174-manager-open','v174-closing');
+      app?.style.removeProperty('transform');
+      managerBusy=false;return;
     }
 
-    ghost=makeGhost(target);
-    const highlight=ghost.querySelector('.g-fold-highlight');
-    const start=`translate3d(${t.dx}px,${t.dy}px,0) scale(${t.sx},${t.sy}) perspective(1200px) rotateY(-8deg) rotateX(3deg)`;
-    const k1=`translate3d(${t.dx*.66}px,${t.dy*.58}px,0) scale(${Math.max(t.sx*3.1,.22)},${Math.max(t.sy*3.8,.16)}) perspective(1200px) rotateY(-56deg) rotateX(8deg) skewY(-2deg)`;
-    const k2=`translate3d(${t.dx*.24}px,${t.dy*.18}px,0) scale(.72,.67) perspective(1200px) rotateY(-34deg) rotateX(3deg)`;
-    const k3='translate3d(-5px,-1px,0) scale(.988,1.006) perspective(1200px) rotateY(-5deg) rotateX(.4deg)';
-    const end='translate3d(0,0,0) scale(1) perspective(1200px) rotateY(0deg) rotateX(0deg)';
+    body.classList.add('v174-vt-running');
+    drawer.style.viewTransitionName='v174ManagerMorph';
+    if(app)app.style.viewTransitionName='v174PageStage';
 
-    const ghostAnim=ghost.animate([
-      {transform:start,opacity:.42,clipPath:'polygon(0 0,100% 0,100% 100%,0 100%)',borderRadius:'12px',offset:0},
-      {transform:k1,opacity:.88,clipPath:'polygon(0 0,100% 7%,72% 100%,13% 84%)',borderRadius:'18px',offset:.28},
-      {transform:k2,opacity:1,clipPath:'polygon(0 0,100% 0,94% 100%,0 91%)',borderRadius:'24px',offset:.58},
-      {transform:k3,opacity:1,clipPath:'polygon(0 0,100% 0,100% 100%,0 100%)',borderRadius:'29px',offset:.84},
-      {transform:end,opacity:1,clipPath:'polygon(0 0,100% 0,100% 100%,0 100%)',borderRadius:'28px',offset:1}
-    ],{duration:620,easing:'cubic-bezier(.16,1,.3,1)',fill:'both'});
-
-    const shine=highlight.animate([
-      {opacity:0,transform:'translateX(-18%)',offset:0},
-      {opacity:.8,transform:'translateX(0)',offset:.42},
-      {opacity:.18,transform:'translateX(8%)',offset:.76},
-      {opacity:0,transform:'translateX(15%)',offset:1}
-    ],{duration:590,easing:'ease-out',fill:'both'});
-
-    const backAnim=backdrop.animate([{opacity:0},{opacity:.94,offset:.75},{opacity:1}],{duration:430,easing:'ease-out',fill:'both'});
-    const appAnim=app?.animate([
-      {transform:'translate3d(0,0,0) scale(1)',opacity:1},
-      {transform:'translate3d(-3px,1px,0) scale(.994)',opacity:.985}
-    ],{duration:430,easing:'cubic-bezier(.2,.8,.2,1)',fill:'both'});
-    activeAnimations=[ghostAnim,shine,backAnim].concat(appAnim?[appAnim]:[]);
-
-    // 最后 110ms 用真实面板交叉淡入，复杂内容不做 3D 变形。
-    setTimeout(()=>{
-      if(!drawer.classList.contains('show'))return;
-      drawer.classList.remove('v173-stage');
-      drawer.classList.add('v173-crossfade');
-      const a=drawer.animate([{opacity:0},{opacity:1}],{duration:120,easing:'ease-out',fill:'both'});
-      activeAnimations.push(a);
-    },500);
-
-    await wait(ghostAnim);
-    if(ghost){ghost.remove();ghost=null}
-    drawer.classList.remove('v173-stage','v173-crossfade','ios-motion-lock');
-    drawer.style.opacity='';
-    backdrop.classList.remove('v173-backdrop');
-    backdrop.style.opacity='';
-    body.classList.remove('manager-ios-animating','v173-transitioning');
-    activeAnimations=[];
-    busy=false;
-  }
-
-  async function closePerspective(){
-    if(busy||!drawer.classList.contains('show'))return;
-    busy=true;stopAll();
-    body.classList.add('manager-ios-animating','v173-transitioning');
-    drawer.classList.add('ios-motion-lock');
-    const target=getDrawerRect();
-    const source=getTriggerRect(lastTrigger);
-    const t=transformFromTo(source,target);
-
-    if(reduce){
-      drawer.classList.remove('show','ios-motion-lock');
+    const vt=document.startViewTransition(()=>{
+      drawer.style.viewTransitionName='';
+      if(lastTrigger)lastTrigger.style.viewTransitionName='v174ManagerMorph';
+      drawer.classList.remove('show');
       backdrop.classList.remove('show');
-      body.classList.remove('manager-ios-open','manager-ios-animating','v173-transitioning');
-      busy=false;return;
-    }
+      body.classList.remove('manager-ios-open','v174-manager-open');
+    });
 
-    ghost=makeGhost(target);
-    const start='translate3d(0,0,0) scale(1) perspective(1200px) rotateY(0deg) rotateX(0deg)';
-    const k1='translate3d(-4px,0,0) scale(.99,.995) perspective(1200px) rotateY(-7deg)';
-    const k2=`translate3d(${t.dx*.27}px,${t.dy*.20}px,0) scale(.72,.66) perspective(1200px) rotateY(-38deg) rotateX(4deg)`;
-    const k3=`translate3d(${t.dx*.72}px,${t.dy*.64}px,0) scale(${Math.max(t.sx*2.7,.19)},${Math.max(t.sy*3.2,.14)}) perspective(1200px) rotateY(-58deg) rotateX(8deg) skewY(-2deg)`;
-    const end=`translate3d(${t.dx}px,${t.dy}px,0) scale(${t.sx},${t.sy}) perspective(1200px) rotateY(-10deg) rotateX(3deg)`;
-
-    drawer.animate([{opacity:1},{opacity:0}],{duration:90,easing:'ease-in',fill:'both'});
-    const ghostAnim=ghost.animate([
-      {transform:start,opacity:1,clipPath:'polygon(0 0,100% 0,100% 100%,0 100%)',borderRadius:'28px',offset:0},
-      {transform:k1,opacity:1,clipPath:'polygon(0 0,100% 0,100% 100%,0 100%)',offset:.18},
-      {transform:k2,opacity:.98,clipPath:'polygon(0 0,100% 0,94% 100%,0 90%)',borderRadius:'24px',offset:.46},
-      {transform:k3,opacity:.82,clipPath:'polygon(0 0,100% 8%,72% 100%,14% 83%)',borderRadius:'18px',offset:.72},
-      {transform:end,opacity:.08,clipPath:'polygon(0 0,100% 0,100% 100%,0 100%)',borderRadius:'11px',offset:1}
-    ],{duration:500,easing:'cubic-bezier(.4,0,.2,1)',fill:'both'});
-    const backAnim=backdrop.animate([{opacity:1},{opacity:0}],{duration:380,easing:'ease-in',fill:'both'});
-    const appAnim=app?.animate([
-      {transform:'translate3d(-3px,1px,0) scale(.994)',opacity:.985},
-      {transform:'translate3d(0,0,0) scale(1)',opacity:1}
-    ],{duration:390,easing:'cubic-bezier(.4,0,.2,1)',fill:'both'});
-    activeAnimations=[ghostAnim,backAnim].concat(appAnim?[appAnim]:[]);
-    await wait(ghostAnim);
-    if(ghost){ghost.remove();ghost=null}
-    drawer.classList.remove('show','ios-motion-lock','v173-stage','v173-crossfade');
-    drawer.style.opacity='';
-    backdrop.classList.remove('show','v173-backdrop');
-    backdrop.style.opacity='';
-    app?.getAnimations().forEach(a=>{try{a.cancel()}catch{}});
-    app?.style.removeProperty('transform');
-    app?.style.removeProperty('opacity');
-    body.classList.remove('manager-ios-open','manager-ios-animating','v173-transitioning');
-    activeAnimations=[];busy=false;
+    try{await vt.finished}catch{}
+    clearVTNames();
+    body.classList.remove('v174-vt-running','v174-closing');
+    managerBusy=false;
   }
 
-  // 覆盖 V17.2 打开/关闭逻辑。传入触发按钮，动画会从按钮位置“折叠飞出”。
-  openDrawer=function(trigger){return openPerspective(trigger)};
-  closeDrawer=closePerspective;
+  function categoryOriginFromButton(btn){
+    if(!btn||!content)return '50%';
+    const br=btn.getBoundingClientRect(),cr=content.getBoundingClientRect();
+    if(!cr.height)return '50%';
+    const y=(br.top+br.height/2-cr.top)/cr.height*100;
+    return Math.max(8,Math.min(92,y)).toFixed(1)+'%';
+  }
+
+  function doCategoryStateSwitch(filter){
+    state.filter=filter;
+    state.query='';
+    const search=document.getElementById('searchInput');if(search)search.value='';
+    const compact=document.getElementById('compactSearchInput');if(compact)compact.value='';
+    document.getElementById('clearSearch')?.classList.remove('show');
+    document.body.classList.remove('searching');
+    syncNavActive();
+    render({animate:false});
+    sidebar?.classList.remove('show');
+    window.scrollTo({top:0,behavior:'auto'});
+    setTimeout(updateNavIndicator,20);
+  }
+
+  async function switchCategoryV174(btn){
+    if(categoryBusy||managerBusy||!btn)return;
+    const filter=btn.dataset.filter;
+    if(!filter)return;
+    categoryBusy=true;
+    document.documentElement.style.setProperty('--v174-category-origin-y',categoryOriginFromButton(btn));
+
+    if(!canVT){
+      doCategoryStateSwitch(filter);
+      content?.animate([{opacity:.12,transform:'translate3d(-34px,0,0) scale(.98)'},{opacity:1,transform:'none'}],{duration:330,easing:'cubic-bezier(.22,1,.36,1)'});
+      categoryBusy=false;return;
+    }
+
+    content.style.viewTransitionName='v174CategoryStage';
+    body.classList.add('v174-vt-running');
+    const vt=document.startViewTransition(()=>doCategoryStateSwitch(filter));
+    try{await vt.finished}catch{}
+    content.style.viewTransitionName='';
+    body.classList.remove('v174-vt-running');
+    categoryBusy=false;
+  }
+
+  function installCategoryHandlers(){
+    document.querySelectorAll('.nav-btn').forEach(btn=>{
+      btn.onclick=e=>{e.preventDefault();switchCategoryV174(btn)};
+    });
+  }
+
+  // buildNav 每次重建左侧分类后重新安装 V17.4 动画处理器。
+  const previousBuildNav=buildNav;
+  buildNav=function(){
+    previousBuildNav();
+    installCategoryHandlers();
+  };
+  installCategoryHandlers();
+
+  // 覆盖管理导航开关。
+  openDrawer=function(trigger){return openManagerV174(trigger)};
+  closeDrawer=closeManagerV174;
 
   function rebind(id,handler){
     const old=document.getElementById(id);if(!old)return null;
@@ -6553,21 +6571,22 @@ window.__fxCloudSchedulePush=scheduleDataSyncV17;
     fresh.addEventListener('click',e=>handler(e.currentTarget));
     return fresh;
   }
-  const manage=rebind('manageBtn',openPerspective);
-  const compact=rebind('compactManageBtn',openPerspective);
-  const mobile=rebind('mobileManageBtn',openPerspective);
+  const manage=rebind('manageBtn',openManagerV174);
+  const compact=rebind('compactManageBtn',openManagerV174);
+  const mobile=rebind('mobileManageBtn',openManagerV174);
   lastTrigger=manage||compact||mobile||lastTrigger;
 
   const close=document.getElementById('closeDrawer');
   if(close){
-    const fresh=close.cloneNode(true);close.replaceWith(fresh);fresh.addEventListener('click',closePerspective);
+    const fresh=close.cloneNode(true);close.replaceWith(fresh);fresh.addEventListener('click',closeManagerV174);
   }
-  if(backdrop)backdrop.onclick=closePerspective;
+  if(backdrop)backdrop.onclick=closeManagerV174;
 
   document.addEventListener('keydown',e=>{
-    if(e.key==='Escape'&&drawer.classList.contains('show')){e.preventDefault();closePerspective()}
+    if(e.key==='Escape'&&drawer.classList.contains('show')){e.preventDefault();closeManagerV174()}
   },true);
 })();
+
 
 </script>
 </body>
