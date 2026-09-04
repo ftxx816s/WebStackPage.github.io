@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#09111f">
-<title>私人导航工具箱 · V17.5 Classic Drawer</title>
+<title>私人导航工具箱 · V17.6 Smart Logo</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https: http:; connect-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -2700,6 +2700,40 @@ html[data-theme="light"] .command-backdrop{background:rgba(50,64,93,.30)!importa
 
 /* ===================== V17.5 · Classic Drawer Rollback ===================== */
 
+
+
+/* ===================== V17.6 · Smart Logo Normalizer =====================
+   上传图标统一处理为 512×512 高清圆角图；显示时自定义 Logo 比普通 favicon 更饱满。
+*/
+.site-icon[data-icon-quality="custom"] img{
+  width:36px!important;
+  height:36px!important;
+  border-radius:10px!important;
+  object-fit:contain!important;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.16))!important;
+}
+.custom-mini-icon[data-icon-quality="custom"] img{
+  width:29px!important;
+  height:29px!important;
+  border-radius:8px!important;
+  object-fit:contain!important;
+}
+.hero-quick .custom-mini-icon[data-icon-quality="custom"] img{
+  width:27px!important;
+  height:27px!important;
+  border-radius:7px!important;
+}
+.command-item .custom-mini-icon[data-icon-quality="custom"] img{
+  width:28px!important;
+  height:28px!important;
+  border-radius:8px!important;
+}
+body.density-compact .site-icon[data-icon-quality="custom"] img{
+  width:27px!important;
+  height:27px!important;
+  border-radius:7px!important;
+}
+
 </style>
 </head>
 <body>
@@ -2811,7 +2845,7 @@ html[data-theme="light"] .command-backdrop{background:rgba(50,64,93,.30)!importa
     </section>
 
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V17.5</div>
+    <div class="footer">© 2026 私人导航工具箱 · V17.6</div>
   </main>
 </div>
 
@@ -2835,7 +2869,7 @@ html[data-theme="light"] .command-backdrop{background:rgba(50,64,93,.30)!importa
           <label>图标地址（可选）</label>
           <div class="icon-control">
             <input id="newIconUrl" placeholder="https://example.com/favicon.ico">
-            <label class="icon-upload-label">上传图标<input type="file" id="newIconFile" accept="image/*" hidden></label>
+            <label class="icon-upload-label">上传图标（自动高清圆角）<input type="file" id="newIconFile" accept="image/*" hidden></label>
           </div>
         </div>
         <div class="field full"><label>图标预览</label><div class="icon-preview" id="iconPreview"></div><div class="v17-icon-note"><b>V17：</b>上传图标会保存到现有 Cloudflare KV；不上传时自动使用服务端高清 favicon 缓存。</div></div>
@@ -3337,7 +3371,7 @@ function createSiteIcon(site,className="site-icon"){
           fb.classList.add("is-hidden");
           wrap.classList.remove("fallback-mode","is-lowres-rejected","icon-upgrading");
           wrap.classList.add("favicon-mode");
-          wrap.dataset.iconQuality="cached-hd";
+          wrap.dataset.iconQuality=site._customIcon?"custom":"cached-hd";
         };
         img.onerror=()=>showVector();
         wrap.classList.add("icon-upgrading");
@@ -3972,41 +4006,108 @@ function loadImageFromDataURL(dataUrl){
 
 async function optimizeIconFile(file){
   if(!file)throw new Error("没有选择文件");
-  if(file.size>2*1024*1024)throw new Error("图标文件不能超过 2MB");
+  if(file.size>12*1024*1024)throw new Error("图标文件不能超过 12MB");
   const allowed=new Set(["image/png","image/jpeg","image/webp","image/gif","image/x-icon","image/vnd.microsoft.icon"]);
   const extOk=/\.ico$/i.test(file.name||"");
   if(file.type&&!allowed.has(file.type)&&!extOk)throw new Error("仅支持 PNG / JPG / WebP / GIF / ICO，不接受 SVG");
+
   const original=await readFileAsDataURL(file);
+  const img=await loadImageFromDataURL(original);
+  const nw=Number(img.naturalWidth)||0,nh=Number(img.naturalHeight)||0;
+  if(!nw||!nh)throw new Error("图标尺寸无法识别");
+  if(nw*nh>60000000)throw new Error("图片像素过大，请先压缩后再上传");
 
+  // 1) 用较小分析画布自动裁掉透明留白，让 Logo 主体尽量占满画布。
+  const analysisMax=1024;
+  const aScale=Math.min(1,analysisMax/Math.max(nw,nh));
+  const aw=Math.max(1,Math.round(nw*aScale));
+  const ah=Math.max(1,Math.round(nh*aScale));
+  const ac=document.createElement("canvas");ac.width=aw;ac.height=ah;
+  const actx=ac.getContext("2d",{willReadFrequently:true});
+  actx.clearRect(0,0,aw,ah);
+  actx.imageSmoothingEnabled=true;actx.imageSmoothingQuality="high";
+  actx.drawImage(img,0,0,aw,ah);
+
+  let sx=0,sy=0,sw=nw,sh=nh;
   try{
-    const img=await loadImageFromDataURL(original);
-    if(img.naturalWidth*img.naturalHeight>30000000)throw new Error("图片尺寸过大");
-    const size=128;
-    const canvas=document.createElement("canvas");
-    canvas.width=size;
-    canvas.height=size;
-    const ctx=canvas.getContext("2d");
-    ctx.clearRect(0,0,size,size);
+    const pixels=actx.getImageData(0,0,aw,ah).data;
+    let minX=aw,minY=ah,maxX=-1,maxY=-1,transparentSeen=false;
+    for(let y=0;y<ah;y++){
+      for(let x=0;x<aw;x++){
+        const a=pixels[(y*aw+x)*4+3];
+        if(a<250)transparentSeen=true;
+        if(a>14){
+          if(x<minX)minX=x;if(x>maxX)maxX=x;
+          if(y<minY)minY=y;if(y>maxY)maxY=y;
+        }
+      }
+    }
+    if(transparentSeen&&maxX>=minX&&maxY>=minY){
+      const margin=Math.max(2,Math.round(Math.max(maxX-minX+1,maxY-minY+1)*.035));
+      minX=Math.max(0,minX-margin);minY=Math.max(0,minY-margin);
+      maxX=Math.min(aw-1,maxX+margin);maxY=Math.min(ah-1,maxY+margin);
+      sx=Math.max(0,Math.floor(minX/aScale));
+      sy=Math.max(0,Math.floor(minY/aScale));
+      sw=Math.min(nw-sx,Math.ceil((maxX-minX+1)/aScale));
+      sh=Math.min(nh-sy,Math.ceil((maxY-minY+1)/aScale));
+    }
+  }catch{}
 
-    const pad=8;
-    const max=size-pad*2;
-    const ratio=Math.min(max/img.naturalWidth,max/img.naturalHeight);
-    const w=Math.max(1,Math.round(img.naturalWidth*ratio));
-    const h=Math.max(1,Math.round(img.naturalHeight*ratio));
-    const x=Math.round((size-w)/2);
-    const y=Math.round((size-h)/2);
+  // 2) 先把超大图分阶段缩小，减少一次性超采样造成的发糊。
+  const OUT=512;
+  const INNER=456; // 约 11% 总留白，兼顾圆角和视觉饱满度
+  const firstScale=Math.min(1,2048/Math.max(sw,sh));
+  let stageW=Math.max(1,Math.round(sw*firstScale));
+  let stageH=Math.max(1,Math.round(sh*firstScale));
+  let stage=document.createElement("canvas");stage.width=stageW;stage.height=stageH;
+  let sctx=stage.getContext("2d");
+  sctx.imageSmoothingEnabled=true;sctx.imageSmoothingQuality="high";
+  sctx.drawImage(img,sx,sy,sw,sh,0,0,stageW,stageH);
 
-    ctx.imageSmoothingEnabled=true;
-    ctx.imageSmoothingQuality="high";
-    ctx.drawImage(img,x,y,w,h);
-
-    const webp=canvas.toDataURL("image/webp",.90);
-    if(webp&&webp.startsWith("data:image/webp"))return webp;
-    return canvas.toDataURL("image/png");
-  }catch{
-    if(file.size<=500*1024)return original;
-    throw new Error("此图标无法压缩，请换 PNG / JPG / WebP，建议小于 500KB");
+  while(Math.max(stage.width,stage.height)>INNER*2.1){
+    const nextW=Math.max(1,Math.round(stage.width*.5));
+    const nextH=Math.max(1,Math.round(stage.height*.5));
+    const next=document.createElement("canvas");next.width=nextW;next.height=nextH;
+    const nctx=next.getContext("2d");
+    nctx.imageSmoothingEnabled=true;nctx.imageSmoothingQuality="high";
+    nctx.drawImage(stage,0,0,nextW,nextH);
+    stage=next;
   }
+
+  // 3) 输出统一 512×512 高清方形图标，并把图片内容裁成圆角。
+  const canvas=document.createElement("canvas");canvas.width=OUT;canvas.height=OUT;
+  const ctx=canvas.getContext("2d");
+  ctx.clearRect(0,0,OUT,OUT);
+  ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality="high";
+
+  const ratio=Math.min(INNER/stage.width,INNER/stage.height);
+  const w=Math.max(1,Math.round(stage.width*ratio));
+  const h=Math.max(1,Math.round(stage.height*ratio));
+  const x=Math.round((OUT-w)/2),y=Math.round((OUT-h)/2);
+  const radius=Math.max(18,Math.round(Math.min(w,h)*.19));
+
+  ctx.save();
+  ctx.beginPath();
+  if(typeof ctx.roundRect==="function")ctx.roundRect(x,y,w,h,radius);
+  else{
+    const r=Math.min(radius,w/2,h/2);
+    ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+    ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+    ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+    ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);
+  }
+  ctx.closePath();ctx.clip();
+  ctx.drawImage(stage,0,0,stage.width,stage.height,x,y,w,h);
+  ctx.restore();
+
+  // 4) WebP 高质量输出。512px 足够覆盖 2x/3x 高 DPI 显示；通常远低于 KV 1MB 限制。
+  let out=canvas.toDataURL("image/webp",.96);
+  if(!out||!out.startsWith("data:image/webp"))out=canvas.toDataURL("image/png");
+  const approxBytes=Math.ceil((out.length-(out.indexOf(',')+1))*3/4);
+  if(approxBytes>950*1024){
+    out=canvas.toDataURL("image/webp",.90);
+  }
+  return out;
 }
 
 async function applyContextIconFile(file){
@@ -4609,7 +4710,7 @@ function applyBootstrapV17(payload,{cache=true}={}){
     state.customCategories=cats.filter(c=>Number(c.is_builtin)===0).sort((a,b)=>Number(a.sort_order)-Number(b.sort_order)).map(c=>({name:c.name,icon:c.icon||"•"}));
     state.categoryOrder=cats.slice().sort((a,b)=>Number(a.sort_order)-Number(b.sort_order)).map(c=>c.name);
     state.categoryIconOverrides={};state.categoryOverrides={};state.siteEdits={};state.iconOverrides={};
-    const mapRow=row=>({id:row.id,name:row.name,url:row.url,category:row.category_name,domain:row.domain||safeDomain(row.url),fullTitle:row.full_title||row.name,icon:"",iconUrl:v17IconUrl(row),_sourceIconUrl:row.icon_url||"",_v17Updated:row.updated_at||""});
+    const mapRow=row=>({id:row.id,name:row.name,url:row.url,category:row.category_name,domain:row.domain||safeDomain(row.url),fullTitle:row.full_title||row.name,icon:"",iconUrl:v17IconUrl(row),_sourceIconUrl:row.icon_url||"",_customIcon:!!row.icon_key,_v17Updated:row.updated_at||""});
     BUILTIN_SITES=rows.filter(r=>Number(r.is_custom)===0).map(mapRow);
     state.custom=rows.filter(r=>Number(r.is_custom)!==0).map(mapRow);
     state.favorites=new Set(rows.filter(r=>Number(r.is_favorite)!==0).map(r=>r.id));
@@ -5508,7 +5609,7 @@ if(__sidebarV158){
    这里增加统一同步入口，后端 API 接入后无需重构页面。
 */
 const FX_SYNC={
-  version:"V17.5",
+  version:"V17.6",
   enabled:false,
   user:null,
   endpoint:"",
