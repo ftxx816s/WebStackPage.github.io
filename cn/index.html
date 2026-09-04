@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#09111f">
-<title>私人导航工具箱 · V17.4 Native Morph</title>
+<title>私人导航工具箱 · V17.5 Classic Drawer</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https: http:; connect-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -2483,7 +2483,7 @@ html[data-theme="light"] .login-form input{
 
 
 
-/* ===================== V17.1 · Smooth UX / Performance ===================== */
+/* ===================== V17.5 · Smooth UX / Performance ===================== */
 :root{
   --motion-ui:cubic-bezier(.22,.78,.24,1);
   --motion-soft:cubic-bezier(.2,.72,.25,1);
@@ -2626,7 +2626,7 @@ html.is-scrolling .site-icon::after{opacity:0!important}
   box-shadow:0 8px 20px rgba(0,0,0,.10)!important;
 }
 
-/* 紧凑模式 V17.1：舒适模式完全不动；紧凑模式真正明显缩小。 */
+/* 紧凑模式 V17.5：舒适模式完全不动；紧凑模式真正明显缩小。 */
 body.density-compact{
   --card-gap:8px!important;
 }
@@ -2698,327 +2698,7 @@ html[data-theme="light"] .command-backdrop{background:rgba(50,64,93,.30)!importa
   .drawer,.backdrop,.site-editor,.site-editor-backdrop,.command-panel,.command-backdrop,.category-context{transition:none!important}
 }
 
-
-
-/* ===================== V17.2 · iOS Motion / Instant Manager ===================== */
-:root{
-  --ios-spring:cubic-bezier(.22,1,.36,1);
-  --ios-close:cubic-bezier(.4,0,.2,1);
-}
-body.manager-ios-open{overflow:hidden!important}
-body.manager-ios-animating .drawer *,
-body.manager-ios-animating .drawer *::before,
-body.manager-ios-animating .drawer *::after{
-  animation-play-state:paused!important;
-}
-
-/* 管理窗口变成悬浮“系统面板”，只动画 transform + opacity，避免 blur / layout 动画。 */
-.drawer{
-  inset:12px 12px 12px auto!important;
-  height:auto!important;
-  max-height:calc(100dvh - 24px)!important;
-  width:min(760px,calc(100vw - 24px))!important;
-  border:1px solid rgba(132,148,255,.16)!important;
-  border-radius:28px!important;
-  overflow:hidden!important;
-  background:#091322!important;
-  box-shadow:-18px 18px 70px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.04)!important;
-  transform-origin:100% 14%!important;
-  transform:translate3d(30px,0,0) scale(.965)!important;
-  opacity:0!important;
-  visibility:hidden!important;
-  pointer-events:none!important;
-  transition:none!important;
-  will-change:auto!important;
-}
-.drawer.show{
-  transform:translate3d(0,0,0) scale(1)!important;
-  opacity:1!important;
-  visibility:visible!important;
-  pointer-events:auto!important;
-}
-.drawer.ios-motion-lock{pointer-events:none!important}
-.drawer-head{
-  border-radius:27px 27px 0 0!important;
-  padding:20px 22px 17px!important;
-  background:#091322!important;
-}
-.drawer-body{
-  scroll-behavior:auto!important;
-  transform:none!important;
-  contain:layout style!important;
-  content-visibility:visible!important;
-}
-.backdrop{
-  transition:none!important;
-  backdrop-filter:none!important;
-  -webkit-backdrop-filter:none!important;
-  background:rgba(2,7,16,.62)!important;
-}
-.backdrop.show{visibility:visible!important;pointer-events:auto!important}
-
-/* 打开窗口期间冻结内部 hover / transition，避免面板移动时额外合成。 */
-body.manager-ios-animating .drawer .custom-item,
-body.manager-ios-animating .drawer .category-manager-item,
-body.manager-ios-animating .drawer .deleted-item,
-body.manager-ios-animating .drawer .mini-btn,
-body.manager-ios-animating .drawer .cat-mini,
-body.manager-ios-animating .drawer .btn,
-body.manager-ios-animating .drawer .site-icon{
-  transition:none!important;
-  transform:none!important;
-  box-shadow:none!important;
-}
-
-/* 其他弹窗统一成 iOS 弹性缩放，不使用高成本实时模糊。 */
-.site-editor-backdrop,.command-backdrop{
-  backdrop-filter:none!important;
-  -webkit-backdrop-filter:none!important;
-  background:rgba(2,7,16,.60)!important;
-  transition:opacity .22s ease,visibility .22s ease!important;
-}
-.site-editor{
-  transform:translate3d(0,18px,0) scale(.955)!important;
-  transform-origin:50% 35%!important;
-  opacity:.2;
-  transition:transform .36s var(--ios-spring),opacity .22s ease!important;
-  will-change:transform,opacity;
-}
-.site-editor-backdrop.show .site-editor{
-  transform:translate3d(0,0,0) scale(1)!important;
-  opacity:1;
-}
-.command-panel{
-  transform:translate3d(0,16px,0) scale(.96)!important;
-  transform-origin:50% 22%!important;
-  opacity:.25;
-  transition:transform .34s var(--ios-spring),opacity .20s ease!important;
-}
-.command-backdrop.show .command-panel{
-  transform:translate3d(0,0,0) scale(1)!important;
-  opacity:1;
-}
-.category-context{
-  transform-origin:100% 0!important;
-  transition:transform .22s var(--ios-spring),opacity .16s ease!important;
-}
-.category-context:not(.show){transform:scale(.94) translate3d(6px,-4px,0)!important;opacity:0!important}
-.category-context.show{transform:scale(1) translate3d(0,0,0)!important;opacity:1!important}
-
-/* 重复列表改为按需加载，避免管理面板背着一大块隐藏 DOM 做合成。 */
-#duplicateList{content-visibility:auto;contain-intrinsic-size:180px}
-
-@media(max-width:760px){
-  .drawer{
-    inset:8px!important;
-    width:auto!important;
-    max-height:calc(100dvh - 16px)!important;
-    border-radius:24px!important;
-    transform-origin:50% 92%!important;
-    transform:translate3d(0,28px,0) scale(.965)!important;
-  }
-  .drawer-head{border-radius:23px 23px 0 0!important}
-}
-@media(prefers-reduced-motion:reduce){
-  .drawer,.backdrop,.site-editor,.site-editor-backdrop,.command-panel,.command-backdrop,.category-context{animation:none!important;transition:none!important}
-}
-
-
-
-/* ===================== V17.4 · Native View Transition Morph =====================
-   目标：
-   1) 不再使用“Ghost 假面板”，避免假动画结束后真实面板突然静止的错觉。
-   2) 使用浏览器原生 View Transition 快照，把“管理导航按钮”直接形变成“管理导航面板”。
-   3) 打开管理导航时，整张主页面本身也向后缩进/左移，形成真正空间层次。
-   4) 左侧分类点击也使用同类折叠/展开过渡。
-*/
-:root{
-  --v174-spring:cubic-bezier(.16,1,.3,1);
-  --v174-soft:cubic-bezier(.22,1,.36,1);
-  --v174-close:cubic-bezier(.4,0,.2,1);
-  --v174-category-origin-y:50%;
-}
-body.v174-vt-running{overflow:hidden!important}
-body.v174-vt-running .drawer *{pointer-events:none!important}
-body.v174-manager-open{overflow:hidden!important}
-body.v174-manager-open .app{
-  transform:translate3d(-42px,8px,0) scale(.968);
-  transform-origin:50% 16%;
-}
-body:not(.v174-manager-open) .app{
-  transform:translate3d(0,0,0) scale(1);
-}
-.app{
-  backface-visibility:hidden;
-  -webkit-backface-visibility:hidden;
-  will-change:transform;
-}
-body.v174-vt-running .app,
-body.v174-vt-running .drawer,
-body.v174-vt-running .backdrop{
-  transition:none!important;
-}
-body.v174-manager-open .drawer{
-  visibility:visible!important;
-  pointer-events:auto!important;
-  transform:none!important;
-  opacity:1!important;
-}
-body.v174-manager-open .backdrop{
-  visibility:visible!important;
-  pointer-events:auto!important;
-  opacity:1!important;
-  background:rgba(2,7,16,.58)!important;
-}
-
-/* View Transition 本身不做默认交叉淡入，全部由下面命名快照控制 */
-::view-transition-old(root),
-::view-transition-new(root){
-  animation:none!important;
-  mix-blend-mode:normal!important;
-}
-
-/* 主页面向后缩进 / 回来 */
-::view-transition-group(v174PageStage){
-  animation-duration:560ms;
-  animation-timing-function:var(--v174-spring);
-  z-index:1;
-}
-::view-transition-old(v174PageStage),
-::view-transition-new(v174PageStage){
-  mix-blend-mode:normal;
-  animation:none;
-}
-
-/* 管理按钮 <-> 管理面板 形变 */
-::view-transition-group(v174ManagerMorph){
-  z-index:900;
-  animation-duration:620ms;
-  animation-timing-function:var(--v174-spring);
-  transform-origin:100% 0%;
-}
-::view-transition-image-pair(v174ManagerMorph){
-  isolation:isolate;
-  overflow:visible;
-  perspective:1400px;
-}
-::view-transition-old(v174ManagerMorph),
-::view-transition-new(v174ManagerMorph){
-  mix-blend-mode:normal;
-  backface-visibility:hidden;
-  -webkit-backface-visibility:hidden;
-  transform-origin:100% 0%;
-}
-::view-transition-old(v174ManagerMorph){
-  animation:v174-manager-old-out 320ms cubic-bezier(.45,0,.55,1) both;
-}
-::view-transition-new(v174ManagerMorph){
-  animation:v174-manager-new-in 620ms var(--v174-spring) both;
-}
-@keyframes v174-manager-old-out{
-  0%{opacity:1;transform:perspective(1400px) rotateY(0) rotateX(0) scale(1);filter:brightness(1)}
-  58%{opacity:.92;transform:perspective(1400px) rotateY(-34deg) rotateX(5deg) scale(.92,.82);filter:brightness(1.12)}
-  100%{opacity:0;transform:perspective(1400px) rotateY(-58deg) rotateX(8deg) scale(.76,.58);filter:brightness(.92)}
-}
-@keyframes v174-manager-new-in{
-  0%{
-    opacity:.08;
-    transform:perspective(1400px) rotateY(-62deg) rotateX(9deg) scale(.28,.18) translate3d(42px,-26px,0);
-    clip-path:polygon(0 0,100% 8%,72% 100%,13% 84%);
-    filter:brightness(1.22)
-  }
-  38%{
-    opacity:.9;
-    transform:perspective(1400px) rotateY(-34deg) rotateX(4deg) scale(.74,.66) translate3d(16px,-8px,0);
-    clip-path:polygon(0 0,100% 0,94% 100%,0 91%);
-    filter:brightness(1.08)
-  }
-  78%{
-    opacity:1;
-    transform:perspective(1400px) rotateY(-4.5deg) rotateX(.4deg) scale(.994,1.006) translate3d(-3px,-1px,0);
-    clip-path:polygon(0 0,100% 0,100% 100%,0 100%);
-    filter:brightness(1.02)
-  }
-  100%{
-    opacity:1;
-    transform:perspective(1400px) rotateY(0) rotateX(0) scale(1) translate3d(0,0,0);
-    clip-path:polygon(0 0,100% 0,100% 100%,0 100%);
-    filter:brightness(1)
-  }
-}
-
-/* 关闭时使用 body class 反转动画方向 */
-body.v174-closing::view-transition-old(v174ManagerMorph){
-  animation:v174-manager-close-old 480ms var(--v174-close) both;
-}
-body.v174-closing::view-transition-new(v174ManagerMorph){
-  animation:v174-manager-close-new 480ms var(--v174-close) both;
-}
-@keyframes v174-manager-close-old{
-  0%{opacity:1;transform:perspective(1400px) rotateY(0) scale(1);clip-path:polygon(0 0,100% 0,100% 100%,0 100%)}
-  52%{opacity:.95;transform:perspective(1400px) rotateY(-38deg) rotateX(5deg) scale(.70,.63);clip-path:polygon(0 0,100% 0,94% 100%,0 91%)}
-  100%{opacity:.05;transform:perspective(1400px) rotateY(-60deg) rotateX(8deg) scale(.28,.18);clip-path:polygon(0 0,100% 8%,72% 100%,13% 84%)}
-}
-@keyframes v174-manager-close-new{
-  0%{opacity:.12;transform:perspective(1400px) rotateY(-45deg) scale(.74)}
-  68%{opacity:.92;transform:perspective(1400px) rotateY(-6deg) scale(1.03)}
-  100%{opacity:1;transform:perspective(1400px) rotateY(0) scale(1)}
-}
-
-/* 左侧分类点击：内容从左侧按钮方向折叠切换 */
-::view-transition-group(v174CategoryStage){
-  z-index:50;
-  animation-duration:430ms;
-  animation-timing-function:var(--v174-soft);
-}
-::view-transition-image-pair(v174CategoryStage){
-  overflow:visible;
-  perspective:1200px;
-}
-::view-transition-old(v174CategoryStage),
-::view-transition-new(v174CategoryStage){
-  mix-blend-mode:normal;
-  transform-origin:0 var(--v174-category-origin-y);
-  backface-visibility:hidden;
-}
-::view-transition-old(v174CategoryStage){
-  animation:v174-category-out 240ms cubic-bezier(.4,0,.8,.2) both;
-}
-::view-transition-new(v174CategoryStage){
-  animation:v174-category-in 430ms var(--v174-soft) both;
-}
-@keyframes v174-category-out{
-  0%{opacity:1;transform:perspective(1200px) translate3d(0,0,0) rotateY(0) scale(1);clip-path:polygon(0 0,100% 0,100% 100%,0 100%)}
-  100%{opacity:.05;transform:perspective(1200px) translate3d(34px,0,0) rotateY(-18deg) scale(.976);clip-path:polygon(0 0,90% 4%,100% 95%,0 100%)}
-}
-@keyframes v174-category-in{
-  0%{opacity:.08;transform:perspective(1200px) translate3d(-54px,0,0) rotateY(22deg) scale(.955);clip-path:polygon(0 5%,88% 0,100% 96%,0 100%)}
-  68%{opacity:1;transform:perspective(1200px) translate3d(4px,0,0) rotateY(-2.5deg) scale(1.004);clip-path:polygon(0 0,100% 0,100% 100%,0 100%)}
-  100%{opacity:1;transform:perspective(1200px) translate3d(0,0,0) rotateY(0) scale(1);clip-path:polygon(0 0,100% 0,100% 100%,0 100%)}
-}
-
-/* 非 View Transition 浏览器 fallback */
-@keyframes v174-fallback-manager-in{
-  0%{opacity:.08;transform:perspective(1200px) translate3d(52px,-18px,0) rotateY(-18deg) scale(.92)}
-  78%{opacity:1;transform:perspective(1200px) translate3d(-3px,0,0) rotateY(-2deg) scale(1.006)}
-  100%{opacity:1;transform:none}
-}
-@keyframes v174-fallback-category-in{
-  0%{opacity:.15;transform:translate3d(-34px,0,0) scale(.98)}
-  100%{opacity:1;transform:none}
-}
-
-@media(max-width:760px){
-  body.v174-manager-open .app{transform:translate3d(0,-10px,0) scale(.965)}
-  ::view-transition-group(v174ManagerMorph){animation-duration:540ms}
-}
-@media(prefers-reduced-motion:reduce){
-  body.v174-manager-open .app{transform:none!important}
-  ::view-transition-group(v174ManagerMorph),
-  ::view-transition-group(v174CategoryStage),
-  ::view-transition-group(v174PageStage){animation-duration:1ms!important}
-}
-
+/* ===================== V17.5 · Classic Drawer Rollback ===================== */
 
 </style>
 </head>
@@ -3131,7 +2811,7 @@ body.v174-closing::view-transition-new(v174ManagerMorph){
     </section>
 
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V17.4</div>
+    <div class="footer">© 2026 私人导航工具箱 · V17.5</div>
   </main>
 </div>
 
@@ -5506,7 +5186,7 @@ $("#addForm").addEventListener("submit",e=>{
   }catch(err){alert(err?.message||"添加失败")}
 });
 $("#exportBtn").onclick=()=>{
-  const payload={version:"17.2",favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides,iconOverrides:state.iconOverrides,hiddenSites:[...state.hiddenSites],siteEdits:state.siteEdits,customCategories:state.customCategories,categoryOrder:state.categoryOrder,categoryIconOverrides:state.categoryIconOverrides,siteOrder:state.siteOrder,usageStats:getUsageStatsV157(),density:STORE.get(V157_DENSITY_KEY)||"comfortable",theme:document.documentElement.dataset.theme||"dark",cloudRevision:CLOUD_SYNC.revision};
+  const payload={version:"17.1",favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides,iconOverrides:state.iconOverrides,hiddenSites:[...state.hiddenSites],siteEdits:state.siteEdits,customCategories:state.customCategories,categoryOrder:state.categoryOrder,categoryIconOverrides:state.categoryIconOverrides,siteOrder:state.siteOrder,usageStats:getUsageStatsV157(),density:STORE.get(V157_DENSITY_KEY)||"comfortable",theme:document.documentElement.dataset.theme||"dark",cloudRevision:CLOUD_SYNC.revision};
   const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);const ds=new Date().toISOString().slice(0,10).replaceAll("-","");a.download=`private-nav-v17-${ds}.json`;a.click();URL.revokeObjectURL(a.href);
 };
 $("#importBtn").onclick=()=>$("#importFile").click();
@@ -5598,7 +5278,7 @@ function handleWindowScroll(){
 window.addEventListener("scroll",handleWindowScroll,{passive:true});
 window.addEventListener("resize",closeCategoryContext,{passive:true});
 
-/* V17.1 management drawer scroll performance */
+/* V17.5 management drawer scroll performance */
 const __drawerBodyV171=$("#drawer .drawer-body");
 let __drawerIdleV171=0;
 if(__drawerBodyV171){
@@ -5828,7 +5508,7 @@ if(__sidebarV158){
    这里增加统一同步入口，后端 API 接入后无需重构页面。
 */
 const FX_SYNC={
-  version:"V17.4",
+  version:"V17.5",
   enabled:false,
   user:null,
   endpoint:"",
@@ -6167,8 +5847,7 @@ const FX_SYNC={
 
   ensureManagerUpgrades();
   renderManagerMetrics();
-  const __dupInit=document.getElementById('duplicateList');
-  if(__dupInit)__dupInit.innerHTML='<div class="duplicate-empty">重复项列表已改为按需加载。点击“扫描重复项”时再生成，减少管理窗口打开时的卡顿。</div>';
+  renderDuplicateList();
 })();
 
 
@@ -6176,7 +5855,7 @@ const FX_SYNC={
 window.__fxCloudSchedulePush=scheduleDataSyncV17;
 
 
-/* ===================== V17.1 · Smooth UX Runtime ===================== */
+/* ===================== V17.5 · Smooth UX Runtime ===================== */
 (function(){
   const root=document.documentElement;
   const body=document.body;
@@ -6238,355 +5917,6 @@ window.__fxCloudSchedulePush=scheduleDataSyncV17;
   // iOS / 高刷新屏上减少第一次 overlay 出现时的布局跳动。
   requestAnimationFrame(()=>body.classList.add("motion-system-ready"));
 })();
-
-
-
-/* ===================== V17.2 · iOS Motion Runtime ===================== */
-(function(){
-  const drawer=document.getElementById('drawer');
-  const backdrop=document.getElementById('backdrop');
-  const body=document.body;
-  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let drawerAnimation=null;
-  let backdropAnimation=null;
-  let managerDirty=true;
-  let managerRendered=false;
-  let idleHandle=0;
-  let refreshToken=0;
-
-  function cancelAnimations(){
-    try{drawerAnimation?.cancel()}catch{}
-    try{backdropAnimation?.cancel()}catch{}
-    drawerAnimation=null;backdropAnimation=null;
-  }
-
-  function refreshManagerHeavy(){
-    if(!managerDirty && managerRendered)return;
-    const token=++refreshToken;
-    try{
-      updateStorageUsage();
-      if(typeof ensureManagerUpgrades==='function')ensureManagerUpgrades();
-      renderCategoryManager();
-      renderCustomList();
-      renderDeletedList();
-      buildCategorySelect();
-      buildMoveCategorySelect();
-      buildMoveSiteOptions();
-      refreshIconPreview();
-      if(typeof renderManagerMetrics==='function')renderManagerMetrics();
-      managerRendered=true;
-      managerDirty=false;
-    }catch(err){
-      console.warn('V17.2 manager refresh failed',err);
-    }
-    return token;
-  }
-
-  function scheduleIdleRefresh(timeout=1200){
-    if(!managerDirty)return;
-    if('cancelIdleCallback' in window && idleHandle)cancelIdleCallback(idleHandle);
-    if('requestIdleCallback' in window){
-      idleHandle=requestIdleCallback(()=>{
-        idleHandle=0;
-        if(!drawer?.classList.contains('show'))refreshManagerHeavy();
-      },{timeout});
-    }else{
-      clearTimeout(idleHandle);
-      idleHandle=setTimeout(()=>{
-        idleHandle=0;
-        if(!drawer?.classList.contains('show'))refreshManagerHeavy();
-      },Math.min(timeout,700));
-    }
-  }
-
-  // 所有数据改动只标记管理页“脏”，优先在浏览器空闲时预渲染，而不是点击管理按钮时现算。
-  const previousSave=save;
-  save=function(){
-    const ok=previousSave();
-    if(ok){managerDirty=true;scheduleIdleRefresh(800)}
-    return ok;
-  };
-
-  function animateOpen(){
-    cancelAnimations();
-    body.classList.add('manager-ios-open','manager-ios-animating');
-    drawer.classList.add('show','ios-motion-lock');
-    backdrop.classList.add('show');
-    backdrop.style.opacity='1';
-
-    if(reduce){
-      drawer.classList.remove('ios-motion-lock');
-      body.classList.remove('manager-ios-animating');
-      if(managerDirty||!managerRendered)refreshManagerHeavy();
-      return;
-    }
-
-    const mobile=matchMedia('(max-width:760px)').matches;
-    const fromTransform=mobile?'translate3d(0,30px,0) scale(.965)':'translate3d(34px,0,0) scale(.965)';
-    drawerAnimation=drawer.animate([
-      {transform:fromTransform,opacity:.18},
-      {transform:mobile?'translate3d(0,-2px,0) scale(1.006)':'translate3d(-3px,0,0) scale(1.004)',opacity:1,offset:.78},
-      {transform:'translate3d(0,0,0) scale(1)',opacity:1}
-    ],{duration:430,easing:'cubic-bezier(.22,1,.36,1)',fill:'both'});
-    backdropAnimation=backdrop.animate([{opacity:0},{opacity:1}],{duration:230,easing:'ease-out',fill:'both'});
-
-    drawerAnimation.finished.catch(()=>{}).then(()=>{
-      drawerAnimation=null;
-      drawer.classList.remove('ios-motion-lock');
-      body.classList.remove('manager-ios-animating');
-      drawer.style.willChange='auto';
-      // 动画完整结束后才允许重型 DOM 刷新；通常空闲预渲染已经完成，这里不会做任何工作。
-      if(managerDirty||!managerRendered){
-        setTimeout(refreshManagerHeavy,0);
-      }
-    });
-  }
-
-  function animateClose(){
-    if(!drawer.classList.contains('show'))return;
-    cancelAnimations();
-    body.classList.add('manager-ios-animating');
-    drawer.classList.add('ios-motion-lock');
-    if(reduce){
-      drawer.classList.remove('show','ios-motion-lock');
-      backdrop.classList.remove('show');
-      body.classList.remove('manager-ios-open','manager-ios-animating');
-      return;
-    }
-    const mobile=matchMedia('(max-width:760px)').matches;
-    const toTransform=mobile?'translate3d(0,24px,0) scale(.972)':'translate3d(28px,0,0) scale(.972)';
-    drawerAnimation=drawer.animate([
-      {transform:'translate3d(0,0,0) scale(1)',opacity:1},
-      {transform:toTransform,opacity:.12}
-    ],{duration:260,easing:'cubic-bezier(.4,0,.2,1)',fill:'both'});
-    backdropAnimation=backdrop.animate([{opacity:1},{opacity:0}],{duration:220,easing:'ease-in',fill:'both'});
-    Promise.allSettled([drawerAnimation.finished,backdropAnimation.finished]).then(()=>{
-      drawerAnimation=null;backdropAnimation=null;
-      drawer.classList.remove('show','ios-motion-lock');
-      backdrop.classList.remove('show');
-      body.classList.remove('manager-ios-open','manager-ios-animating');
-      drawer.style.transform='';drawer.style.opacity='';backdrop.style.opacity='';
-    });
-  }
-
-  // 完全替换旧 openDrawer：旧函数会在点击时同步渲染重复检测、191 个 select 选项等，这是卡顿根因。
-  openDrawer=function(){
-    if(drawer.classList.contains('show'))return;
-    // 只做极轻量同步工作，让第一帧立刻开始。
-    updateStorageUsage();
-    if(typeof ensureManagerUpgrades==='function')ensureManagerUpgrades();
-    if(typeof renderManagerMetrics==='function')renderManagerMetrics();
-    animateOpen();
-  };
-  closeDrawer=animateClose;
-
-  // 重新绑定桌面按钮，避免旧 wrapper 链继续执行重型 openDrawer。
-  const manage=document.getElementById('manageBtn');
-  const compact=document.getElementById('compactManageBtn');
-  const close=document.getElementById('closeDrawer');
-  if(manage)manage.onclick=openDrawer;
-  if(compact)compact.onclick=openDrawer;
-  if(close)close.onclick=closeDrawer;
-  if(backdrop)backdrop.onclick=closeDrawer;
-
-  // 移动端曾经用 addEventListener 捕获旧函数，克隆按钮清掉历史监听器再重新绑定。
-  const mobileBtn=document.getElementById('mobileManageBtn');
-  if(mobileBtn){
-    const fresh=mobileBtn.cloneNode(true);
-    mobileBtn.replaceWith(fresh);
-    fresh.addEventListener('click',openDrawer,{passive:true});
-  }
-
-  document.addEventListener('keydown',e=>{
-    if(e.key==='Escape'&&drawer.classList.contains('show')){
-      e.preventDefault();closeDrawer();
-    }
-  },true);
-
-  // 页面稳定后偷偷预渲染管理数据。用户真正点击时通常只剩纯 GPU 动画。
-  managerDirty=true;
-  setTimeout(()=>scheduleIdleRefresh(900),180);
-})();
-
-
-
-/* ===================== V17.4 · Native View Transition Runtime ===================== */
-(function(){
-  const drawer=document.getElementById('drawer');
-  const backdrop=document.getElementById('backdrop');
-  const body=document.body;
-  const app=document.querySelector('.app');
-  const content=document.getElementById('content');
-  const sidebar=document.getElementById('sidebar');
-  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const canVT=typeof document.startViewTransition==='function'&&!reduce;
-  let lastTrigger=document.getElementById('manageBtn')||document.getElementById('compactManageBtn');
-  let managerBusy=false;
-  let categoryBusy=false;
-
-  function clearVTNames(){
-    [drawer,app,content,lastTrigger].forEach(el=>{if(el)el.style.viewTransitionName=''});
-    document.querySelectorAll('.nav-btn').forEach(el=>el.style.viewTransitionName='');
-  }
-
-  async function openManagerV174(trigger){
-    if(managerBusy||drawer.classList.contains('show'))return;
-    managerBusy=true;
-    lastTrigger=trigger?.currentTarget||trigger||lastTrigger||document.getElementById('manageBtn');
-    body.classList.remove('v174-closing');
-
-    // 保留 V17.2 的“空闲预渲染”成果，点击时不再做重型 DOM 计算。
-    updateStorageUsage();
-    if(typeof ensureManagerUpgrades==='function')ensureManagerUpgrades();
-    if(typeof renderManagerMetrics==='function')renderManagerMetrics();
-
-    if(!canVT){
-      body.classList.add('manager-ios-open','v174-manager-open');
-      drawer.classList.add('show');
-      backdrop.classList.add('show');
-      drawer.animate([{opacity:.08,transform:'perspective(1200px) translate3d(52px,-18px,0) rotateY(-18deg) scale(.92)'},{opacity:1,transform:'none'}],{duration:430,easing:'cubic-bezier(.16,1,.3,1)'});
-      app?.animate([{transform:'translate3d(0,0,0) scale(1)'},{transform:matchMedia('(max-width:760px)').matches?'translate3d(0,-10px,0) scale(.965)':'translate3d(-42px,8px,0) scale(.968)'}],{duration:430,easing:'cubic-bezier(.16,1,.3,1)',fill:'forwards'});
-      managerBusy=false;
-      return;
-    }
-
-    body.classList.add('v174-vt-running');
-    if(lastTrigger)lastTrigger.style.viewTransitionName='v174ManagerMorph';
-    if(app)app.style.viewTransitionName='v174PageStage';
-
-    const vt=document.startViewTransition(()=>{
-      if(lastTrigger)lastTrigger.style.viewTransitionName='';
-      drawer.style.viewTransitionName='v174ManagerMorph';
-      body.classList.add('manager-ios-open','v174-manager-open');
-      drawer.classList.add('show');
-      backdrop.classList.add('show');
-      drawer.classList.remove('v173-stage','v173-crossfade','ios-motion-lock');
-    });
-
-    try{await vt.finished}catch{}
-    clearVTNames();
-    body.classList.remove('v174-vt-running');
-    managerBusy=false;
-  }
-
-  async function closeManagerV174(){
-    if(managerBusy||!drawer.classList.contains('show'))return;
-    managerBusy=true;
-    body.classList.add('v174-closing');
-
-    if(!canVT){
-      const a=drawer.animate([{opacity:1,transform:'none'},{opacity:.05,transform:'perspective(1200px) translate3d(46px,-12px,0) rotateY(-14deg) scale(.93)'}],{duration:300,easing:'cubic-bezier(.4,0,.2,1)'});
-      backdrop.animate([{opacity:1},{opacity:0}],{duration:250,easing:'ease-in'});
-      app?.animate([{transform:getComputedStyle(app).transform},{transform:'none'}],{duration:320,easing:'cubic-bezier(.4,0,.2,1)',fill:'forwards'});
-      try{await a.finished}catch{}
-      drawer.classList.remove('show');backdrop.classList.remove('show');
-      body.classList.remove('manager-ios-open','v174-manager-open','v174-closing');
-      app?.style.removeProperty('transform');
-      managerBusy=false;return;
-    }
-
-    body.classList.add('v174-vt-running');
-    drawer.style.viewTransitionName='v174ManagerMorph';
-    if(app)app.style.viewTransitionName='v174PageStage';
-
-    const vt=document.startViewTransition(()=>{
-      drawer.style.viewTransitionName='';
-      if(lastTrigger)lastTrigger.style.viewTransitionName='v174ManagerMorph';
-      drawer.classList.remove('show');
-      backdrop.classList.remove('show');
-      body.classList.remove('manager-ios-open','v174-manager-open');
-    });
-
-    try{await vt.finished}catch{}
-    clearVTNames();
-    body.classList.remove('v174-vt-running','v174-closing');
-    managerBusy=false;
-  }
-
-  function categoryOriginFromButton(btn){
-    if(!btn||!content)return '50%';
-    const br=btn.getBoundingClientRect(),cr=content.getBoundingClientRect();
-    if(!cr.height)return '50%';
-    const y=(br.top+br.height/2-cr.top)/cr.height*100;
-    return Math.max(8,Math.min(92,y)).toFixed(1)+'%';
-  }
-
-  function doCategoryStateSwitch(filter){
-    state.filter=filter;
-    state.query='';
-    const search=document.getElementById('searchInput');if(search)search.value='';
-    const compact=document.getElementById('compactSearchInput');if(compact)compact.value='';
-    document.getElementById('clearSearch')?.classList.remove('show');
-    document.body.classList.remove('searching');
-    syncNavActive();
-    render({animate:false});
-    sidebar?.classList.remove('show');
-    window.scrollTo({top:0,behavior:'auto'});
-    setTimeout(updateNavIndicator,20);
-  }
-
-  async function switchCategoryV174(btn){
-    if(categoryBusy||managerBusy||!btn)return;
-    const filter=btn.dataset.filter;
-    if(!filter)return;
-    categoryBusy=true;
-    document.documentElement.style.setProperty('--v174-category-origin-y',categoryOriginFromButton(btn));
-
-    if(!canVT){
-      doCategoryStateSwitch(filter);
-      content?.animate([{opacity:.12,transform:'translate3d(-34px,0,0) scale(.98)'},{opacity:1,transform:'none'}],{duration:330,easing:'cubic-bezier(.22,1,.36,1)'});
-      categoryBusy=false;return;
-    }
-
-    content.style.viewTransitionName='v174CategoryStage';
-    body.classList.add('v174-vt-running');
-    const vt=document.startViewTransition(()=>doCategoryStateSwitch(filter));
-    try{await vt.finished}catch{}
-    content.style.viewTransitionName='';
-    body.classList.remove('v174-vt-running');
-    categoryBusy=false;
-  }
-
-  function installCategoryHandlers(){
-    document.querySelectorAll('.nav-btn').forEach(btn=>{
-      btn.onclick=e=>{e.preventDefault();switchCategoryV174(btn)};
-    });
-  }
-
-  // buildNav 每次重建左侧分类后重新安装 V17.4 动画处理器。
-  const previousBuildNav=buildNav;
-  buildNav=function(){
-    previousBuildNav();
-    installCategoryHandlers();
-  };
-  installCategoryHandlers();
-
-  // 覆盖管理导航开关。
-  openDrawer=function(trigger){return openManagerV174(trigger)};
-  closeDrawer=closeManagerV174;
-
-  function rebind(id,handler){
-    const old=document.getElementById(id);if(!old)return null;
-    const fresh=old.cloneNode(true);old.replaceWith(fresh);
-    fresh.addEventListener('click',e=>handler(e.currentTarget));
-    return fresh;
-  }
-  const manage=rebind('manageBtn',openManagerV174);
-  const compact=rebind('compactManageBtn',openManagerV174);
-  const mobile=rebind('mobileManageBtn',openManagerV174);
-  lastTrigger=manage||compact||mobile||lastTrigger;
-
-  const close=document.getElementById('closeDrawer');
-  if(close){
-    const fresh=close.cloneNode(true);close.replaceWith(fresh);fresh.addEventListener('click',closeManagerV174);
-  }
-  if(backdrop)backdrop.onclick=closeManagerV174;
-
-  document.addEventListener('keydown',e=>{
-    if(e.key==='Escape'&&drawer.classList.contains('show')){e.preventDefault();closeManagerV174()}
-  },true);
-})();
-
 
 </script>
 </body>
