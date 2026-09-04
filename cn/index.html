@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#09111f">
-<title>私人导航工具箱 · V17.1 Smooth UX</title>
+<title>私人导航工具箱 · V17.2 iOS Motion</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https: http:; connect-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -2698,6 +2698,131 @@ html[data-theme="light"] .command-backdrop{background:rgba(50,64,93,.30)!importa
   .drawer,.backdrop,.site-editor,.site-editor-backdrop,.command-panel,.command-backdrop,.category-context{transition:none!important}
 }
 
+
+
+/* ===================== V17.2 · iOS Motion / Instant Manager ===================== */
+:root{
+  --ios-spring:cubic-bezier(.22,1,.36,1);
+  --ios-close:cubic-bezier(.4,0,.2,1);
+}
+body.manager-ios-open{overflow:hidden!important}
+body.manager-ios-animating .drawer *,
+body.manager-ios-animating .drawer *::before,
+body.manager-ios-animating .drawer *::after{
+  animation-play-state:paused!important;
+}
+
+/* 管理窗口变成悬浮“系统面板”，只动画 transform + opacity，避免 blur / layout 动画。 */
+.drawer{
+  inset:12px 12px 12px auto!important;
+  height:auto!important;
+  max-height:calc(100dvh - 24px)!important;
+  width:min(760px,calc(100vw - 24px))!important;
+  border:1px solid rgba(132,148,255,.16)!important;
+  border-radius:28px!important;
+  overflow:hidden!important;
+  background:#091322!important;
+  box-shadow:-18px 18px 70px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.04)!important;
+  transform-origin:100% 14%!important;
+  transform:translate3d(30px,0,0) scale(.965)!important;
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+  transition:none!important;
+  will-change:auto!important;
+}
+.drawer.show{
+  transform:translate3d(0,0,0) scale(1)!important;
+  opacity:1!important;
+  visibility:visible!important;
+  pointer-events:auto!important;
+}
+.drawer.ios-motion-lock{pointer-events:none!important}
+.drawer-head{
+  border-radius:27px 27px 0 0!important;
+  padding:20px 22px 17px!important;
+  background:#091322!important;
+}
+.drawer-body{
+  scroll-behavior:auto!important;
+  transform:none!important;
+  contain:layout style!important;
+  content-visibility:visible!important;
+}
+.backdrop{
+  transition:none!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  background:rgba(2,7,16,.62)!important;
+}
+.backdrop.show{visibility:visible!important;pointer-events:auto!important}
+
+/* 打开窗口期间冻结内部 hover / transition，避免面板移动时额外合成。 */
+body.manager-ios-animating .drawer .custom-item,
+body.manager-ios-animating .drawer .category-manager-item,
+body.manager-ios-animating .drawer .deleted-item,
+body.manager-ios-animating .drawer .mini-btn,
+body.manager-ios-animating .drawer .cat-mini,
+body.manager-ios-animating .drawer .btn,
+body.manager-ios-animating .drawer .site-icon{
+  transition:none!important;
+  transform:none!important;
+  box-shadow:none!important;
+}
+
+/* 其他弹窗统一成 iOS 弹性缩放，不使用高成本实时模糊。 */
+.site-editor-backdrop,.command-backdrop{
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  background:rgba(2,7,16,.60)!important;
+  transition:opacity .22s ease,visibility .22s ease!important;
+}
+.site-editor{
+  transform:translate3d(0,18px,0) scale(.955)!important;
+  transform-origin:50% 35%!important;
+  opacity:.2;
+  transition:transform .36s var(--ios-spring),opacity .22s ease!important;
+  will-change:transform,opacity;
+}
+.site-editor-backdrop.show .site-editor{
+  transform:translate3d(0,0,0) scale(1)!important;
+  opacity:1;
+}
+.command-panel{
+  transform:translate3d(0,16px,0) scale(.96)!important;
+  transform-origin:50% 22%!important;
+  opacity:.25;
+  transition:transform .34s var(--ios-spring),opacity .20s ease!important;
+}
+.command-backdrop.show .command-panel{
+  transform:translate3d(0,0,0) scale(1)!important;
+  opacity:1;
+}
+.category-context{
+  transform-origin:100% 0!important;
+  transition:transform .22s var(--ios-spring),opacity .16s ease!important;
+}
+.category-context:not(.show){transform:scale(.94) translate3d(6px,-4px,0)!important;opacity:0!important}
+.category-context.show{transform:scale(1) translate3d(0,0,0)!important;opacity:1!important}
+
+/* 重复列表改为按需加载，避免管理面板背着一大块隐藏 DOM 做合成。 */
+#duplicateList{content-visibility:auto;contain-intrinsic-size:180px}
+
+@media(max-width:760px){
+  .drawer{
+    inset:8px!important;
+    width:auto!important;
+    max-height:calc(100dvh - 16px)!important;
+    border-radius:24px!important;
+    transform-origin:50% 92%!important;
+    transform:translate3d(0,28px,0) scale(.965)!important;
+  }
+  .drawer-head{border-radius:23px 23px 0 0!important}
+}
+@media(prefers-reduced-motion:reduce){
+  .drawer,.backdrop,.site-editor,.site-editor-backdrop,.command-panel,.command-backdrop,.category-context{animation:none!important;transition:none!important}
+}
+
 </style>
 </head>
 <body>
@@ -2809,7 +2934,7 @@ html[data-theme="light"] .command-backdrop{background:rgba(50,64,93,.30)!importa
     </section>
 
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V17.1</div>
+    <div class="footer">© 2026 私人导航工具箱 · V17.2</div>
   </main>
 </div>
 
@@ -5184,7 +5309,7 @@ $("#addForm").addEventListener("submit",e=>{
   }catch(err){alert(err?.message||"添加失败")}
 });
 $("#exportBtn").onclick=()=>{
-  const payload={version:"17.1",favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides,iconOverrides:state.iconOverrides,hiddenSites:[...state.hiddenSites],siteEdits:state.siteEdits,customCategories:state.customCategories,categoryOrder:state.categoryOrder,categoryIconOverrides:state.categoryIconOverrides,siteOrder:state.siteOrder,usageStats:getUsageStatsV157(),density:STORE.get(V157_DENSITY_KEY)||"comfortable",theme:document.documentElement.dataset.theme||"dark",cloudRevision:CLOUD_SYNC.revision};
+  const payload={version:"17.2",favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides,iconOverrides:state.iconOverrides,hiddenSites:[...state.hiddenSites],siteEdits:state.siteEdits,customCategories:state.customCategories,categoryOrder:state.categoryOrder,categoryIconOverrides:state.categoryIconOverrides,siteOrder:state.siteOrder,usageStats:getUsageStatsV157(),density:STORE.get(V157_DENSITY_KEY)||"comfortable",theme:document.documentElement.dataset.theme||"dark",cloudRevision:CLOUD_SYNC.revision};
   const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);const ds=new Date().toISOString().slice(0,10).replaceAll("-","");a.download=`private-nav-v17-${ds}.json`;a.click();URL.revokeObjectURL(a.href);
 };
 $("#importBtn").onclick=()=>$("#importFile").click();
@@ -5506,7 +5631,7 @@ if(__sidebarV158){
    这里增加统一同步入口，后端 API 接入后无需重构页面。
 */
 const FX_SYNC={
-  version:"V17.1",
+  version:"V17.2",
   enabled:false,
   user:null,
   endpoint:"",
@@ -5845,7 +5970,8 @@ const FX_SYNC={
 
   ensureManagerUpgrades();
   renderManagerMetrics();
-  renderDuplicateList();
+  const __dupInit=document.getElementById('duplicateList');
+  if(__dupInit)__dupInit.innerHTML='<div class="duplicate-empty">重复项列表已改为按需加载。点击“扫描重复项”时再生成，减少管理窗口打开时的卡顿。</div>';
 })();
 
 
@@ -5914,6 +6040,175 @@ window.__fxCloudSchedulePush=scheduleDataSyncV17;
 
   // iOS / 高刷新屏上减少第一次 overlay 出现时的布局跳动。
   requestAnimationFrame(()=>body.classList.add("motion-system-ready"));
+})();
+
+
+
+/* ===================== V17.2 · iOS Motion Runtime ===================== */
+(function(){
+  const drawer=document.getElementById('drawer');
+  const backdrop=document.getElementById('backdrop');
+  const body=document.body;
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let drawerAnimation=null;
+  let backdropAnimation=null;
+  let managerDirty=true;
+  let managerRendered=false;
+  let idleHandle=0;
+  let refreshToken=0;
+
+  function cancelAnimations(){
+    try{drawerAnimation?.cancel()}catch{}
+    try{backdropAnimation?.cancel()}catch{}
+    drawerAnimation=null;backdropAnimation=null;
+  }
+
+  function refreshManagerHeavy(){
+    if(!managerDirty && managerRendered)return;
+    const token=++refreshToken;
+    try{
+      updateStorageUsage();
+      if(typeof ensureManagerUpgrades==='function')ensureManagerUpgrades();
+      renderCategoryManager();
+      renderCustomList();
+      renderDeletedList();
+      buildCategorySelect();
+      buildMoveCategorySelect();
+      buildMoveSiteOptions();
+      refreshIconPreview();
+      if(typeof renderManagerMetrics==='function')renderManagerMetrics();
+      managerRendered=true;
+      managerDirty=false;
+    }catch(err){
+      console.warn('V17.2 manager refresh failed',err);
+    }
+    return token;
+  }
+
+  function scheduleIdleRefresh(timeout=1200){
+    if(!managerDirty)return;
+    if('cancelIdleCallback' in window && idleHandle)cancelIdleCallback(idleHandle);
+    if('requestIdleCallback' in window){
+      idleHandle=requestIdleCallback(()=>{
+        idleHandle=0;
+        if(!drawer?.classList.contains('show'))refreshManagerHeavy();
+      },{timeout});
+    }else{
+      clearTimeout(idleHandle);
+      idleHandle=setTimeout(()=>{
+        idleHandle=0;
+        if(!drawer?.classList.contains('show'))refreshManagerHeavy();
+      },Math.min(timeout,700));
+    }
+  }
+
+  // 所有数据改动只标记管理页“脏”，优先在浏览器空闲时预渲染，而不是点击管理按钮时现算。
+  const previousSave=save;
+  save=function(){
+    const ok=previousSave();
+    if(ok){managerDirty=true;scheduleIdleRefresh(800)}
+    return ok;
+  };
+
+  function animateOpen(){
+    cancelAnimations();
+    body.classList.add('manager-ios-open','manager-ios-animating');
+    drawer.classList.add('show','ios-motion-lock');
+    backdrop.classList.add('show');
+    backdrop.style.opacity='1';
+
+    if(reduce){
+      drawer.classList.remove('ios-motion-lock');
+      body.classList.remove('manager-ios-animating');
+      if(managerDirty||!managerRendered)refreshManagerHeavy();
+      return;
+    }
+
+    const mobile=matchMedia('(max-width:760px)').matches;
+    const fromTransform=mobile?'translate3d(0,30px,0) scale(.965)':'translate3d(34px,0,0) scale(.965)';
+    drawerAnimation=drawer.animate([
+      {transform:fromTransform,opacity:.18},
+      {transform:mobile?'translate3d(0,-2px,0) scale(1.006)':'translate3d(-3px,0,0) scale(1.004)',opacity:1,offset:.78},
+      {transform:'translate3d(0,0,0) scale(1)',opacity:1}
+    ],{duration:430,easing:'cubic-bezier(.22,1,.36,1)',fill:'both'});
+    backdropAnimation=backdrop.animate([{opacity:0},{opacity:1}],{duration:230,easing:'ease-out',fill:'both'});
+
+    drawerAnimation.finished.catch(()=>{}).then(()=>{
+      drawerAnimation=null;
+      drawer.classList.remove('ios-motion-lock');
+      body.classList.remove('manager-ios-animating');
+      drawer.style.willChange='auto';
+      // 动画完整结束后才允许重型 DOM 刷新；通常空闲预渲染已经完成，这里不会做任何工作。
+      if(managerDirty||!managerRendered){
+        setTimeout(refreshManagerHeavy,0);
+      }
+    });
+  }
+
+  function animateClose(){
+    if(!drawer.classList.contains('show'))return;
+    cancelAnimations();
+    body.classList.add('manager-ios-animating');
+    drawer.classList.add('ios-motion-lock');
+    if(reduce){
+      drawer.classList.remove('show','ios-motion-lock');
+      backdrop.classList.remove('show');
+      body.classList.remove('manager-ios-open','manager-ios-animating');
+      return;
+    }
+    const mobile=matchMedia('(max-width:760px)').matches;
+    const toTransform=mobile?'translate3d(0,24px,0) scale(.972)':'translate3d(28px,0,0) scale(.972)';
+    drawerAnimation=drawer.animate([
+      {transform:'translate3d(0,0,0) scale(1)',opacity:1},
+      {transform:toTransform,opacity:.12}
+    ],{duration:260,easing:'cubic-bezier(.4,0,.2,1)',fill:'both'});
+    backdropAnimation=backdrop.animate([{opacity:1},{opacity:0}],{duration:220,easing:'ease-in',fill:'both'});
+    Promise.allSettled([drawerAnimation.finished,backdropAnimation.finished]).then(()=>{
+      drawerAnimation=null;backdropAnimation=null;
+      drawer.classList.remove('show','ios-motion-lock');
+      backdrop.classList.remove('show');
+      body.classList.remove('manager-ios-open','manager-ios-animating');
+      drawer.style.transform='';drawer.style.opacity='';backdrop.style.opacity='';
+    });
+  }
+
+  // 完全替换旧 openDrawer：旧函数会在点击时同步渲染重复检测、191 个 select 选项等，这是卡顿根因。
+  openDrawer=function(){
+    if(drawer.classList.contains('show'))return;
+    // 只做极轻量同步工作，让第一帧立刻开始。
+    updateStorageUsage();
+    if(typeof ensureManagerUpgrades==='function')ensureManagerUpgrades();
+    if(typeof renderManagerMetrics==='function')renderManagerMetrics();
+    animateOpen();
+  };
+  closeDrawer=animateClose;
+
+  // 重新绑定桌面按钮，避免旧 wrapper 链继续执行重型 openDrawer。
+  const manage=document.getElementById('manageBtn');
+  const compact=document.getElementById('compactManageBtn');
+  const close=document.getElementById('closeDrawer');
+  if(manage)manage.onclick=openDrawer;
+  if(compact)compact.onclick=openDrawer;
+  if(close)close.onclick=closeDrawer;
+  if(backdrop)backdrop.onclick=closeDrawer;
+
+  // 移动端曾经用 addEventListener 捕获旧函数，克隆按钮清掉历史监听器再重新绑定。
+  const mobileBtn=document.getElementById('mobileManageBtn');
+  if(mobileBtn){
+    const fresh=mobileBtn.cloneNode(true);
+    mobileBtn.replaceWith(fresh);
+    fresh.addEventListener('click',openDrawer,{passive:true});
+  }
+
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'&&drawer.classList.contains('show')){
+      e.preventDefault();closeDrawer();
+    }
+  },true);
+
+  // 页面稳定后偷偷预渲染管理数据。用户真正点击时通常只剩纯 GPU 动画。
+  managerDirty=true;
+  setTimeout(()=>scheduleIdleRefresh(900),180);
 })();
 
 </script>
