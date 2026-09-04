@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#09111f">
-<title>私人导航工具箱 · V15.3 UI Pro</title>
+<title>私人导航工具箱 · V16 Cloud</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https: http:; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https: http:; connect-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
 <style>
 :root{
   --sidebar-w:264px;
@@ -1014,7 +1014,7 @@ html.is-scrolling .card:hover .site-domain{
 }
 
 
-/* ===================== V15.3 UI Pro ===================== */
+/* ===================== V15.6 外网高清图标优先版 ===================== */
 :root{
   --ui-ease:cubic-bezier(.2,.8,.2,1);
 }
@@ -1245,6 +1245,848 @@ body.page-ready .hero{opacity:1;transform:none;transition:opacity .26s ease,tran
   .compact-bar{transition:none!important}
 }
 
+
+/* ===================== V15.4 · No-VPN Icon Reliability =====================
+   先显示 HTML 内置/用户自定义图标，保证不开 VPN 也不空白；
+   高清图标只作为渐进增强，不再依赖 Google / DuckDuckGo / icon.horse。
+*/
+.site-icon[data-icon-quality="embedded-low"] img{
+  width:26px!important;
+  height:26px!important;
+  filter:none!important;
+}
+.site-icon[data-icon-quality="hd"] img{
+  width:30px!important;
+  height:30px!important;
+}
+.site-icon[data-icon-quality="local"] img{
+  opacity:1;
+}
+.site-icon.icon-upgrading::after{
+  content:"";
+  position:absolute;
+  right:4px;
+  bottom:4px;
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  background:rgba(116,135,255,.58);
+  opacity:.55;
+  pointer-events:none;
+}
+.site-icon:not(.icon-upgrading)::after{display:none}
+@media(max-width:650px){
+  .site-icon[data-icon-quality="embedded-low"] img{
+    width:25px!important;
+    height:25px!important;
+  }
+}
+
+
+/* ===================== V15.5 · Always Crisp Icons =====================
+   原则：宁可显示矢量字母，也不把 16/24/32px 小图硬放大。
+   自动图标只有达到 64px 才进入主卡片；否则保持矢量兜底。
+*/
+.site-icon .site-fallback{
+  inset:5px!important;
+  border-radius:11px!important;
+  font-size:14.5px!important;
+  font-weight:850!important;
+  letter-spacing:-.03em;
+  text-shadow:0 1px 1px rgba(0,0,0,.14);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.18),
+    0 5px 13px rgba(31,42,80,.12);
+}
+.site-icon .site-fallback::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.11),transparent 46%);
+}
+.site-icon[data-icon-quality="vector"]{
+  background:transparent!important;
+  border-color:rgba(116,135,255,.16)!important;
+}
+.site-icon[data-icon-quality="hd"] img{
+  width:30px!important;
+  height:30px!important;
+  filter:drop-shadow(0 1px 1px rgba(0,0,0,.08))!important;
+}
+.site-icon[data-icon-quality="custom"] img{
+  width:30px!important;
+  height:30px!important;
+}
+.site-icon.is-lowres-rejected{
+  background:rgba(255,255,255,.04)!important;
+}
+html[data-theme="light"] .site-icon.is-lowres-rejected{
+  background:rgba(255,255,255,.92)!important;
+}
+
+
+/* ===================== V15.6 · External HD First ===================== */
+.site-icon[data-icon-source="google-256"] img,
+.site-icon[data-icon-source="icon-horse"] img,
+.site-icon[data-icon-source="apple-touch"] img,
+.site-icon[data-icon-source="android-512"] img,
+.site-icon[data-icon-source="android-192"] img{
+  width:31px!important;
+  height:31px!important;
+}
+.site-icon[data-icon-source="embedded-bookmark"] img{
+  width:26px!important;
+  height:26px!important;
+  filter:none!important;
+}
+.site-icon.icon-upgrading::after{
+  content:"";
+  position:absolute;
+  right:4px;
+  bottom:4px;
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  background:rgba(116,135,255,.52);
+  opacity:.42;
+  pointer-events:none;
+}
+
+
+/* ===================== V15.7 · Ultimate UI ===================== */
+:root{
+  --content-max:1720px;
+  --card-min:225px;
+  --card-gap:12px;
+}
+
+/* 更稳定的宽屏构图 */
+.main{
+  width:100%;
+  max-width:var(--content-max);
+  margin-inline:auto;
+}
+.grid{
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,var(--card-min)),1fr))!important;
+  gap:var(--card-gap)!important;
+}
+
+/* 分类标题层级 */
+.section-head{
+  align-items:flex-end!important;
+}
+.section-title{
+  align-items:flex-start!important;
+}
+.section-heading-copy{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.section-heading-line{
+  display:flex;
+  align-items:baseline;
+  gap:7px;
+  min-width:0;
+}
+.section-heading-line h2{
+  margin:0;
+  font-size:18px;
+  line-height:1.15;
+  letter-spacing:-.015em;
+}
+.section-total{
+  color:var(--muted2);
+  font-size:10px;
+  font-weight:750;
+  white-space:nowrap;
+}
+.section-desc{
+  max-width:660px;
+  color:var(--muted2);
+  font-size:10.5px;
+  line-height:1.45;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* 全部网站滚动时：左侧分类自动跟随 */
+.nav-btn.scroll-active{
+  background:linear-gradient(90deg,rgba(116,135,255,.14),rgba(164,92,246,.065))!important;
+  border-color:rgba(116,135,255,.18)!important;
+}
+.nav-btn.scroll-active .nav-icon{
+  color:#fff;
+  border-color:rgba(116,135,255,.24);
+  background:linear-gradient(135deg,rgba(116,135,255,.34),rgba(164,92,246,.22));
+}
+body.scroll-spy-active .nav-btn[data-filter="all"].active{
+  background:transparent!important;
+  border-color:transparent!important;
+}
+body.scroll-spy-active .nav-btn[data-filter="all"].active .nav-icon{
+  color:var(--text);
+  background:var(--soft);
+  border-color:var(--line);
+}
+
+/* 紧凑模式 */
+body.density-compact{
+  --card-min:185px;
+  --card-gap:9px;
+}
+body.density-compact .section{margin:23px 0}
+body.density-compact .card-link{
+  min-height:60px!important;
+  padding:8px 34px 8px 10px!important;
+  gap:9px!important;
+}
+body.density-compact .site-icon{
+  width:38px!important;height:38px!important;flex-basis:38px!important;border-radius:12px!important;
+}
+body.density-compact .site-icon img{
+  width:25px!important;height:25px!important;
+}
+body.density-compact .site-icon .site-fallback{
+  inset:4px!important;font-size:12.5px!important;border-radius:9px!important;
+}
+body.density-compact .site-name{font-size:12.5px!important}
+body.density-compact .site-domain{display:none}
+body.density-compact .section-desc{font-size:10px}
+body.density-compact .star{top:50%!important;transform:translateY(-50%);right:6px!important}
+body.density-compact .card:hover .star{transform:translateY(-50%) scale(1.06)!important}
+
+/* Ctrl/⌘ + K 快速启动器 */
+.command-backdrop{
+  position:fixed;
+  inset:0;
+  z-index:520;
+  display:grid;
+  place-items:start center;
+  padding:clamp(72px,12vh,130px) 16px 24px;
+  background:rgba(2,7,16,.54);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:opacity .14s ease,visibility .14s;
+}
+.command-backdrop.show{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+}
+.command-panel{
+  width:min(720px,100%);
+  max-height:min(650px,calc(100vh - 110px));
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  border:1px solid rgba(116,135,255,.20);
+  border-radius:24px;
+  background:rgba(10,18,32,.97);
+  box-shadow:0 30px 90px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.045);
+  transform:translateY(-8px) scale(.985);
+  transition:transform .16s var(--ui-ease);
+}
+.command-backdrop.show .command-panel{transform:none}
+.command-search{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-height:68px;
+  padding:0 17px;
+  border-bottom:1px solid var(--line);
+}
+.command-search-symbol{
+  display:grid;
+  place-items:center;
+  width:36px;height:36px;flex:0 0 36px;
+  border-radius:11px;
+  background:var(--soft2);
+  border:1px solid var(--line);
+  color:var(--muted);
+}
+.command-search input{
+  min-width:0;
+  flex:1;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:var(--text);
+  font:inherit;
+  font-size:16px;
+}
+.command-esc{
+  padding:4px 7px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  color:var(--muted2);
+  font-size:9px;
+}
+.command-body{
+  overflow:auto;
+  padding:10px;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(116,135,255,.28) transparent;
+}
+.command-group-title{
+  padding:8px 9px 5px;
+  color:var(--muted2);
+  font-size:9px;
+  font-weight:850;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+.command-item{
+  width:100%;
+  min-width:0;
+  min-height:53px;
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:11px;
+  padding:7px 10px;
+  border:1px solid transparent;
+  border-radius:14px;
+  background:transparent;
+  color:var(--text);
+  text-align:left;
+}
+.command-item:hover,.command-item.active{
+  background:rgba(116,135,255,.10);
+  border-color:rgba(116,135,255,.16);
+}
+.command-item .custom-mini-icon{width:35px;height:35px;flex-basis:35px;border-radius:10px}
+.command-item .custom-mini-icon img{width:23px!important;height:23px!important}
+.command-copy{min-width:0}
+.command-name{display:block;font-size:12.5px;font-weight:820;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.command-meta{display:block;margin-top:3px;color:var(--muted);font-size:9.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.command-kind{
+  color:var(--muted2);
+  font-size:9px;
+  white-space:nowrap;
+}
+.command-empty{
+  padding:42px 20px;
+  text-align:center;
+  color:var(--muted);
+  font-size:12px;
+}
+.command-footer{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:9px 14px;
+  border-top:1px solid var(--line);
+  color:var(--muted2);
+  font-size:9px;
+}
+.command-footer span:last-child{margin-left:auto}
+html[data-theme="light"] .command-backdrop{background:rgba(61,72,96,.22)}
+html[data-theme="light"] .command-panel{
+  background:rgba(250,252,255,.985);
+  box-shadow:0 30px 75px rgba(69,84,116,.22),inset 0 1px 0 #fff;
+}
+
+/* 手机底部工具栏 */
+.mobile-bottom-bar{display:none}
+@media(max-width:980px){
+  .main{padding-bottom:92px!important}
+  .mobile-bottom-bar{
+    position:fixed;
+    z-index:72;
+    left:12px;
+    right:12px;
+    bottom:max(10px,env(safe-area-inset-bottom));
+    height:62px;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    padding:5px;
+    border:1px solid rgba(116,135,255,.16);
+    border-radius:20px;
+    background:rgba(9,17,31,.94);
+    box-shadow:0 15px 42px rgba(0,0,0,.24);
+  }
+  .mobile-bottom-action{
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:2px;
+    border:0;
+    border-radius:14px;
+    background:transparent;
+    color:var(--muted);
+  }
+  .mobile-bottom-action span{font-size:17px;line-height:1}
+  .mobile-bottom-action small{font-size:9px;font-weight:750}
+  .mobile-bottom-action.active{
+    color:#fff;
+    background:linear-gradient(135deg,rgba(116,135,255,.24),rgba(164,92,246,.15));
+  }
+  html[data-theme="light"] .mobile-bottom-bar{
+    background:rgba(250,252,255,.96);
+    box-shadow:0 15px 34px rgba(70,85,116,.14);
+  }
+  html[data-theme="light"] .mobile-bottom-action.active{color:#5163d8}
+  .to-top{bottom:84px!important}
+}
+@media(max-width:650px){
+  :root{--card-min:100%}
+  body.density-compact{--card-min:100%}
+  .section-desc{max-width:250px}
+  .command-backdrop{padding:58px 10px 84px}
+  .command-panel{border-radius:20px;max-height:calc(100vh - 150px)}
+}
+
+/* 最终统一覆盖层：减少历史版本样式互相打架 */
+.card,.nav-btn,.tool-btn,.compact-action,.hero-quick,.command-item{
+  -webkit-tap-highlight-color:transparent;
+}
+@media(prefers-reduced-motion:reduce){
+  .command-backdrop,.command-panel{transition:none!important}
+}
+
+
+/* ===================== V15.8 · Sidebar Interaction =====================
+   桌面端左侧导航：
+   - 整行轻微右移
+   - 紫蓝渐变底色
+   - 左侧短光条
+   - 图标微放大 + 柔光
+   - 文字提亮
+   - 数字胶囊同步高亮
+   - active / scroll-spy 状态比普通 hover 更强
+*/
+.sidebar{
+  --side-hover-accent:rgba(121,108,255,.88);
+  --side-hover-accent2:rgba(171,88,246,.78);
+}
+
+.nav-btn{
+  position:relative!important;
+  isolation:isolate;
+  overflow:hidden;
+  transform:translateX(0);
+  will-change:auto;
+}
+
+.nav-btn > *{
+  position:relative;
+  z-index:2;
+}
+
+.nav-btn::before{
+  content:"";
+  position:absolute;
+  z-index:3;
+  left:0;
+  top:50%;
+  width:3px;
+  height:22px;
+  border-radius:999px;
+  background:linear-gradient(180deg,#8b7cff,#b55df6);
+  box-shadow:0 0 14px rgba(137,105,247,.46);
+  opacity:0;
+  transform:translateY(-50%) scaleY(.55);
+  transform-origin:center;
+  pointer-events:none;
+  transition:
+    opacity .15s ease,
+    transform .18s cubic-bezier(.2,.8,.2,1),
+    height .18s ease;
+}
+
+.nav-btn::after{
+  content:"";
+  position:absolute;
+  z-index:0;
+  inset:0;
+  pointer-events:none;
+  opacity:0;
+  background:
+    radial-gradient(120px 50px at 8% 50%,rgba(116,135,255,.16),transparent 72%),
+    linear-gradient(90deg,rgba(116,135,255,.11),rgba(164,92,246,.052) 58%,transparent 100%);
+  transition:opacity .17s ease;
+}
+
+.nav-icon{
+  transition:
+    transform .18s cubic-bezier(.2,.8,.2,1),
+    color .16s ease,
+    border-color .16s ease,
+    background .16s ease,
+    box-shadow .18s ease!important;
+}
+
+.nav-name{
+  transition:
+    transform .18s cubic-bezier(.2,.8,.2,1),
+    color .16s ease,
+    text-shadow .16s ease!important;
+}
+
+.nav-count{
+  transition:
+    transform .18s cubic-bezier(.2,.8,.2,1),
+    color .16s ease,
+    border-color .16s ease,
+    background .16s ease,
+    box-shadow .18s ease!important;
+}
+
+/* 只有真正鼠标设备启用悬浮动画 */
+@media (hover:hover) and (pointer:fine){
+  .nav-btn{
+    transition:
+      transform .18s cubic-bezier(.2,.8,.2,1),
+      border-color .16s ease,
+      background .16s ease!important;
+  }
+
+  .nav-btn:hover{
+    transform:translateX(3px)!important;
+    background:
+      linear-gradient(90deg,rgba(116,135,255,.125),rgba(164,92,246,.055))!important;
+    border-color:rgba(116,135,255,.22)!important;
+  }
+
+  .nav-btn:hover::before{
+    opacity:1;
+    transform:translateY(-50%) scaleY(1);
+  }
+
+  .nav-btn:hover::after{
+    opacity:1;
+  }
+
+  .nav-btn:hover .nav-icon{
+    transform:scale(1.065);
+    color:#fff;
+    border-color:rgba(132,121,255,.34)!important;
+    background:
+      linear-gradient(135deg,rgba(116,135,255,.32),rgba(164,92,246,.20))!important;
+    box-shadow:
+      0 5px 14px rgba(80,77,194,.18),
+      inset 0 1px 0 rgba(255,255,255,.08);
+  }
+
+  .nav-btn:hover .nav-name{
+    transform:translateX(2px);
+    color:#f8f9ff;
+    text-shadow:0 0 12px rgba(132,121,255,.12);
+  }
+
+  .nav-btn:hover .nav-count{
+    transform:translateX(-1px) scale(1.03);
+    color:#dfe4ff;
+    border-color:rgba(132,121,255,.26)!important;
+    background:rgba(116,135,255,.115)!important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.035);
+  }
+}
+
+/* 选中项 / 滚动跟随项：比普通 hover 更明确 */
+.nav-btn.active,
+.nav-btn.scroll-active{
+  border-color:rgba(116,135,255,.26)!important;
+}
+
+.nav-btn.active::before,
+.nav-btn.scroll-active::before{
+  opacity:1;
+  height:27px;
+  transform:translateY(-50%) scaleY(1);
+}
+
+.nav-btn.active::after,
+.nav-btn.scroll-active::after{
+  opacity:.72;
+}
+
+.nav-btn.active .nav-name,
+.nav-btn.scroll-active .nav-name{
+  color:#fff!important;
+}
+
+.nav-btn.active .nav-count,
+.nav-btn.scroll-active .nav-count{
+  color:#dfe4ff!important;
+  border-color:rgba(132,121,255,.28)!important;
+  background:rgba(116,135,255,.12)!important;
+}
+
+.nav-btn.active .nav-icon,
+.nav-btn.scroll-active .nav-icon{
+  box-shadow:
+    0 6px 15px rgba(78,74,190,.16),
+    inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+/* 当 V15.7 Scroll Spy 接管当前分类时，不让“全部网站”继续显得像选中态 */
+body.scroll-spy-active .nav-btn[data-filter="all"].active::before,
+body.scroll-spy-active .nav-btn[data-filter="all"].active::after{
+  opacity:0!important;
+}
+
+body.scroll-spy-active .nav-btn[data-filter="all"].active .nav-name{
+  color:var(--text)!important;
+}
+
+body.scroll-spy-active .nav-btn[data-filter="all"].active .nav-count{
+  color:var(--muted)!important;
+  border-color:var(--line)!important;
+  background:var(--soft)!important;
+  box-shadow:none!important;
+}
+
+/* 左侧全局 Scroll Spy 指示条更细腻 */
+.nav-active-indicator{
+  width:3px!important;
+  left:5px!important;
+  background:linear-gradient(180deg,#7f76ff 0%,#a65ff5 100%)!important;
+  box-shadow:
+    0 0 12px rgba(132,104,246,.48),
+    0 0 24px rgba(132,104,246,.20)!important;
+}
+
+/* 浅色主题 */
+html[data-theme="light"] .nav-btn::after{
+  background:
+    radial-gradient(120px 50px at 8% 50%,rgba(103,120,255,.115),transparent 72%),
+    linear-gradient(90deg,rgba(103,120,255,.085),rgba(164,92,246,.037) 58%,transparent 100%);
+}
+
+@media (hover:hover) and (pointer:fine){
+  html[data-theme="light"] .nav-btn:hover{
+    background:linear-gradient(90deg,rgba(103,120,255,.105),rgba(164,92,246,.045))!important;
+    border-color:rgba(91,107,222,.18)!important;
+  }
+
+  html[data-theme="light"] .nav-btn:hover .nav-name{
+    color:#1d2942;
+    text-shadow:none;
+  }
+
+  html[data-theme="light"] .nav-btn:hover .nav-icon{
+    color:#4b5fd5;
+    background:linear-gradient(135deg,rgba(103,120,255,.13),rgba(164,92,246,.075))!important;
+    border-color:rgba(91,107,222,.18)!important;
+    box-shadow:0 5px 14px rgba(92,102,170,.08);
+  }
+
+  html[data-theme="light"] .nav-btn:hover .nav-count{
+    color:#5363c8;
+    background:rgba(103,120,255,.075)!important;
+    border-color:rgba(91,107,222,.14)!important;
+  }
+}
+
+html[data-theme="light"] .nav-btn.active .nav-name,
+html[data-theme="light"] .nav-btn.scroll-active .nav-name{
+  color:#263454!important;
+}
+
+/* 滚动时关闭左侧 hover 位移与阴影，避免滚动过程中多余绘制 */
+html.is-scrolling .nav-btn:hover{
+  transform:none!important;
+}
+html.is-scrolling .nav-btn:hover .nav-icon,
+html.is-scrolling .nav-btn:hover .nav-name,
+html.is-scrolling .nav-btn:hover .nav-count{
+  transform:none!important;
+  box-shadow:none!important;
+}
+html.is-scrolling .nav-btn:hover::after{
+  opacity:0!important;
+}
+
+/* 手机/触屏不做 hover 位移动效，只保留 active 状态 */
+@media (hover:none), (pointer:coarse){
+  .nav-btn::before{transition:none}
+  .nav-btn::after{display:none}
+}
+
+
+.nav-btn.nav-press{
+  transform:translateX(2px) scale(.988)!important;
+}
+@media (hover:none), (pointer:coarse){
+  .nav-btn.nav-press{transform:none!important}
+}
+
+
+/* ===================== V15.9 · Grid Alignment =====================
+   解决 V15.7 auto-fit 带来的“最后一排卡片被拉宽 / 各分类不齐”问题。
+   桌面最多 5 列；每个分类都使用同一列轨道宽度。
+*/
+:root{
+  --card-gap:12px;
+}
+
+/* 宽屏固定 5 列：最后一排不足 5 个时仍按前面列宽排列，不再拉伸 */
+.grid{
+  display:grid!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  gap:var(--card-gap)!important;
+  align-items:stretch;
+}
+
+/* 所有卡片在网格中撑满单元格，宽高规则一致 */
+.card{
+  width:100%;
+  min-width:0;
+  height:100%;
+}
+
+.card-link{
+  width:100%;
+}
+
+/* 紧凑模式也不再增加到 6/7 列，仍然最多 5 列 */
+body.density-compact{
+  --card-gap:10px;
+}
+body.density-compact .grid{
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+}
+
+/* 断点按整个页面宽度逐级减列，始终保持整齐 */
+@media(max-width:1600px){
+  .grid,
+  body.density-compact .grid{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  }
+}
+
+@media(max-width:1280px){
+  .grid,
+  body.density-compact .grid{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+}
+
+@media(max-width:980px){
+  .grid,
+  body.density-compact .grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+}
+
+@media(max-width:650px){
+  .grid,
+  body.density-compact .grid{
+    grid-template-columns:1fr!important;
+    gap:10px!important;
+  }
+}
+
+/* 分类块之间的纵向间距统一 */
+.section{
+  margin:27px 0!important;
+}
+.section-head{
+  margin-bottom:13px!important;
+}
+
+/* 最后一排左对齐，由固定 5 列轨道自然实现 */
+.grid > .card{
+  justify-self:stretch;
+  align-self:stretch;
+}
+
+
+/* ===================== V16 Cloud Sync ===================== */
+.cloud-status{
+  height:30px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:0 9px;
+  border:1px solid var(--line);
+  border-radius:9px;
+  background:rgba(255,255,255,.025);
+  color:var(--muted);
+  font-size:9.5px;
+  font-weight:760;
+  white-space:nowrap;
+  user-select:none;
+}
+.cloud-status i{
+  width:6px;
+  height:6px;
+  flex:0 0 6px;
+  border-radius:50%;
+  background:#8995a9;
+  box-shadow:0 0 0 3px rgba(137,149,169,.08);
+}
+.cloud-status[data-state="syncing"]{color:#bec8ff;border-color:rgba(116,135,255,.20)}
+.cloud-status[data-state="syncing"] i{
+  background:#8292ff;
+  box-shadow:0 0 0 3px rgba(116,135,255,.11);
+  animation:cloudPulse 1s ease-in-out infinite;
+}
+.cloud-status[data-state="synced"]{color:#a6ddc7;border-color:rgba(70,203,148,.17)}
+.cloud-status[data-state="synced"] i{
+  background:#55cf9c;
+  box-shadow:0 0 0 3px rgba(85,207,156,.10);
+}
+.cloud-status[data-state="offline"]{color:#e7bb78;border-color:rgba(229,174,91,.18)}
+.cloud-status[data-state="offline"] i{
+  background:#e6ad59;
+  box-shadow:0 0 0 3px rgba(230,173,89,.09);
+}
+.cloud-status[data-state="error"]{color:#ff9cad;border-color:rgba(255,113,135,.20)}
+.cloud-status[data-state="error"] i{
+  background:#ff7187;
+  box-shadow:0 0 0 3px rgba(255,113,135,.10);
+}
+@keyframes cloudPulse{50%{opacity:.38;transform:scale(.82)}}
+
+.compact-cloud-status{
+  display:grid;
+  place-items:center;
+  width:27px;
+  height:27px;
+  border-radius:8px;
+  color:#8995a9;
+  font-size:10px;
+  cursor:default;
+}
+.compact-cloud-status[data-state="syncing"]{color:#8292ff}
+.compact-cloud-status[data-state="synced"]{color:#55cf9c}
+.compact-cloud-status[data-state="offline"]{color:#e6ad59}
+.compact-cloud-status[data-state="error"]{color:#ff7187}
+
+.cloud-first-sync{
+  margin-top:10px;
+  padding:10px 12px;
+  border:1px solid rgba(116,135,255,.18);
+  border-radius:12px;
+  background:rgba(116,135,255,.06);
+  color:var(--muted);
+  font-size:10.5px;
+  line-height:1.6;
+}
+
+@media(max-width:1180px){
+  .cloud-status{padding:0 7px}
+  .cloud-status #cloudStatusText{display:none}
+}
+@media(max-width:980px){
+  .tool-cluster .cloud-status{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .cloud-status[data-state="syncing"] i{animation:none!important}
+}
+
 </style>
 </head>
 <body>
@@ -1297,6 +2139,8 @@ body.page-ready .hero{opacity:1;transform:none;transition:opacity .26s ease,tran
       <div class="tool-cluster" aria-label="页面工具">
         <button class="tool-btn hide-sm" id="sortModeBtn" title="拖拽网站调整顺序"><span class="tool-glyph">↕</span><span>排序</span></button>
         <button class="tool-btn hide-sm" id="manageBtn"><span class="tool-glyph">＋</span><span>管理导航</span></button>
+        <button class="tool-btn hide-sm" id="densityBtn" title="切换卡片密度"><span class="tool-glyph">▦</span><span>紧凑</span></button>
+        <span class="cloud-status" id="cloudStatus" title="云同步状态"><i></i><span id="cloudStatusText">本地</span></span>
         <button class="tool-btn icon-only" id="themeBtn" aria-label="切换主题">☾</button>
       </div>
     </div>
@@ -1310,6 +2154,8 @@ body.page-ready .hero{opacity:1;transform:none;transition:opacity .26s ease,tran
         <span class="compact-count"><b id="compactSiteCount">0</b> 个网站</span>
         <button class="compact-action hide-sm" id="compactSortBtn" title="排序">↕</button>
         <button class="compact-action" id="compactManageBtn" title="管理导航">＋</button>
+        <button class="compact-action hide-sm" id="compactDensityBtn" title="切换卡片密度">▦</button>
+        <span class="compact-cloud-status" id="compactCloudStatus" title="云同步状态">●</span>
         <button class="compact-action" id="compactThemeBtn" title="切换主题">☾</button>
       </div>
     </div>
@@ -1351,7 +2197,7 @@ body.page-ready .hero{opacity:1;transform:none;transition:opacity .26s ease,tran
     </section>
 
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V15.3 UI Pro</div>
+    <div class="footer">© 2026 私人导航工具箱 · V16 Cloud</div>
   </main>
 </div>
 
@@ -1364,7 +2210,7 @@ body.page-ready .hero{opacity:1;transform:none;transition:opacity .26s ease,tran
     </div>
   </div>
   <div class="drawer-body">
-    <div class="admin-note">V15.3 UI Pro：内置 191 个网站，重构首页 Hero、增加最近使用与滚动紧凑搜索栏，并优化侧栏选中反馈、工具栏、卡片微交互和移动端布局。你之前手动新增的网站仍会保留。当前本地修改仍保存在浏览器；云同步需在 Worker API 正式接入后启用。<br><span id="storageUsage">正在计算本地数据占用…</span></div>
+    <div class="admin-note">V16 Cloud：保留 V15.9 全部 UI 与 191 个内置网站，新增 Cloudflare Pages Functions + D1 云同步、本地缓存、跨设备自动更新、版本冲突保护与云端备份。你之前手动新增的网站仍会保留。本版已接入 /api/state 云同步。D1 连接成功后，添加、删除、编辑、分类、排序、收藏会自动保存到云端；localStorage 仅作为本地缓存与离线兜底。<br><span id="storageUsage">正在计算本地数据占用…</span></div>
 
     <form id="addForm">
       <div class="form-grid">
@@ -1681,49 +2527,53 @@ function iconSources(site){
     seen.add(clean);
     out.push({
       url:clean,
-      force:!!opts.force,
       minSize:Number(opts.minSize||0),
       kind:String(opts.kind||"auto")
     });
   };
 
-  const override=validIconValue(state.iconOverrides?.[site.id]);
-  const own=validIconValue(site.icon);
-  const urlIcon=validIconValue(site.iconUrl);
-  const id=String(site.id||"");
-  const builtIn=id.startsWith("v15_");
   const d=site.domain||safeDomain(site.url);
+  if(!d)return out;
 
-  // 用户手动设置的图标永远优先，不做尺寸拦截。
-  if(override)add(override,{force:true,kind:"custom"});
-  if(urlIcon)add(urlIcon,{force:true,kind:"custom-url"});
+  // V15.6：外网高清图标优先。
+  // 开 VPN 时优先拿更清晰的第三方图标；失败后继续尝试网站自身图标。
+  add("https://www.google.com/s2/favicons?sz=256&domain_url="+encodeURIComponent(site.url),
+      {minSize:64,kind:"google-256"});
+  add("https://icon.horse/icon/"+encodeURIComponent(d),
+      {minSize:48,kind:"icon-horse"});
+  add("https://icons.duckduckgo.com/ip3/"+encodeURIComponent(d)+".ico",
+      {minSize:32,kind:"duckduckgo"});
 
-  // 自己新增的网站如果上传过图标，同样尊重用户选择。
-  if(own&&!builtIn)add(own,{force:true,kind:"custom"});
+  try{
+    const u=new URL(site.url);
+    add(u.origin+"/apple-touch-icon.png",{minSize:64,kind:"apple-touch"});
+    add(u.origin+"/apple-touch-icon-precomposed.png",{minSize:64,kind:"apple-touch"});
+    add(u.origin+"/android-chrome-512x512.png",{minSize:128,kind:"android-512"});
+    add(u.origin+"/android-chrome-192x192.png",{minSize:96,kind:"android-192"});
+    add(u.origin+"/favicon-196x196.png",{minSize:96,kind:"favicon-196"});
+    add(u.origin+"/favicon-128.png",{minSize:64,kind:"favicon-128"});
+    add(u.origin+"/favicon.png",{minSize:48,kind:"favicon-png"});
+    add(u.origin+"/favicon.ico",{minSize:32,kind:"favicon-ico"});
+  }catch{}
 
-  if(d){
-    // 优先请求能返回高分辨率 favicon 的源。
-    add("https://www.google.com/s2/favicons?sz=256&domain_url="+encodeURIComponent(site.url),{minSize:48,kind:"google-256"});
-    add("https://icon.horse/icon/"+encodeURIComponent(d),{minSize:40,kind:"icon-horse"});
-
-    // 再尝试网站常见的高清触屏/应用图标路径。
-    try{
-      const u=new URL(site.url);
-      add(u.origin+"/apple-touch-icon.png",{minSize:48,kind:"apple-touch"});
-      add(u.origin+"/apple-touch-icon-precomposed.png",{minSize:48,kind:"apple-touch"});
-      add(u.origin+"/android-chrome-192x192.png",{minSize:48,kind:"android-192"});
-      add(u.origin+"/favicon-196x196.png",{minSize:48,kind:"favicon-196"});
-      add(u.origin+"/favicon.png",{minSize:32,kind:"favicon-png"});
-      add(u.origin+"/favicon.ico",{minSize:32,kind:"favicon-ico"});
-    }catch{}
-
-    add("https://icons.duckduckgo.com/ip3/"+encodeURIComponent(d)+".ico",{minSize:32,kind:"duckduckgo"});
-  }
-
-  // 收藏夹里自带的大量图标只有 16x16，放在最后兜底。
-  // createSiteIcon 会先检查尺寸；太小就不用，避免强行放大变糊。
-  if(own)add(own,{minSize:32,kind:"bookmark"});
   return out;
+}
+
+let __iconUpgradeObserver=null;
+function getIconUpgradeObserver(){
+  if(__iconUpgradeObserver)return __iconUpgradeObserver;
+  if(!("IntersectionObserver" in window))return null;
+
+  __iconUpgradeObserver=new IntersectionObserver(entries=>{
+    for(const entry of entries){
+      if(!entry.isIntersecting)continue;
+      const wrap=entry.target;
+      __iconUpgradeObserver.unobserve(wrap);
+      const run=wrap.__startIconUpgrade;
+      if(typeof run==="function")run();
+    }
+  },{rootMargin:"220px 0px"});
+  return __iconUpgradeObserver;
 }
 
 function createSiteIcon(site,className="site-icon"){
@@ -1731,19 +2581,26 @@ function createSiteIcon(site,className="site-icon"){
   wrap.className=className;
 
   const fb=document.createElement("span");
-  fb.className="site-fallback is-hidden";
-  const label=((site.name||site.domain||"?").trim().charAt(0)||"?").toUpperCase();
-  const colors=gradientFor((site.domain||"")+(site.name||""));
+  fb.className="site-fallback";
+
+  const rawName=(site.name||site.domain||"?").trim();
+  const d=(site.domain||safeDomain(site.url)||"").replace(/^www\./,"");
+  const asciiInitial=(rawName.match(/[A-Za-z0-9]/)||[])[0];
+  const label=(asciiInitial||rawName.charAt(0)||d.charAt(0)||"?").toUpperCase();
+
+  const colors=gradientFor((d||"")+(rawName||""));
   fb.textContent=label;
   fb.style.background=`linear-gradient(135deg,${colors[0]},${colors[1]})`;
   wrap.append(fb);
 
-  const sources=iconSources(site);
-  if(!sources.length){
-    fb.classList.remove("is-hidden");
-    wrap.classList.add("fallback-mode");
-    return wrap;
-  }
+  wrap.classList.add("fallback-mode");
+  wrap.dataset.iconQuality="vector";
+
+  const override=validIconValue(state.iconOverrides?.[site.id]);
+  const own=validIconValue(site.icon);
+  const urlIcon=validIconValue(site.iconUrl);
+  const id=String(site.id||"");
+  const builtIn=id.startsWith("v15_");
 
   const img=document.createElement("img");
   img.alt="";
@@ -1751,49 +2608,118 @@ function createSiteIcon(site,className="site-icon"){
   img.referrerPolicy="no-referrer";
   img.loading="lazy";
 
-  let i=0;
-  let current=null;
-
-  const useFallback=()=>{
+  const showVector=()=>{
     img.remove();
     fb.classList.remove("is-hidden");
-    wrap.classList.remove("favicon-mode");
-    wrap.classList.add("fallback-mode");
+    wrap.classList.remove("favicon-mode","icon-upgrading");
+    wrap.classList.add("fallback-mode","is-lowres-rejected");
+    wrap.dataset.iconQuality="vector";
     wrap.removeAttribute("data-icon-source");
   };
 
-  const loadNext=()=>{
-    if(i>=sources.length){
-      useFallback();
-      return;
-    }
-    current=sources[i++];
-    img.src=current.url;
+  const setImage=(url,quality="hd",minSize=0,timeout=2800)=>{
+    return new Promise(resolve=>{
+      const probe=new Image();
+      probe.decoding="async";
+      probe.referrerPolicy="no-referrer";
+
+      let settled=false;
+      const finish=v=>{
+        if(settled)return;
+        settled=true;
+        clearTimeout(timer);
+        probe.onload=probe.onerror=null;
+        resolve(v);
+      };
+      const timer=setTimeout(()=>finish(false),timeout);
+
+      probe.onload=()=>{
+        const natural=Math.max(probe.naturalWidth||0,probe.naturalHeight||0);
+        if(quality!=="custom" && minSize && natural<minSize){
+          finish(false);
+          return;
+        }
+
+        img.onload=()=>{
+          fb.classList.add("is-hidden");
+          wrap.classList.remove("fallback-mode","is-lowres-rejected","icon-upgrading");
+          wrap.classList.add("favicon-mode");
+          wrap.dataset.iconQuality=quality;
+          finish(true);
+        };
+        img.onerror=()=>finish(false);
+
+        if(!img.isConnected)wrap.append(img);
+        img.src=url;
+      };
+
+      probe.onerror=()=>finish(false);
+      probe.src=url;
+    });
   };
 
-  img.onload=()=>{
-    const natural=Math.max(img.naturalWidth||0,img.naturalHeight||0);
+  // 用户自己上传/指定的图标始终最高优先级
+  const fixedIcon=override||urlIcon||(!builtIn?own:"");
+  if(fixedIcon){
+    setImage(fixedIcon,"custom",0,2200).then(ok=>{
+      if(!ok)showVector();
+    });
+    return wrap;
+  }
 
-    // 用户自定义图标直接采用；自动图标必须达到最低尺寸，
-    // 这样 16x16/24x24 的小 favicon 不会被硬拉成 30px。
-    if(!current?.force && current?.minSize && natural<current.minSize){
-      loadNext();
-      return;
+  const sources=iconSources(site);
+  let started=false;
+
+  const startUpgrade=async()=>{
+    if(started)return;
+    started=true;
+    wrap.classList.add("icon-upgrading");
+
+    // 1) 外网高清图标优先
+    for(const current of sources){
+      const ok=await setImage(current.url,"hd",current.minSize||32,2600);
+      if(ok){
+        wrap.dataset.iconSource=current.kind||"auto";
+        wrap.classList.remove("icon-upgrading");
+        return;
+      }
     }
 
-    fb.classList.add("is-hidden");
-    wrap.classList.remove("fallback-mode");
-    wrap.classList.add("favicon-mode");
-    wrap.dataset.iconSource=current?.kind||"auto";
+    // 2) 全部外网/站点高清源失败后，使用收藏夹自带图标
+    //    只要能显示就保底，避免不开 VPN 时出现空白。
+    if(own){
+      const ok=await setImage(own,"local",0,1200);
+      if(ok){
+        wrap.dataset.iconSource="embedded-bookmark";
+        wrap.classList.remove("icon-upgrading");
+        return;
+      }
+    }
+
+    // 3) 最后使用永远清晰的矢量字母
+    wrap.classList.remove("icon-upgrading");
+    showVector();
   };
 
-  img.onerror=loadNext;
-  wrap.append(img);
-  loadNext();
+  wrap.__startIconUpgrade=startUpgrade;
+  const observer=getIconUpgradeObserver();
+  if(observer)observer.observe(wrap);
+  else setTimeout(startUpgrade,60);
+
   return wrap;
 }
 function toast(msg){const el=$("#toast");el.textContent=msg;el.classList.add("show");clearTimeout(window.__toast);window.__toast=setTimeout(()=>el.classList.remove("show"),1800)}
-function recordRecent(id){state.recents=[id,...state.recents.filter(x=>x!==id)].slice(0,30);save();updateCounts();renderHeroRecent()}
+function recordRecent(id){
+  state.recents=[id,...state.recents.filter(x=>x!==id)].slice(0,30);
+  try{
+    const key="fxnav_usage_stats_v157";
+    const stats=parseStored(key,{});
+    const now=Date.now(),prev=stats[id]||{count:0,last:0};
+    stats[id]={count:Math.min(99999,(Number(prev.count)||0)+1),last:now};
+    STORE.set(key,JSON.stringify(stats));
+  }catch{}
+  save();updateCounts();renderHeroRecent();
+}
 function toggleFavorite(id){state.favorites.has(id)?state.favorites.delete(id):state.favorites.add(id);save();render()}
 let suppressCardClickUntil=0;
 function attachQuickManage(target,link,site){
@@ -2555,11 +3481,26 @@ function orderedSites(items,category){
   const rank=new Map(order.map((id,i)=>[id,i])),original=new Map(items.map((s,i)=>[s.id,i]));
   return [...items].sort((a,b)=>(rank.has(a.id)?rank.get(a.id):Number.MAX_SAFE_INTEGER)-(rank.has(b.id)?rank.get(b.id):Number.MAX_SAFE_INTEGER)||(original.get(a.id)-original.get(b.id)));
 }
-function save(){
-  const entries=[[KEYS.favorites,JSON.stringify([...state.favorites])],[KEYS.recents,JSON.stringify(state.recents.slice(0,30))],[KEYS.custom,JSON.stringify(state.custom)],[KEYS.categoryOverrides,JSON.stringify(state.categoryOverrides)],[KEYS.iconOverrides,JSON.stringify(state.iconOverrides)],[KEYS.hiddenSites,JSON.stringify([...state.hiddenSites])],[KEYS.siteEdits,JSON.stringify(state.siteEdits)],[KEYS.customCategories,JSON.stringify(state.customCategories)],[KEYS.categoryOrder,JSON.stringify(state.categoryOrder)],[KEYS.categoryIconOverrides,JSON.stringify(state.categoryIconOverrides)],[KEYS.siteOrder,JSON.stringify(state.siteOrder)]];
+function saveLocalState(){
+  const entries=[
+    [KEYS.favorites,JSON.stringify([...state.favorites])],
+    [KEYS.recents,JSON.stringify(state.recents.slice(0,30))],
+    [KEYS.custom,JSON.stringify(state.custom)],
+    [KEYS.categoryOverrides,JSON.stringify(state.categoryOverrides)],
+    [KEYS.iconOverrides,JSON.stringify(state.iconOverrides)],
+    [KEYS.hiddenSites,JSON.stringify([...state.hiddenSites])],
+    [KEYS.siteEdits,JSON.stringify(state.siteEdits)],
+    [KEYS.customCategories,JSON.stringify(state.customCategories)],
+    [KEYS.categoryOrder,JSON.stringify(state.categoryOrder)],
+    [KEYS.categoryIconOverrides,JSON.stringify(state.categoryIconOverrides)],
+    [KEYS.siteOrder,JSON.stringify(state.siteOrder)]
+  ];
   const previous=new Map(entries.map(([k])=>[k,STORE.get(k)]));
-  try{for(const [k,v] of entries)if(!STORE.set(k,v))throw new Error("storage");updateStorageUsage();return true}
-  catch{
+  try{
+    for(const [k,v] of entries)if(!STORE.set(k,v))throw new Error("storage");
+    updateStorageUsage();
+    return true;
+  }catch{
     for(const [k,v] of previous){if(v===null)STORE.remove(k);else STORE.set(k,v)}
     try{
       state.favorites=new Set(previous.get(KEYS.favorites)?JSON.parse(previous.get(KEYS.favorites)):[]);
@@ -2574,8 +3515,16 @@ function save(){
       state.categoryIconOverrides=previous.get(KEYS.categoryIconOverrides)?JSON.parse(previous.get(KEYS.categoryIconOverrides)):{};
       state.siteOrder=previous.get(KEYS.siteOrder)?JSON.parse(previous.get(KEYS.siteOrder)):{};
     }catch{}
-    toast("本地存储空间不足，修改未保存");updateStorageUsage();return false;
+    toast("本地存储空间不足，修改未保存");
+    updateStorageUsage();
+    return false;
   }
+}
+
+function save(){
+  const ok=saveLocalState();
+  if(ok&&window.__fxCloudSchedulePush)window.__fxCloudSchedulePush();
+  return ok;
 }
 
 /* ===================== V15 · 收藏夹数据迁移 =====================
@@ -2637,16 +3586,28 @@ function movedCount(){return Object.keys(state.categoryOverrides).filter(id=>raw
 
 
 /* ===================== V15.3 UI Pro helpers ===================== */
+function getUsageStatsV157(){
+  const raw=parseStored("fxnav_usage_stats_v157",{});
+  return raw&&typeof raw==="object"&&!Array.isArray(raw)?raw:{};
+}
 function getHeroRecentSites(){
   const pool=allSites().filter(site=>!state.hiddenSites.has(site.id));
-  const byId=new Map(pool.map(site=>[site.id,site]));
-  const picked=[];
-  const seen=new Set();
-  const take=id=>{const site=byId.get(id);if(site&&!seen.has(id)){seen.add(id);picked.push(site)}};
-  state.recents.forEach(take);
-  [...state.favorites].forEach(take);
-  pool.forEach(site=>{if(picked.length<4)take(site.id)});
-  return picked.slice(0,4);
+  const usage=getUsageStatsV157();
+  const recentRank=new Map(state.recents.map((id,i)=>[id,i]));
+  const now=Date.now();
+
+  return [...pool].sort((a,b)=>{
+    const score=site=>{
+      const u=usage[site.id]||{};
+      const count=Math.max(0,Number(u.count)||0);
+      const age=Math.max(0,now-(Number(u.last)||0));
+      const freshness=u.last?Math.max(0,18-age/86400000):0;
+      const recent=recentRank.has(site.id)?Math.max(0,28-recentRank.get(site.id)*1.6):0;
+      const favorite=state.favorites.has(site.id)?16:0;
+      return Math.log2(count+1)*9+freshness+recent+favorite;
+    };
+    return score(b)-score(a);
+  }).slice(0,4);
 }
 
 function renderHeroRecent(){
@@ -2675,7 +3636,7 @@ function renderHeroRecent(){
 }
 
 function updateNavIndicator(){
-  const indicator=$("#navActiveIndicator"),active=$(".nav-btn.active"),sidebar=$("#sidebar");
+  const indicator=$("#navActiveIndicator"),active=(state.filter==="all"&&!state.query.trim()?$(".nav-btn.scroll-active")||$(".nav-btn.active"):$(".nav-btn.active")),sidebar=$("#sidebar");
   if(!indicator||!active||!sidebar)return;
   const y=active.offsetTop+(active.offsetHeight-36)/2;
   indicator.style.height="36px";
@@ -2709,15 +3670,125 @@ function syncCompactControls(){
   const compactTheme=$("#compactThemeBtn"),mainTheme=$("#themeBtn");if(compactTheme&&mainTheme)compactTheme.textContent=mainTheme.textContent;
 }
 
-/* V13 view */
+
+/* ===================== V15.7 helpers ===================== */
+let __sectionSpyObserver=null,__sectionSpyTimer=0;
+function clearSectionSpy(){
+  $$(".nav-btn.scroll-active").forEach(btn=>btn.classList.remove("scroll-active"));
+  document.body.classList.remove("scroll-spy-active");
+}
+function setScrollSpyCategory(cat){
+  if(state.filter!=="all"||state.query.trim())return clearSectionSpy();
+  let matched=false;
+  $$(".nav-btn").forEach(btn=>{
+    const on=btn.dataset.filter===cat;
+    btn.classList.toggle("scroll-active",on);
+    if(on)matched=true;
+  });
+  document.body.classList.toggle("scroll-spy-active",matched);
+  if(matched)requestAnimationFrame(updateNavIndicator);
+}
+function initSectionSpy(){
+  if(__sectionSpyObserver){__sectionSpyObserver.disconnect();__sectionSpyObserver=null}
+  clearSectionSpy();
+  if(state.filter!=="all"||state.query.trim())return;
+  const sections=$$("#content .section[data-category]").filter(s=>s.dataset.category);
+  if(!sections.length)return;
+
+  __sectionSpyObserver=new IntersectionObserver(entries=>{
+    const candidates=entries.filter(e=>e.isIntersecting&&e.target.dataset.category);
+    if(!candidates.length)return;
+    candidates.sort((a,b)=>Math.abs(a.boundingClientRect.top-105)-Math.abs(b.boundingClientRect.top-105));
+    setScrollSpyCategory(candidates[0].target.dataset.category);
+  },{root:null,rootMargin:"-86px 0px -62% 0px",threshold:[0,.01]});
+  sections.forEach(sec=>__sectionSpyObserver.observe(sec));
+}
+function scheduleSectionSpy(){
+  clearTimeout(__sectionSpyTimer);
+  __sectionSpyTimer=setTimeout(initSectionSpy,30);
+}
+
+const V157_DENSITY_KEY="fxnav_density_v157";
+function applyDensityV157(){
+  const compact=STORE.get(V157_DENSITY_KEY)==="compact";
+  document.body.classList.toggle("density-compact",compact);
+  const btn=$("#densityBtn");
+  if(btn)btn.innerHTML=compact?'<span class="tool-glyph">▤</span><span>舒适</span>':'<span class="tool-glyph">▦</span><span>紧凑</span>';
+  const compactBtn=$("#compactDensityBtn");
+  if(compactBtn){compactBtn.textContent=compact?"▤":"▦";compactBtn.title=compact?"切换舒适布局":"切换紧凑布局"}
+}
+function toggleDensityV157(){
+  const compact=!document.body.classList.contains("density-compact");
+  STORE.set(V157_DENSITY_KEY,compact?"compact":"comfortable");
+  applyDensityV157();
+  toast(compact?"已切换紧凑布局":"已切换舒适布局");
+}
+
+function syncMobileBottomBar(){
+  const fav=$("#mobileFavoriteBtn"),home=$("#mobileHomeBtn");
+  if(fav)fav.classList.toggle("active",state.filter==="favorite");
+  if(home)home.classList.toggle("active",state.filter!=="favorite");
+}
+
+/* V13/V15.7 view */
+function categoryDescription(cat){
+  const map={
+    "常用·搜索":"搜索入口与每天最常打开的基础工具",
+    "AI 助手·聚合":"AI 对话、模型聚合与智能助理",
+    "AI 图像·视频":"AI 绘图、视频生成与视觉创作",
+    "设计·灵感":"设计平台、视觉参考与创意灵感",
+    "素材·字体·PPT":"图片素材、字体、模板与演示资源",
+    "图片·文档工具":"图片处理、格式转换与文档效率工具",
+    "工具·导航":"在线工具集合、网址导航与效率入口",
+    "开发·技术":"代码托管、开发工具与技术资源",
+    "软件·系统":"软件下载、系统工具与桌面应用",
+    "网络·测速·IP":"IP 检测、网络质量、测速与诊断",
+    "VPN·代理":"代理工具、节点检测与网络辅助",
+    "影音·直播":"视频、影视、直播与音乐内容",
+    "游戏·资源":"游戏相关资源与实用工具",
+    "学习·知识":"知识平台、课程、资料与学习工具",
+    "政务·法律":"政务服务、法律查询与公共信息",
+    "电商·购物":"购物平台、商品服务与电商工具",
+    "账号·订阅":"账号管理、订阅服务与价格信息",
+    "生活·出行":"地图、物流、汽车与生活服务",
+    "社交·社区":"社交平台、社区与内容交流",
+    "文件·下载·传输":"文件传输、临时网盘与下载工具",
+    "搜索结果":"按名称、域名、标题与分类匹配",
+    "我的收藏":"你手动收藏的常用网站",
+    "最近访问":"按最近打开顺序排列"
+  };
+  return map[cat]||"自定义收藏分类";
+}
 function sectionBlock(cat,items,icon){
   const isRealCategory=!!categoryByName(cat),sorted=isRealCategory?orderedSites(items,cat):items;
   const sec=document.createElement("section");sec.className="section";sec.dataset.category=isRealCategory?cat:"";
-  const head=document.createElement("div");head.className="section-head";const title=document.createElement("div");title.className="section-title";
-  const badge=document.createElement("span");badge.className="section-badge";badge.textContent=icon||"•";const h=document.createElement("h2");h.textContent=cat;const small=document.createElement("small");small.textContent="· "+sorted.length;h.append(small);title.append(badge,h);head.append(title);sec.append(head);
+
+  const head=document.createElement("div");head.className="section-head";
+  const title=document.createElement("div");title.className="section-title";
+  const badge=document.createElement("span");badge.className="section-badge";badge.textContent=icon||"•";
+
+  const copy=document.createElement("div");copy.className="section-heading-copy";
+  const line=document.createElement("div");line.className="section-heading-line";
+  const h=document.createElement("h2");h.textContent=cat;
+  const total=document.createElement("span");total.className="section-total";total.textContent=`${sorted.length} 个`;
+  line.append(h,total);
+  const desc=document.createElement("div");desc.className="section-desc";desc.textContent=categoryDescription(cat);
+  copy.append(line,desc);
+  title.append(badge,copy);head.append(title);sec.append(head);
+
   const grid=document.createElement("div");grid.className="grid";grid.dataset.category=isRealCategory?cat:"";
-  sorted.forEach(site=>{const card=createCard(site);card.dataset.siteId=site.id;if(isRealCategory){card.draggable=!!state.sortMode;const handle=document.createElement("span");handle.className="sort-handle";handle.textContent="⋮⋮";handle.title="拖拽排序";card.append(handle);bindSiteDrag(card,grid,site)}grid.append(card)});
-  if(isRealCategory)bindGridDrop(grid,cat);sec.append(grid);return sec;
+  sorted.forEach(site=>{
+    const card=createCard(site);card.dataset.siteId=site.id;
+    if(isRealCategory){
+      card.draggable=!!state.sortMode;
+      const handle=document.createElement("span");handle.className="sort-handle";handle.textContent="⋮⋮";handle.title="拖拽排序";
+      card.append(handle);bindSiteDrag(card,grid,site)
+    }
+    grid.append(card)
+  });
+  if(isRealCategory)bindGridDrop(grid,cat);
+  sec.append(grid);
+  return sec;
 }
 function render(opts={}){
   const content=$("#content");content.innerHTML="";const visible=filteredSites();
@@ -2726,7 +3797,7 @@ function render(opts={}){
   else if(state.filter==="recent")content.append(visible.length?sectionBlock("最近访问",visible,"↺"):emptyBlock("还没有最近访问记录"));
   else if(state.filter!=="all"){const c=categoryByName(state.filter);content.append(visible.length?sectionBlock(state.filter,visible,c?.icon||"•"):emptyBlock("这个分类还没有网站"))}
   else allCategories().forEach(c=>{const g=visible.filter(s=>effectiveCategory(s)===c.name);if(g.length)content.append(sectionBlock(c.name,g,c.icon))});
-  document.body.classList.toggle("sort-mode",!!state.sortMode);const sortBtn=$("#sortModeBtn");if(sortBtn){sortBtn.classList.toggle("active",!!state.sortMode);sortBtn.innerHTML=state.sortMode?'<span class="tool-glyph">✓</span><span>完成排序</span>':'<span class="tool-glyph">↕</span><span>排序</span>'}updateCounts();renderHeroRecent();syncCompactControls();if(opts.animate)animateContentIn();
+  document.body.classList.toggle("sort-mode",!!state.sortMode);const sortBtn=$("#sortModeBtn");if(sortBtn){sortBtn.classList.toggle("active",!!state.sortMode);sortBtn.innerHTML=state.sortMode?'<span class="tool-glyph">✓</span><span>完成排序</span>':'<span class="tool-glyph">↕</span><span>排序</span>'}updateCounts();renderHeroRecent();syncCompactControls();scheduleSectionSpy();syncMobileBottomBar();if(opts.animate)animateContentIn();
 }
 function buildNav(){
   const box=$("#categoryNav");box.innerHTML="";
@@ -2824,7 +3895,278 @@ function buildCategoryContext(site){
   tools.append(editBtn,iconBtn,resetIcon,copyBtn,deleteBtn);menu.append(head,label,grid,footer,tools);
 }
 
-const __v15Migrated=migrateBuiltinDataV15();sanitizeState();if(save()&&__v15Migrated)STORE.set(V15_BUILTIN_DATA_KEY,V15_BUILTIN_DATA_VERSION);applyTheme();buildNav();buildCategorySelect();buildMoveCategorySelect();buildMoveSiteOptions();render();renderCategoryManager();renderDeletedList();refreshIconPreview();updateStorageUsage();
+
+/* ===================== V16 Cloud Sync Runtime ===================== */
+const CLOUD_API="/api/state";
+const CLOUD_CACHE_KEY="fxnav_cloud_cache_v16";
+const CLOUD_CLIENT_KEY="fxnav_cloud_client_v16";
+
+const CLOUD_SYNC={
+  ready:false,
+  loading:false,
+  pushing:false,
+  suppressPush:false,
+  revision:0,
+  updatedAt:"",
+  lastHash:"",
+  pushTimer:0,
+  pullTimer:0,
+  clientId:STORE.get(CLOUD_CLIENT_KEY)||("")
+};
+
+if(!CLOUD_SYNC.clientId){
+  CLOUD_SYNC.clientId=(crypto?.randomUUID?.()||("client_"+Date.now()+"_"+Math.random().toString(36).slice(2)));
+  STORE.set(CLOUD_CLIENT_KEY,CLOUD_SYNC.clientId);
+}
+
+function setCloudStatus(mode,text,title=""){
+  const el=$("#cloudStatus"),txt=$("#cloudStatusText"),compact=$("#compactCloudStatus");
+  if(el){
+    el.dataset.state=mode||"";
+    if(txt)txt.textContent=text||"";
+    if(title)el.title=title;
+  }
+  if(compact){
+    compact.dataset.state=mode||"";
+    compact.title=title||text||"云同步";
+  }
+}
+
+function cloudSerializableState(){
+  return {
+    schema:1,
+    favorites:[...state.favorites],
+    recents:[...state.recents].slice(0,30),
+    custom:cloneJSON(state.custom||[]),
+    categoryOverrides:cloneJSON(state.categoryOverrides||{}),
+    iconOverrides:cloneJSON(state.iconOverrides||{}),
+    hiddenSites:[...state.hiddenSites],
+    siteEdits:cloneJSON(state.siteEdits||{}),
+    customCategories:cloneJSON(state.customCategories||[]),
+    categoryOrder:[...state.categoryOrder],
+    categoryIconOverrides:cloneJSON(state.categoryIconOverrides||{}),
+    siteOrder:cloneJSON(state.siteOrder||{}),
+    usageStats:typeof getUsageStatsV157==="function"?getUsageStatsV157():{},
+    density:STORE.get(V157_DENSITY_KEY)||"comfortable",
+    theme:document.documentElement.dataset.theme||STORE.get(KEYS.theme)||"dark"
+  };
+}
+
+function stableCloudHash(data){
+  try{return JSON.stringify(data)}catch{return ""}
+}
+
+function applyCloudPayload(data,{renderUI=true}={}){
+  if(!data||typeof data!=="object")return false;
+  CLOUD_SYNC.suppressPush=true;
+  try{
+    state.favorites=new Set(Array.isArray(data.favorites)?data.favorites:[]);
+    state.recents=Array.isArray(data.recents)?data.recents.slice(0,30):[];
+    state.custom=Array.isArray(data.custom)?data.custom:[];
+    state.categoryOverrides=data.categoryOverrides&&typeof data.categoryOverrides==="object"&&!Array.isArray(data.categoryOverrides)?data.categoryOverrides:{};
+    state.iconOverrides=data.iconOverrides&&typeof data.iconOverrides==="object"&&!Array.isArray(data.iconOverrides)?data.iconOverrides:{};
+    state.hiddenSites=new Set(Array.isArray(data.hiddenSites)?data.hiddenSites:[]);
+    state.siteEdits=data.siteEdits&&typeof data.siteEdits==="object"&&!Array.isArray(data.siteEdits)?data.siteEdits:{};
+    state.customCategories=Array.isArray(data.customCategories)?data.customCategories:[];
+    state.categoryOrder=Array.isArray(data.categoryOrder)?data.categoryOrder:[];
+    state.categoryIconOverrides=data.categoryIconOverrides&&typeof data.categoryIconOverrides==="object"&&!Array.isArray(data.categoryIconOverrides)?data.categoryIconOverrides:{};
+    state.siteOrder=data.siteOrder&&typeof data.siteOrder==="object"&&!Array.isArray(data.siteOrder)?data.siteOrder:{};
+
+    if(data.usageStats&&typeof data.usageStats==="object"&&!Array.isArray(data.usageStats)){
+      STORE.set("fxnav_usage_stats_v157",JSON.stringify(data.usageStats));
+    }
+    if(data.density==="compact"||data.density==="comfortable"){
+      STORE.set(V157_DENSITY_KEY,data.density);
+    }
+    if(data.theme==="light"||data.theme==="dark"){
+      STORE.set(KEYS.theme,data.theme);
+      document.documentElement.dataset.theme=data.theme;
+    }
+
+    sanitizeState();
+    saveLocalState();
+    STORE.set(CLOUD_CACHE_KEY,JSON.stringify(data));
+    CLOUD_SYNC.lastHash=stableCloudHash(cloudSerializableState());
+
+    if(renderUI){
+      applyTheme();
+      if(typeof applyDensityV157==="function")applyDensityV157();
+      buildNav();
+      buildCategorySelect();
+      buildMoveCategorySelect();
+      buildMoveSiteOptions();
+      render();
+      renderCategoryManager();
+      renderDeletedList();
+      renderCustomList();
+      refreshIconPreview();
+      updateStorageUsage();
+    }
+    return true;
+  }finally{
+    CLOUD_SYNC.suppressPush=false;
+  }
+}
+
+async function cloudRequest(method,body){
+  const opts={
+    method,
+    headers:{"Accept":"application/json"},
+    credentials:"same-origin",
+    cache:"no-store"
+  };
+  if(body!==undefined){
+    opts.headers["Content-Type"]="application/json";
+    opts.body=JSON.stringify(body);
+  }
+  const res=await fetch(CLOUD_API,opts);
+  let payload=null;
+  try{payload=await res.json()}catch{}
+  if(!res.ok){
+    const err=new Error(payload?.error||("HTTP "+res.status));
+    err.status=res.status;
+    err.payload=payload;
+    throw err;
+  }
+  return payload;
+}
+
+async function pushCloudState({force=false,quiet=false}={}){
+  if(!CLOUD_SYNC.ready||CLOUD_SYNC.suppressPush||CLOUD_SYNC.pushing)return false;
+  const data=cloudSerializableState();
+  const hash=stableCloudHash(data);
+  if(!force&&hash&&hash===CLOUD_SYNC.lastHash)return true;
+
+  CLOUD_SYNC.pushing=true;
+  if(!quiet)setCloudStatus("syncing","保存中…","正在保存到 Cloudflare D1");
+  try{
+    const result=await cloudRequest("PUT",{
+      baseRevision:CLOUD_SYNC.revision,
+      data,
+      clientId:CLOUD_SYNC.clientId,
+      force:false
+    });
+    CLOUD_SYNC.revision=Number(result.revision)||CLOUD_SYNC.revision;
+    CLOUD_SYNC.updatedAt=result.updatedAt||"";
+    CLOUD_SYNC.lastHash=hash;
+    STORE.set(CLOUD_CACHE_KEY,JSON.stringify(data));
+    setCloudStatus("synced","已同步","云端已同步 · "+(CLOUD_SYNC.updatedAt||""));
+    return true;
+  }catch(err){
+    if(err.status===409&&err.payload?.revision){
+      // 单用户场景：先刷新 revision，再重试一次；服务器会保留旧版本备份。
+      try{
+        CLOUD_SYNC.revision=Number(err.payload.revision)||CLOUD_SYNC.revision;
+        const retry=await cloudRequest("PUT",{
+          baseRevision:CLOUD_SYNC.revision,
+          data,
+          clientId:CLOUD_SYNC.clientId,
+          force:true
+        });
+        CLOUD_SYNC.revision=Number(retry.revision)||CLOUD_SYNC.revision;
+        CLOUD_SYNC.updatedAt=retry.updatedAt||"";
+        CLOUD_SYNC.lastHash=hash;
+        STORE.set(CLOUD_CACHE_KEY,JSON.stringify(data));
+        setCloudStatus("synced","已同步","检测到其他设备更新，已保存本机最新修改并创建云端备份");
+        return true;
+      }catch(retryErr){
+        err=retryErr;
+      }
+    }
+
+    if(!navigator.onLine||err.status===0){
+      setCloudStatus("offline","待同步","网络不可用，本地修改已保留；恢复网络后自动同步");
+    }else if(err.status===401||err.status===403){
+      setCloudStatus("error","未授权","请先配置 Cloudflare Access，并确认 ALLOWED_EMAIL");
+    }else{
+      setCloudStatus("error","同步失败","云同步失败："+(err.message||"未知错误"));
+    }
+    return false;
+  }finally{
+    CLOUD_SYNC.pushing=false;
+  }
+}
+
+function scheduleCloudPushV16(){
+  if(!CLOUD_SYNC.ready||CLOUD_SYNC.suppressPush)return;
+  clearTimeout(CLOUD_SYNC.pushTimer);
+  setCloudStatus("syncing","保存中…","本地已保存，准备同步云端");
+  CLOUD_SYNC.pushTimer=setTimeout(()=>pushCloudState(),650);
+}
+window.__fxCloudSchedulePush=scheduleCloudPushV16;
+
+async function pullCloudStateV16({initial=false,quiet=false}={}){
+  if(CLOUD_SYNC.loading)return false;
+  CLOUD_SYNC.loading=true;
+  if(!quiet)setCloudStatus("syncing",initial?"连接云端…":"检查更新…","正在读取 Cloudflare D1");
+  try{
+    const result=await cloudRequest("GET");
+    CLOUD_SYNC.revision=Number(result.revision)||0;
+    CLOUD_SYNC.updatedAt=result.updatedAt||"";
+
+    if(result.exists&&result.data){
+      const incomingHash=stableCloudHash(result.data);
+      if(incomingHash!==CLOUD_SYNC.lastHash){
+        applyCloudPayload(result.data,{renderUI:true});
+      }else{
+        CLOUD_SYNC.lastHash=incomingHash;
+      }
+      CLOUD_SYNC.ready=true;
+      setCloudStatus("synced","已同步","云端版本 "+CLOUD_SYNC.revision+" · "+(CLOUD_SYNC.updatedAt||""));
+      return true;
+    }
+
+    // 云端为空：把当前浏览器作为第一次初始化数据源。
+    CLOUD_SYNC.ready=true;
+    CLOUD_SYNC.revision=0;
+    CLOUD_SYNC.lastHash="";
+    setCloudStatus("syncing","初始化…","云端为空，正在上传本机导航数据");
+    const ok=await pushCloudState({force:true});
+    if(ok)toast("V16 云同步已初始化：本机数据已上传云端");
+    return ok;
+  }catch(err){
+    CLOUD_SYNC.ready=false;
+    if(err.status===401||err.status===403){
+      setCloudStatus("error","未授权","API 已拒绝访问：请配置 Cloudflare Access / ALLOWED_EMAIL");
+    }else if(!navigator.onLine){
+      setCloudStatus("offline","离线","当前使用本地缓存，联网后自动同步");
+    }else{
+      setCloudStatus("error","云端未连接","请检查 Pages Functions 与 D1 的 DB 绑定");
+    }
+    return false;
+  }finally{
+    CLOUD_SYNC.loading=false;
+  }
+}
+
+async function initCloudSyncV16(){
+  setCloudStatus("syncing","连接云端…","正在连接 Cloudflare Pages Functions");
+  await pullCloudStateV16({initial:true});
+
+  window.addEventListener("online",()=>{
+    if(CLOUD_SYNC.ready)pushCloudState({force:true});
+    else pullCloudStateV16({initial:false});
+  });
+
+  window.addEventListener("offline",()=>{
+    setCloudStatus("offline","离线","本地仍可使用，恢复网络后自动同步");
+  });
+
+  window.addEventListener("focus",()=>{
+    if(document.visibilityState==="visible")pullCloudStateV16({quiet:true});
+  });
+
+  document.addEventListener("visibilitychange",()=>{
+    if(document.visibilityState==="visible")pullCloudStateV16({quiet:true});
+  });
+
+  // 页面打开期间每 60 秒检查一次其他设备修改。
+  CLOUD_SYNC.pullTimer=setInterval(()=>{
+    if(document.visibilityState==="visible"&&navigator.onLine)pullCloudStateV16({quiet:true});
+  },60000);
+}
+
+const __v15Migrated=migrateBuiltinDataV15();sanitizeState();if(save()&&__v15Migrated)STORE.set(V15_BUILTIN_DATA_KEY,V15_BUILTIN_DATA_VERSION);applyTheme();buildNav();buildCategorySelect();buildMoveCategorySelect();buildMoveSiteOptions();render();renderCategoryManager();renderDeletedList();refreshIconPreview();updateStorageUsage();setTimeout(initCloudSyncV16,80);
 
 let searchRenderRAF=0;
 function queueSearchRender(value){
@@ -2926,7 +4268,7 @@ $("#addForm").addEventListener("submit",e=>{
   }catch(err){alert(err?.message||"添加失败")}
 });
 $("#exportBtn").onclick=()=>{
-  const payload={version:"15.3",favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides,iconOverrides:state.iconOverrides,hiddenSites:[...state.hiddenSites],siteEdits:state.siteEdits,customCategories:state.customCategories,categoryOrder:state.categoryOrder,categoryIconOverrides:state.categoryIconOverrides,siteOrder:state.siteOrder};
+  const payload={version:"16.0",favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides,iconOverrides:state.iconOverrides,hiddenSites:[...state.hiddenSites],siteEdits:state.siteEdits,customCategories:state.customCategories,categoryOrder:state.categoryOrder,categoryIconOverrides:state.categoryIconOverrides,siteOrder:state.siteOrder,usageStats:getUsageStatsV157(),density:STORE.get(V157_DENSITY_KEY)||"comfortable",theme:document.documentElement.dataset.theme||"dark",cloudRevision:CLOUD_SYNC.revision};
   const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);const ds=new Date().toISOString().slice(0,10).replaceAll("-","");a.download=`feitianxiaoxiang-nav-backup-v15.3-${ds}.json`;a.click();URL.revokeObjectURL(a.href);
 };
 $("#importBtn").onclick=()=>$("#importFile").click();
@@ -2937,7 +4279,7 @@ $("#importFile").addEventListener("change",async e=>{
     const d=JSON.parse(await file.text());if(!d||typeof d!=="object")throw new Error("配置格式无效");
     if(!confirm("导入配置会覆盖当前浏览器里的网站修改、分类、排序、收藏、自定义图标和删除状态。继续？"))return;
     const snapshot={custom:cloneJSON(state.custom),recents:[...state.recents],favorites:new Set(state.favorites),categoryOverrides:cloneJSON(state.categoryOverrides),iconOverrides:cloneJSON(state.iconOverrides),hiddenSites:new Set(state.hiddenSites),siteEdits:cloneJSON(state.siteEdits),customCategories:cloneJSON(state.customCategories),categoryOrder:[...state.categoryOrder],categoryIconOverrides:cloneJSON(state.categoryIconOverrides),siteOrder:cloneJSON(state.siteOrder)};
-    state.custom=Array.isArray(d.custom)?d.custom:[];state.recents=Array.isArray(d.recents)?d.recents:[];state.favorites=new Set(Array.isArray(d.favorites)?d.favorites:[]);state.categoryOverrides=(d.categoryOverrides&&typeof d.categoryOverrides==="object"&&!Array.isArray(d.categoryOverrides))?d.categoryOverrides:{};state.iconOverrides=(d.iconOverrides&&typeof d.iconOverrides==="object"&&!Array.isArray(d.iconOverrides))?d.iconOverrides:{};state.hiddenSites=new Set(Array.isArray(d.hiddenSites)?d.hiddenSites:[]);state.siteEdits=(d.siteEdits&&typeof d.siteEdits==="object"&&!Array.isArray(d.siteEdits))?d.siteEdits:{};state.customCategories=Array.isArray(d.customCategories)?d.customCategories:[];state.categoryOrder=Array.isArray(d.categoryOrder)?d.categoryOrder:[];state.categoryIconOverrides=(d.categoryIconOverrides&&typeof d.categoryIconOverrides==="object"&&!Array.isArray(d.categoryIconOverrides))?d.categoryIconOverrides:{};state.siteOrder=(d.siteOrder&&typeof d.siteOrder==="object"&&!Array.isArray(d.siteOrder))?d.siteOrder:{};
+    state.custom=Array.isArray(d.custom)?d.custom:[];state.recents=Array.isArray(d.recents)?d.recents:[];state.favorites=new Set(Array.isArray(d.favorites)?d.favorites:[]);state.categoryOverrides=(d.categoryOverrides&&typeof d.categoryOverrides==="object"&&!Array.isArray(d.categoryOverrides))?d.categoryOverrides:{};state.iconOverrides=(d.iconOverrides&&typeof d.iconOverrides==="object"&&!Array.isArray(d.iconOverrides))?d.iconOverrides:{};state.hiddenSites=new Set(Array.isArray(d.hiddenSites)?d.hiddenSites:[]);state.siteEdits=(d.siteEdits&&typeof d.siteEdits==="object"&&!Array.isArray(d.siteEdits))?d.siteEdits:{};state.customCategories=Array.isArray(d.customCategories)?d.customCategories:[];state.categoryOrder=Array.isArray(d.categoryOrder)?d.categoryOrder:[];state.categoryIconOverrides=(d.categoryIconOverrides&&typeof d.categoryIconOverrides==="object"&&!Array.isArray(d.categoryIconOverrides))?d.categoryIconOverrides:{};state.siteOrder=(d.siteOrder&&typeof d.siteOrder==="object"&&!Array.isArray(d.siteOrder))?d.siteOrder:{};if(d.usageStats&&typeof d.usageStats==="object"&&!Array.isArray(d.usageStats))STORE.set("fxnav_usage_stats_v157",JSON.stringify(d.usageStats));if(d.density==="compact"||d.density==="comfortable")STORE.set(V157_DENSITY_KEY,d.density);applyDensityV157();
     sanitizeState();
     if(!save()){Object.assign(state,{custom:snapshot.custom,recents:snapshot.recents,favorites:snapshot.favorites,categoryOverrides:snapshot.categoryOverrides,iconOverrides:snapshot.iconOverrides,hiddenSites:snapshot.hiddenSites,siteEdits:snapshot.siteEdits,customCategories:snapshot.customCategories,categoryOrder:snapshot.categoryOrder,categoryIconOverrides:snapshot.categoryIconOverrides,siteOrder:snapshot.siteOrder});throw new Error("导入数据超过浏览器本地存储容量，已恢复原配置")}
     refreshCategoryUI();renderDeletedList();updateStorageUsage();toast("V15.3 配置已导入");
@@ -3035,12 +4377,198 @@ if(window.matchMedia?.("(hover:hover) and (pointer:fine)").matches){
 window.addEventListener("resize",()=>requestAnimationFrame(updateNavIndicator),{passive:true});
 requestAnimationFrame(()=>{document.body.classList.add("page-ready");renderHeroRecent();syncCompactControls();updateNavIndicator()});
 
-/* ===================== V15.3 · Sync Architecture =====================
+
+/* ===================== V15.7 · Command Launcher ===================== */
+let __commandIndex=0,__commandItems=[];
+
+function launcherScoreSite(site,q){
+  const query=q.trim().toLowerCase();
+  const usage=getUsageStatsV157()[site.id]||{};
+  const recency=state.recents.indexOf(site.id);
+  let score=Math.log2((Number(usage.count)||0)+1)*4+(state.favorites.has(site.id)?7:0)+(recency>=0?Math.max(0,8-recency*.35):0);
+  if(!query)return score;
+  const name=String(site.name||"").toLowerCase();
+  const domain=String(site.domain||safeDomain(site.url)||"").toLowerCase();
+  const title=String(site.fullTitle||"").toLowerCase();
+  const cat=effectiveCategory(site).toLowerCase();
+  const tokens=query.split(/\s+/).filter(Boolean);
+  if(!tokens.every(t=>(`${name} ${domain} ${title} ${cat}`).includes(t)))return -9999;
+  if(name===query)score+=120;
+  else if(name.startsWith(query))score+=85;
+  else if(name.includes(query))score+=58;
+  if(domain.startsWith(query))score+=45;
+  else if(domain.includes(query))score+=28;
+  if(cat.includes(query))score+=18;
+  if(title.includes(query))score+=12;
+  return score;
+}
+
+function getLauncherResults(q){
+  const query=String(q||"").trim();
+  const sites=allSites()
+    .map(site=>({type:"site",site,score:launcherScoreSite(site,query)}))
+    .filter(x=>x.score>-9000)
+    .sort((a,b)=>b.score-a.score)
+    .slice(0,9);
+
+  const cats=query?allCategories()
+    .filter(c=>c.name.toLowerCase().includes(query.toLowerCase()))
+    .slice(0,3)
+    .map(c=>({type:"category",category:c,score:70})):[];
+  return [...cats,...sites];
+}
+
+function ensureCommandLauncher(){
+  if($("#commandBackdrop"))return;
+  const shell=document.createElement("div");
+  shell.id="commandBackdrop";shell.className="command-backdrop";shell.setAttribute("aria-hidden","true");
+  shell.innerHTML=`
+    <div class="command-panel" role="dialog" aria-modal="true" aria-label="快速启动">
+      <div class="command-search">
+        <span class="command-search-symbol">⌕</span>
+        <input id="commandInput" autocomplete="off" spellcheck="false" placeholder="搜索网站、分类或域名…" aria-label="快速搜索">
+        <span class="command-esc">ESC</span>
+      </div>
+      <div class="command-body" id="commandBody"></div>
+      <div class="command-footer"><span>↑ ↓ 选择</span><span>Enter 打开</span><span>Ctrl / ⌘ + K</span></div>
+    </div>`;
+  document.body.append(shell);
+
+  shell.addEventListener("pointerdown",e=>{if(e.target===shell)closeCommandLauncher()});
+  $("#commandInput").addEventListener("input",e=>renderCommandLauncher(e.target.value));
+  $("#commandInput").addEventListener("keydown",e=>{
+    if(e.key==="ArrowDown"){e.preventDefault();moveCommandSelection(1)}
+    else if(e.key==="ArrowUp"){e.preventDefault();moveCommandSelection(-1)}
+    else if(e.key==="Enter"){e.preventDefault();activateCommandSelection()}
+    else if(e.key==="Escape"){e.preventDefault();closeCommandLauncher()}
+  });
+}
+
+function renderCommandLauncher(q=""){
+  ensureCommandLauncher();
+  const body=$("#commandBody");body.innerHTML="";
+  __commandItems=getLauncherResults(q);
+  __commandIndex=Math.min(__commandIndex,Math.max(0,__commandItems.length-1));
+
+  const groupTitle=document.createElement("div");groupTitle.className="command-group-title";
+  groupTitle.textContent=q.trim()?"搜索结果":"常用与最近";
+  body.append(groupTitle);
+
+  if(!__commandItems.length){
+    const empty=document.createElement("div");empty.className="command-empty";empty.textContent="没有找到匹配的网站或分类";
+    body.append(empty);return;
+  }
+
+  __commandItems.forEach((item,index)=>{
+    const btn=document.createElement("button");btn.type="button";btn.className="command-item"+(index===__commandIndex?" active":"");
+    if(item.type==="category"){
+      const icon=document.createElement("span");icon.className="section-badge";icon.textContent=item.category.icon||"•";
+      const copy=document.createElement("span");copy.className="command-copy";
+      const name=document.createElement("span");name.className="command-name";name.textContent=item.category.name;
+      const meta=document.createElement("span");meta.className="command-meta";meta.textContent=categoryDescription(item.category.name);
+      const kind=document.createElement("span");kind.className="command-kind";kind.textContent="分类";
+      copy.append(name,meta);btn.append(icon,copy,kind);
+    }else{
+      btn.append(createSiteIcon(item.site,"custom-mini-icon"));
+      const copy=document.createElement("span");copy.className="command-copy";
+      const name=document.createElement("span");name.className="command-name";name.textContent=item.site.name;
+      const meta=document.createElement("span");meta.className="command-meta";meta.textContent=`${effectiveCategory(item.site)} · ${item.site.domain||safeDomain(item.site.url)}`;
+      const kind=document.createElement("span");kind.className="command-kind";kind.textContent=state.favorites.has(item.site.id)?"★ 收藏":"↗ 打开";
+      copy.append(name,meta);btn.append(copy,kind);
+    }
+    btn.onmouseenter=()=>{__commandIndex=index;refreshCommandActive()};
+    btn.onclick=()=>{__commandIndex=index;activateCommandSelection()};
+    body.append(btn);
+  });
+}
+
+function refreshCommandActive(){
+  $$("#commandBody .command-item").forEach((el,i)=>el.classList.toggle("active",i===__commandIndex));
+  const active=$$("#commandBody .command-item")[__commandIndex];
+  active?.scrollIntoView({block:"nearest"});
+}
+function moveCommandSelection(delta){
+  if(!__commandItems.length)return;
+  __commandIndex=(__commandIndex+delta+__commandItems.length)%__commandItems.length;
+  refreshCommandActive();
+}
+function activateCommandSelection(){
+  const item=__commandItems[__commandIndex];if(!item)return;
+  if(item.type==="category"){
+    state.filter=item.category.name;state.query="";
+    $("#searchInput").value="";$("#compactSearchInput").value="";
+    document.body.classList.remove("searching");syncNavActive();render({animate:true});
+    closeCommandLauncher();window.scrollTo({top:0,behavior:"smooth"});setTimeout(updateNavIndicator,30);
+  }else{
+    recordRecent(item.site.id);window.open(item.site.url,"_blank","noopener");closeCommandLauncher();
+  }
+}
+function openCommandLauncher(seed=""){
+  ensureCommandLauncher();
+  const shell=$("#commandBackdrop"),input=$("#commandInput");
+  shell.classList.add("show");shell.setAttribute("aria-hidden","false");
+  __commandIndex=0;input.value=seed;renderCommandLauncher(seed);
+  setTimeout(()=>{input.focus();input.select()},20);
+}
+function closeCommandLauncher(){
+  const shell=$("#commandBackdrop");if(!shell)return;
+  shell.classList.remove("show");shell.setAttribute("aria-hidden","true");
+}
+
+function initV157(){
+  applyDensityV157();
+  ensureCommandLauncher();
+
+  $("#densityBtn")?.addEventListener("click",toggleDensityV157);
+  $("#compactDensityBtn")?.addEventListener("click",toggleDensityV157);
+
+  $("#mobileHomeBtn")?.addEventListener("click",()=>{
+    state.filter="all";state.query="";$("#searchInput").value="";$("#compactSearchInput").value="";
+    syncNavActive();render({animate:true});window.scrollTo({top:0,behavior:"smooth"});
+  });
+  $("#mobileSearchBtn")?.addEventListener("click",()=>openCommandLauncher(""));
+  $("#mobileFavoriteBtn")?.addEventListener("click",()=>{
+    state.filter="favorite";state.query="";syncNavActive();render({animate:true});window.scrollTo({top:0,behavior:"smooth"});
+  });
+  $("#mobileManageBtn")?.addEventListener("click",openDrawer);
+
+  document.addEventListener("keydown",e=>{
+    if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){
+      e.preventDefault();e.stopImmediatePropagation();openCommandLauncher(state.query||"");
+    }else if(e.key==="Escape"&&$("#commandBackdrop")?.classList.contains("show")){
+      e.preventDefault();e.stopImmediatePropagation();closeCommandLauncher();
+    }
+  },true);
+
+  scheduleSectionSpy();
+  syncMobileBottomBar();
+}
+initV157();
+
+
+/* ===================== V15.8 · Sidebar press feedback ===================== */
+const __sidebarV158=$("#sidebar");
+if(__sidebarV158){
+  __sidebarV158.addEventListener("pointerdown",e=>{
+    const btn=e.target.closest(".nav-btn");
+    if(!btn||e.pointerType==="touch")return;
+    btn.classList.add("nav-press");
+  });
+  ["pointerup","pointercancel","pointerleave"].forEach(type=>{
+    __sidebarV158.addEventListener(type,e=>{
+      const btn=e.target.closest?.(".nav-btn");
+      if(btn)btn.classList.remove("nav-press");
+      else $$(".nav-btn.nav-press").forEach(x=>x.classList.remove("nav-press"));
+    },{passive:true});
+  });
+}
+
+/* ===================== V15.8 · Sync Architecture =====================
    V13 数据结构保留。
    这里增加统一同步入口，后端 API 接入后无需重构页面。
 */
 const FX_SYNC={
-  version:"V15.3",
+  version:"V16.0",
   enabled:false,
   user:null,
   endpoint:"",
