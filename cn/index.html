@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#09111f">
-<title>私人导航工具箱 · V17.6 Smart Logo</title>
+<title>私人导航工具箱 · V17.7 Context Icon Fix</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https: http:; connect-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -403,6 +403,7 @@ html[data-theme="light"] .category-context{
   margin-bottom:8px;
 }
 .context-head-icon{
+  position:relative;
   width:36px;
   height:36px;
   flex:0 0 36px;
@@ -2734,6 +2735,36 @@ body.density-compact .site-icon[data-icon-quality="custom"] img{
   border-radius:7px!important;
 }
 
+
+/* ===================== V17.7 · Context Icon Containment Fix =====================
+   修复右键/长按管理菜单中 fallback/custom Logo 使用 absolute 定位时逃逸出 36px 图标盒，
+   导致整块菜单被巨型图标覆盖的问题。
+*/
+.context-head-icon{
+  position:relative!important;
+  contain:layout paint!important;
+  isolation:isolate!important;
+  overflow:hidden!important;
+}
+.context-head-icon > .site-fallback{
+  position:absolute!important;
+  inset:0!important;
+  width:auto!important;
+  height:auto!important;
+  border-radius:inherit!important;
+}
+.context-head-icon > img{
+  position:absolute!important;
+  inset:50% auto auto 50%!important;
+  transform:translate(-50%,-50%)!important;
+  width:26px!important;
+  height:26px!important;
+  max-width:26px!important;
+  max-height:26px!important;
+  object-fit:contain!important;
+  border-radius:7px!important;
+}
+
 </style>
 </head>
 <body>
@@ -2845,7 +2876,7 @@ body.density-compact .site-icon[data-icon-quality="custom"] img{
     </section>
 
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V17.6</div>
+    <div class="footer">© 2026 私人导航工具箱 · V17.7</div>
   </main>
 </div>
 
@@ -4657,7 +4688,7 @@ function resetCategoryOrder(){state.categoryOrder=[...CATEGORIES.map(c=>c.name),
 /* V13 context menu */
 function buildCategoryContext(site){
   const menu=$("#categoryContext");menu.innerHTML="";
-  const head=document.createElement("div");head.className="context-head";const iconWrap=document.createElement("div");iconWrap.className="context-head-icon";const icon=createSiteIcon(site,"custom-mini-icon");while(icon.firstChild)iconWrap.append(icon.firstChild);const copy=document.createElement("div");copy.className="context-head-copy";const name=document.createElement("div");name.className="context-head-name";name.textContent=site.name;const cat=document.createElement("div");cat.className="context-head-category";cat.textContent=`当前分类：${effectiveCategory(site)}`;copy.append(name,cat);head.append(iconWrap,copy);
+  const head=document.createElement("div");head.className="context-head";const iconWrap=createSiteIcon(site,"custom-mini-icon context-head-icon");const copy=document.createElement("div");copy.className="context-head-copy";const name=document.createElement("div");name.className="context-head-name";name.textContent=site.name;const cat=document.createElement("div");cat.className="context-head-category";cat.textContent=`当前分类：${effectiveCategory(site)}`;copy.append(name,cat);head.append(iconWrap,copy);
   const label=document.createElement("div");label.className="context-label";label.textContent="移动到分类";const grid=document.createElement("div");grid.className="context-grid";const current=effectiveCategory(site);
   allCategories().forEach(c=>{const btn=document.createElement("button");btn.type="button";btn.className="context-item"+(c.name===current?" current":"");const ci=document.createElement("span");ci.className="context-cat-icon";ci.textContent=c.icon||"•";const cn=document.createElement("span");cn.className="context-cat-name";cn.textContent=c.name;btn.append(ci,cn);if(c.name===current){const check=document.createElement("span");check.className="context-check";check.textContent="✓";btn.append(check)}btn.onclick=e=>{e.preventDefault();e.stopPropagation();applyContextCategory(site,c.name)};grid.append(btn)});
   const footer=document.createElement("div");footer.className="context-footer";const restore=document.createElement("button");restore.type="button";restore.className="context-restore";restore.textContent=`恢复默认：${site.category}`;restore.hidden=!state.categoryOverrides[site.id];restore.onclick=e=>{e.preventDefault();e.stopPropagation();restoreContextCategory(site)};const tip=document.createElement("span");tip.className="context-tip";tip.textContent="右键 / 长按管理";footer.append(restore,tip);
@@ -5609,7 +5640,7 @@ if(__sidebarV158){
    这里增加统一同步入口，后端 API 接入后无需重构页面。
 */
 const FX_SYNC={
-  version:"V17.6",
+  version:"V17.7",
   enabled:false,
   user:null,
   endpoint:"",
@@ -6017,6 +6048,35 @@ window.__fxCloudSchedulePush=scheduleDataSyncV17;
 
   // iOS / 高刷新屏上减少第一次 overlay 出现时的布局跳动。
   requestAnimationFrame(()=>body.classList.add("motion-system-ready"));
+})();
+
+
+/* ===================== V17.7 · Context menu runtime guard ===================== */
+(function(){
+  const menu=document.getElementById('categoryContext');
+  if(!menu)return;
+  const normalizeContextIcon=()=>{
+    const box=menu.querySelector('.context-head-icon');
+    if(!box)return;
+    box.style.position='relative';
+    box.style.overflow='hidden';
+    box.querySelectorAll('.site-fallback').forEach(el=>{
+      el.style.position='absolute';
+      el.style.inset='0';
+    });
+    box.querySelectorAll('img').forEach(img=>{
+      img.style.position='absolute';
+      img.style.left='50%';
+      img.style.top='50%';
+      img.style.transform='translate(-50%,-50%)';
+      img.style.width='26px';
+      img.style.height='26px';
+      img.style.maxWidth='26px';
+      img.style.maxHeight='26px';
+      img.style.objectFit='contain';
+    });
+  };
+  new MutationObserver(normalizeContextIcon).observe(menu,{childList:true,subtree:true});
 })();
 
 </script>
