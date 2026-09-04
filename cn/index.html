@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#09111f">
-<title>私人导航工具箱 · V16 Cloud</title>
+<title>私人导航工具箱 · V16.1 Private Login</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https: http:; connect-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -2087,6 +2087,196 @@ body.density-compact .grid{
   .cloud-status[data-state="syncing"] i{animation:none!important}
 }
 
+
+/* ===================== V16.1 · Private Login ===================== */
+.auth-logout-btn{
+  color:var(--muted)!important;
+}
+.auth-logout-btn:hover{
+  color:#ff9cac!important;
+  background:rgba(255,113,135,.08)!important;
+}
+.login-gate{
+  position:fixed;
+  inset:0;
+  z-index:700;
+  display:grid;
+  place-items:center;
+  padding:20px;
+  background:
+    radial-gradient(760px 500px at 16% 8%,rgba(116,135,255,.18),transparent 62%),
+    radial-gradient(650px 450px at 88% 12%,rgba(164,92,246,.15),transparent 64%),
+    rgba(4,10,19,.82);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:opacity .18s ease,visibility .18s;
+}
+.login-gate.show{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+}
+.login-card{
+  width:min(430px,100%);
+  padding:31px 30px 25px;
+  border:1px solid rgba(116,135,255,.20);
+  border-radius:26px;
+  background:
+    radial-gradient(330px 180px at 85% 0%,rgba(116,135,255,.11),transparent 70%),
+    rgba(10,18,32,.965);
+  box-shadow:
+    0 30px 90px rgba(0,0,0,.42),
+    inset 0 1px 0 rgba(255,255,255,.045);
+  transform:translateY(9px) scale(.985);
+  transition:transform .2s cubic-bezier(.2,.8,.2,1);
+}
+.login-gate.show .login-card{transform:none}
+.login-brand{
+  width:58px;
+  height:48px;
+  display:grid;
+  place-items:center;
+  margin-bottom:15px;
+}
+.login-brand svg{
+  width:58px;
+  height:45px;
+  filter:drop-shadow(0 9px 18px rgba(117,91,246,.23));
+}
+.login-eyebrow{
+  color:#8f9cff;
+  font-size:9px;
+  font-weight:850;
+  letter-spacing:.16em;
+}
+.login-card h2{
+  margin:8px 0 8px;
+  font-size:28px;
+  line-height:1.1;
+  letter-spacing:-.035em;
+}
+.login-card > p{
+  margin:0 0 22px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.65;
+}
+.login-form{
+  display:grid;
+  gap:14px;
+}
+.login-form label{
+  display:grid;
+  gap:7px;
+}
+.login-form label > span{
+  color:var(--muted);
+  font-size:10.5px;
+  font-weight:760;
+}
+.login-form input{
+  width:100%;
+  height:48px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  outline:0;
+  background:rgba(255,255,255,.045);
+  color:var(--text);
+  padding:0 13px;
+  font:inherit;
+  font-size:13px;
+  transition:border-color .15s ease,box-shadow .15s ease,background .15s ease;
+}
+.login-form input:focus{
+  border-color:rgba(116,135,255,.52);
+  box-shadow:0 0 0 3px rgba(116,135,255,.095);
+  background:rgba(255,255,255,.055);
+}
+.login-password-row{
+  position:relative;
+}
+.login-password-row input{padding-right:48px}
+.login-password-row button{
+  position:absolute;
+  right:6px;
+  top:6px;
+  width:36px;
+  height:36px;
+  border:0;
+  border-radius:10px;
+  background:transparent;
+  color:var(--muted);
+}
+.login-password-row button:hover{background:var(--soft2);color:var(--text)}
+.login-error{
+  min-height:16px;
+  margin-top:-4px;
+  color:#ff8fa2;
+  font-size:10.5px;
+  line-height:1.5;
+}
+.login-submit{
+  height:48px;
+  border:1px solid rgba(116,135,255,.28);
+  border-radius:14px;
+  background:linear-gradient(135deg,#7085ff,#9a5bf2);
+  color:#fff;
+  font:inherit;
+  font-size:13px;
+  font-weight:820;
+  box-shadow:0 12px 28px rgba(91,88,214,.18);
+}
+.login-submit:hover{filter:brightness(1.055)}
+.login-submit:disabled{
+  opacity:.58;
+  cursor:wait;
+}
+.login-foot{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:18px;
+  padding-top:15px;
+  border-top:1px solid var(--line);
+  color:var(--muted2);
+  font-size:9px;
+}
+body.auth-locked{
+  overflow:hidden!important;
+}
+body.auth-locked > .app,
+body.auth-locked > .mobile-bottom-bar,
+body.auth-locked > .to-top{
+  pointer-events:none!important;
+  user-select:none!important;
+}
+html[data-theme="light"] .login-gate{
+  background:
+    radial-gradient(760px 500px at 16% 8%,rgba(116,135,255,.11),transparent 62%),
+    radial-gradient(650px 450px at 88% 12%,rgba(164,92,246,.08),transparent 64%),
+    rgba(239,244,252,.78);
+}
+html[data-theme="light"] .login-card{
+  background:
+    radial-gradient(330px 180px at 85% 0%,rgba(116,135,255,.07),transparent 70%),
+    rgba(252,253,255,.975);
+  box-shadow:0 30px 75px rgba(63,78,112,.18),inset 0 1px 0 #fff;
+}
+html[data-theme="light"] .login-form input{
+  background:rgba(72,91,127,.045);
+}
+@media(max-width:650px){
+  .login-gate{padding:12px}
+  .login-card{padding:25px 20px 21px;border-radius:22px}
+  .login-card h2{font-size:25px}
+}
+@media(prefers-reduced-motion:reduce){
+  .login-gate,.login-card{transition:none!important}
+}
+
 </style>
 </head>
 <body>
@@ -2140,7 +2330,8 @@ body.density-compact .grid{
         <button class="tool-btn hide-sm" id="sortModeBtn" title="拖拽网站调整顺序"><span class="tool-glyph">↕</span><span>排序</span></button>
         <button class="tool-btn hide-sm" id="manageBtn"><span class="tool-glyph">＋</span><span>管理导航</span></button>
         <button class="tool-btn hide-sm" id="densityBtn" title="切换卡片密度"><span class="tool-glyph">▦</span><span>紧凑</span></button>
-        <span class="cloud-status" id="cloudStatus" title="云同步状态"><i></i><span id="cloudStatusText">本地</span></span>
+        <span class="cloud-status" id="cloudStatus" title="云同步状态"><i></i><span id="cloudStatusText">未登录</span></span>
+        <button class="tool-btn icon-only auth-logout-btn" id="logoutBtn" title="退出登录" aria-label="退出登录" hidden>↪</button>
         <button class="tool-btn icon-only" id="themeBtn" aria-label="切换主题">☾</button>
       </div>
     </div>
@@ -2197,7 +2388,7 @@ body.density-compact .grid{
     </section>
 
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V16 Cloud</div>
+    <div class="footer">© 2026 私人导航工具箱 · V16.1</div>
   </main>
 </div>
 
@@ -2210,7 +2401,7 @@ body.density-compact .grid{
     </div>
   </div>
   <div class="drawer-body">
-    <div class="admin-note">V16 Cloud：保留 V15.9 全部 UI 与 191 个内置网站，新增 Cloudflare Pages Functions + D1 云同步、本地缓存、跨设备自动更新、版本冲突保护与云端备份。你之前手动新增的网站仍会保留。本版已接入 /api/state 云同步。D1 连接成功后，添加、删除、编辑、分类、排序、收藏会自动保存到云端；localStorage 仅作为本地缓存与离线兜底。<br><span id="storageUsage">正在计算本地数据占用…</span></div>
+    <div class="admin-note">V16.1 Private Login：保留 V16 云同步与全部 UI，改为网页内私人登录，不依赖 Cloudflare Zero Trust；登录成功后才允许读取和写入 D1。你之前手动新增的网站仍会保留。本版使用网页内私人登录保护 /api/state。登录成功后，添加、删除、编辑、分类、排序、收藏会自动保存到 D1；localStorage 继续作为本地缓存与离线兜底。<br><span id="storageUsage">正在计算本地数据占用…</span></div>
 
     <form id="addForm">
       <div class="form-grid">
@@ -2308,6 +2499,56 @@ body.density-compact .grid{
 </aside>
 
 <button class="to-top" id="toTop" aria-label="回到顶部">↑</button>
+
+<div class="login-gate" id="loginGate" aria-hidden="true">
+  <div class="login-card" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+    <div class="login-brand" aria-hidden="true">
+      <svg viewBox="0 0 54 42" fill="none">
+        <defs>
+          <linearGradient id="loginNavGradientA" x1="5" y1="34" x2="45" y2="5" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#A956F7"/>
+            <stop offset=".46" stop-color="#7B63F6"/>
+            <stop offset="1" stop-color="#5F8BFF"/>
+          </linearGradient>
+          <linearGradient id="loginNavGradientB" x1="10" y1="5" x2="48" y2="37" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#C267FA"/>
+            <stop offset=".52" stop-color="#8562F7"/>
+            <stop offset="1" stop-color="#547DFA"/>
+          </linearGradient>
+        </defs>
+        <path d="M8.8 28.8 18 17.1a5.7 5.7 0 0 1 8.9-.1l2.8 3.3-9.5 11.9a7.35 7.35 0 0 1-11.4-3.4Z" fill="url(#loginNavGradientA)"/>
+        <path d="m24.1 13.8 4-5.1a7.35 7.35 0 0 1 11.6 0l5.5 7a5.72 5.72 0 0 1-.1 7.2l-2.9 3.4-9.3-11.7a5.72 5.72 0 0 0-8.8-.8Z" fill="url(#loginNavGradientB)"/>
+        <path d="m29.6 22.6 4.7-5.8 9 11.4a5.7 5.7 0 0 1-.3 7.5 7.35 7.35 0 0 1-10.9-.8l-5.2-6.6 2.7-5.7Z" fill="url(#loginNavGradientA)"/>
+        <circle cx="26.2" cy="23.1" r="3.35" fill="#DCA7FF"/>
+      </svg>
+    </div>
+    <div class="login-eyebrow">PRIVATE NAV TOOLBOX</div>
+    <h2 id="loginTitle">登录私人导航</h2>
+    <p>登录后自动读取并同步你的导航、分类、排序、收藏和自定义内容。</p>
+
+    <form id="loginForm" class="login-form">
+      <label>
+        <span>用户名</span>
+        <input id="loginUsername" autocomplete="username" maxlength="64" required placeholder="输入用户名">
+      </label>
+      <label>
+        <span>密码</span>
+        <div class="login-password-row">
+          <input id="loginPassword" type="password" autocomplete="current-password" maxlength="256" required placeholder="输入密码">
+          <button type="button" id="toggleLoginPassword" aria-label="显示或隐藏密码">◉</button>
+        </div>
+      </label>
+      <div class="login-error" id="loginError" role="alert"></div>
+      <button class="login-submit" id="loginSubmit" type="submit">登录并同步</button>
+    </form>
+
+    <div class="login-foot">
+      <span>会话使用 HttpOnly 安全 Cookie</span>
+      <span>30 天有效</span>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <div class="site-editor-backdrop" id="siteEditorBackdrop" aria-hidden="true">
@@ -3896,7 +4137,162 @@ function buildCategoryContext(site){
 }
 
 
-/* ===================== V16 Cloud Sync Runtime ===================== */
+
+/* ===================== V16.1 · Private Login Runtime ===================== */
+const AUTH_API="/api/state";
+const AUTH_V161={
+  authenticated:false,
+  username:"",
+  checking:false
+};
+
+function authFetchV161(mode,method="GET",body){
+  const url=AUTH_API+"?mode="+encodeURIComponent(mode);
+  const opts={
+    method,
+    headers:{"Accept":"application/json"},
+    credentials:"include",
+    cache:"no-store"
+  };
+  if(body!==undefined){
+    opts.headers["Content-Type"]="application/json";
+    opts.body=JSON.stringify(body);
+  }
+  return fetch(url,opts).then(async res=>{
+    let payload=null;
+    try{payload=await res.json()}catch{}
+    if(!res.ok){
+      const err=new Error(payload?.error||("HTTP "+res.status));
+      err.status=res.status;
+      err.payload=payload;
+      throw err;
+    }
+    return payload;
+  });
+}
+
+function showLoginGateV161(message=""){
+  const gate=$("#loginGate"),error=$("#loginError");
+  if(!gate)return;
+  document.body.classList.add("auth-locked");
+  gate.classList.add("show");
+  gate.setAttribute("aria-hidden","false");
+  if(error)error.textContent=message||"";
+  $("#logoutBtn")?.setAttribute("hidden","");
+  setCloudStatus("offline","未登录","登录后启用 D1 云同步");
+  setTimeout(()=>$("#loginUsername")?.focus(),40);
+}
+
+function hideLoginGateV161(){
+  const gate=$("#loginGate"),error=$("#loginError");
+  document.body.classList.remove("auth-locked");
+  if(gate){
+    gate.classList.remove("show");
+    gate.setAttribute("aria-hidden","true");
+  }
+  if(error)error.textContent="";
+  $("#logoutBtn")?.removeAttribute("hidden");
+}
+
+async function checkAuthV161(){
+  if(AUTH_V161.checking)return false;
+  AUTH_V161.checking=true;
+  try{
+    const result=await authFetchV161("me");
+    AUTH_V161.authenticated=!!result.authenticated;
+    AUTH_V161.username=result.username||"";
+    if(AUTH_V161.authenticated){
+      hideLoginGateV161();
+      return true;
+    }
+    showLoginGateV161();
+    return false;
+  }catch(err){
+    AUTH_V161.authenticated=false;
+    if(err.status===401){
+      showLoginGateV161();
+    }else if(err.status===500){
+      showLoginGateV161("服务器登录变量还没配置完成。");
+      setCloudStatus("error","登录未配置","请在 Cloudflare Pages 中配置 NAV_USERNAME / NAV_PASSWORD / SESSION_SECRET");
+    }else{
+      showLoginGateV161("暂时无法连接登录接口，请稍后重试。");
+      setCloudStatus("error","登录接口异常",err.message||"登录接口异常");
+    }
+    return false;
+  }finally{
+    AUTH_V161.checking=false;
+  }
+}
+
+async function doLoginV161(username,password){
+  const btn=$("#loginSubmit"),error=$("#loginError");
+  if(btn){btn.disabled=true;btn.textContent="正在登录…"}
+  if(error)error.textContent="";
+  try{
+    const result=await authFetchV161("login","POST",{username,password});
+    AUTH_V161.authenticated=true;
+    AUTH_V161.username=result.username||username;
+    hideLoginGateV161();
+    setCloudStatus("syncing","登录成功","正在读取云端数据");
+    await initCloudSyncV16();
+    toast("登录成功，云同步已启用");
+    return true;
+  }catch(err){
+    let msg=err.payload?.error||"登录失败";
+    if(err.status===429)msg="尝试次数过多，请稍后再试。";
+    else if(err.status===401)msg="用户名或密码错误。";
+    else if(err.status===500)msg="服务器登录变量未配置完整。";
+    if(error)error.textContent=msg;
+    setCloudStatus("error","登录失败",msg);
+    $("#loginPassword")?.focus();
+    $("#loginPassword")?.select();
+    return false;
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent="登录并同步"}
+  }
+}
+
+async function logoutV161(){
+  try{await authFetchV161("logout","POST",{})}catch{}
+  AUTH_V161.authenticated=false;
+  AUTH_V161.username="";
+  CLOUD_SYNC.ready=false;
+  clearTimeout(CLOUD_SYNC.pushTimer);
+  setCloudStatus("offline","未登录","已退出私人导航");
+  showLoginGateV161("你已退出登录。");
+  $("#loginPassword").value="";
+}
+
+async function initAuthV161(){
+  setCloudStatus("syncing","检查登录…","正在验证私人导航会话");
+  const ok=await checkAuthV161();
+  if(ok){
+    setCloudStatus("syncing","连接云端…","登录有效，正在连接 D1");
+    await initCloudSyncV16();
+  }
+}
+
+$("#loginForm")?.addEventListener("submit",e=>{
+  e.preventDefault();
+  const username=$("#loginUsername").value.trim();
+  const password=$("#loginPassword").value;
+  if(!username||!password)return;
+  doLoginV161(username,password);
+});
+
+$("#toggleLoginPassword")?.addEventListener("click",()=>{
+  const input=$("#loginPassword");
+  if(!input)return;
+  input.type=input.type==="password"?"text":"password";
+  $("#toggleLoginPassword").textContent=input.type==="password"?"◉":"◎";
+  input.focus();
+});
+
+$("#logoutBtn")?.addEventListener("click",()=>{
+  if(confirm("退出私人导航登录？"))logoutV161();
+});
+
+/* ===================== V16.1 Cloud Sync Runtime ===================== */
 const CLOUD_API="/api/state";
 const CLOUD_CACHE_KEY="fxnav_cloud_cache_v16";
 const CLOUD_CLIENT_KEY="fxnav_cloud_client_v16";
@@ -4012,7 +4408,7 @@ async function cloudRequest(method,body){
   const opts={
     method,
     headers:{"Accept":"application/json"},
-    credentials:"same-origin",
+    credentials:"include",
     cache:"no-store"
   };
   if(body!==undefined){
@@ -4077,7 +4473,7 @@ async function pushCloudState({force=false,quiet=false}={}){
     if(!navigator.onLine||err.status===0){
       setCloudStatus("offline","待同步","网络不可用，本地修改已保留；恢复网络后自动同步");
     }else if(err.status===401||err.status===403){
-      setCloudStatus("error","未授权","请先配置 Cloudflare Access，并确认 ALLOWED_EMAIL");
+      setCloudStatus("error","登录失效","请重新登录私人导航");showLoginGateV161("登录已失效，请重新登录。");
     }else{
       setCloudStatus("error","同步失败","云同步失败："+(err.message||"未知错误"));
     }
@@ -4127,7 +4523,7 @@ async function pullCloudStateV16({initial=false,quiet=false}={}){
   }catch(err){
     CLOUD_SYNC.ready=false;
     if(err.status===401||err.status===403){
-      setCloudStatus("error","未授权","API 已拒绝访问：请配置 Cloudflare Access / ALLOWED_EMAIL");
+      setCloudStatus("error","未登录","请先登录私人导航");showLoginGateV161("请先登录后再同步云端数据。");
     }else if(!navigator.onLine){
       setCloudStatus("offline","离线","当前使用本地缓存，联网后自动同步");
     }else{
@@ -4140,7 +4536,7 @@ async function pullCloudStateV16({initial=false,quiet=false}={}){
 }
 
 async function initCloudSyncV16(){
-  setCloudStatus("syncing","连接云端…","正在连接 Cloudflare Pages Functions");
+  setCloudStatus("syncing","连接云端…","正在连接 Cloudflare Pages Functions + D1");
   await pullCloudStateV16({initial:true});
 
   window.addEventListener("online",()=>{
@@ -4166,7 +4562,7 @@ async function initCloudSyncV16(){
   },60000);
 }
 
-const __v15Migrated=migrateBuiltinDataV15();sanitizeState();if(save()&&__v15Migrated)STORE.set(V15_BUILTIN_DATA_KEY,V15_BUILTIN_DATA_VERSION);applyTheme();buildNav();buildCategorySelect();buildMoveCategorySelect();buildMoveSiteOptions();render();renderCategoryManager();renderDeletedList();refreshIconPreview();updateStorageUsage();setTimeout(initCloudSyncV16,80);
+const __v15Migrated=migrateBuiltinDataV15();sanitizeState();if(save()&&__v15Migrated)STORE.set(V15_BUILTIN_DATA_KEY,V15_BUILTIN_DATA_VERSION);applyTheme();buildNav();buildCategorySelect();buildMoveCategorySelect();buildMoveSiteOptions();render();renderCategoryManager();renderDeletedList();refreshIconPreview();updateStorageUsage();setTimeout(initAuthV161,80);
 
 let searchRenderRAF=0;
 function queueSearchRender(value){
@@ -4268,7 +4664,7 @@ $("#addForm").addEventListener("submit",e=>{
   }catch(err){alert(err?.message||"添加失败")}
 });
 $("#exportBtn").onclick=()=>{
-  const payload={version:"16.0",favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides,iconOverrides:state.iconOverrides,hiddenSites:[...state.hiddenSites],siteEdits:state.siteEdits,customCategories:state.customCategories,categoryOrder:state.categoryOrder,categoryIconOverrides:state.categoryIconOverrides,siteOrder:state.siteOrder,usageStats:getUsageStatsV157(),density:STORE.get(V157_DENSITY_KEY)||"comfortable",theme:document.documentElement.dataset.theme||"dark",cloudRevision:CLOUD_SYNC.revision};
+  const payload={version:"16.1",favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides,iconOverrides:state.iconOverrides,hiddenSites:[...state.hiddenSites],siteEdits:state.siteEdits,customCategories:state.customCategories,categoryOrder:state.categoryOrder,categoryIconOverrides:state.categoryIconOverrides,siteOrder:state.siteOrder,usageStats:getUsageStatsV157(),density:STORE.get(V157_DENSITY_KEY)||"comfortable",theme:document.documentElement.dataset.theme||"dark",cloudRevision:CLOUD_SYNC.revision};
   const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);const ds=new Date().toISOString().slice(0,10).replaceAll("-","");a.download=`feitianxiaoxiang-nav-backup-v15.3-${ds}.json`;a.click();URL.revokeObjectURL(a.href);
 };
 $("#importBtn").onclick=()=>$("#importFile").click();
@@ -4568,7 +4964,7 @@ if(__sidebarV158){
    这里增加统一同步入口，后端 API 接入后无需重构页面。
 */
 const FX_SYNC={
-  version:"V16.0",
+  version:"V16.1",
   enabled:false,
   user:null,
   endpoint:"",
