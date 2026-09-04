@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#09111f">
-<title>私人导航工具箱 · V17 Data Driven</title>
+<title>私人导航工具箱 · V17.1 Smooth UX</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https: http:; connect-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -2481,6 +2481,223 @@ html[data-theme="light"] .login-form input{
 .v17-icon-note{margin-top:8px;color:var(--muted2);font-size:10px;line-height:1.6}
 .v17-icon-note b{color:#cfd8ff}
 
+
+
+/* ===================== V17.1 · Smooth UX / Performance ===================== */
+:root{
+  --motion-ui:cubic-bezier(.22,.78,.24,1);
+  --motion-soft:cubic-bezier(.2,.72,.25,1);
+}
+html{scrollbar-gutter:stable}
+body.ui-overlay-open{overflow:hidden}
+
+/* 主页面滚动：滚动期间只保留必要绘制，彻底压住 hover 残影和图标“悬浮”。 */
+html.is-scrolling .card,
+html.is-scrolling .card *,
+html.is-scrolling .nav-btn,
+html.is-scrolling .nav-btn *{
+  transition:none!important;
+  animation:none!important;
+}
+html.is-scrolling .card:hover,
+html.is-scrolling .card:hover .site-icon,
+html.is-scrolling .card:hover .site-name,
+html.is-scrolling .card:hover .site-domain,
+html.is-scrolling .card:hover .star{
+  transform:none!important;
+  box-shadow:none!important;
+}
+html.is-scrolling .site-icon::after{opacity:0!important}
+
+/* 管理导航：不让整个 fixed drawer 参与滚动合成，只让 drawer-body 独立滚。 */
+.backdrop{
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  background:rgba(2,7,16,.58)!important;
+  opacity:0;
+  visibility:hidden;
+  transition:opacity .22s ease,visibility .22s ease!important;
+}
+.backdrop.show{opacity:1;visibility:visible}
+.drawer{
+  display:flex!important;
+  flex-direction:column;
+  overflow:hidden!important;
+  background:#091322!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  transform:translate3d(102%,0,0)!important;
+  opacity:.98;
+  visibility:hidden;
+  will-change:transform,opacity;
+  transition:transform .30s var(--motion-ui),opacity .22s ease,visibility .30s ease!important;
+}
+.drawer.show{
+  transform:translate3d(0,0,0)!important;
+  opacity:1;
+  visibility:visible;
+}
+.drawer-head{
+  position:relative!important;
+  top:auto!important;
+  z-index:40!important;
+  flex:0 0 auto;
+  isolation:isolate;
+  background:#091322!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  box-shadow:0 1px 0 rgba(255,255,255,.055),0 12px 28px rgba(4,8,17,.16);
+}
+.drawer-body{
+  position:relative;
+  z-index:1;
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-gutter:stable;
+  contain:layout style;
+  transform:translateZ(0);
+}
+/* 图1的问题：列表图标永远压在 drawer header 下面，不再向上滚时穿透标题。 */
+.drawer .site-icon,.drawer .custom-mini-icon{z-index:0!important;isolation:isolate}
+.drawer .site-icon img,.drawer .custom-mini-icon img{z-index:1!important}
+.drawer.is-drawer-scrolling .custom-item,
+.drawer.is-drawer-scrolling .category-manager-item,
+.drawer.is-drawer-scrolling .deleted-item,
+.drawer.is-drawer-scrolling .duplicate-group,
+.drawer.is-drawer-scrolling .mini-btn,
+.drawer.is-drawer-scrolling .cat-mini{
+  transition:none!important;
+  animation:none!important;
+  transform:none!important;
+  box-shadow:none!important;
+}
+.drawer.is-drawer-scrolling .custom-item:hover,
+.drawer.is-drawer-scrolling .category-manager-item:hover,
+.drawer.is-drawer-scrolling .deleted-item:hover{
+  transform:none!important;
+  box-shadow:none!important;
+}
+
+/* 所有弹出层统一使用 transform + opacity，取消大面积实时 blur。 */
+.site-editor-backdrop,
+.command-backdrop,
+.login-gate{
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  background:rgba(2,7,16,.64)!important;
+  transition:opacity .22s ease,visibility .22s ease!important;
+}
+.site-editor{
+  opacity:0;
+  transform:translate3d(0,18px,0) scale(.975)!important;
+  will-change:transform,opacity;
+  transition:transform .28s var(--motion-ui),opacity .20s ease!important;
+}
+.site-editor-backdrop.show .site-editor{
+  opacity:1;
+  transform:translate3d(0,0,0) scale(1)!important;
+}
+.command-panel{
+  opacity:0;
+  transform:translate3d(0,-14px,0) scale(.975)!important;
+  will-change:transform,opacity;
+  transition:transform .26s var(--motion-ui),opacity .20s ease!important;
+}
+.command-backdrop.show .command-panel{
+  opacity:1;
+  transform:translate3d(0,0,0) scale(1)!important;
+}
+.category-context{
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  background:#0b1425!important;
+  will-change:transform,opacity;
+  transform:translate3d(0,-7px,0) scale(.972)!important;
+  transition:opacity .18s ease,transform .20s var(--motion-ui),visibility .20s ease!important;
+}
+.category-context.show{transform:translate3d(0,0,0) scale(1)!important}
+
+/* 右侧管理内容 hover 仍保留，但不做重阴影。 */
+.custom-item:hover,.category-manager-item:hover,.deleted-item:hover{
+  box-shadow:0 8px 20px rgba(0,0,0,.10)!important;
+}
+
+/* 紧凑模式 V17.1：舒适模式完全不动；紧凑模式真正明显缩小。 */
+body.density-compact{
+  --card-gap:8px!important;
+}
+body.density-compact .section{margin:16px 0!important}
+body.density-compact .section-head{margin-bottom:8px!important}
+body.density-compact .section-desc{display:none!important}
+body.density-compact .section-badge{
+  width:30px!important;height:30px!important;border-radius:10px!important;font-size:10px!important;
+}
+body.density-compact .section-heading-line h2{font-size:15px!important}
+body.density-compact .section-total{font-size:9px!important}
+body.density-compact .card{
+  min-height:52px!important;
+  border-radius:13px!important;
+}
+body.density-compact .card-link{
+  min-height:52px!important;
+  padding:6px 29px 6px 8px!important;
+  gap:8px!important;
+}
+body.density-compact .site-icon{
+  width:32px!important;height:32px!important;flex:0 0 32px!important;border-radius:10px!important;
+}
+body.density-compact .site-icon img{width:21px!important;height:21px!important;border-radius:4px!important}
+body.density-compact .site-icon .site-fallback{font-size:11px!important}
+body.density-compact .site-copy{padding-right:8px!important}
+body.density-compact .site-name{font-size:11.5px!important;font-weight:760!important;line-height:1.1!important}
+body.density-compact .site-domain{display:none!important}
+body.density-compact .star{
+  right:4px!important;top:50%!important;transform:translateY(-50%)!important;
+  font-size:13px!important;padding:4px!important;
+}
+body.density-compact .card:hover .star{transform:translateY(-50%)!important}
+body.density-compact .sort-handle{transform:scale(.88)}
+
+/* 紧凑布局允许更早进入五列，但始终不会超过五列。 */
+@media(max-width:1600px) and (min-width:1261px){
+  body.density-compact .grid{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+}
+@media(max-width:1260px) and (min-width:981px){
+  body.density-compact .grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+}
+@media(max-width:980px) and (min-width:701px){
+  body.density-compact .grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
+@media(max-width:700px) and (min-width:481px){
+  body.density-compact .grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(max-width:480px){
+  body.density-compact .grid{grid-template-columns:1fr!important}
+}
+
+/* 鼠标滚轮/触控滚动期间，工具栏也不触发悬浮动画。 */
+html.is-scrolling .tool-btn,
+html.is-scrolling .compact-action,
+html.is-scrolling .tool-btn::after,
+html.is-scrolling .compact-action::after{
+  transition:none!important;
+  transform:none!important;
+}
+
+html[data-theme="light"] .drawer-head,
+html[data-theme="light"] .drawer{background:#f7f9fd!important}
+html[data-theme="light"] .category-context{background:#fbfcff!important}
+html[data-theme="light"] .site-editor-backdrop,
+html[data-theme="light"] .command-backdrop{background:rgba(50,64,93,.30)!important}
+
+@media(prefers-reduced-motion:reduce){
+  .drawer,.backdrop,.site-editor,.site-editor-backdrop,.command-panel,.command-backdrop,.category-context{transition:none!important}
+}
+
 </style>
 </head>
 <body>
@@ -2592,7 +2809,7 @@ html[data-theme="light"] .login-form input{
     </section>
 
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V17</div>
+    <div class="footer">© 2026 私人导航工具箱 · V17.1</div>
   </main>
 </div>
 
@@ -3017,7 +3234,7 @@ function getIconUpgradeObserver(){
       const run=wrap.__startIconUpgrade;
       if(typeof run==="function")run();
     }
-  },{rootMargin:"220px 0px"});
+  },{rootMargin:"110px 0px"});
   return __iconUpgradeObserver;
 }
 
@@ -3103,12 +3320,37 @@ function createSiteIcon(site,className="site-icon"){
     });
   };
 
-  // 用户自己上传/指定的图标始终最高优先级
+  // 用户自己上传/指定的图标始终最高优先级。
+  // V17 的同源图标代理不再一次性请求全部 191 个图标：进入视口附近后才加载，
+  // 并且不再额外创建 probe Image 做二次解码，显著降低首屏和滚动抖动。
   const fixedIcon=override||urlIcon||(!builtIn?own:"");
   if(fixedIcon){
-    setImage(fixedIcon,"custom",0,2200).then(ok=>{
-      if(!ok)showVector();
-    });
+    const isV17Proxy=String(fixedIcon).startsWith("/api/data?mode=icon");
+    const loadFixed=()=>{
+      if(isV17Proxy){
+        if(img.isConnected)return;
+        img.loading="eager";
+        img.fetchPriority="low";
+        img.onload=()=>{
+          fb.classList.add("is-hidden");
+          wrap.classList.remove("fallback-mode","is-lowres-rejected","icon-upgrading");
+          wrap.classList.add("favicon-mode");
+          wrap.dataset.iconQuality="cached-hd";
+        };
+        img.onerror=()=>showVector();
+        wrap.classList.add("icon-upgrading");
+        wrap.append(img);
+        img.src=fixedIcon;
+      }else{
+        setImage(fixedIcon,"custom",0,2200).then(ok=>{if(!ok)showVector()});
+      }
+    };
+    if(isV17Proxy){
+      wrap.__startIconUpgrade=loadFixed;
+      const observer=getIconUpgradeObserver();
+      if(observer)observer.observe(wrap);
+      else setTimeout(loadFixed,40);
+    }else loadFixed();
     return wrap;
   }
 
@@ -4942,7 +5184,7 @@ $("#addForm").addEventListener("submit",e=>{
   }catch(err){alert(err?.message||"添加失败")}
 });
 $("#exportBtn").onclick=()=>{
-  const payload={version:"17",favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides,iconOverrides:state.iconOverrides,hiddenSites:[...state.hiddenSites],siteEdits:state.siteEdits,customCategories:state.customCategories,categoryOrder:state.categoryOrder,categoryIconOverrides:state.categoryIconOverrides,siteOrder:state.siteOrder,usageStats:getUsageStatsV157(),density:STORE.get(V157_DENSITY_KEY)||"comfortable",theme:document.documentElement.dataset.theme||"dark",cloudRevision:CLOUD_SYNC.revision};
+  const payload={version:"17.1",favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides,iconOverrides:state.iconOverrides,hiddenSites:[...state.hiddenSites],siteEdits:state.siteEdits,customCategories:state.customCategories,categoryOrder:state.categoryOrder,categoryIconOverrides:state.categoryIconOverrides,siteOrder:state.siteOrder,usageStats:getUsageStatsV157(),density:STORE.get(V157_DENSITY_KEY)||"comfortable",theme:document.documentElement.dataset.theme||"dark",cloudRevision:CLOUD_SYNC.revision};
   const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);const ds=new Date().toISOString().slice(0,10).replaceAll("-","");a.download=`private-nav-v17-${ds}.json`;a.click();URL.revokeObjectURL(a.href);
 };
 $("#importBtn").onclick=()=>$("#importFile").click();
@@ -4986,6 +5228,15 @@ document.addEventListener("keydown",e=>{
 
 /* V15.1 · 单一 RAF 滚动监听
    每个动画帧最多更新一次 UI，避免多个 scroll handler 重复改 class / DOM。 */
+let __fxCompactThresholdV171=300;
+function refreshCompactThresholdV171(){
+  const hero=$("#hero");
+  if(hero)__fxCompactThresholdV171=Math.max(180,hero.offsetTop+hero.offsetHeight-72);
+}
+function getCompactThresholdV171(){return __fxCompactThresholdV171}
+refreshCompactThresholdV171();
+window.addEventListener("resize",()=>requestAnimationFrame(refreshCompactThresholdV171),{passive:true});
+
 let __fxScrollRAF=0;
 let __fxScrollIdleTimer=0;
 let __fxToTopVisible=false;
@@ -5001,8 +5252,8 @@ function handleWindowScroll(){
       toTop.classList.toggle("show",shouldShowTop);
     }
 
-    const hero=$("#hero"),compactBar=$("#compactBar");
-    const compactShouldShow=hero?hero.getBoundingClientRect().bottom<72:window.scrollY>300;
+    const compactBar=$("#compactBar");
+    const compactShouldShow=window.scrollY>getCompactThresholdV171();
     if(compactBar){
       compactBar.classList.toggle("show",compactShouldShow);
       compactBar.setAttribute("aria-hidden",compactShouldShow?"false":"true");
@@ -5024,6 +5275,19 @@ function handleWindowScroll(){
 
 window.addEventListener("scroll",handleWindowScroll,{passive:true});
 window.addEventListener("resize",closeCategoryContext,{passive:true});
+
+/* V17.1 management drawer scroll performance */
+const __drawerBodyV171=$("#drawer .drawer-body");
+let __drawerIdleV171=0;
+if(__drawerBodyV171){
+  __drawerBodyV171.addEventListener("scroll",()=>{
+    const drawer=$("#drawer");
+    if(drawer&&!drawer.classList.contains("is-drawer-scrolling"))drawer.classList.add("is-drawer-scrolling");
+    clearTimeout(__drawerIdleV171);
+    __drawerIdleV171=setTimeout(()=>drawer?.classList.remove("is-drawer-scrolling"),120);
+  },{passive:true});
+}
+
 
 /* V10/V15.1 context menu closing behavior */
 document.addEventListener("pointerdown",e=>{
@@ -5242,7 +5506,7 @@ if(__sidebarV158){
    这里增加统一同步入口，后端 API 接入后无需重构页面。
 */
 const FX_SYNC={
-  version:"V17",
+  version:"V17.1",
   enabled:false,
   user:null,
   endpoint:"",
@@ -5587,6 +5851,71 @@ const FX_SYNC={
 
 /* V17 must own the save scheduler after legacy runtime definitions. */
 window.__fxCloudSchedulePush=scheduleDataSyncV17;
+
+
+/* ===================== V17.1 · Smooth UX Runtime ===================== */
+(function(){
+  const root=document.documentElement;
+  const body=document.body;
+  let overlayDepth=0;
+  function lockOverlay(){
+    overlayDepth++;
+    body.classList.add("ui-overlay-open");
+  }
+  function unlockOverlay(){
+    overlayDepth=Math.max(0,overlayDepth-1);
+    if(!overlayDepth)body.classList.remove("ui-overlay-open");
+  }
+
+  const oldOpenDrawer=openDrawer, oldCloseDrawer=closeDrawer;
+  openDrawer=function(){
+    if(!$("#drawer")?.classList.contains("show"))lockOverlay();
+    oldOpenDrawer();
+    requestAnimationFrame(()=>$("#drawer")?.classList.add("motion-ready"));
+  };
+  closeDrawer=function(){
+    const wasOpen=$("#drawer")?.classList.contains("show");
+    oldCloseDrawer();
+    if(wasOpen)unlockOverlay();
+  };
+  $("#manageBtn").onclick=openDrawer;
+  $("#compactManageBtn").onclick=openDrawer;
+  $("#closeDrawer").onclick=closeDrawer;
+  $("#backdrop").onclick=closeDrawer;
+
+  const oldOpenEditor=openSiteEditor, oldCloseEditor=closeSiteEditor;
+  openSiteEditor=function(siteOrId){
+    if(!$("#siteEditorBackdrop")?.classList.contains("show"))lockOverlay();
+    oldOpenEditor(siteOrId);
+  };
+  closeSiteEditor=function(){
+    const wasOpen=$("#siteEditorBackdrop")?.classList.contains("show");
+    oldCloseEditor();
+    if(wasOpen)unlockOverlay();
+  };
+  $("#saveSiteEditor").onclick=saveSiteEditor;
+  $("#closeSiteEditor").onclick=closeSiteEditor;
+
+  const oldOpenCommand=openCommandLauncher, oldCloseCommand=closeCommandLauncher;
+  openCommandLauncher=function(seed=""){
+    if(!$("#commandBackdrop")?.classList.contains("show"))lockOverlay();
+    oldOpenCommand(seed);
+  };
+  closeCommandLauncher=function(){
+    const wasOpen=$("#commandBackdrop")?.classList.contains("show");
+    oldCloseCommand();
+    if(wasOpen)unlockOverlay();
+  };
+
+  // 任何悬浮菜单在开始滚动时立即关闭，避免卡片/图标穿过固定层。
+  window.addEventListener("scroll",()=>{
+    if($("#categoryContext")?.classList.contains("show"))closeCategoryContext();
+  },{passive:true});
+
+  // iOS / 高刷新屏上减少第一次 overlay 出现时的布局跳动。
+  requestAnimationFrame(()=>body.classList.add("motion-system-ready"));
+})();
+
 </script>
 </body>
 </html>
