@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#09111f">
-<title>私人导航工具箱 · V17.7 Context Icon Fix</title>
+<title>私人导航工具箱 · V17.8 Public View / Admin Mode</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https: http:; connect-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -2765,6 +2765,35 @@ body.density-compact .site-icon[data-icon-quality="custom"] img{
   border-radius:7px!important;
 }
 
+
+
+/* ===================== V17.8 · Public View / Admin Mode ===================== */
+.login-card{position:relative}
+.login-close{
+  position:absolute;right:14px;top:14px;width:34px;height:34px;border:1px solid var(--line);border-radius:11px;
+  background:rgba(255,255,255,.035);color:var(--muted);font:inherit;font-size:18px;line-height:1;cursor:pointer;
+  transition:transform .18s ease,background .18s ease,color .18s ease,border-color .18s ease;
+}
+.login-close:hover{transform:scale(1.04);background:var(--soft2);color:var(--text);border-color:rgba(116,135,255,.28)}
+body.guest-mode #sortModeBtn,body.guest-mode #compactSortBtn{display:none!important}
+body.guest-mode #logoutBtn{display:none!important}
+body.admin-mode #logoutBtn{display:inline-grid!important}
+body.guest-mode #manageBtn .tool-glyph{font-size:11px}
+body.guest-mode #manageBtn::before{
+  content:"";position:absolute;inset:5px;border-radius:7px;border:1px solid rgba(116,135,255,.08);pointer-events:none
+}
+.access-readonly-pill{
+  display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;border:1px solid rgba(116,135,255,.16);
+  background:rgba(116,135,255,.07);color:#bdc9ff;font-size:10px;font-weight:760
+}
+.context-guest-note{padding:9px 10px;color:var(--muted);font-size:10px;line-height:1.5;border-top:1px solid var(--line)}
+.context-tool.admin-login{color:#cfd7ff;background:rgba(116,135,255,.08)}
+.context-tool.admin-login:hover{background:rgba(116,135,255,.15)}
+body.guest-mode .cloud-status{border-color:rgba(116,135,255,.16);color:#c4ceff}
+body.guest-mode .cloud-status i{background:#8392ff;box-shadow:0 0 0 3px rgba(131,146,255,.10)}
+body.admin-mode .sidebar-bottom #accessModeText{color:#91e2c1}
+body.guest-mode .sidebar-bottom #accessModeText{color:#aebcff}
+
 </style>
 </head>
 <body>
@@ -2808,7 +2837,7 @@ body.density-compact .site-icon[data-icon-quality="custom"] img{
 
     <div class="side-label">分类</div>
     <div id="categoryNav"></div>
-    <div class="sidebar-bottom">私人导航工具箱<br>收藏不再散落，常用内容一处抵达。</div>
+    <div class="sidebar-bottom">私人导航工具箱<br><span id="accessModeText">访客 · 只读模式</span><br>收藏不再散落，常用内容一处抵达。</div>
   </aside>
 
   <main class="main">
@@ -2876,7 +2905,7 @@ body.density-compact .site-icon[data-icon-quality="custom"] img{
     </section>
 
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V17.7</div>
+    <div class="footer">© 2026 私人导航工具箱 · V17.8</div>
   </main>
 </div>
 
@@ -2989,7 +3018,7 @@ body.density-compact .site-icon[data-icon-quality="custom"] img{
 <button class="to-top" id="toTop" aria-label="回到顶部">↑</button>
 
 <div class="login-gate" id="loginGate" aria-hidden="true">
-  <div class="login-card" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+  <div class="login-card" role="dialog" aria-modal="true" aria-labelledby="loginTitle"><button class="login-close" id="closeLoginGate" type="button" aria-label="关闭登录">×</button>
     <div class="login-brand" aria-hidden="true">
       <svg viewBox="0 0 54 42" fill="none">
         <defs>
@@ -3011,8 +3040,8 @@ body.density-compact .site-icon[data-icon-quality="custom"] img{
       </svg>
     </div>
     <div class="login-eyebrow">PRIVATE NAV TOOLBOX</div>
-    <h2 id="loginTitle">登录私人导航</h2>
-    <p>登录后自动读取并同步你的导航、分类、排序、收藏和自定义内容。</p>
+    <h2 id="loginTitle">管理员登录</h2>
+    <p>访客无需登录即可浏览。管理员登录后可编辑网站、调整分类、排序、删除和上传自定义 Logo。</p>
 
     <form id="loginForm" class="login-form">
       <label>
@@ -3027,12 +3056,12 @@ body.density-compact .site-icon[data-icon-quality="custom"] img{
         </div>
       </label>
       <div class="login-error" id="loginError" role="alert"></div>
-      <button class="login-submit" id="loginSubmit" type="submit">登录并同步</button>
+      <button class="login-submit" id="loginSubmit" type="submit">登录管理</button>
     </form>
 
     <div class="login-foot">
-      <span>会话使用 HttpOnly 安全 Cookie</span>
-      <span>30 天有效</span>
+      <span>访客模式 · 只读浏览</span>
+      <span>管理员会话 30 天</span>
     </div>
   </div>
 </div>
@@ -4741,7 +4770,7 @@ function applyBootstrapV17(payload,{cache=true}={}){
     state.customCategories=cats.filter(c=>Number(c.is_builtin)===0).sort((a,b)=>Number(a.sort_order)-Number(b.sort_order)).map(c=>({name:c.name,icon:c.icon||"•"}));
     state.categoryOrder=cats.slice().sort((a,b)=>Number(a.sort_order)-Number(b.sort_order)).map(c=>c.name);
     state.categoryIconOverrides={};state.categoryOverrides={};state.siteEdits={};state.iconOverrides={};
-    const mapRow=row=>({id:row.id,name:row.name,url:row.url,category:row.category_name,domain:row.domain||safeDomain(row.url),fullTitle:row.full_title||row.name,icon:"",iconUrl:v17IconUrl(row),_sourceIconUrl:row.icon_url||"",_customIcon:!!row.icon_key,_v17Updated:row.updated_at||""});
+    const mapRow=row=>({id:row.id,name:row.name,url:row.url,category:row.category_name,domain:row.domain||safeDomain(row.url),fullTitle:row.full_title||row.name,icon:"",iconUrl:v17IconUrl(row),_sourceIconUrl:row.icon_url||"",_customIcon:!!(row.has_custom_icon||row.icon_key),_v17Updated:row.updated_at||""});
     BUILTIN_SITES=rows.filter(r=>Number(r.is_custom)===0).map(mapRow);
     state.custom=rows.filter(r=>Number(r.is_custom)!==0).map(mapRow);
     state.favorites=new Set(rows.filter(r=>Number(r.is_favorite)!==0).map(r=>r.id));
@@ -5214,7 +5243,7 @@ async function initCloudSyncV16(){
   },60000);
 }
 
-const __v15Migrated=migrateBuiltinDataV15();sanitizeState();if(save()&&__v15Migrated)STORE.set(V15_BUILTIN_DATA_KEY,V15_BUILTIN_DATA_VERSION);applyTheme();buildNav();buildCategorySelect();buildMoveCategorySelect();buildMoveSiteOptions();render();renderCategoryManager();renderDeletedList();refreshIconPreview();updateStorageUsage();setTimeout(initAuthV161,80);
+const __v15Migrated=migrateBuiltinDataV15();sanitizeState();if(save()&&__v15Migrated)STORE.set(V15_BUILTIN_DATA_KEY,V15_BUILTIN_DATA_VERSION);applyTheme();buildNav();buildCategorySelect();buildMoveCategorySelect();buildMoveSiteOptions();render();renderCategoryManager();renderDeletedList();refreshIconPreview();updateStorageUsage();setTimeout(initPublicAdminV178,80);
 
 let searchRenderRAF=0;
 function queueSearchRender(value){
@@ -6078,6 +6107,187 @@ window.__fxCloudSchedulePush=scheduleDataSyncV17;
   };
   new MutationObserver(normalizeContextIcon).observe(menu,{childList:true,subtree:true});
 })();
+
+
+
+/* ===================== V17.8 · Public View / Admin Mode Runtime ===================== */
+const GUEST_FAVORITES_KEY_V178="fxnav_guest_favorites_v178";
+const GUEST_RECENTS_KEY_V178="fxnav_guest_recents_v178";
+let ADMIN_PENDING_V178=null;
+
+function guestFavoritesV178(){const v=parseStored(GUEST_FAVORITES_KEY_V178,[]);return new Set(Array.isArray(v)?v:[])}
+function guestRecentsV178(){const v=parseStored(GUEST_RECENTS_KEY_V178,[]);return Array.isArray(v)?v.slice(0,30):[]}
+function saveGuestStateV178(){
+  STORE.set(GUEST_FAVORITES_KEY_V178,JSON.stringify([...state.favorites]));
+  STORE.set(GUEST_RECENTS_KEY_V178,JSON.stringify(state.recents.slice(0,30)));
+  updateStorageUsage();
+  return true;
+}
+function updateAccessUIV178(){
+  const admin=!!AUTH_V161.authenticated;
+  document.body.classList.toggle("admin-mode",admin);
+  document.body.classList.toggle("guest-mode",!admin);
+  const accessText=$("#accessModeText");if(accessText)accessText.textContent=admin?"管理员 · 云端可编辑":"访客 · 只读模式";
+  const manage=$("#manageBtn");
+  if(manage){
+    const glyph=manage.querySelector(".tool-glyph"),copy=manage.querySelector("span:last-child");
+    if(glyph)glyph.textContent=admin?"＋":"⌁";
+    if(copy)copy.textContent="管理导航";
+    manage.title=admin?"打开管理导航":"管理员登录后管理导航";
+  }
+  const compact=$("#compactManageBtn");if(compact){compact.textContent=admin?"＋":"⌁";compact.title=admin?"管理导航":"管理员登录后管理导航"}
+  const logout=$("#logoutBtn");if(logout)logout.hidden=!admin;
+  if(admin)setCloudStatus("synced","D1 已同步","管理员模式 · D1 可读写 · KV 图标可上传");
+  else setCloudStatus("synced","访客只读","无需登录即可浏览；修改操作仅管理员可用");
+}
+function closeLoginGateV178(){
+  if(AUTH_V161.authenticated){hideLoginGateV161();updateAccessUIV178();return}
+  ADMIN_PENDING_V178=null;
+  hideLoginGateV161();
+  updateAccessUIV178();
+}
+function requestAdminV178(action,message="管理员登录后可继续此操作。"){
+  if(AUTH_V161.authenticated){action?.();return true}
+  ADMIN_PENDING_V178=typeof action==="function"?action:null;
+  showLoginGateV161(message);
+  const btn=$("#loginSubmit");if(btn)btn.textContent="登录管理";
+  return false;
+}
+async function silentAuthCheckV178(){
+  AUTH_V161.checking=true;
+  try{
+    const result=await authFetchV161("me");
+    AUTH_V161.authenticated=!!result.authenticated;
+    AUTH_V161.username=result.username||"";
+  }catch(err){
+    AUTH_V161.authenticated=false;
+    AUTH_V161.username="";
+  }finally{AUTH_V161.checking=false}
+  updateAccessUIV178();
+  return AUTH_V161.authenticated;
+}
+async function initPublicAdminV178(){
+  setCloudStatus("syncing","载入导航…","正在读取公开导航数据");
+  await silentAuthCheckV178();
+  await initDataDrivenV17();
+  updateAccessUIV178();
+}
+
+// Guest state stays local; admin state keeps syncing to D1.
+const __saveBeforeV178=save;
+save=function(){
+  if(!AUTH_V161.authenticated)return saveGuestStateV178();
+  return __saveBeforeV178();
+};
+const __scheduleDataSyncBeforeV178=scheduleDataSyncV17;
+scheduleDataSyncV17=function(){
+  if(!AUTH_V161.authenticated){saveGuestStateV178();updateAccessUIV178();return}
+  return __scheduleDataSyncBeforeV178();
+};
+window.__fxCloudSchedulePush=scheduleDataSyncV17;
+
+// Keep guest favorites / recents private to that browser.
+const __applyBootstrapBeforeV178=applyBootstrapV17;
+applyBootstrapV17=function(payload,opts={}){
+  const isGuest=payload?.access==="guest"||payload?.authenticated===false;
+  const fav=isGuest?(STORE.get(GUEST_FAVORITES_KEY_V178)===null?new Set(state.favorites):guestFavoritesV178()):null;
+  const rec=isGuest?(STORE.get(GUEST_RECENTS_KEY_V178)===null?state.recents.slice(0,30):guestRecentsV178()):null;
+  const ok=__applyBootstrapBeforeV178(payload,opts);
+  if(!ok)return ok;
+  AUTH_V161.authenticated=!isGuest;
+  if(isGuest){
+    const ids=new Set(rawSites().map(s=>s.id));
+    state.favorites=new Set([...fav].filter(id=>ids.has(id)));
+    state.recents=rec.filter(id=>ids.has(id)).slice(0,30);
+    state.hiddenSites=new Set();
+    buildNav();render();updateCounts();
+  }
+  updateAccessUIV178();
+  return ok;
+};
+
+// Login now only elevates permissions; public page remains visible without it.
+const __doLoginBeforeV178=doLoginV161;
+doLoginV161=async function(username,password){
+  const ok=await __doLoginBeforeV178(username,password);
+  if(ok){
+    updateAccessUIV178();
+    const pending=ADMIN_PENDING_V178;ADMIN_PENDING_V178=null;
+    if(pending)setTimeout(()=>pending(),60);
+  }
+  const btn=$("#loginSubmit");if(btn&&!btn.disabled)btn.textContent="登录管理";
+  return ok;
+};
+logoutV161=async function(){
+  try{await authFetchV161("logout","POST",{})}catch{}
+  AUTH_V161.authenticated=false;AUTH_V161.username="";V17.ready=false;
+  clearTimeout(V17.pushTimer);closeDrawer();closeCategoryContext();closeSiteEditor();
+  hideLoginGateV161();
+  await refreshV17FromServer({quiet:true});
+  updateAccessUIV178();
+  toast("已退出管理员模式，当前为访客只读");
+};
+
+$("#closeLoginGate")?.addEventListener("click",closeLoginGateV178);
+$("#loginGate")?.addEventListener("pointerdown",e=>{if(e.target===$("#loginGate"))closeLoginGateV178()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("#loginGate")?.classList.contains("show")&&!AUTH_V161.authenticated){e.preventDefault();closeLoginGateV178()}},true);
+
+// Admin-only entry points.
+const __openDrawerBeforeV178=openDrawer;
+openDrawer=function(){return requestAdminV178(()=>__openDrawerBeforeV178(),"管理导航仅管理员可用，请登录后继续。")};
+const __toggleSortBeforeV178=toggleSortMode;
+toggleSortMode=function(){return requestAdminV178(()=>__toggleSortBeforeV178(),"排序会修改云端导航，请先登录管理员。")};
+const __openEditorBeforeV178=openSiteEditor;
+openSiteEditor=function(siteOrId){return requestAdminV178(()=>__openEditorBeforeV178(siteOrId),"编辑网站需要管理员权限。")};
+const __chooseIconBeforeV178=chooseContextIcon;
+chooseContextIcon=function(site){return requestAdminV178(()=>__chooseIconBeforeV178(site),"上传或修改 Logo 需要管理员权限。")};
+const __deleteContextBeforeV178=deleteContextSite;
+deleteContextSite=function(site){return requestAdminV178(()=>__deleteContextBeforeV178(site),"删除网站需要管理员权限。")};
+const __applyCategoryBeforeV178=applyContextCategory;
+applyContextCategory=function(site,target){return requestAdminV178(()=>__applyCategoryBeforeV178(site,target),"移动分类需要管理员权限。")};
+const __restoreCategoryBeforeV178=restoreContextCategory;
+restoreContextCategory=function(site){return requestAdminV178(()=>__restoreCategoryBeforeV178(site),"恢复分类需要管理员权限。")};
+const __resetIconBeforeV178=resetContextIcon;
+resetContextIcon=function(site){return requestAdminV178(()=>__resetIconBeforeV178(site),"恢复图标需要管理员权限。")};
+
+$("#manageBtn").onclick=openDrawer;
+$("#compactManageBtn").onclick=openDrawer;
+$("#sortModeBtn").onclick=toggleSortMode;
+$("#compactSortBtn").onclick=toggleSortMode;
+$("#logoutBtn")?.addEventListener("click",e=>{e.preventDefault();e.stopImmediatePropagation();if(AUTH_V161.authenticated&&confirm("退出管理员模式？"))logoutV161()},true);
+$("#mobileManageBtn")?.addEventListener("click",e=>{e.preventDefault();e.stopImmediatePropagation();openDrawer()},true);
+
+// Guest right-click menu: browse / local favorite / copy only. Admin gets full original menu.
+const __buildContextBeforeV178=buildCategoryContext;
+buildCategoryContext=function(site){
+  if(AUTH_V161.authenticated)return __buildContextBeforeV178(site);
+  const menu=$("#categoryContext");menu.innerHTML="";
+  const head=document.createElement("div");head.className="context-head";
+  const iconWrap=createSiteIcon(site,"custom-mini-icon context-head-icon");
+  const copy=document.createElement("div");copy.className="context-head-copy";
+  const name=document.createElement("div");name.className="context-head-name";name.textContent=site.name;
+  const cat=document.createElement("div");cat.className="context-head-category";cat.textContent=`${effectiveCategory(site)} · 访客只读`;
+  copy.append(name,cat);head.append(iconWrap,copy);
+  const tools=document.createElement("div");tools.className="context-tools";
+  const openBtn=document.createElement("button");openBtn.type="button";openBtn.className="context-tool full";openBtn.innerHTML='<span class="context-tool-icon">↗</span><span>打开网站</span>';openBtn.onclick=e=>{e.preventDefault();e.stopPropagation();recordRecent(site.id);closeCategoryContext();window.open(site.url,"_blank","noopener")};
+  const favBtn=document.createElement("button");favBtn.type="button";favBtn.className="context-tool";favBtn.innerHTML=`<span class="context-tool-icon">${state.favorites.has(site.id)?"★":"☆"}</span><span>${state.favorites.has(site.id)?"取消本机收藏":"收藏到本机"}</span>`;favBtn.onclick=e=>{e.preventDefault();e.stopPropagation();toggleFavorite(site.id);buildCategoryContext(site)};
+  const copyBtn=document.createElement("button");copyBtn.type="button";copyBtn.className="context-tool";copyBtn.innerHTML='<span class="context-tool-icon">⧉</span><span>复制网址</span>';copyBtn.onclick=async e=>{e.preventDefault();e.stopPropagation();try{await navigator.clipboard.writeText(site.url);closeCategoryContext();toast("网址已复制")}catch{prompt("复制网址",site.url)}};
+  const adminBtn=document.createElement("button");adminBtn.type="button";adminBtn.className="context-tool full admin-login";adminBtn.innerHTML='<span class="context-tool-icon">⌁</span><span>管理员登录后编辑 / 换图标 / 删除</span>';adminBtn.onclick=e=>{e.preventDefault();e.stopPropagation();const r=menu.getBoundingClientRect();closeCategoryContext();requestAdminV178(()=>{__buildContextBeforeV178(site);menu.setAttribute("aria-hidden","false");positionCategoryContext(menu,Math.min(innerWidth-20,r.left+20),Math.min(innerHeight-20,r.top+20))},"登录管理员后可编辑网站、移动分类、自定义 Logo 和删除。")};
+  const note=document.createElement("div");note.className="context-guest-note";note.textContent="访客只能浏览、复制和在本机收藏；所有云端修改接口均需要管理员会话。";
+  tools.append(openBtn,favBtn,copyBtn,adminBtn);menu.append(head,tools,note);
+};
+
+// If an admin session expires during a write, show login only then.
+const __pushBeforeV178=pushV17;
+pushV17=async function(opts={}){
+  if(!AUTH_V161.authenticated)return true;
+  return __pushBeforeV178(opts);
+};
+
+// Prevent guest mutation through forms if a stale drawer somehow remains open.
+document.getElementById("addForm")?.addEventListener("submit",e=>{if(!AUTH_V161.authenticated){e.preventDefault();e.stopImmediatePropagation();requestAdminV178(()=>openDrawer(),"添加网站需要管理员权限。");}},true);
+
+updateAccessUIV178();
 
 </script>
 </body>
