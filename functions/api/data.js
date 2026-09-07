@@ -48,6 +48,106 @@ async function buildBootstrap(env,owner,migrationSource,{publicView=false}={}){
   return {ok:true,revision:await getRevision(env,owner),migrationSource,categories:cats,sites,settings,iconStore:"kv",kv:!!env.KV,access:publicView?"guest":"admin",authenticated:!publicView};
 }
 async function backupSnapshot(env,owner,revision){const snap=await buildBootstrap(env,owner,"backup");await env.DB.prepare(`INSERT INTO backups_v17(owner,revision,snapshot,created_at) VALUES(?,?,?,CURRENT_TIMESTAMP)`).bind(owner,revision,JSON.stringify(snap)).run();await env.DB.prepare(`DELETE FROM backups_v17 WHERE owner=? AND id NOT IN (SELECT id FROM backups_v17 WHERE owner=? ORDER BY id DESC LIMIT ?)`).bind(owner,owner,BACKUP_KEEP).run()}
+
+async function listBackups(env,owner){
+  const rows=(await env.DB.prepare(`SELECT id,revision,snapshot,created_at FROM backups_v17 WHERE owner=? ORDER BY id DESC LIMIT ?`).bind(owner,BACKUP_KEEP).all()).results||[];
+  const backups=rows.map(row=>{
+    let siteCount=0,categoryCount=0;
+    try{
+      const snap=JSON.parse(row.snapshot||"{}");
+      siteCount=Array.isArray(snap.sites)?snap.sites.length:0;
+      categoryCount=Array.isArray(snap.categories)?snap.categories.length:0;
+    }catch{}
+    return {id:Number(row.id),revision:Number(row.revision)||0,createdAt:row.created_at,siteCount,categoryCount};
+  });
+  return json({ok:true,backups});
+}
+function backupToSyncBody(snapshot,currentRevision){
+  const cats=(Array.isArray(snapshot?.categories)?snapshot.categories:[]).map(c=>({
+    name:String(c?.name||""),
+    icon:String(c?.icon||"•"),
+    sortOrder:Number(c?.sort_order??c?.sortOrder)||0,
+    isBuiltin:Number(c?.is_builtin??c?.isBuiltin)!==0
+  }));
+  const sites=(Array.isArray(snapshot?.sites)?snapshot.sites:[]).map(s=>({
+    id:String(s?.id||""),
+    name:String(s?.name||""),
+    url:String(s?.url||""),
+    fullTitle:String(s?.full_title??s?.fullTitle??s?.name??""),
+    category:String(s?.category_name??s?.category??""),
+    sortOrder:Number(s?.sort_order??s?.sortOrder)||0,
+    isFavorite:Number(s?.is_favorite??s?.isFavorite)!==0,
+    isDeleted:Number(s?.is_deleted??s?.isDeleted)!==0,
+    isCustom:Number(s?.is_custom??s?.isCustom)!==0,
+    iconUrl:String(s?.icon_url??s?.iconUrl??"")
+  }));
+  return {baseRevision:currentRevision,force:true,categories:cats,sites,settings:(snapshot?.settings&&typeof snapshot.settings==="object")?snapshot.settings:{}};
+}
+async function restoreBackup(env,owner,id){
+  const row=await env.DB.prepare(`SELECT snapshot FROM backups_v17 WHERE owner=? AND id=? LIMIT 1`).bind(owner,id).first();
+  if(!row?.snapshot)return json({ok:false,error:"Backup not found."},404);
+  let snap=null;try{snap=JSON.parse(row.snapshot)}catch{return json({ok:false,error:"Backup is corrupted."},500)}
+  const current=await getRevision(env,owner);
+  return await syncSnapshot(env,owner,backupToSyncBody(snap,current));
+}
+function privateHost(host){
+  const h=String(host||"").toLowerCase();
+  if(!h||h==="localhost"||h.endsWith(".localhost")||h.endsWith(".local")||h.endsWith(".internal")||h.endsWith(".lan"))return true;
+  if(h==="::1"||h==="0:0:0:0:0:0:0:1")return true;
+  const m=h.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+  if(m){
+    const a=Number(m[1]),b=Number(m[2]);
+    if(a===10||a===127||a===0||a>=224)return true;
+    if(a===169&&b===254)return true;
+    if(a===172&&b>=16&&b<=31)return true;
+    if(a===192&&b===168)return true;
+  }
+  return false;
+}
+async function checkSiteHealth(site){
+  let u=null;try{u=new URL(site.url)}catch{return {id:site.id,kind:"bad",label:"网址无效",status:0}}
+  if(!/^https?:$/.test(u.protocol)||privateHost(u.hostname))return {id:site.id,kind:"bad",label:"已阻止检测",status:0};
+  const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),4500);
+  try{
+    const res=await fetch(u.href,{method:"HEAD",redirect:"manual",signal:ctl.signal,headers:{"User-Agent":"Mozilla/5.0"}});
+    const status=Number(res.status)||0;
+    if(status>=200&&status<300)return {id:site.id,kind:"ok",label:`正常 ${status}`,status};
+    if(status>=300&&status<400)return {id:site.id,kind:"warn",label:`重定向 ${status}`,status,location:res.headers.get("location")||""};
+    if(status===401||status===403||status===405)return {id:site.id,kind:"warn",label:`可访问 ${status}`,status};
+    return {id:site.id,kind:"bad",label:`异常 ${status||"?"}`,status};
+  }catch{
+    return {id:site.id,kind:"bad",label:"连接失败",status:0};
+  }finally{clearTimeout(timer)}
+}
+async function refreshIcons(env,owner,ids){
+  if(!env.KV)return json({ok:false,error:"Missing KV binding: KV"},500);
+  const clean=[...new Set((Array.isArray(ids)?ids:[]).map(String))].slice(0,60);
+  let refreshed=0,skipped=0;
+  for(const id of clean){
+    const site=await env.DB.prepare(`SELECT * FROM sites_v17 WHERE id=? LIMIT 1`).bind(id).first();
+    if(!site){skipped++;continue}
+    if(site.icon_key&&String(site.icon_key).startsWith("custom:")){skipped++;continue}
+    const root=site.root_domain||rootDomain(site.domain),key=`favicon:${root}`;
+    await env.KV.delete(key);
+    await serveIcon(env,site);
+    await env.DB.prepare(`UPDATE sites_v17 SET updated_at=CURRENT_TIMESTAMP WHERE id=?`).bind(id).run();
+    refreshed++;
+  }
+  if(refreshed){
+    const rev=await getRevision(env,owner)+1;
+    await setSetting(env,owner,"revision",String(rev));
+    return json({ok:true,refreshed,skipped,revision:rev});
+  }
+  return json({ok:true,refreshed,skipped,revision:await getRevision(env,owner)});
+}
+async function healthBatch(env,ids){
+  const clean=[...new Set((Array.isArray(ids)?ids:[]).map(String))].slice(0,12);
+  if(!clean.length)return json({ok:true,results:[]});
+  const marks=clean.map(()=>"?").join(",");
+  const rows=(await env.DB.prepare(`SELECT id,url FROM sites_v17 WHERE id IN (${marks})`).bind(...clean).all()).results||[];
+  const results=await Promise.all(rows.map(checkSiteHealth));
+  return json({ok:true,results});
+}
 function validateSnapshot(body){const cats=Array.isArray(body?.categories)?body.categories:[],sites=Array.isArray(body?.sites)?body.sites:[];const seen=new Map(),dups=[];for(const s of sites){const n=normalizeUrl(s?.url);if(!n)continue;if(seen.has(n))dups.push({url:n,a:seen.get(n),b:s.id});else seen.set(n,s.id)}return {cats,sites,dups}}
 async function syncSnapshot(env,owner,body){const {cats,sites,dups}=validateSnapshot(body);if(dups.length)return json({ok:false,error:"Duplicate URL detected.",duplicates:dups},409);const current=await getRevision(env,owner),base=Math.max(0,Number(body?.baseRevision)||0),force=body?.force===true;if(!force&&base!==current)return json({ok:false,error:"Revision conflict.",revision:current},409);await backupSnapshot(env,owner,current);
   const existing=(await env.DB.prepare(`SELECT id,is_custom,icon_key FROM sites_v17`).all()).results||[],incoming=new Set(sites.map(s=>String(s.id)));for(const r of existing){if(Number(r.is_custom)!==0&&!incoming.has(String(r.id))){if(env.KV&&r.icon_key&&String(r.icon_key).startsWith("custom:"))await env.KV.delete(r.icon_key);await env.DB.prepare(`DELETE FROM sites_v17 WHERE id=?`).bind(r.id).run()}}
@@ -76,7 +176,12 @@ export async function onRequest(context){const {request,env}=context;try{await e
   // Everything below mutates cloud state and therefore requires admin auth.
   const auth=await requireAuth(request,env);if(auth.error)return auth.error;
   if(mode==="sync"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);return await syncSnapshot(env,auth.owner,await request.json())}
+  if(mode==="backups"&&request.method==="GET"){return await listBackups(env,auth.owner)}
+  if(mode==="backup-now"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);const rev=await getRevision(env,auth.owner);await backupSnapshot(env,auth.owner,rev);return json({ok:true,revision:rev})}
+  if(mode==="restore-backup"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);const body=await request.json();return await restoreBackup(env,auth.owner,Number(body?.id)||0)}
+  if(mode==="refresh-icons"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);const body=await request.json();return await refreshIcons(env,auth.owner,body?.ids)}
+  if(mode==="health"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);const body=await request.json();return await healthBatch(env,body?.ids)}
   if(mode==="upload-icon"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);if(!env.KV)return json({ok:false,error:"Missing KV binding: KV"},500);const id=String(url.searchParams.get("site")||""),site=await env.DB.prepare(`SELECT id,icon_key FROM sites_v17 WHERE id=? LIMIT 1`).bind(id).first();if(!site)return json({ok:false,error:"Site not found."},404);const type=(request.headers.get("content-type")||"").split(";")[0].trim().toLowerCase(),allowed=new Set(["image/png","image/jpeg","image/webp","image/gif","image/x-icon","image/vnd.microsoft.icon"]);if(!allowed.has(type))return json({ok:false,error:"Only PNG/JPG/WebP/GIF/ICO are allowed."},415);const buf=await request.arrayBuffer();if(!buf.byteLength||buf.byteLength>MAX_ICON_BYTES)return json({ok:false,error:"Icon must be 1MB or smaller."},413);const key=`custom:${auth.owner}:${id}:${crypto.randomUUID()}`;await env.KV.put(key,buf,{metadata:{contentType:type,kind:"custom"}});if(site.icon_key&&String(site.icon_key).startsWith("custom:"))await env.KV.delete(site.icon_key);await env.DB.prepare(`UPDATE sites_v17 SET icon_key=?,updated_at=CURRENT_TIMESTAMP WHERE id=?`).bind(key,id).run();const rev=await getRevision(env,auth.owner)+1;await setSetting(env,auth.owner,"revision",String(rev));return json({ok:true,revision:rev})}
   if(mode==="reset-icon"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);const id=String(url.searchParams.get("site")||""),site=await env.DB.prepare(`SELECT icon_key FROM sites_v17 WHERE id=? LIMIT 1`).bind(id).first();if(!site)return json({ok:false,error:"Site not found."},404);if(env.KV&&site.icon_key&&String(site.icon_key).startsWith("custom:"))await env.KV.delete(site.icon_key);await env.DB.prepare(`UPDATE sites_v17 SET icon_key=NULL,updated_at=CURRENT_TIMESTAMP WHERE id=?`).bind(id).run();const rev=await getRevision(env,auth.owner)+1;await setSetting(env,auth.owner,"revision",String(rev));return json({ok:true,revision:rev})}
   return json({ok:false,error:"Not found."},404)
-}catch(e){return json({ok:false,error:"V17.8 API error: "+String(e?.message||e)},500)}}
+}catch(e){return json({ok:false,error:"V18.1 API error: "+String(e?.message||e)},500)}}
