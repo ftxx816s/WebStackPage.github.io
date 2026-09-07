@@ -41,7 +41,10 @@ async function buildBootstrap(env,owner,migrationSource,{publicView=false}={}){
     : `SELECT id,name,url,normalized_url,domain,root_domain,full_title,category_name,sort_order,is_favorite,is_deleted,is_custom,icon_url,CASE WHEN icon_key IS NOT NULL THEN 1 ELSE 0 END AS has_custom_icon,visit_count,last_visited_at,updated_at,created_at FROM sites_v17 ORDER BY category_name,sort_order,name`;
   const sites=(await env.DB.prepare(sql).all()).results||[];
   let settings={};
-  if(!publicView){try{settings=JSON.parse(await getSetting(env,owner,"ui")||"{}")||{}}catch{}}
+  try{
+    const ui=JSON.parse(await getSetting(env,owner,"ui")||"{}")||{};
+    settings=publicView?{categoryTitles:(ui.categoryTitles&&typeof ui.categoryTitles==="object"&&!Array.isArray(ui.categoryTitles))?ui.categoryTitles:{}}:ui;
+  }catch{settings={}}
   return {ok:true,revision:await getRevision(env,owner),migrationSource,categories:cats,sites,settings,iconStore:"kv",kv:!!env.KV,access:publicView?"guest":"admin",authenticated:!publicView};
 }
 async function backupSnapshot(env,owner,revision){const snap=await buildBootstrap(env,owner,"backup");await env.DB.prepare(`INSERT INTO backups_v17(owner,revision,snapshot,created_at) VALUES(?,?,?,CURRENT_TIMESTAMP)`).bind(owner,revision,JSON.stringify(snap)).run();await env.DB.prepare(`DELETE FROM backups_v17 WHERE owner=? AND id NOT IN (SELECT id FROM backups_v17 WHERE owner=? ORDER BY id DESC LIMIT ?)`).bind(owner,owner,BACKUP_KEEP).run()}
