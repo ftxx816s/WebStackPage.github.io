@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>私人导航工具箱 · V17.15 D1 Label</title>
+<title>私人导航工具箱 · V18.0 Manager Center</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https: http:; connect-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -2908,6 +2908,347 @@ html[data-theme="light"] .login-brand img{
   .brand-copy b{font-size:16.5px!important}
   .brand-copy small{font-size:8.5px!important}
 }
+
+/* ===================== V18.0 · Manager Center ===================== */
+:root{
+  --mgr-panel-bg:rgba(11,18,32,.42);
+  --mgr-panel-strong:rgba(14,22,39,.72);
+}
+.drawer{
+  width:min(820px,100vw)!important;
+}
+.drawer-head{
+  padding:17px 18px 0!important;
+  background:rgba(8,15,28,.985)!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+.drawer-head-row{
+  padding-bottom:14px;
+}
+.drawer-title h2{font-size:24px!important}
+.drawer-title p{font-size:11px!important;letter-spacing:.035em!important;text-transform:none!important}
+.drawer-body{
+  padding:18px!important;
+}
+.manager-tabs{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  overflow-x:auto;
+  scrollbar-width:none;
+  padding:0 0 12px;
+  -webkit-overflow-scrolling:touch;
+}
+.manager-tabs::-webkit-scrollbar{display:none}
+.manager-tab{
+  position:relative;
+  flex:0 0 auto;
+  height:36px;
+  padding:0 12px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  border:1px solid transparent;
+  border-radius:11px;
+  background:transparent;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:800;
+  cursor:pointer;
+  transition:background .16s ease,border-color .16s ease,color .16s ease,transform .16s ease;
+}
+.manager-tab:hover{
+  color:var(--text);
+  background:rgba(255,255,255,.045);
+  border-color:var(--line);
+}
+.manager-tab.active{
+  color:#eef2ff;
+  background:linear-gradient(135deg,rgba(116,135,255,.19),rgba(164,92,246,.12));
+  border-color:rgba(116,135,255,.28);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+}
+.manager-tab-badge{
+  min-width:19px;
+  height:19px;
+  padding:0 6px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  background:rgba(255,255,255,.055);
+  color:var(--muted);
+  font-size:9px;
+  font-weight:900;
+}
+.manager-tab.active .manager-tab-badge{
+  color:#cdd5ff;
+  background:rgba(116,135,255,.13);
+}
+.manager-panel{
+  display:none;
+  min-height:220px;
+  animation:mgrPanelIn .16s ease both;
+}
+.manager-panel.active{display:block}
+@keyframes mgrPanelIn{
+  from{opacity:.55;transform:translateY(4px)}
+  to{opacity:1;transform:none}
+}
+.manager-overview-hero{
+  padding:16px;
+  margin-bottom:14px;
+  border:1px solid var(--line);
+  border-radius:17px;
+  background:
+    radial-gradient(420px 190px at 5% 0%,rgba(116,135,255,.10),transparent 68%),
+    radial-gradient(300px 160px at 96% 0%,rgba(164,92,246,.08),transparent 70%),
+    rgba(255,255,255,.022);
+}
+.manager-overview-hero strong{
+  display:block;
+  font-size:15px;
+  margin-bottom:5px;
+}
+.manager-overview-hero p{
+  margin:0;
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.65;
+}
+.manager-quick-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:9px;
+  margin:14px 0 4px;
+}
+.manager-quick{
+  min-height:68px;
+  padding:12px;
+  text-align:left;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:rgba(255,255,255,.025);
+  color:var(--text);
+  cursor:pointer;
+  transition:transform .16s ease,border-color .16s ease,background .16s ease;
+}
+.manager-quick:hover{
+  transform:translateY(-1px);
+  border-color:rgba(116,135,255,.27);
+  background:rgba(116,135,255,.06);
+}
+.manager-quick b{display:block;font-size:12px}
+.manager-quick small{display:block;margin-top:5px;color:var(--muted);font-size:9.5px;line-height:1.4}
+.manager-panel-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin:2px 0 12px;
+}
+.manager-panel-title h3{margin:0;font-size:16px}
+.manager-panel-title p{margin:3px 0 0;color:var(--muted);font-size:10px}
+.manager-site-toolbar{
+  position:sticky;
+  top:0;
+  z-index:3;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 180px auto;
+  gap:9px;
+  padding:10px;
+  margin-bottom:10px;
+  border:1px solid var(--line);
+  border-radius:15px;
+  background:rgba(9,16,29,.97);
+}
+.manager-site-toolbar input,
+.manager-site-toolbar select{
+  min-width:0;
+  height:38px;
+  border-radius:11px;
+}
+.manager-add-wrap{
+  display:none;
+  margin-bottom:12px;
+}
+.manager-add-wrap.show{display:block}
+.manager-add-wrap #addForm{margin:0!important}
+.manager-site-list{
+  display:grid;
+  gap:7px;
+}
+.manager-site-row{
+  display:grid;
+  grid-template-columns:28px 42px minmax(0,1fr) auto auto;
+  gap:9px;
+  align-items:center;
+  min-height:61px;
+  padding:8px 10px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:rgba(255,255,255,.022);
+  content-visibility:auto;
+  contain-intrinsic-size:61px;
+}
+.manager-site-row:hover{
+  border-color:rgba(116,135,255,.22);
+  background:rgba(116,135,255,.045);
+}
+.manager-check{
+  width:16px;
+  height:16px;
+  accent-color:#7f8fff;
+}
+.manager-site-copy{min-width:0}
+.manager-site-copy b{
+  display:block;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:12px;
+}
+.manager-site-copy small{
+  display:block;
+  margin-top:3px;
+  color:var(--muted);
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:9.5px;
+}
+.manager-site-kind{
+  padding:4px 7px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  color:var(--muted);
+  font-size:8.5px;
+  font-weight:850;
+  white-space:nowrap;
+}
+.manager-site-actions{display:flex;gap:6px}
+.manager-load-more{
+  width:100%;
+  margin-top:10px;
+}
+.manager-batch-bar{
+  display:none;
+  position:sticky;
+  bottom:0;
+  z-index:4;
+  grid-template-columns:auto minmax(150px,1fr) auto auto;
+  gap:8px;
+  align-items:center;
+  margin-top:10px;
+  padding:10px;
+  border:1px solid rgba(116,135,255,.23);
+  border-radius:14px;
+  background:rgba(10,18,32,.97);
+  box-shadow:0 -10px 30px rgba(0,0,0,.18);
+}
+.manager-batch-bar.show{display:grid}
+.manager-batch-count{
+  color:#cfd6ff;
+  font-size:10px;
+  font-weight:850;
+}
+.manager-empty{
+  padding:30px 16px;
+  text-align:center;
+  border:1px dashed var(--line);
+  border-radius:15px;
+  color:var(--muted);
+  font-size:11px;
+}
+.manager-category-title-btn{
+  border-color:rgba(116,135,255,.18)!important;
+  color:#cbd3ff!important;
+}
+.category-manager-copy .category-display-sub{
+  display:block;
+  margin-top:2px;
+  color:#8492aa;
+  font-size:9px;
+}
+.category-manager-copy .category-display-sub.is-custom-title{
+  color:#9ba9d3;
+}
+.manager-dup-intro{
+  margin-bottom:11px;
+  padding:12px 13px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:rgba(255,255,255,.022);
+  color:var(--muted);
+  font-size:10px;
+  line-height:1.6;
+}
+.duplicate-list .dup-item{
+  grid-template-columns:38px minmax(0,1fr) auto!important;
+}
+.manager-dup-actions{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+}
+.manager-locate-btn{
+  color:#cfd7ff!important;
+}
+.manager-locate-flash{
+  animation:managerLocateFlash 1.6s ease both!important;
+}
+@keyframes managerLocateFlash{
+  0%,100%{box-shadow:0 0 0 0 rgba(116,135,255,0)}
+  18%{box-shadow:0 0 0 3px rgba(116,135,255,.34),0 0 30px rgba(116,135,255,.16)}
+  65%{box-shadow:0 0 0 2px rgba(116,135,255,.18),0 0 18px rgba(116,135,255,.08)}
+}
+.manager-data-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+.manager-data-card{
+  padding:14px;
+  border:1px solid var(--line);
+  border-radius:15px;
+  background:rgba(255,255,255,.022);
+}
+.manager-data-card b{display:block;font-size:12px}
+.manager-data-card p{margin:6px 0 12px;color:var(--muted);font-size:10px;line-height:1.55}
+.manager-data-actions{display:flex;gap:7px;flex-wrap:wrap}
+.manager-stash{display:none!important}
+
+html[data-theme="light"] .drawer-head,
+html[data-theme="light"] .manager-site-toolbar,
+html[data-theme="light"] .manager-batch-bar{
+  background:rgba(247,249,253,.98)!important;
+}
+html[data-theme="light"] .manager-tab.active{color:#263057}
+html[data-theme="light"] .manager-overview-hero,
+html[data-theme="light"] .manager-site-row,
+html[data-theme="light"] .manager-data-card{
+  background:rgba(255,255,255,.76);
+}
+
+@media(max-width:760px){
+  .drawer{width:100vw!important}
+  .drawer-head{padding:14px 14px 0!important}
+  .drawer-body{padding:14px!important}
+  .manager-quick-grid{grid-template-columns:1fr 1fr}
+  .manager-site-toolbar{grid-template-columns:1fr 132px}
+  .manager-site-toolbar .btn{grid-column:1/-1}
+  .manager-site-row{
+    grid-template-columns:24px 40px minmax(0,1fr) auto;
+  }
+  .manager-site-kind{display:none}
+  .manager-site-actions .mini-btn{padding:0 8px}
+  .manager-batch-bar{grid-template-columns:1fr 1fr}
+  .manager-batch-count{grid-column:1/-1}
+  .manager-data-grid{grid-template-columns:1fr}
+}
+
 </style>
 
 <!-- V17.15 transparent favicon: logo only, no background -->
@@ -3003,7 +3344,7 @@ html[data-theme="light"] .login-brand img{
     </section>
 
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V17.15</div>
+    <div class="footer">© 2026 私人导航工具箱 · V18.0</div>
   </main>
 </div>
 
@@ -5748,7 +6089,7 @@ if(__sidebarV158){
    这里增加统一同步入口，后端 API 接入后无需重构页面。
 */
 const FX_SYNC={
-  version:"V17.7",
+  version:"V18.0",
   enabled:false,
   user:null,
   endpoint:"",
@@ -6056,11 +6397,10 @@ const FX_SYNC={
     _origOpenDrawer();
     ensureManagerUpgrades();
     renderManagerMetrics();
-    renderDuplicateList();
   };
   document.getElementById('manageBtn').onclick=openDrawer;
   document.getElementById('compactManageBtn').onclick=openDrawer;
-  document.getElementById('mobileManageBtn')?.addEventListener('click',()=>setTimeout(()=>{ensureManagerUpgrades();renderManagerMetrics();renderDuplicateList()},50));
+  document.getElementById('mobileManageBtn')?.addEventListener('click',()=>setTimeout(()=>{ensureManagerUpgrades();renderManagerMetrics()},50));
 
   const _origUpdateCounts=updateCounts;
   updateCounts=function(){
@@ -6087,7 +6427,6 @@ const FX_SYNC={
 
   ensureManagerUpgrades();
   renderManagerMetrics();
-  renderDuplicateList();
 })();
 
 
@@ -6369,5 +6708,714 @@ document.getElementById("addForm")?.addEventListener("submit",e=>{if(!AUTH_V161.
 updateAccessUIV178();
 
 </script>
+
+<script>
+/* ===================== V18.0 · Manager Center Runtime ===================== */
+(function(){
+  const MGR_TAB_KEY="fxnav_manager_tab_v18";
+  const CAT_TITLE_KEY="fxnav_category_title_overrides_v18";
+  const PAGE_SIZE=60;
+  let managerPageSize=PAGE_SIZE;
+  let managerSelection=new Set();
+  let managerReady=false;
+  let duplicateScanned=false;
+
+  function v18RootDomain(host){
+    const h=String(host||"").toLowerCase().replace(/^www\./,"").replace(/\.$/,"");
+    if(!h)return "";
+    const parts=h.split(".").filter(Boolean);
+    if(parts.length<=2)return h;
+    const multipart=new Set([
+      "com.cn","net.cn","org.cn","gov.cn","edu.cn","ac.cn",
+      "co.uk","org.uk","gov.uk","ac.uk","com.au","net.au","org.au",
+      "co.jp","ne.jp","or.jp","com.hk","com.tw","com.sg","com.br"
+    ]);
+    const last2=parts.slice(-2).join(".");
+    const last3=parts.slice(-3).join(".");
+    return multipart.has(last2)?last3:last2;
+  }
+  function v18UrlMeta(url){
+    try{
+      const u=new URL(String(url||"").trim());
+      return {
+        href:u.href,
+        host:u.hostname.toLowerCase().replace(/^www\./,""),
+        root:v18RootDomain(u.hostname),
+        canonical:(u.protocol+"//"+u.hostname.toLowerCase().replace(/^www\./,"")+u.pathname.replace(/\/+$/,"")+(u.search||"")).replace(/\/$/,"")
+      };
+    }catch{return {href:"",host:"",root:"",canonical:""}}
+  }
+  function displayCategory(name){
+    const raw=String(name||"");
+    return String(state.categoryTitleOverrides?.[raw]||raw).trim()||raw;
+  }
+  window.categoryDisplayNameV18=displayCategory;
+
+  function loadCategoryTitles(){
+    const stored=parseStored(CAT_TITLE_KEY,{});
+    state.categoryTitleOverrides=(stored&&typeof stored==="object"&&!Array.isArray(stored))?stored:{};
+  }
+  loadCategoryTitles();
+
+  function saveCategoryTitlesLocal(){
+    STORE.set(CAT_TITLE_KEY,JSON.stringify(state.categoryTitleOverrides||{}));
+  }
+
+  // D1 sync: category titles are public-safe UI metadata.
+  const __makeV17SnapshotV18=makeV17Snapshot;
+  makeV17Snapshot=function(){
+    const snap=__makeV17SnapshotV18();
+    snap.settings={...(snap.settings||{}),categoryTitles:{...(state.categoryTitleOverrides||{})}};
+    return snap;
+  };
+  const __applyBootstrapV18=applyBootstrapV17;
+  applyBootstrapV17=function(payload,opts={}){
+    const ok=__applyBootstrapV18(payload,opts);
+    if(!ok)return ok;
+    const titles=payload?.settings?.categoryTitles;
+    if(titles&&typeof titles==="object"&&!Array.isArray(titles)){
+      state.categoryTitleOverrides={...titles};
+      saveCategoryTitlesLocal();
+    }else if(!AUTH_V161?.authenticated){
+      // Guest receives public-safe categoryTitles from V18 backend.
+      state.categoryTitleOverrides={};
+    }
+    refreshCategoryDisplayV18();
+    return ok;
+  };
+
+  function patchCategoryLabels(){
+    document.querySelectorAll(".nav-btn[data-filter] .nav-name").forEach(el=>{
+      const btn=el.closest(".nav-btn");
+      const key=btn?.dataset.filter;
+      if(key && !["all","favorite","recent"].includes(key))el.textContent=displayCategory(key);
+    });
+    document.querySelectorAll(".section[data-category]").forEach(sec=>{
+      const key=sec.dataset.category;
+      const h=sec.querySelector(".section-heading-line h2");
+      if(h&&key)h.textContent=displayCategory(key);
+    });
+    document.querySelectorAll("#newCategory option,#moveCategorySelect option,#editSiteCategory option,#managerCategoryFilter option,#managerBatchCategory option").forEach(o=>{
+      if(o.value)o.textContent=displayCategory(o.value);
+    });
+  }
+  function refreshCategoryDisplayV18(){
+    patchCategoryLabels();
+    if(document.getElementById("categoryManagerList"))renderCategoryManager?.();
+    if(document.getElementById("managerSiteList"))renderManagerSites();
+  }
+
+  const __buildNavV18=buildNav;
+  buildNav=function(){const r=__buildNavV18();patchCategoryLabels();return r};
+  const __renderV18=render;
+  render=function(opts={}){const r=__renderV18(opts);patchCategoryLabels();return r};
+  const __fillCategorySelectV18=fillCategorySelect;
+  fillCategorySelect=function(sel,current=""){
+    const r=__fillCategorySelectV18(sel,current);
+    if(sel)[...sel.options].forEach(o=>{if(o.value)o.textContent=displayCategory(o.value)});
+    return r;
+  };
+
+  // Category manager: every category gets a "标题" button without changing its internal key.
+  const __renderCategoryManagerV18=renderCategoryManager;
+  renderCategoryManager=function(){
+    const r=__renderCategoryManagerV18();
+    document.querySelectorAll("#categoryManagerList .category-manager-item").forEach(row=>{
+      const key=row.dataset.category;
+      if(!key)return;
+      const copy=row.querySelector(".category-manager-copy");
+      const b=copy?.querySelector("b");
+      if(b)b.textContent=displayCategory(key);
+      if(copy){
+        let sub=copy.querySelector(".category-display-sub");
+        if(!sub){
+          sub=document.createElement("span");
+          sub.className="category-display-sub";
+          copy.append(sub);
+        }
+        const custom=displayCategory(key)!==key;
+        sub.classList.toggle("is-custom-title",custom);
+        sub.textContent=custom?`内部分类键：${key}`:"标题与内部分类键一致";
+      }
+      const actions=row.querySelector(".category-manager-actions");
+      if(actions&&!actions.querySelector(".manager-category-title-btn")){
+        const btn=document.createElement("button");
+        btn.type="button";
+        btn.className="cat-mini manager-category-title-btn";
+        btn.textContent="标题";
+        btn.title="修改前台显示标题，不改变分类内部键和网站归属";
+        btn.onclick=()=>{
+          const current=displayCategory(key);
+          const next=prompt(`自定义分类标题\n\n内部分类：${key}\n留空或输入原名称可恢复默认标题。`,current);
+          if(next===null)return;
+          const clean=String(next).trim().slice(0,28);
+          if(!clean||clean===key)delete state.categoryTitleOverrides[key];
+          else state.categoryTitleOverrides[key]=clean;
+          saveCategoryTitlesLocal();
+          save();
+          buildNav();
+          render();
+          renderCategoryManager();
+          buildCategorySelect();
+          buildMoveCategorySelect();
+          buildMoveSiteOptions();
+          renderManagerSites();
+          toast(clean&&clean!==key?`分类标题已改为「${clean}」`:"分类标题已恢复默认");
+        };
+        actions.prepend(btn);
+      }
+    });
+    patchCategoryLabels();
+    return r;
+  };
+
+  function findTitleRow(text){
+    return [...document.querySelectorAll("#drawer .custom-title-row")].find(row=>row.querySelector("h3")?.textContent.trim()===text)||null;
+  }
+  function moveBlockFromTitle(titleText,panel,stopTitleText){
+    const start=findTitleRow(titleText);
+    if(!start)return;
+    let node=start;
+    while(node){
+      const next=node.nextElementSibling;
+      if(node!==start && node.classList?.contains("custom-title-row") && node.querySelector("h3")?.textContent.trim()===stopTitleText)break;
+      if(node.classList?.contains("admin-divider")){node.remove();break}
+      panel.append(node);
+      node=next;
+    }
+  }
+
+  function setTab(tab){
+    const tabs=[...document.querySelectorAll(".manager-tab")];
+    if(!tabs.some(x=>x.dataset.tab===tab))tab="overview";
+    STORE.set(MGR_TAB_KEY,tab);
+    tabs.forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));
+    document.querySelectorAll(".manager-panel").forEach(p=>p.classList.toggle("active",p.dataset.panel===tab));
+    const body=document.querySelector("#drawer .drawer-body");
+    if(body)body.scrollTop=0;
+    if(tab==="sites")renderManagerSites();
+    if(tab==="categories"){renderCategoryManager();patchCategoryLabels()}
+    if(tab==="recycle")renderDeletedList();
+    if(tab==="data")renderDataPanel();
+    updateManagerBadges();
+  }
+  window.setManagerTabV18=setTab;
+
+  function updateManagerBadges(){
+    const values={
+      sites:allSites().length,
+      categories:allCategories().length,
+      recycle:state.hiddenSites.size
+    };
+    for(const [tab,val] of Object.entries(values)){
+      const b=document.querySelector(`.manager-tab[data-tab="${tab}"] .manager-tab-badge`);
+      if(b)b.textContent=val;
+    }
+    const d=document.querySelector('.manager-tab[data-tab="duplicates"] .manager-tab-badge');
+    if(d)d.textContent=duplicateScanned?document.querySelectorAll("#duplicateList .duplicate-group").length:"·";
+  }
+
+  function makePanel(id){
+    const p=document.createElement("section");
+    p.className="manager-panel";
+    p.dataset.panel=id;
+    return p;
+  }
+
+  function setupManagerCenter(){
+    if(managerReady)return;
+    const drawer=document.getElementById("drawer");
+    const head=drawer?.querySelector(".drawer-head");
+    const body=drawer?.querySelector(".drawer-body");
+    if(!head||!body)return;
+
+    const tabs=document.createElement("div");
+    tabs.id="managerTabs";
+    tabs.className="manager-tabs";
+    tabs.innerHTML=`
+      <button class="manager-tab" type="button" data-tab="overview">概览</button>
+      <button class="manager-tab" type="button" data-tab="sites">网站 <span class="manager-tab-badge">0</span></button>
+      <button class="manager-tab" type="button" data-tab="categories">分类 <span class="manager-tab-badge">0</span></button>
+      <button class="manager-tab" type="button" data-tab="duplicates">重复检测 <span class="manager-tab-badge">·</span></button>
+      <button class="manager-tab" type="button" data-tab="recycle">回收站 <span class="manager-tab-badge">0</span></button>
+      <button class="manager-tab" type="button" data-tab="data">数据</button>
+    `;
+    head.append(tabs);
+
+    const overview=makePanel("overview");
+    const sites=makePanel("sites");
+    const categories=makePanel("categories");
+    const duplicates=makePanel("duplicates");
+    const recycle=makePanel("recycle");
+    const data=makePanel("data");
+    const stash=document.createElement("div");
+    stash.className="manager-stash";
+
+    // Overview
+    const firstNote=body.querySelector(":scope > .admin-note");
+    const metrics=document.getElementById("managerMetrics");
+    overview.innerHTML=`
+      <div class="manager-overview-hero">
+        <strong>导航管理中心</strong>
+        <p>功能按任务拆分，不再需要在一个超长页面里来回滚动。网站、分类、重复项、回收站和数据工具各自独立。</p>
+      </div>
+      <div class="manager-quick-grid">
+        <button class="manager-quick" type="button" data-go="sites" data-add="1"><b>＋ 新增网站</b><small>添加网站与自定义 Logo</small></button>
+        <button class="manager-quick" type="button" data-go="duplicates" data-scan="1"><b>扫描重复</b><small>同主域名即视为重复候选</small></button>
+        <button class="manager-quick" type="button" data-go="categories"><b>分类设置</b><small>标题、图标、排序与移动</small></button>
+        <button class="manager-quick" type="button" data-go="data"><b>数据与备份</b><small>D1 / KV / 导入导出</small></button>
+      </div>
+    `;
+    if(metrics)overview.insertBefore(metrics,overview.querySelector(".manager-quick-grid"));
+    if(firstNote)overview.append(firstNote);
+
+    // Sites
+    sites.innerHTML=`
+      <div class="manager-panel-title">
+        <div><h3>网站管理</h3><p>搜索、筛选、批量移动、批量删除。列表按需渲染，避免一次生成全部 DOM。</p></div>
+      </div>
+      <div class="manager-site-toolbar">
+        <input id="managerSiteSearch" placeholder="搜索名称、域名或分类">
+        <select id="managerCategoryFilter"><option value="">全部分类</option></select>
+        <button class="btn primary" type="button" id="managerToggleAdd">＋ 新增网站</button>
+      </div>
+      <div class="manager-add-wrap" id="managerAddWrap"></div>
+      <div class="manager-site-list" id="managerSiteList"></div>
+      <button class="btn manager-load-more" type="button" id="managerLoadMore" hidden>显示更多</button>
+      <div class="manager-batch-bar" id="managerBatchBar">
+        <span class="manager-batch-count" id="managerBatchCount">已选 0 项</span>
+        <select id="managerBatchCategory"></select>
+        <button class="btn" type="button" id="managerBatchMove">批量移动</button>
+        <button class="btn danger-text" type="button" id="managerBatchDelete">批量删除</button>
+      </div>
+    `;
+    const addWrap=sites.querySelector("#managerAddWrap");
+    const addForm=document.getElementById("addForm");
+    if(addForm)addWrap.append(addForm);
+
+    // Categories: move existing blocks.
+    categories.innerHTML=`
+      <div class="manager-panel-title"><div><h3>分类管理</h3><p>“标题”只改变前台显示名称，不改内部分类键，因此不会破坏网站归属。</p></div></div>
+    `;
+    moveBlockFromTitle("分类管理",categories,"分类移动");
+    moveBlockFromTitle("分类移动",categories,"我的新增");
+
+    // Duplicates
+    const dupPanel=document.getElementById("duplicatePanel");
+    if(dupPanel){
+      duplicates.append(dupPanel);
+      const note=dupPanel.querySelector(".admin-note");
+      if(note)note.textContent="重复规则：网址完全相同一定重复；网址不同但属于同一个主域名，也会归为重复候选。扫描结果支持直接定位、编辑和一键去重。";
+      const jump=dupPanel.querySelector("#jumpDeletedBtn");
+      if(jump){jump.textContent="打开回收站";jump.onclick=()=>setTab("recycle")}
+    }else{
+      duplicates.innerHTML='<div class="manager-empty">重复检测模块正在初始化，请重新打开管理中心。</div>';
+    }
+
+    // Recycle
+    recycle.innerHTML=`
+      <div class="manager-panel-title"><div><h3>回收站</h3><p>已删除网站集中管理，不再放在页面最底部。</p></div></div>
+    `;
+    moveBlockFromTitle("已删除网站",recycle,"");
+
+    // Data
+    data.innerHTML=`
+      <div class="manager-panel-title"><div><h3>数据中心</h3><p>D1 是正式数据源，KV 用于自定义 Logo 与高清 favicon 缓存。</p></div></div>
+      <div class="manager-data-grid">
+        <div class="manager-data-card">
+          <b>D1 云端数据</b>
+          <p id="managerD1Info">正在读取当前数据状态…</p>
+          <div class="manager-data-actions">
+            <button class="btn primary" type="button" id="managerSyncNow">立即同步</button>
+            <button class="btn" type="button" id="managerRefreshCloud">从云端刷新</button>
+          </div>
+        </div>
+        <div class="manager-data-card">
+          <b>配置备份</b>
+          <p>导出一份 JSON 本地备份；导入时仍会经过现有数据校验，并同步回 D1。</p>
+          <div class="manager-data-actions">
+            <button class="btn" type="button" id="managerExport">导出配置</button>
+            <button class="btn" type="button" id="managerImport">导入配置</button>
+          </div>
+        </div>
+        <div class="manager-data-card">
+          <b>KV 图标缓存</b>
+          <p>自定义上传 Logo 和自动抓取的高清 favicon 均继续使用现有 Workers KV。</p>
+          <div class="manager-data-actions">
+            <button class="btn" type="button" id="managerGoSites">管理网站图标</button>
+          </div>
+        </div>
+        <div class="manager-data-card">
+          <b>本机缓存</b>
+          <p id="managerLocalInfo">正在计算…</p>
+          <div class="manager-data-actions">
+            <button class="btn" type="button" id="managerUpdateUsage">刷新占用</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Keep legacy custom list alive but out of the long UI; existing functions can still update it safely.
+    const customTitle=findTitleRow("我的新增");
+    if(customTitle){
+      let node=customTitle;
+      while(node){
+        const next=node.nextElementSibling;
+        if(node.classList?.contains("custom-title-row") && node!==customTitle && node.querySelector("h3")?.textContent.trim()==="已删除网站")break;
+        if(node.classList?.contains("admin-divider")){node.remove();break}
+        stash.append(node);
+        node=next;
+      }
+    }
+
+    // Anything left from the old long page goes to hidden compatibility stash.
+    [...body.children].forEach(el=>{
+      if(![overview,sites,categories,duplicates,recycle,data,stash].includes(el))stash.append(el);
+    });
+    body.append(overview,sites,categories,duplicates,recycle,data,stash);
+
+    tabs.addEventListener("click",e=>{
+      const btn=e.target.closest(".manager-tab");
+      if(btn)setTab(btn.dataset.tab);
+    });
+    overview.addEventListener("click",e=>{
+      const btn=e.target.closest("[data-go]");
+      if(!btn)return;
+      const tab=btn.dataset.go;
+      setTab(tab);
+      if(btn.dataset.add==="1")setTimeout(()=>document.getElementById("managerToggleAdd")?.click(),30);
+      if(btn.dataset.scan==="1")setTimeout(()=>document.getElementById("scanDuplicatesBtn")?.click(),30);
+    });
+
+    document.getElementById("managerToggleAdd")?.addEventListener("click",()=>{
+      const wrap=document.getElementById("managerAddWrap");
+      wrap?.classList.toggle("show");
+      if(wrap?.classList.contains("show"))document.getElementById("newName")?.focus();
+    });
+    document.getElementById("managerSiteSearch")?.addEventListener("input",()=>{managerPageSize=PAGE_SIZE;renderManagerSites()});
+    document.getElementById("managerCategoryFilter")?.addEventListener("change",()=>{managerPageSize=PAGE_SIZE;renderManagerSites()});
+    document.getElementById("managerLoadMore")?.addEventListener("click",()=>{managerPageSize+=PAGE_SIZE;renderManagerSites()});
+    document.getElementById("managerBatchMove")?.addEventListener("click",batchMoveV18);
+    document.getElementById("managerBatchDelete")?.addEventListener("click",batchDeleteV18);
+
+    document.getElementById("managerSyncNow")?.addEventListener("click",async()=>{
+      const btn=document.getElementById("managerSyncNow");if(btn)btn.disabled=true;
+      try{await pushV17({force:true});toast("已请求立即同步")}finally{if(btn)btn.disabled=false;renderDataPanel()}
+    });
+    document.getElementById("managerRefreshCloud")?.addEventListener("click",async()=>{
+      const btn=document.getElementById("managerRefreshCloud");if(btn)btn.disabled=true;
+      try{await refreshV17FromServer({quiet:false});toast("已从 D1 刷新")}finally{if(btn)btn.disabled=false;renderDataPanel()}
+    });
+    document.getElementById("managerExport")?.addEventListener("click",()=>document.getElementById("exportBtn")?.click());
+    document.getElementById("managerImport")?.addEventListener("click",()=>document.getElementById("importBtn")?.click());
+    document.getElementById("managerGoSites")?.addEventListener("click",()=>setTab("sites"));
+    document.getElementById("managerUpdateUsage")?.addEventListener("click",()=>{updateStorageUsage();renderDataPanel()});
+
+    setupDuplicateV18();
+    managerReady=true;
+    rebuildManagerCategorySelects();
+    setTab(STORE.get(MGR_TAB_KEY)||"overview");
+    updateManagerBadges();
+  }
+
+  function rebuildManagerCategorySelects(){
+    const filter=document.getElementById("managerCategoryFilter");
+    const batch=document.getElementById("managerBatchCategory");
+    if(filter){
+      const current=filter.value;
+      filter.innerHTML='<option value="">全部分类</option>';
+      allCategories().forEach(c=>{
+        const o=document.createElement("option");o.value=c.name;o.textContent=displayCategory(c.name);filter.append(o);
+      });
+      filter.value=current;
+    }
+    if(batch){
+      const current=batch.value;
+      batch.innerHTML="";
+      allCategories().forEach(c=>{
+        const o=document.createElement("option");o.value=c.name;o.textContent=displayCategory(c.name);batch.append(o);
+      });
+      if(current&&categoryByName(current))batch.value=current;
+    }
+  }
+
+  function managerFilteredSites(){
+    const q=String(document.getElementById("managerSiteSearch")?.value||"").trim().toLowerCase();
+    const cat=String(document.getElementById("managerCategoryFilter")?.value||"");
+    return rawSites()
+      .filter(site=>!state.hiddenSites.has(site.id))
+      .filter(site=>!cat||effectiveCategory(site)===cat)
+      .filter(site=>{
+        if(!q)return true;
+        const hay=[site.name,site.domain,safeDomain(site.url),effectiveCategory(site),displayCategory(effectiveCategory(site)),site.url].join(" ").toLowerCase();
+        return hay.includes(q);
+      })
+      .sort((a,b)=>{
+        const ca=allCategories().findIndex(c=>c.name===effectiveCategory(a));
+        const cb=allCategories().findIndex(c=>c.name===effectiveCategory(b));
+        return ca-cb||String(a.name).localeCompare(String(b.name),"zh-Hans-CN");
+      });
+  }
+
+  function renderManagerSites(){
+    const box=document.getElementById("managerSiteList");
+    if(!box)return;
+    rebuildManagerCategorySelects();
+    const all=managerFilteredSites();
+    const shown=all.slice(0,managerPageSize);
+    const validIds=new Set(all.map(s=>s.id));
+    managerSelection=new Set([...managerSelection].filter(id=>validIds.has(id)));
+    const frag=document.createDocumentFragment();
+    shown.forEach(site=>{
+      const row=document.createElement("div");
+      row.className="manager-site-row";
+      row.dataset.siteId=site.id;
+      const check=document.createElement("input");
+      check.type="checkbox";check.className="manager-check";check.checked=managerSelection.has(site.id);
+      check.addEventListener("change",()=>{check.checked?managerSelection.add(site.id):managerSelection.delete(site.id);updateBatchBar()});
+      const icon=createSiteIcon(site,"custom-mini-icon");
+      const copy=document.createElement("div");copy.className="manager-site-copy";
+      const b=document.createElement("b");b.textContent=site.name;
+      const sm=document.createElement("small");sm.textContent=`${displayCategory(effectiveCategory(site))} · ${site.domain||safeDomain(site.url)}`;
+      copy.append(b,sm);
+      const kind=document.createElement("span");kind.className="manager-site-kind";kind.textContent=isBuiltinSite(site.id)?"内置":"自建";
+      const actions=document.createElement("div");actions.className="manager-site-actions";
+      const edit=document.createElement("button");edit.type="button";edit.className="mini-btn";edit.textContent="编辑";edit.onclick=()=>openSiteEditor(site);
+      const del=document.createElement("button");del.type="button";del.className="mini-btn danger";del.textContent="删除";del.onclick=()=>deleteOneV18(site);
+      actions.append(edit,del);
+      row.append(check,icon,copy,kind,actions);
+      frag.append(row);
+    });
+    box.replaceChildren(frag);
+    if(!shown.length)box.innerHTML='<div class="manager-empty">没有找到符合条件的网站。</div>';
+    const more=document.getElementById("managerLoadMore");
+    if(more){more.hidden=shown.length>=all.length;more.textContent=`显示更多（${shown.length}/${all.length}）`}
+    updateBatchBar();
+    updateManagerBadges();
+  }
+
+  function deleteOneV18(site){
+    if(!confirm(`删除「${site.name}」？\n\n网站会进入回收站，可恢复。`))return;
+    state.hiddenSites.add(site.id);
+    state.favorites.delete(site.id);
+    state.recents=state.recents.filter(id=>id!==site.id);
+    managerSelection.delete(site.id);
+    if(!save())return;
+    buildNav();render();renderDeletedList();renderCustomList();buildMoveSiteOptions();
+    renderManagerSites();updateManagerBadges();toast("网站已移入回收站");
+  }
+  function updateBatchBar(){
+    const bar=document.getElementById("managerBatchBar");
+    const count=document.getElementById("managerBatchCount");
+    const n=managerSelection.size;
+    bar?.classList.toggle("show",n>0);
+    if(count)count.textContent=`已选 ${n} 项`;
+  }
+  function batchMoveV18(){
+    const ids=[...managerSelection];
+    const target=document.getElementById("managerBatchCategory")?.value;
+    if(!ids.length||!target)return;
+    if(!confirm(`把选中的 ${ids.length} 个网站移动到「${displayCategory(target)}」？`))return;
+    ids.forEach(id=>{
+      const site=rawSites().find(s=>s.id===id);
+      if(site)state.categoryOverrides[id]=target;
+    });
+    if(!save())return;
+    managerSelection.clear();
+    buildNav();render();buildMoveSiteOptions();renderManagerSites();toast(`已批量移动 ${ids.length} 个网站`);
+  }
+  function batchDeleteV18(){
+    const ids=[...managerSelection];
+    if(!ids.length)return;
+    if(!confirm(`把选中的 ${ids.length} 个网站移入回收站？`))return;
+    ids.forEach(id=>{
+      state.hiddenSites.add(id);
+      state.favorites.delete(id);
+      state.recents=state.recents.filter(x=>x!==id);
+    });
+    if(!save())return;
+    managerSelection.clear();
+    buildNav();render();renderDeletedList();renderCustomList();buildMoveSiteOptions();renderManagerSites();updateManagerBadges();toast(`已批量删除 ${ids.length} 个网站`);
+  }
+
+  function duplicateGroupsV18(){
+    const rootMap=new Map();
+    rawSites().forEach(site=>{
+      const meta=v18UrlMeta(site.url);
+      if(!meta.root)return;
+      if(!rootMap.has(meta.root))rootMap.set(meta.root,[]);
+      rootMap.get(meta.root).push({...site,__meta:meta});
+    });
+    return [...rootMap.entries()]
+      .map(([root,sites])=>({root,sites:[...new Map(sites.map(s=>[s.id,s])).values()]}))
+      .filter(g=>g.sites.length>1)
+      .sort((a,b)=>b.sites.length-a.sites.length||a.root.localeCompare(b.root));
+  }
+  function keepScoreV18(site){
+    let n=0;
+    if(isBuiltinSite(site.id))n+=80;
+    if(state.favorites.has(site.id))n+=40;
+    if(!state.hiddenSites.has(site.id))n+=15;
+    const i=state.recents.indexOf(site.id);if(i>=0)n+=Math.max(12-i,1);
+    return n;
+  }
+  function setupDuplicateV18(){
+    const scan=document.getElementById("scanDuplicatesBtn");
+    if(scan){
+      scan.addEventListener("click",e=>{
+        e.preventDefault();e.stopImmediatePropagation();
+        renderDuplicatesV18();
+      },true);
+    }
+  }
+  function renderDuplicatesV18(){
+    const box=document.getElementById("duplicateList");
+    const count=document.getElementById("duplicateCount");
+    if(!box||!count)return;
+    duplicateScanned=true;
+    const groups=duplicateGroupsV18();
+    count.textContent=`${groups.length} 组`;
+    box.innerHTML="";
+    if(!groups.length){
+      box.innerHTML='<div class="duplicate-empty">没有检测到同主域名重复项。</div>';
+      updateManagerBadges();return;
+    }
+    groups.forEach(group=>{
+      const sites=group.sites.slice().sort((a,b)=>keepScoreV18(b)-keepScoreV18(a)||String(a.name).localeCompare(String(b.name),"zh-Hans-CN"));
+      const keep=sites[0];
+      const exact=new Set(sites.map(s=>s.__meta.canonical)).size===1;
+      const wrap=document.createElement("div");wrap.className="duplicate-group";
+      const head=document.createElement("div");head.className="duplicate-group-head";
+      head.innerHTML=`
+        <div class="duplicate-group-title">
+          <strong>${group.root}</strong>
+          <span class="dup-chip warn">${exact?"完全同网址":"网址不同 · 同主域名"}</span>
+          <span class="dup-chip">${sites.length} 个站点</span>
+        </div>
+        <button class="btn dup-hide-btn" type="button">一键去重</button>`;
+      head.querySelector("button").onclick=()=>dedupeGroupV18(group.root,keep.id);
+      const body=document.createElement("div");body.className="duplicate-items";
+      sites.forEach(site=>{
+        const row=document.createElement("div");row.className="dup-item";
+        row.dataset.siteId=site.id;
+        const icon=createSiteIcon(site,"custom-mini-icon");
+        const copy=document.createElement("div");copy.className="dup-item-copy";
+        const b=document.createElement("b");b.textContent=site.name;
+        const sm=document.createElement("small");sm.textContent=`${displayCategory(effectiveCategory(site))} · ${site.__meta.host} · ${site.url}`;
+        copy.append(b,sm);
+        const actions=document.createElement("div");actions.className="manager-dup-actions";
+        const badge=document.createElement("span");badge.className="dup-chip"+(site.id===keep.id?" dup-keep":"");badge.textContent=site.id===keep.id?"建议保留":(isBuiltinSite(site.id)?"内置":"自建");
+        const locate=document.createElement("button");locate.type="button";locate.className="mini-btn manager-locate-btn";locate.textContent="定位";locate.onclick=()=>locateSiteV18(site);
+        const edit=document.createElement("button");edit.type="button";edit.className="mini-btn";edit.textContent="编辑";edit.onclick=()=>openSiteEditor(site);
+        actions.append(badge,locate,edit);
+        row.append(icon,copy,actions);
+        body.append(row);
+      });
+      wrap.append(head,body);box.append(wrap);
+    });
+    updateManagerBadges();
+  }
+  function dedupeGroupV18(root,keepId){
+    const g=duplicateGroupsV18().find(x=>x.root===root);if(!g)return;
+    const targets=g.sites.filter(s=>s.id!==keepId);
+    if(!targets.length)return;
+    const keep=g.sites.find(s=>s.id===keepId);
+    if(!confirm(`同主域名「${root}」发现 ${g.sites.length} 个站点。\n\n保留「${keep?.name||"建议项"}」，其余 ${targets.length} 个移入回收站？`))return;
+    targets.forEach(site=>{
+      state.hiddenSites.add(site.id);state.favorites.delete(site.id);state.recents=state.recents.filter(id=>id!==site.id);
+    });
+    if(!save())return;
+    buildNav();render();renderDeletedList();renderCustomList();buildMoveSiteOptions();renderDuplicatesV18();renderManagerSites();toast(`已处理 ${targets.length} 个重复项`);
+  }
+  function locateSiteV18(site){
+    closeDrawer();
+    state.filter=effectiveCategory(site);
+    state.query="";
+    const s=document.getElementById("searchInput");if(s)s.value="";
+    buildNav();render();
+    setTimeout(()=>{
+      const card=document.querySelector(`.card[data-site-id="${CSS.escape(site.id)}"]`);
+      if(card){
+        card.scrollIntoView({behavior:"smooth",block:"center"});
+        card.classList.add("manager-locate-flash");
+        setTimeout(()=>card.classList.remove("manager-locate-flash"),1800);
+      }
+    },120);
+  }
+
+  // New add/edit: same root-domain is considered a duplicate candidate, even when URL differs.
+  function identityDuplicateV18(url,excludeId=""){
+    const target=v18UrlMeta(url);if(!target.root)return null;
+    return rawSites().find(site=>{
+      if(site.id===excludeId)return false;
+      const m=v18UrlMeta(site.url);
+      return m.root && m.root===target.root;
+    })||null;
+  }
+  document.getElementById("addForm")?.addEventListener("submit",e=>{
+    if(!AUTH_V161?.authenticated)return;
+    const url=document.getElementById("newUrl")?.value||"";
+    const dup=identityDuplicateV18(url);
+    if(dup){
+      e.preventDefault();e.stopImmediatePropagation();
+      alert(`检测到重复网站：${dup.name}\n\n虽然网址可能不同，但属于同一个主域名：${v18UrlMeta(url).root}\n已有位置：${displayCategory(effectiveCategory(dup))}\n\n请先定位或编辑已有网站。`);
+      setTab("duplicates");
+      setTimeout(()=>{renderDuplicatesV18()},20);
+    }
+  },true);
+  const __saveSiteEditorV18=saveSiteEditor;
+  saveSiteEditor=function(){
+    const current=rawSites().find(s=>s.id===editingSiteId);
+    const url=document.getElementById("editSiteUrl")?.value||"";
+    const dup=identityDuplicateV18(url,current?.id||"");
+    if(dup){
+      alert(`检测到重复网站：${dup.name}\n\n网址不同也属于同一主域名：${v18UrlMeta(url).root}\n已有位置：${displayCategory(effectiveCategory(dup))}\n\n当前保存已拦截。`);
+      return;
+    }
+    const r=__saveSiteEditorV18();
+    setTimeout(()=>{renderManagerSites();updateManagerBadges()},30);
+    return r;
+  };
+  document.getElementById("saveSiteEditor").onclick=saveSiteEditor;
+
+  function renderDataPanel(){
+    const d1=document.getElementById("managerD1Info");
+    if(d1)d1.textContent=`当前：${AUTH_V161?.authenticated?"管理员模式":"访客模式"} · D1 revision ${Number(V17?.revision)||0} · ${navigator.onLine?"网络在线":"当前离线"}`;
+    const local=document.getElementById("managerLocalInfo");
+    if(local){
+      const bytes=typeof storageBytes==="function"?storageBytes():0;
+      local.textContent=`本机 localStorage 约 ${(bytes/1024).toFixed(0)} KB；云端正式数据仍以 D1 为准。`;
+    }
+  }
+
+  // Open manager: only render current tab, not every heavy module.
+  const __openDrawerManagerV18=openDrawer;
+  openDrawer=function(){
+    const result=__openDrawerManagerV18();
+    setTimeout(()=>{
+      setupManagerCenter();
+      rebuildManagerCategorySelects();
+      setTab(STORE.get(MGR_TAB_KEY)||"overview");
+    },0);
+    return result;
+  };
+  document.getElementById("manageBtn").onclick=openDrawer;
+  document.getElementById("compactManageBtn").onclick=openDrawer;
+  document.getElementById("mobileManageBtn")?.addEventListener("click",e=>{e.preventDefault();e.stopImmediatePropagation();openDrawer()},true);
+
+  // Keep Manager Center refreshed after common data mutations.
+  const __renderDeletedListV18=renderDeletedList;
+  renderDeletedList=function(){const r=__renderDeletedListV18();updateManagerBadges();return r};
+  const __renderCustomListV18=renderCustomList;
+  renderCustomList=function(){const r=__renderCustomListV18();updateManagerBadges();return r};
+
+  // Initialize after legacy upgrade code has created duplicatePanel/metrics.
+  setTimeout(()=>{
+    setupManagerCenter();
+    patchCategoryLabels();
+  },0);
+})();
+</script>
+
 </body>
 </html>
