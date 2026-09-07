@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>私人导航工具箱 · V18.0 Manager Center</title>
+<title>私人导航工具箱 · V18.1 Stable Manager</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https: http:; connect-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -2909,7 +2909,7 @@ html[data-theme="light"] .login-brand img{
   .brand-copy small{font-size:8.5px!important}
 }
 
-/* ===================== V18.0 · Manager Center ===================== */
+/* ===================== V18.1 · Manager Center ===================== */
 :root{
   --mgr-panel-bg:rgba(11,18,32,.42);
   --mgr-panel-strong:rgba(14,22,39,.72);
@@ -3249,6 +3249,99 @@ html[data-theme="light"] .manager-data-card{
   .manager-data-grid{grid-template-columns:1fr}
 }
 
+
+/* ===================== V18.1 · Stable Cleanup ===================== */
+.manager-batch-bar{
+  grid-template-columns:auto minmax(150px,1fr) auto auto auto auto!important;
+}
+.manager-health-ok{color:#8de2be!important}
+.manager-health-warn{color:#f2c47d!important}
+.manager-health-bad{color:#ff8da0!important}
+.manager-health-chip{
+  margin-left:5px;
+  padding:2px 5px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  font-size:8px;
+  font-weight:850;
+}
+.manager-backup-card{grid-column:1/-1}
+.manager-backup-toolbar{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  margin-bottom:10px;
+}
+.manager-backup-list{
+  display:grid;
+  gap:7px;
+}
+.manager-backup-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto auto;
+  align-items:center;
+  gap:9px;
+  padding:9px 10px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:rgba(255,255,255,.02);
+}
+.manager-backup-row b{
+  display:block;
+  font-size:10.5px;
+}
+.manager-backup-row small{
+  display:block;
+  margin-top:3px;
+  color:var(--muted);
+  font-size:9px;
+}
+.manager-backup-empty{
+  padding:18px 12px;
+  text-align:center;
+  color:var(--muted);
+  border:1px dashed var(--line);
+  border-radius:12px;
+  font-size:10px;
+}
+.dup-chip.dup-exact{
+  border-color:rgba(255,113,135,.25)!important;
+  color:#ff9aaa!important;
+  background:rgba(255,113,135,.07)!important;
+}
+.dup-chip.dup-host{
+  border-color:rgba(242,196,125,.24)!important;
+  color:#f1ca8b!important;
+  background:rgba(242,196,125,.06)!important;
+}
+.dup-chip.dup-root{
+  border-color:rgba(116,135,255,.22)!important;
+  color:#bdc7ff!important;
+  background:rgba(116,135,255,.06)!important;
+}
+.duplicate-toolbar{
+  flex-wrap:wrap;
+}
+.manager-ignore-reset{
+  margin-left:auto;
+}
+.manager-site-copy small .manager-health-chip{
+  display:inline-flex;
+}
+html[data-theme="light"] .manager-backup-row{
+  background:rgba(255,255,255,.72);
+}
+@media(max-width:760px){
+  .manager-batch-bar{
+    grid-template-columns:1fr 1fr!important;
+  }
+  .manager-batch-count{grid-column:1/-1}
+  .manager-backup-row{
+    grid-template-columns:1fr auto;
+  }
+  .manager-backup-row .backup-meta{grid-column:1/-1}
+}
+
 </style>
 
 <!-- V17.15 transparent favicon: logo only, no background -->
@@ -3344,7 +3437,7 @@ html[data-theme="light"] .manager-data-card{
     </section>
 
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V18.0</div>
+    <div class="footer">© 2026 私人导航工具箱 · V18.1</div>
   </main>
 </div>
 
@@ -5203,7 +5296,7 @@ function applyBootstrapV17(payload,{cache=true}={}){
     rows.slice().sort((a,b)=>Number(a.sort_order)-Number(b.sort_order)).forEach(r=>{(grouped[r.category_name]??=[]).push(r.id)});state.siteOrder=grouped;
     sanitizeState();saveLocalState();applyTheme();if(typeof applyDensityV157==="function")applyDensityV157();buildNav();buildCategorySelect();buildMoveCategorySelect();buildMoveSiteOptions();render();renderCategoryManager();renderDeletedList();renderCustomList();refreshIconPreview();updateStorageUsage();
     V17.revision=Number(payload.revision)||0;V17.ready=true;V17.lastSnapshot=JSON.stringify(makeV17Snapshot());if(cache)STORE.set(V17_CACHE_KEY,JSON.stringify(payload));
-    setCloudStatus("synced","D1 SQLite 数据库",`D1 数据版本 ${V17.revision} · 图标由 KV 缓存`);return true;
+    setCloudStatus("synced","D1 已同步",`Cloudflare D1 SQLite 数据库 · 数据版本 ${V17.revision} · KV 图标缓存正常`);return true;
   }finally{V17.suppress=false}
 }
 function makeV17Snapshot(){
@@ -5217,23 +5310,23 @@ function makeV17Snapshot(){
 }
 async function pushV17({force=false}={}){
   if(!V17.ready||V17.suppress||V17.syncing)return false;const snap=makeV17Snapshot();const hash=JSON.stringify(snap);if(!force&&hash===V17.lastSnapshot)return true;
-  V17.syncing=true;setCloudStatus("syncing","保存到 D1…","正在同步网站、分类与设置");
-  try{const res=await v17Request("sync","POST",{...snap,force});V17.revision=Number(res.revision)||V17.revision;V17.lastSnapshot=JSON.stringify(makeV17Snapshot());setCloudStatus("synced","D1 SQLite 数据库",`D1 数据版本 ${V17.revision}`);return true}
+  V17.syncing=true;setCloudStatus("syncing","D1 保存中…","Cloudflare D1 SQLite 数据库 · 正在同步网站、分类与设置");
+  try{const res=await v17Request("sync","POST",{...snap,force});V17.revision=Number(res.revision)||V17.revision;V17.lastSnapshot=JSON.stringify(makeV17Snapshot());setCloudStatus("synced","D1 已同步",`Cloudflare D1 SQLite 数据库 · 数据版本 ${V17.revision}`);return true}
   catch(err){
     if(err.status===409&&err.payload?.revision){V17.revision=Number(err.payload.revision)||V17.revision;try{return await pushV17({force:true})}catch{}}
     if(err.status===401){showLoginGateV161("登录已失效，请重新登录。");setCloudStatus("error","登录失效","请重新登录")}
-    else if(!navigator.onLine)setCloudStatus("offline","待同步","当前离线，本地修改保留")
+    else if(!navigator.onLine)setCloudStatus("offline","D1 离线","网络不可用 · 本地修改已保留，联网后自动同步")
     else setCloudStatus("error","D1 同步失败",err.message||"同步失败");return false
   }finally{V17.syncing=false}
 }
-function scheduleDataSyncV17(){if(!V17.ready||V17.suppress)return;clearTimeout(V17.pushTimer);setCloudStatus("syncing","保存中…","本地已保存，准备同步 D1");V17.pushTimer=setTimeout(()=>pushV17(),650)}
+function scheduleDataSyncV17(){if(!V17.ready||V17.suppress)return;clearTimeout(V17.pushTimer);setCloudStatus("syncing","D1 保存中…","本地已保存 · 准备写入 Cloudflare D1 SQLite 数据库");V17.pushTimer=setTimeout(()=>pushV17(),650)}
 window.__fxCloudSchedulePush=scheduleDataSyncV17;
 async function refreshV17FromServer({quiet=false}={}){
-  try{const payload=await v17Request("bootstrap");if(Number(payload.revision)!==V17.revision||!V17.ready)applyBootstrapV17(payload);else if(!quiet)setCloudStatus("synced","D1 SQLite 数据库",`D1 数据版本 ${V17.revision}`);return true}
+  try{const payload=await v17Request("bootstrap");if(Number(payload.revision)!==V17.revision||!V17.ready)applyBootstrapV17(payload);else if(!quiet)setCloudStatus("synced","D1 已同步",`Cloudflare D1 SQLite 数据库 · 数据版本 ${V17.revision}`);return true}
   catch(err){if(err.status===401)showLoginGateV161("请登录后读取 D1 数据");else if(!quiet)setCloudStatus("error","D1 未连接",err.message||"无法读取 D1");return false}
 }
 async function initDataDrivenV17(){
-  setCloudStatus("syncing","读取 D1…","正在加载网站和分类数据");
+  setCloudStatus("syncing","D1 连接中…","正在读取 Cloudflare D1 SQLite 数据库");
   const ok=await refreshV17FromServer();if(!ok){const cached=parseStored(V17_CACHE_KEY,null);if(cached){applyBootstrapV17(cached,{cache:false});setCloudStatus("offline","本地缓存","暂时使用最近一次 D1 缓存")}}
   clearInterval(V17.pullTimer);V17.pullTimer=setInterval(()=>{if(document.visibilityState==="visible"&&navigator.onLine)refreshV17FromServer({quiet:true})},45000);
   window.addEventListener("focus",()=>{if(AUTH_V161.authenticated&&navigator.onLine)refreshV17FromServer({quiet:true})});
@@ -5357,8 +5450,9 @@ async function logoutV161(){
   try{await authFetchV161("logout","POST",{})}catch{}
   AUTH_V161.authenticated=false;
   AUTH_V161.username="";
-  CLOUD_SYNC.ready=false;
-  clearTimeout(CLOUD_SYNC.pushTimer);
+  V17.ready=false;
+  clearTimeout(V17.pushTimer);
+  clearInterval(V17.pullTimer);
   setCloudStatus("offline","未登录","已退出私人导航");
   showLoginGateV161("你已退出登录。");
   $("#loginPassword").value="";
@@ -5393,274 +5487,19 @@ $("#logoutBtn")?.addEventListener("click",()=>{
   if(confirm("退出私人导航登录？"))logoutV161();
 });
 
-/* ===================== V16.1 Cloud Sync Runtime ===================== */
-const CLOUD_API="/api/state";
-const CLOUD_CACHE_KEY="fxnav_cloud_cache_v16";
-const CLOUD_CLIENT_KEY="fxnav_cloud_client_v16";
-
-const CLOUD_SYNC={
-  ready:false,
-  loading:false,
-  pushing:false,
-  suppressPush:false,
-  revision:0,
-  updatedAt:"",
-  lastHash:"",
-  pushTimer:0,
-  pullTimer:0,
-  clientId:STORE.get(CLOUD_CLIENT_KEY)||("")
-};
-
-if(!CLOUD_SYNC.clientId){
-  CLOUD_SYNC.clientId=(crypto?.randomUUID?.()||("client_"+Date.now()+"_"+Math.random().toString(36).slice(2)));
-  STORE.set(CLOUD_CLIENT_KEY,CLOUD_SYNC.clientId);
-}
-
+/* ===================== V18.1 · Cloud Status ===================== */
 function setCloudStatus(mode,text,title=""){
   const el=$("#cloudStatus"),txt=$("#cloudStatusText"),compact=$("#compactCloudStatus");
+  const detail=title||text||"Cloudflare D1 SQLite 数据库";
   if(el){
     el.dataset.state=mode||"";
     if(txt)txt.textContent=text||"";
-    if(title)el.title=title;
+    el.title=detail;
   }
   if(compact){
     compact.dataset.state=mode||"";
-    compact.title=title||text||"云同步";
+    compact.title=detail;
   }
-}
-
-function cloudSerializableState(){
-  return {
-    schema:1,
-    favorites:[...state.favorites],
-    recents:[...state.recents].slice(0,30),
-    custom:cloneJSON(state.custom||[]),
-    categoryOverrides:cloneJSON(state.categoryOverrides||{}),
-    iconOverrides:cloneJSON(state.iconOverrides||{}),
-    hiddenSites:[...state.hiddenSites],
-    siteEdits:cloneJSON(state.siteEdits||{}),
-    customCategories:cloneJSON(state.customCategories||[]),
-    categoryOrder:[...state.categoryOrder],
-    categoryIconOverrides:cloneJSON(state.categoryIconOverrides||{}),
-    siteOrder:cloneJSON(state.siteOrder||{}),
-    usageStats:typeof getUsageStatsV157==="function"?getUsageStatsV157():{},
-    density:STORE.get(V157_DENSITY_KEY)||"comfortable",
-    theme:document.documentElement.dataset.theme||STORE.get(KEYS.theme)||"dark"
-  };
-}
-
-function stableCloudHash(data){
-  try{return JSON.stringify(data)}catch{return ""}
-}
-
-function applyCloudPayload(data,{renderUI=true}={}){
-  if(!data||typeof data!=="object")return false;
-  CLOUD_SYNC.suppressPush=true;
-  try{
-    state.favorites=new Set(Array.isArray(data.favorites)?data.favorites:[]);
-    state.recents=Array.isArray(data.recents)?data.recents.slice(0,30):[];
-    state.custom=Array.isArray(data.custom)?data.custom:[];
-    state.categoryOverrides=data.categoryOverrides&&typeof data.categoryOverrides==="object"&&!Array.isArray(data.categoryOverrides)?data.categoryOverrides:{};
-    state.iconOverrides=data.iconOverrides&&typeof data.iconOverrides==="object"&&!Array.isArray(data.iconOverrides)?data.iconOverrides:{};
-    state.hiddenSites=new Set(Array.isArray(data.hiddenSites)?data.hiddenSites:[]);
-    state.siteEdits=data.siteEdits&&typeof data.siteEdits==="object"&&!Array.isArray(data.siteEdits)?data.siteEdits:{};
-    state.customCategories=Array.isArray(data.customCategories)?data.customCategories:[];
-    state.categoryOrder=Array.isArray(data.categoryOrder)?data.categoryOrder:[];
-    state.categoryIconOverrides=data.categoryIconOverrides&&typeof data.categoryIconOverrides==="object"&&!Array.isArray(data.categoryIconOverrides)?data.categoryIconOverrides:{};
-    state.siteOrder=data.siteOrder&&typeof data.siteOrder==="object"&&!Array.isArray(data.siteOrder)?data.siteOrder:{};
-
-    if(data.usageStats&&typeof data.usageStats==="object"&&!Array.isArray(data.usageStats)){
-      STORE.set("fxnav_usage_stats_v157",JSON.stringify(data.usageStats));
-    }
-    if(data.density==="compact"||data.density==="comfortable"){
-      STORE.set(V157_DENSITY_KEY,data.density);
-    }
-    if(data.theme==="light"||data.theme==="dark"){
-      STORE.set(KEYS.theme,data.theme);
-      document.documentElement.dataset.theme=data.theme;
-    }
-
-    sanitizeState();
-    saveLocalState();
-    STORE.set(CLOUD_CACHE_KEY,JSON.stringify(data));
-    CLOUD_SYNC.lastHash=stableCloudHash(cloudSerializableState());
-
-    if(renderUI){
-      applyTheme();
-      if(typeof applyDensityV157==="function")applyDensityV157();
-      buildNav();
-      buildCategorySelect();
-      buildMoveCategorySelect();
-      buildMoveSiteOptions();
-      render();
-      renderCategoryManager();
-      renderDeletedList();
-      renderCustomList();
-      refreshIconPreview();
-      updateStorageUsage();
-    }
-    return true;
-  }finally{
-    CLOUD_SYNC.suppressPush=false;
-  }
-}
-
-async function cloudRequest(method,body){
-  const opts={
-    method,
-    headers:{"Accept":"application/json"},
-    credentials:"include",
-    cache:"no-store"
-  };
-  if(body!==undefined){
-    opts.headers["Content-Type"]="application/json";
-    opts.body=JSON.stringify(body);
-  }
-  const res=await fetch(CLOUD_API,opts);
-  let payload=null;
-  try{payload=await res.json()}catch{}
-  if(!res.ok){
-    const err=new Error(payload?.error||("HTTP "+res.status));
-    err.status=res.status;
-    err.payload=payload;
-    throw err;
-  }
-  return payload;
-}
-
-async function pushCloudState({force=false,quiet=false}={}){
-  if(!CLOUD_SYNC.ready||CLOUD_SYNC.suppressPush||CLOUD_SYNC.pushing)return false;
-  const data=cloudSerializableState();
-  const hash=stableCloudHash(data);
-  if(!force&&hash&&hash===CLOUD_SYNC.lastHash)return true;
-
-  CLOUD_SYNC.pushing=true;
-  if(!quiet)setCloudStatus("syncing","保存中…","正在保存到 Cloudflare D1");
-  try{
-    const result=await cloudRequest("PUT",{
-      baseRevision:CLOUD_SYNC.revision,
-      data,
-      clientId:CLOUD_SYNC.clientId,
-      force:false
-    });
-    CLOUD_SYNC.revision=Number(result.revision)||CLOUD_SYNC.revision;
-    CLOUD_SYNC.updatedAt=result.updatedAt||"";
-    CLOUD_SYNC.lastHash=hash;
-    STORE.set(CLOUD_CACHE_KEY,JSON.stringify(data));
-    setCloudStatus("synced","D1 SQLite 数据库","云端已同步 · "+(CLOUD_SYNC.updatedAt||""));
-    return true;
-  }catch(err){
-    if(err.status===409&&err.payload?.revision){
-      // 单用户场景：先刷新 revision，再重试一次；服务器会保留旧版本备份。
-      try{
-        CLOUD_SYNC.revision=Number(err.payload.revision)||CLOUD_SYNC.revision;
-        const retry=await cloudRequest("PUT",{
-          baseRevision:CLOUD_SYNC.revision,
-          data,
-          clientId:CLOUD_SYNC.clientId,
-          force:true
-        });
-        CLOUD_SYNC.revision=Number(retry.revision)||CLOUD_SYNC.revision;
-        CLOUD_SYNC.updatedAt=retry.updatedAt||"";
-        CLOUD_SYNC.lastHash=hash;
-        STORE.set(CLOUD_CACHE_KEY,JSON.stringify(data));
-        setCloudStatus("synced","D1 SQLite 数据库","检测到其他设备更新，已保存本机最新修改并创建云端备份");
-        return true;
-      }catch(retryErr){
-        err=retryErr;
-      }
-    }
-
-    if(!navigator.onLine||err.status===0){
-      setCloudStatus("offline","待同步","网络不可用，本地修改已保留；恢复网络后自动同步");
-    }else if(err.status===401||err.status===403){
-      setCloudStatus("error","登录失效","请重新登录私人导航");showLoginGateV161("登录已失效，请重新登录。");
-    }else{
-      setCloudStatus("error","同步失败","云同步失败："+(err.message||"未知错误"));
-    }
-    return false;
-  }finally{
-    CLOUD_SYNC.pushing=false;
-  }
-}
-
-function scheduleCloudPushV16(){
-  if(!CLOUD_SYNC.ready||CLOUD_SYNC.suppressPush)return;
-  clearTimeout(CLOUD_SYNC.pushTimer);
-  setCloudStatus("syncing","保存中…","本地已保存，准备同步云端");
-  CLOUD_SYNC.pushTimer=setTimeout(()=>pushCloudState(),650);
-}
-window.__fxCloudSchedulePush=scheduleCloudPushV16;
-
-async function pullCloudStateV16({initial=false,quiet=false}={}){
-  if(CLOUD_SYNC.loading)return false;
-  CLOUD_SYNC.loading=true;
-  if(!quiet)setCloudStatus("syncing",initial?"连接云端…":"检查更新…","正在读取 Cloudflare D1");
-  try{
-    const result=await cloudRequest("GET");
-    CLOUD_SYNC.revision=Number(result.revision)||0;
-    CLOUD_SYNC.updatedAt=result.updatedAt||"";
-
-    if(result.exists&&result.data){
-      const incomingHash=stableCloudHash(result.data);
-      if(incomingHash!==CLOUD_SYNC.lastHash){
-        applyCloudPayload(result.data,{renderUI:true});
-      }else{
-        CLOUD_SYNC.lastHash=incomingHash;
-      }
-      CLOUD_SYNC.ready=true;
-      setCloudStatus("synced","D1 SQLite 数据库","云端版本 "+CLOUD_SYNC.revision+" · "+(CLOUD_SYNC.updatedAt||""));
-      return true;
-    }
-
-    // 云端为空：把当前浏览器作为第一次初始化数据源。
-    CLOUD_SYNC.ready=true;
-    CLOUD_SYNC.revision=0;
-    CLOUD_SYNC.lastHash="";
-    setCloudStatus("syncing","初始化…","云端为空，正在上传本机导航数据");
-    const ok=await pushCloudState({force:true});
-    if(ok)toast("V16 云同步已初始化：本机数据已上传云端");
-    return ok;
-  }catch(err){
-    CLOUD_SYNC.ready=false;
-    if(err.status===401||err.status===403){
-      setCloudStatus("error","未登录","请先登录私人导航");showLoginGateV161("请先登录后再同步云端数据。");
-    }else if(!navigator.onLine){
-      setCloudStatus("offline","离线","当前使用本地缓存，联网后自动同步");
-    }else{
-      setCloudStatus("error","云端未连接","请检查 Pages Functions 与 D1 的 DB 绑定");
-    }
-    return false;
-  }finally{
-    CLOUD_SYNC.loading=false;
-  }
-}
-
-async function initCloudSyncV16(){
-  setCloudStatus("syncing","连接云端…","正在连接 Cloudflare Pages Functions + D1");
-  await pullCloudStateV16({initial:true});
-
-  window.addEventListener("online",()=>{
-    if(CLOUD_SYNC.ready)pushCloudState({force:true});
-    else pullCloudStateV16({initial:false});
-  });
-
-  window.addEventListener("offline",()=>{
-    setCloudStatus("offline","离线","本地仍可使用，恢复网络后自动同步");
-  });
-
-  window.addEventListener("focus",()=>{
-    if(document.visibilityState==="visible")pullCloudStateV16({quiet:true});
-  });
-
-  document.addEventListener("visibilitychange",()=>{
-    if(document.visibilityState==="visible")pullCloudStateV16({quiet:true});
-  });
-
-  // 页面打开期间每 60 秒检查一次其他设备修改。
-  CLOUD_SYNC.pullTimer=setInterval(()=>{
-    if(document.visibilityState==="visible"&&navigator.onLine)pullCloudStateV16({quiet:true});
-  },60000);
 }
 
 const __v15Migrated=migrateBuiltinDataV15();sanitizeState();if(save()&&__v15Migrated)STORE.set(V15_BUILTIN_DATA_KEY,V15_BUILTIN_DATA_VERSION);applyTheme();buildNav();buildCategorySelect();buildMoveCategorySelect();buildMoveSiteOptions();render();renderCategoryManager();renderDeletedList();refreshIconPreview();updateStorageUsage();setTimeout(initPublicAdminV178,80);
@@ -5767,7 +5606,7 @@ $("#addForm").addEventListener("submit",e=>{
   }catch(err){alert(err?.message||"添加失败")}
 });
 $("#exportBtn").onclick=()=>{
-  const payload={version:"17.1",favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides,iconOverrides:state.iconOverrides,hiddenSites:[...state.hiddenSites],siteEdits:state.siteEdits,customCategories:state.customCategories,categoryOrder:state.categoryOrder,categoryIconOverrides:state.categoryIconOverrides,siteOrder:state.siteOrder,usageStats:getUsageStatsV157(),density:STORE.get(V157_DENSITY_KEY)||"comfortable",theme:document.documentElement.dataset.theme||"dark",cloudRevision:CLOUD_SYNC.revision};
+  const payload={version:"17.1",favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides,iconOverrides:state.iconOverrides,hiddenSites:[...state.hiddenSites],siteEdits:state.siteEdits,customCategories:state.customCategories,categoryOrder:state.categoryOrder,categoryIconOverrides:state.categoryIconOverrides,siteOrder:state.siteOrder,usageStats:getUsageStatsV157(),density:STORE.get(V157_DENSITY_KEY)||"comfortable",theme:document.documentElement.dataset.theme||"dark",cloudRevision:V17.revision};
   const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);const ds=new Date().toISOString().slice(0,10).replaceAll("-","");a.download=`private-nav-v17-${ds}.json`;a.click();URL.revokeObjectURL(a.href);
 };
 $("#importBtn").onclick=()=>$("#importFile").click();
@@ -6089,7 +5928,7 @@ if(__sidebarV158){
    这里增加统一同步入口，后端 API 接入后无需重构页面。
 */
 const FX_SYNC={
-  version:"V18.0",
+  version:"V18.1",
   enabled:false,
   user:null,
   endpoint:"",
@@ -6240,7 +6079,7 @@ const FX_SYNC={
         else form.insertAdjacentElement('afterend',panel);
       }
     }
-    document.getElementById('scanDuplicatesBtn')?.addEventListener('click',renderDuplicateList);
+    /* V18.1: duplicate scan is handled only by Manager Center. */
     document.getElementById('jumpDeletedBtn')?.addEventListener('click',()=>document.getElementById('deletedList')?.scrollIntoView({behavior:'smooth',block:'start'}));
     document.getElementById('addForm')?.classList.add('admin-surface');
     document.getElementById('movePreview')?.classList.add('admin-surface');
@@ -6555,7 +6394,7 @@ function updateAccessUIV178(){
   }
   const compact=$("#compactManageBtn");if(compact){compact.textContent=admin?"＋":"⌁";compact.title=admin?"管理导航":"管理员登录后管理导航"}
   const logout=$("#logoutBtn");if(logout)logout.hidden=!admin;
-  if(admin)setCloudStatus("synced","D1 SQLite 数据库","管理员模式 · D1 可读写 · KV 图标可上传");
+  if(admin)setCloudStatus("synced","D1 已同步","管理员模式 · Cloudflare D1 SQLite 可读写 · KV 图标可上传");
   else setCloudStatus("synced","访客只读","无需登录即可浏览；修改操作仅管理员可用");
 }
 function closeLoginGateV178(){
@@ -6710,13 +6549,15 @@ updateAccessUIV178();
 </script>
 
 <script>
-/* ===================== V18.0 · Manager Center Runtime ===================== */
+/* ===================== V18.1 · Manager Center Runtime ===================== */
 (function(){
   const MGR_TAB_KEY="fxnav_manager_tab_v18";
   const CAT_TITLE_KEY="fxnav_category_title_overrides_v18";
-  const PAGE_SIZE=60;
+  const DUP_IGNORE_KEY="fxnav_duplicate_ignore_v181";
+  const PAGE_SIZE=48;
   let managerPageSize=PAGE_SIZE;
   let managerSelection=new Set();
+  let managerHealth=new Map();
   let managerReady=false;
   let duplicateScanned=false;
 
@@ -6756,6 +6597,11 @@ updateAccessUIV178();
     state.categoryTitleOverrides=(stored&&typeof stored==="object"&&!Array.isArray(stored))?stored:{};
   }
   loadCategoryTitles();
+  const storedDupIgnore=parseStored(DUP_IGNORE_KEY,[]);
+  state.duplicateIgnoreKeys=new Set(Array.isArray(storedDupIgnore)?storedDupIgnore:[]);
+  function saveDuplicateIgnoreLocal(){
+    STORE.set(DUP_IGNORE_KEY,JSON.stringify([...state.duplicateIgnoreKeys]));
+  }
 
   function saveCategoryTitlesLocal(){
     STORE.set(CAT_TITLE_KEY,JSON.stringify(state.categoryTitleOverrides||{}));
@@ -6765,7 +6611,11 @@ updateAccessUIV178();
   const __makeV17SnapshotV18=makeV17Snapshot;
   makeV17Snapshot=function(){
     const snap=__makeV17SnapshotV18();
-    snap.settings={...(snap.settings||{}),categoryTitles:{...(state.categoryTitleOverrides||{})}};
+    snap.settings={
+      ...(snap.settings||{}),
+      categoryTitles:{...(state.categoryTitleOverrides||{})},
+      duplicateIgnoreKeys:[...state.duplicateIgnoreKeys]
+    };
     return snap;
   };
   const __applyBootstrapV18=applyBootstrapV17;
@@ -6777,8 +6627,12 @@ updateAccessUIV178();
       state.categoryTitleOverrides={...titles};
       saveCategoryTitlesLocal();
     }else if(!AUTH_V161?.authenticated){
-      // Guest receives public-safe categoryTitles from V18 backend.
       state.categoryTitleOverrides={};
+    }
+    if(AUTH_V161?.authenticated){
+      const ignored=payload?.settings?.duplicateIgnoreKeys;
+      state.duplicateIgnoreKeys=new Set(Array.isArray(ignored)?ignored:[]);
+      saveDuplicateIgnoreLocal();
     }
     refreshCategoryDisplayV18();
     return ok;
@@ -6961,7 +6815,7 @@ updateAccessUIV178();
       </div>
       <div class="manager-quick-grid">
         <button class="manager-quick" type="button" data-go="sites" data-add="1"><b>＋ 新增网站</b><small>添加网站与自定义 Logo</small></button>
-        <button class="manager-quick" type="button" data-go="duplicates" data-scan="1"><b>扫描重复</b><small>同主域名即视为重复候选</small></button>
+        <button class="manager-quick" type="button" data-go="duplicates" data-scan="1"><b>扫描重复</b><small>三级重复检测 + 忽略规则</small></button>
         <button class="manager-quick" type="button" data-go="categories"><b>分类设置</b><small>标题、图标、排序与移动</small></button>
         <button class="manager-quick" type="button" data-go="data"><b>数据与备份</b><small>D1 / KV / 导入导出</small></button>
       </div>
@@ -6986,6 +6840,8 @@ updateAccessUIV178();
         <span class="manager-batch-count" id="managerBatchCount">已选 0 项</span>
         <select id="managerBatchCategory"></select>
         <button class="btn" type="button" id="managerBatchMove">批量移动</button>
+        <button class="btn" type="button" id="managerBatchRefreshIcons">刷新图标</button>
+        <button class="btn" type="button" id="managerBatchHealth">检测状态</button>
         <button class="btn danger-text" type="button" id="managerBatchDelete">批量删除</button>
       </div>
     `;
@@ -7005,7 +6861,7 @@ updateAccessUIV178();
     if(dupPanel){
       duplicates.append(dupPanel);
       const note=dupPanel.querySelector(".admin-note");
-      if(note)note.textContent="重复规则：网址完全相同一定重复；网址不同但属于同一个主域名，也会归为重复候选。扫描结果支持直接定位、编辑和一键去重。";
+      if(note)note.textContent="重复检测分三级：完全同网址、同 hostname 不同路径、同主域名疑似重复。网址不同也能发现；疑似不同服务可点“忽略此组”。";
       const jump=dupPanel.querySelector("#jumpDeletedBtn");
       if(jump){jump.textContent="打开回收站";jump.onclick=()=>setTab("recycle")}
     }else{
@@ -7052,6 +6908,17 @@ updateAccessUIV178();
             <button class="btn" type="button" id="managerUpdateUsage">刷新占用</button>
           </div>
         </div>
+        <div class="manager-data-card manager-backup-card">
+          <b>D1 版本恢复</b>
+          <p>每次云端写入前都会自动保留旧版本，最多保留最近 20 个快照。恢复前也会再自动备份当前状态。</p>
+          <div class="manager-backup-toolbar">
+            <button class="btn primary" type="button" id="managerBackupNow">立即创建快照</button>
+            <button class="btn" type="button" id="managerReloadBackups">刷新版本列表</button>
+          </div>
+          <div class="manager-backup-list" id="managerBackupList">
+            <div class="manager-backup-empty">进入“数据”标签后加载云端版本。</div>
+          </div>
+        </div>
       </div>
     `;
 
@@ -7096,6 +6963,8 @@ updateAccessUIV178();
     document.getElementById("managerCategoryFilter")?.addEventListener("change",()=>{managerPageSize=PAGE_SIZE;renderManagerSites()});
     document.getElementById("managerLoadMore")?.addEventListener("click",()=>{managerPageSize+=PAGE_SIZE;renderManagerSites()});
     document.getElementById("managerBatchMove")?.addEventListener("click",batchMoveV18);
+    document.getElementById("managerBatchRefreshIcons")?.addEventListener("click",batchRefreshIconsV181);
+    document.getElementById("managerBatchHealth")?.addEventListener("click",batchHealthV181);
     document.getElementById("managerBatchDelete")?.addEventListener("click",batchDeleteV18);
 
     document.getElementById("managerSyncNow")?.addEventListener("click",async()=>{
@@ -7110,6 +6979,8 @@ updateAccessUIV178();
     document.getElementById("managerImport")?.addEventListener("click",()=>document.getElementById("importBtn")?.click());
     document.getElementById("managerGoSites")?.addEventListener("click",()=>setTab("sites"));
     document.getElementById("managerUpdateUsage")?.addEventListener("click",()=>{updateStorageUsage();renderDataPanel()});
+    document.getElementById("managerBackupNow")?.addEventListener("click",createBackupNowV181);
+    document.getElementById("managerReloadBackups")?.addEventListener("click",()=>loadBackupsV181(true));
 
     setupDuplicateV18();
     managerReady=true;
@@ -7176,7 +7047,15 @@ updateAccessUIV178();
       const icon=createSiteIcon(site,"custom-mini-icon");
       const copy=document.createElement("div");copy.className="manager-site-copy";
       const b=document.createElement("b");b.textContent=site.name;
-      const sm=document.createElement("small");sm.textContent=`${displayCategory(effectiveCategory(site))} · ${site.domain||safeDomain(site.url)}`;
+      const sm=document.createElement("small");
+      const health=managerHealth.get(site.id);
+      sm.textContent=`${displayCategory(effectiveCategory(site))} · ${site.domain||safeDomain(site.url)}`;
+      if(health){
+        const chip=document.createElement("span");
+        chip.className=`manager-health-chip ${health.kind==="ok"?"manager-health-ok":health.kind==="warn"?"manager-health-warn":"manager-health-bad"}`;
+        chip.textContent=health.label;
+        sm.append(document.createTextNode(" "),chip);
+      }
       copy.append(b,sm);
       const kind=document.createElement("span");kind.className="manager-site-kind";kind.textContent=isBuiltinSite(site.id)?"内置":"自建";
       const actions=document.createElement("div");actions.className="manager-site-actions";
@@ -7238,18 +7117,74 @@ updateAccessUIV178();
     buildNav();render();renderDeletedList();renderCustomList();buildMoveSiteOptions();renderManagerSites();updateManagerBadges();toast(`已批量删除 ${ids.length} 个网站`);
   }
 
+
+  async function batchRefreshIconsV181(){
+    const ids=[...managerSelection];
+    if(!ids.length)return toast("请先选择网站");
+    if(!confirm(`重新抓取选中的 ${ids.length} 个网站高清图标？\n\n手动上传的自定义 Logo 会自动跳过。`))return;
+    const btn=document.getElementById("managerBatchRefreshIcons");
+    if(btn){btn.disabled=true;btn.textContent="刷新中…"}
+    try{
+      const result=await v17Request("refresh-icons","POST",{ids});
+      toast(`图标刷新完成：${result.refreshed||0} 个，跳过 ${result.skipped||0} 个`);
+      await refreshV17FromServer({quiet:true});
+      renderManagerSites();
+    }catch(err){
+      alert(err?.message||"刷新图标失败");
+    }finally{
+      if(btn){btn.disabled=false;btn.textContent="刷新图标"}
+    }
+  }
+
+  async function batchHealthV181(){
+    const ids=[...managerSelection];
+    if(!ids.length)return toast("请先选择要检测的网站");
+    if(ids.length>40&&!confirm(`本次选择了 ${ids.length} 个网站，检测可能需要一些时间。继续？`))return;
+    const btn=document.getElementById("managerBatchHealth");
+    if(btn){btn.disabled=true;btn.textContent="检测中…"}
+    try{
+      const chunks=[];
+      for(let i=0;i<ids.length;i+=12)chunks.push(ids.slice(i,i+12));
+      for(let i=0;i<chunks.length;i++){
+        if(btn)btn.textContent=`检测 ${i+1}/${chunks.length}`;
+        const result=await v17Request("health","POST",{ids:chunks[i]});
+        (result.results||[]).forEach(r=>managerHealth.set(r.id,r));
+        renderManagerSites();
+      }
+      const vals=ids.map(id=>managerHealth.get(id)).filter(Boolean);
+      const ok=vals.filter(x=>x.kind==="ok").length;
+      const warn=vals.filter(x=>x.kind==="warn").length;
+      const bad=vals.filter(x=>x.kind==="bad").length;
+      toast(`状态检测完成：正常 ${ok} · 受限/重定向 ${warn} · 失败 ${bad}`);
+    }catch(err){
+      alert(err?.message||"网站状态检测失败");
+    }finally{
+      if(btn){btn.disabled=false;btn.textContent="检测状态"}
+    }
+  }
+
   function duplicateGroupsV18(){
     const rootMap=new Map();
-    rawSites().forEach(site=>{
+    rawSites().filter(site=>!state.hiddenSites.has(site.id)).forEach(site=>{
       const meta=v18UrlMeta(site.url);
       if(!meta.root)return;
       if(!rootMap.has(meta.root))rootMap.set(meta.root,[]);
       rootMap.get(meta.root).push({...site,__meta:meta});
     });
     return [...rootMap.entries()]
-      .map(([root,sites])=>({root,sites:[...new Map(sites.map(s=>[s.id,s])).values()]}))
-      .filter(g=>g.sites.length>1)
-      .sort((a,b)=>b.sites.length-a.sites.length||a.root.localeCompare(b.root));
+      .map(([root,sites])=>{
+        const unique=[...new Map(sites.map(s=>[s.id,s])).values()];
+        const canonicals=new Set(unique.map(s=>s.__meta.canonical));
+        const hosts=new Set(unique.map(s=>s.__meta.host));
+        const tier=canonicals.size===1?"exact":hosts.size===1?"host":"root";
+        const key=`${tier}:${tier==="exact"?[...canonicals][0]:tier==="host"?[...hosts][0]:root}`;
+        return {root,sites:unique,tier,key};
+      })
+      .filter(g=>g.sites.length>1&&!state.duplicateIgnoreKeys.has(g.key))
+      .sort((a,b)=>{
+        const rank={exact:0,host:1,root:2};
+        return rank[a.tier]-rank[b.tier]||b.sites.length-a.sites.length||a.root.localeCompare(b.root);
+      });
   }
   function keepScoreV18(site){
     let n=0;
@@ -7267,6 +7202,25 @@ updateAccessUIV178();
         renderDuplicatesV18();
       },true);
     }
+    const toolbar=document.querySelector("#duplicatePanel .duplicate-toolbar");
+    if(toolbar&&!document.getElementById("resetDuplicateIgnoreV181")){
+      const reset=document.createElement("button");
+      reset.type="button";
+      reset.id="resetDuplicateIgnoreV181";
+      reset.className="btn manager-ignore-reset";
+      reset.textContent="重置忽略";
+      reset.title="重新显示以前忽略的疑似重复组";
+      reset.onclick=()=>{
+        if(!state.duplicateIgnoreKeys.size)return toast("没有被忽略的重复组");
+        if(!confirm(`重新启用 ${state.duplicateIgnoreKeys.size} 条忽略规则？`))return;
+        state.duplicateIgnoreKeys.clear();
+        saveDuplicateIgnoreLocal();
+        save();
+        renderDuplicatesV18();
+        toast("已重置重复忽略规则");
+      };
+      toolbar.append(reset);
+    }
   }
   function renderDuplicatesV18(){
     const box=document.getElementById("duplicateList");
@@ -7277,23 +7231,29 @@ updateAccessUIV178();
     count.textContent=`${groups.length} 组`;
     box.innerHTML="";
     if(!groups.length){
-      box.innerHTML='<div class="duplicate-empty">没有检测到同主域名重复项。</div>';
+      box.innerHTML='<div class="duplicate-empty">没有检测到重复项，或相关疑似组已被忽略。</div>';
       updateManagerBadges();return;
     }
     groups.forEach(group=>{
       const sites=group.sites.slice().sort((a,b)=>keepScoreV18(b)-keepScoreV18(a)||String(a.name).localeCompare(String(b.name),"zh-Hans-CN"));
       const keep=sites[0];
-      const exact=new Set(sites.map(s=>s.__meta.canonical)).size===1;
+      const tierText=group.tier==="exact"?"完全同网址":group.tier==="host"?"同域名 · 路径不同":"同主域名 · 疑似重复";
+      const tierClass=group.tier==="exact"?"dup-exact":group.tier==="host"?"dup-host":"dup-root";
       const wrap=document.createElement("div");wrap.className="duplicate-group";
       const head=document.createElement("div");head.className="duplicate-group-head";
       head.innerHTML=`
         <div class="duplicate-group-title">
           <strong>${group.root}</strong>
-          <span class="dup-chip warn">${exact?"完全同网址":"网址不同 · 同主域名"}</span>
+          <span class="dup-chip ${tierClass}">${tierText}</span>
           <span class="dup-chip">${sites.length} 个站点</span>
         </div>
-        <button class="btn dup-hide-btn" type="button">一键去重</button>`;
-      head.querySelector("button").onclick=()=>dedupeGroupV18(group.root,keep.id);
+        <div class="manager-dup-actions">
+          <button class="btn dup-ignore-btn" type="button">忽略此组</button>
+          <button class="btn dup-hide-btn" type="button">一键去重</button>
+        </div>`;
+      const buttons=head.querySelectorAll("button");
+      buttons[0].onclick=()=>ignoreDuplicateGroupV181(group);
+      buttons[1].onclick=()=>dedupeGroupV18(group.key,keep.id);
       const body=document.createElement("div");body.className="duplicate-items";
       sites.forEach(site=>{
         const row=document.createElement("div");row.className="dup-item";
@@ -7315,12 +7275,20 @@ updateAccessUIV178();
     });
     updateManagerBadges();
   }
-  function dedupeGroupV18(root,keepId){
-    const g=duplicateGroupsV18().find(x=>x.root===root);if(!g)return;
+  function ignoreDuplicateGroupV181(group){
+    state.duplicateIgnoreKeys.add(group.key);
+    saveDuplicateIgnoreLocal();
+    save();
+    renderDuplicatesV18();
+    toast("已忽略此重复组，可通过“重置忽略”恢复");
+  }
+  function dedupeGroupV18(groupKey,keepId){
+    const g=duplicateGroupsV18().find(x=>x.key===groupKey);if(!g)return;
     const targets=g.sites.filter(s=>s.id!==keepId);
     if(!targets.length)return;
     const keep=g.sites.find(s=>s.id===keepId);
-    if(!confirm(`同主域名「${root}」发现 ${g.sites.length} 个站点。\n\n保留「${keep?.name||"建议项"}」，其余 ${targets.length} 个移入回收站？`))return;
+    const level=g.tier==="root"?"注意：这些网址属于同一主域名，但可能是不同子服务。\n\n":"";
+    if(!confirm(`${level}保留「${keep?.name||"建议项"}」，其余 ${targets.length} 个移入回收站？`))return;
     targets.forEach(site=>{
       state.hiddenSites.add(site.id);state.favorites.delete(site.id);state.recents=state.recents.filter(id=>id!==site.id);
     });
@@ -7346,11 +7314,13 @@ updateAccessUIV178();
   // New add/edit: same root-domain is considered a duplicate candidate, even when URL differs.
   function identityDuplicateV18(url,excludeId=""){
     const target=v18UrlMeta(url);if(!target.root)return null;
-    return rawSites().find(site=>{
-      if(site.id===excludeId)return false;
-      const m=v18UrlMeta(site.url);
-      return m.root && m.root===target.root;
-    })||null;
+    const candidates=rawSites().filter(site=>site.id!==excludeId&&!state.hiddenSites.has(site.id)).map(site=>({site,meta:v18UrlMeta(site.url)}));
+    let found=candidates.find(x=>x.meta.canonical&&x.meta.canonical===target.canonical);
+    if(found)return {...found,tier:"exact"};
+    found=candidates.find(x=>x.meta.host&&x.meta.host===target.host);
+    if(found)return {...found,tier:"host"};
+    found=candidates.find(x=>x.meta.root&&x.meta.root===target.root);
+    return found?{...found,tier:"root"}:null;
   }
   document.getElementById("addForm")?.addEventListener("submit",e=>{
     if(!AUTH_V161?.authenticated)return;
@@ -7378,6 +7348,70 @@ updateAccessUIV178();
   };
   document.getElementById("saveSiteEditor").onclick=saveSiteEditor;
 
+
+  function fmtBackupTimeV181(value){
+    try{
+      const d=new Date(String(value||"").replace(" ","T")+"Z");
+      return new Intl.DateTimeFormat("zh-CN",{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false}).format(d);
+    }catch{return String(value||"")}
+  }
+  async function loadBackupsV181(force=false){
+    const box=document.getElementById("managerBackupList");
+    if(!box||!AUTH_V161?.authenticated)return;
+    if(!force&&box.dataset.loaded==="1")return;
+    box.innerHTML='<div class="manager-backup-empty">正在读取 D1 版本历史…</div>';
+    try{
+      const result=await v17Request("backups");
+      const rows=Array.isArray(result.backups)?result.backups:[];
+      box.dataset.loaded="1";
+      box.innerHTML="";
+      if(!rows.length){
+        box.innerHTML='<div class="manager-backup-empty">暂时没有云端快照。下一次修改前会自动创建，也可以点“立即创建快照”。</div>';
+        return;
+      }
+      rows.forEach(item=>{
+        const row=document.createElement("div");row.className="manager-backup-row";
+        const copy=document.createElement("div");copy.className="backup-meta";
+        copy.innerHTML=`<b>${fmtBackupTimeV181(item.createdAt)} · revision ${item.revision}</b><small>${item.siteCount} 个网站 · ${item.categoryCount} 个分类</small>`;
+        const tag=document.createElement("span");tag.className="manager-site-kind";tag.textContent=`#${item.id}`;
+        const restore=document.createElement("button");restore.type="button";restore.className="btn";restore.textContent="恢复";
+        restore.onclick=()=>restoreBackupV181(item);
+        row.append(copy,tag,restore);box.append(row);
+      });
+    }catch(err){
+      box.innerHTML=`<div class="manager-backup-empty">版本列表读取失败：${String(err?.message||"未知错误")}</div>`;
+    }
+  }
+  async function createBackupNowV181(){
+    const btn=document.getElementById("managerBackupNow");if(btn){btn.disabled=true;btn.textContent="创建中…"}
+    try{
+      await v17Request("backup-now","POST",{});
+      const box=document.getElementById("managerBackupList");if(box)box.dataset.loaded="";
+      await loadBackupsV181(true);
+      toast("D1 快照已创建");
+    }catch(err){alert(err?.message||"创建快照失败")}
+    finally{if(btn){btn.disabled=false;btn.textContent="立即创建快照"}}
+  }
+  async function restoreBackupV181(item){
+    if(!confirm(`恢复到 ${fmtBackupTimeV181(item.createdAt)} 的云端版本？\n\n当前状态会先自动创建一个新快照，因此仍可撤回。`))return;
+    setCloudStatus("syncing","D1 恢复中…","正在恢复 Cloudflare D1 SQLite 历史版本");
+    try{
+      const result=await v17Request("restore-backup","POST",{id:item.id});
+      V17.revision=Number(result.revision)||V17.revision;
+      V17.lastSnapshot="";
+      await refreshV17FromServer({quiet:false});
+      const box=document.getElementById("managerBackupList");if(box)box.dataset.loaded="";
+      await loadBackupsV181(true);
+      renderManagerSites();
+      renderCategoryManager();
+      renderDeletedList();
+      toast("历史版本已恢复");
+    }catch(err){
+      setCloudStatus("error","D1 恢复失败",err?.message||"恢复失败");
+      alert(err?.message||"恢复历史版本失败");
+    }
+  }
+
   function renderDataPanel(){
     const d1=document.getElementById("managerD1Info");
     if(d1)d1.textContent=`当前：${AUTH_V161?.authenticated?"管理员模式":"访客模式"} · D1 revision ${Number(V17?.revision)||0} · ${navigator.onLine?"网络在线":"当前离线"}`;
@@ -7386,6 +7420,7 @@ updateAccessUIV178();
       const bytes=typeof storageBytes==="function"?storageBytes():0;
       local.textContent=`本机 localStorage 约 ${(bytes/1024).toFixed(0)} KB；云端正式数据仍以 D1 为准。`;
     }
+    loadBackupsV181(false);
   }
 
   // Open manager: only render current tab, not every heavy module.
