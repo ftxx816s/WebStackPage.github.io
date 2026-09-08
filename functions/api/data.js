@@ -5,7 +5,7 @@ const BACKUP_KEEP=20,MAX_ICON_BYTES=1024*1024;
 
 function normalizeUrl(value){try{const u=new URL(String(value));if(!/^https?:$/.test(u.protocol))return "";u.hash="";u.hostname=u.hostname.toLowerCase();if(u.pathname!=="/")u.pathname=u.pathname.replace(/\/+$/,"");return u.href}catch{return ""}}
 function domainOf(value){try{return new URL(value).hostname.toLowerCase().replace(/^www\./,"")}catch{return ""}}
-function rootDomain(host){const clean=String(host||"").toLowerCase().replace(/^www\./,"");const p=clean.split(".").filter(Boolean);if(p.length<=2)return clean;const s=p.slice(-2).join("."),special=new Set(["com.cn","net.cn","org.cn","gov.cn","edu.cn","co.uk","com.hk","com.tw","com.au","co.jp","com.sg"]);return special.has(s)&&p.length>=3?p.slice(-3).join("."):p.slice(-2).join(".")}
+function rootDomain(host){const clean=String(host||"").toLowerCase().replace(/^www\./,"");const p=clean.split(".").filter(Boolean);if(p.length<=2)return clean;const s=p.slice(-2).join("."),special=new Set(["com.cn","net.cn","org.cn","gov.cn","edu.cn","ac.cn","co.uk","org.uk","gov.uk","ac.uk","com.au","net.au","org.au","co.jp","ne.jp","or.jp","com.hk","com.tw","com.sg","com.br"]);return special.has(s)&&p.length>=3?p.slice(-3).join("."):p.slice(-2).join(".")}
 let __schemaReadyPromiseV186=null;
 async function ensureSchema(env){
   if(!env?.DB)throw new Error("Missing D1 binding: DB");
@@ -101,7 +101,7 @@ async function restoreBackup(env,owner,id){
 function privateHost(host){
   const h=String(host||"").toLowerCase();
   if(!h||h==="localhost"||h.endsWith(".localhost")||h.endsWith(".local")||h.endsWith(".internal")||h.endsWith(".lan"))return true;
-  if(h==="::1"||h==="0:0:0:0:0:0:0:1"||h.startsWith("fc")||h.startsWith("fd")||h.startsWith("fe80:"))return true;
+  if(h==="::1"||h==="0:0:0:0:0:0:0:1")return true;if(h.includes(":")&&(/^(?:fc|fd)/i.test(h)||/^fe[89ab]/i.test(h)))return true;
   const m=h.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
   if(m){
     const a=Number(m[1]),b=Number(m[2]);
@@ -219,7 +219,7 @@ export async function onRequest(context){const {request,env}=context;try{const u
     if(!env?.DB)return json({ok:false,db:false,kv:!!env?.KV,error:"Missing D1 binding: DB"},500);
     await ensureSchema(env);
     let revision=0;try{revision=await getRevision(env,normalizeUsername(env.NAV_USERNAME||"admin"))}catch{}
-    return json({ok:true,db:true,kv:!!env.KV,revision,apiVersion:"18.6"});
+    return json({ok:true,db:true,kv:!!env.KV,revision,apiVersion:"18.7"});
   }
   await ensureSchema(env);const owner=normalizeUsername(env.NAV_USERNAME||"admin");
   // Public read endpoints: no password required.
@@ -243,4 +243,4 @@ export async function onRequest(context){const {request,env}=context;try{const u
   if(mode==="upload-icon"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);if(!env.KV)return json({ok:false,error:"Missing KV binding: KV"},500);const id=String(url.searchParams.get("site")||""),site=await env.DB.prepare(`SELECT id,icon_key FROM sites_v17 WHERE id=? LIMIT 1`).bind(id).first();if(!site)return json({ok:false,error:"Site not found."},404);const type=(request.headers.get("content-type")||"").split(";")[0].trim().toLowerCase(),allowed=new Set(["image/png","image/jpeg","image/webp","image/gif","image/x-icon","image/vnd.microsoft.icon"]);if(!allowed.has(type))return json({ok:false,error:"Only PNG/JPG/WebP/GIF/ICO are allowed."},415);const buf=await request.arrayBuffer();if(!buf.byteLength||buf.byteLength>MAX_ICON_BYTES)return json({ok:false,error:"Icon must be 1MB or smaller."},413);const key=`custom:${auth.owner}:${id}:${crypto.randomUUID()}`;await env.KV.put(key,buf,{metadata:{contentType:type,kind:"custom"}});if(site.icon_key&&String(site.icon_key).startsWith("custom:"))await env.KV.delete(site.icon_key);await env.DB.prepare(`UPDATE sites_v17 SET icon_key=?,updated_at=CURRENT_TIMESTAMP WHERE id=?`).bind(key,id).run();const rev=await getRevision(env,auth.owner)+1;await setSetting(env,auth.owner,"revision",String(rev));return json({ok:true,revision:rev})}
   if(mode==="reset-icon"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);const id=String(url.searchParams.get("site")||""),site=await env.DB.prepare(`SELECT icon_key FROM sites_v17 WHERE id=? LIMIT 1`).bind(id).first();if(!site)return json({ok:false,error:"Site not found."},404);if(env.KV&&site.icon_key&&String(site.icon_key).startsWith("custom:"))await env.KV.delete(site.icon_key);await env.DB.prepare(`UPDATE sites_v17 SET icon_key=NULL,updated_at=CURRENT_TIMESTAMP WHERE id=?`).bind(id).run();const rev=await getRevision(env,auth.owner)+1;await setSetting(env,auth.owner,"revision",String(rev));return json({ok:true,revision:rev})}
   return json({ok:false,error:"Not found."},404)
-}catch(e){return json({ok:false,error:"V18.6 API error: "+String(e?.message||e)},500)}}
+}catch(e){return json({ok:false,error:"V18.7 API error: "+String(e?.message||e)},500)}}
