@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>私人导航工具箱 · V18.6 Stable Release</title>
+<title>私人导航工具箱 · V18.7 Verified Release</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https: http:; connect-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -2918,7 +2918,7 @@ html[data-theme="light"] .login-brand img{
   .brand-copy small{font-size:8.5px!important}
 }
 
-/* ===================== V18.6 · Manager Center ===================== */
+/* ===================== V18.7 · Manager Center ===================== */
 :root{
   --mgr-panel-bg:rgba(11,18,32,.42);
   --mgr-panel-strong:rgba(14,22,39,.72);
@@ -3259,7 +3259,7 @@ html[data-theme="light"] .manager-data-card{
 }
 
 
-/* ===================== V18.6 · Stable Cleanup ===================== */
+/* ===================== V18.7 · Stable Cleanup ===================== */
 .manager-batch-bar{
   grid-template-columns:auto minmax(150px,1fr) auto auto auto auto!important;
 }
@@ -3352,7 +3352,7 @@ html[data-theme="light"] .manager-backup-row{
 }
 
 
-/* ===================== V18.6 · Light Theme Logo Fix ===================== */
+/* ===================== V18.7 · Light Theme Logo Fix ===================== */
 html[data-theme="light"] .brand-mark,
 html[data-theme="light"] .login-brand{
   background:transparent!important;
@@ -3377,7 +3377,7 @@ html[data-theme="light"] .login-brand img{
 }
 
 
-/* ===================== V18.6 · Smart Duplicate / Force Add ===================== */
+/* ===================== V18.7 · Smart Duplicate / Force Add ===================== */
 .v183-dup-warning{
   display:none;margin:10px 0 0;padding:12px 13px;
   border:1px solid rgba(242,196,125,.25);border-radius:13px;
@@ -3402,7 +3402,7 @@ html[data-theme="light"] .v183-dup-warning{background:linear-gradient(135deg,rgb
 html[data-theme="light"] .v183-dup-warning.exact{background:linear-gradient(135deg,rgba(238,78,103,.06),rgba(255,255,255,.82))}
 
 
-/* ===================== V18.6 · Clean Vector-like Brand Logo ===================== */
+/* ===================== V18.7 · Clean Vector-like Brand Logo ===================== */
 .brand-mark img{
   width:54px!important;
   height:49px!important;
@@ -3434,7 +3434,7 @@ html[data-theme="light"] .login-brand img{
 }
 
 
-/* ===================== V18.6 · Precision Clock Calendar ===================== */
+/* ===================== V18.7 · Precision Clock Calendar ===================== */
 .hero-datetime{
   min-height:238px;
   align-self:stretch;
@@ -3707,120 +3707,8 @@ html[data-theme="light"] .calendar-day.selected:not(.today){
 }
 
 
-/* ===================== V18.6 · Restore Card Light FX ===================== */
-/* 保留原有光感，不砍视觉。只在真正鼠标设备上启用。 */
-@media (hover:hover) and (pointer:fine){
-  .card{
-    isolation:isolate;
-    overflow:hidden!important;
-  }
-  .card::before{
-    content:""!important;
-    position:absolute!important;
-    inset:-1px!important;
-    z-index:0!important;
-    pointer-events:none!important;
-    opacity:0!important;
-    background:
-      radial-gradient(
-        260px 150px at var(--mx,22%) var(--my,28%),
-        rgba(126,147,255,.235) 0%,
-        rgba(127,102,245,.125) 31%,
-        rgba(164,92,246,.055) 49%,
-        transparent 72%
-      ),
-      linear-gradient(115deg,rgba(116,135,255,.042),rgba(164,92,246,.028))!important;
-    transition:opacity .16s ease!important;
-  }
-  .card::after{
-    content:""!important;
-    position:absolute!important;
-    inset:0!important;
-    z-index:0!important;
-    pointer-events:none!important;
-    opacity:0!important;
-    border-radius:inherit!important;
-    background:
-      linear-gradient(
-        105deg,
-        transparent 18%,
-        rgba(255,255,255,.075) 38%,
-        rgba(132,148,255,.055) 48%,
-        transparent 64%
-      )!important;
-    transform:translateX(-26%)!important;
-    transition:opacity .16s ease,transform .30s cubic-bezier(.2,.8,.2,1)!important;
-  }
-  .card:hover{
-    transform:translateY(-4px)!important;
-    border-color:rgba(126,143,255,.43)!important;
-    background:
-      linear-gradient(180deg,rgba(20,31,52,.91),rgba(12,22,39,.86))!important;
-    box-shadow:
-      0 18px 42px rgba(0,0,0,.22),
-      0 0 24px rgba(99,112,255,.10),
-      0 0 0 1px rgba(129,143,255,.055) inset!important;
-  }
-  .card:hover::before{
-    opacity:1!important;
-  }
-  .card:hover::after{
-    opacity:1!important;
-    transform:translateX(16%)!important;
-  }
-  .card:hover .site-icon{
-    transform:translateY(-1px) scale(1.075)!important;
-    border-color:rgba(130,147,255,.38)!important;
-    box-shadow:
-      inset 0 1px 0 rgba(255,255,255,.12),
-      0 8px 20px rgba(40,54,114,.24),
-      0 0 16px rgba(116,135,255,.10)!important;
-  }
-  .card:hover .site-name{
-    transform:translateX(2px)!important;
-    color:#fff!important;
-  }
-  .card:hover .site-domain{
-    transform:translateX(2px)!important;
-    color:#afbdd7!important;
-  }
-  .card:hover .star{
-    opacity:1!important;
-    transform:scale(1.09)!important;
-  }
-
-  html[data-theme="light"] .card:hover{
-    background:
-      linear-gradient(180deg,rgba(255,255,255,.985),rgba(250,252,255,.96))!important;
-    border-color:rgba(99,116,238,.34)!important;
-    box-shadow:
-      0 18px 38px rgba(72,89,126,.14),
-      0 0 22px rgba(104,121,255,.065),
-      0 0 0 1px rgba(116,135,255,.035) inset!important;
-  }
-  html[data-theme="light"] .card::before{
-    background:
-      radial-gradient(
-        260px 150px at var(--mx,22%) var(--my,28%),
-        rgba(111,129,255,.15) 0%,
-        rgba(133,104,244,.075) 34%,
-        rgba(164,92,246,.035) 52%,
-        transparent 72%
-      ),
-      linear-gradient(115deg,rgba(116,135,255,.025),rgba(164,92,246,.015))!important;
-  }
-  html[data-theme="light"] .card:hover .site-name{color:#18243c!important}
-  html[data-theme="light"] .card:hover .site-domain{color:#667892!important}
-}
-
-/* 真正滚动时暂时收起光效；滚动停止后立即恢复。 */
-html.is-scrolling .card::before,
-html.is-scrolling .card::after{
-  opacity:0!important;
-}
-
-
-/* ===================== V18.6 · Context Icon Integrity ===================== */
+/* ===================== V18.7 · Context Menu Integrity ===================== */
+/* 右键菜单图标使用独立容器，避免 site-icon / custom-mini-icon 历史样式叠加造成偏移。 */
 .context-head-icon{
   position:relative!important;
   width:36px!important;
@@ -3829,67 +3717,81 @@ html.is-scrolling .card::after{
   display:grid!important;
   place-items:center!important;
   overflow:hidden!important;
-  contain:layout paint!important;
-  isolation:isolate!important;
   border:1px solid var(--line)!important;
   border-radius:11px!important;
-  background:rgba(255,255,255,.045)!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.055)!important;
+  background:var(--soft)!important;
+  isolation:isolate!important;
 }
-.context-head-icon::before,
-.context-head-icon::after{content:none!important;display:none!important}
-.context-head-icon > img{
+.context-head-icon>.context-head-source{
+  position:relative!important;
+  inset:auto!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  flex:0 0 100%!important;
+  display:grid!important;
+  place-items:center!important;
+  overflow:hidden!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  transform:none!important;
+  filter:none!important;
+}
+.context-head-icon>.context-head-source::before,
+.context-head-icon>.context-head-source::after{
+  content:none!important;
+  display:none!important;
+}
+.context-head-icon>.context-head-source>img{
   position:absolute!important;
-  left:50%!important;
-  top:50%!important;
-  right:auto!important;
-  bottom:auto!important;
-  width:25px!important;
-  height:25px!important;
-  max-width:25px!important;
-  max-height:25px!important;
-  transform:translate(-50%,-50%)!important;
-  transform-origin:center!important;
+  inset:0!important;
+  margin:auto!important;
+  width:24px!important;
+  height:24px!important;
+  max-width:24px!important;
+  max-height:24px!important;
   object-fit:contain!important;
   object-position:center!important;
   border-radius:6px!important;
-  z-index:2!important;
-  margin:0!important;
-  padding:0!important;
+  transform:none!important;
   filter:none!important;
+  z-index:2!important;
 }
-.context-head-icon > .site-fallback{
+.context-head-icon>.context-head-source>.site-fallback{
   position:absolute!important;
-  inset:4px!important;
-  display:grid!important;
-  place-items:center!important;
+  inset:5px!important;
   width:auto!important;
   height:auto!important;
+  margin:0!important;
+  display:grid!important;
+  place-items:center!important;
   border-radius:8px!important;
   font-size:11px!important;
   line-height:1!important;
+  transform:none!important;
   z-index:1!important;
 }
+.context-head-icon>.context-head-source>.longpress-ring{display:none!important}
+.category-context .context-head-icon,
+.category-context .context-head-icon:hover,
+.category-context .context-head-source,
+.category-context .context-head-source:hover{transform:none!important}
 html[data-theme="light"] .context-head-icon{
   background:rgba(255,255,255,.90)!important;
   border-color:rgba(31,48,78,.095)!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.98),0 3px 10px rgba(71,88,119,.04)!important;
 }
-
-
-/* V18.6 · UI isolation */
-.category-context .context-head-icon,
-.category-context .context-head-icon:hover{transform:none!important}
-.category-context .context-head-icon img{pointer-events:none!important}
 
 </style>
 
-<!-- V18.6 transparent favicon: clean logo only, no background / no dark halo -->
+<!-- V18.7 transparent favicon: clean logo only, no background / no dark halo -->
 <link rel="icon" type="image/png" sizes="64x64" href="data:image/png;base64,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">
 <link rel="shortcut icon" type="image/png" href="data:image/png;base64,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">
 <meta name="theme-color" content="#081426">
 
-<meta name="x-build" content="V18.6-logo-clean-20260908">
+<meta name="x-build" content="V18.7-logo-clean-20260908">
 </head>
 <body>
 <div class="app">
@@ -4001,7 +3903,7 @@ html[data-theme="light"] .context-head-icon{
     </section>
 
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V18.6</div>
+    <div class="footer">© 2026 私人导航工具箱 · V18.7</div>
   </main>
 </div>
 
@@ -4570,45 +4472,26 @@ function createSiteIcon(site,className="site-icon"){
 }
 function toast(msg){const el=$("#toast");el.textContent=msg;el.classList.add("show");clearTimeout(window.__toast);window.__toast=setTimeout(()=>el.classList.remove("show"),1800)}
 
-/* V18.6 · Context header icon: use the same visual source as the card, always centered. */
-function createContextHeadIconV186(site){
-  const wrap=document.createElement("div");
-  wrap.className="context-head-icon";
-
-  let source=null;
+/* V18.7 · shared context-menu helpers */
+function contextCategoryLabelV187(name){
+  const raw=String(name||"");
+  const local=String(state?.categoryTitleOverrides?.[raw]||"").trim();
+  if(local)return local;
   try{
-    const selector=`.card[data-site-id="${CSS.escape(String(site.id||""))}"] .site-icon`;
-    source=document.querySelector(selector);
+    const fn=window.categoryDisplayNameV18;
+    if(typeof fn==="function")return String(fn(raw)||raw);
   }catch{}
-
-  const liveImg=source?.querySelector("img");
-  if(liveImg?.complete && liveImg.naturalWidth>0){
-    const img=liveImg.cloneNode(false);
-    img.loading="eager";
-    img.decoding="async";
-    img.alt="";
-    wrap.append(img);
-    return wrap;
-  }
-
-  const liveFallback=source?.querySelector(".site-fallback:not(.is-hidden)");
-  if(liveFallback){
-    wrap.append(liveFallback.cloneNode(true));
-  }else{
-    const generated=createSiteIcon(site,"context-head-icon");
-    requestAnimationFrame(()=>generated.__startIconUpgrade?.());
-    return generated;
-  }
-
-  const generated=createSiteIcon(site,"context-head-icon");
-  const generatedImg=generated.querySelector("img");
-  if(generatedImg){
-    generatedImg.addEventListener("load",()=>{
-      wrap.replaceChildren(generatedImg.cloneNode(false));
-    },{once:true});
-  }
-  requestAnimationFrame(()=>generated.__startIconUpgrade?.());
-  return wrap;
+  return raw;
+}
+function createContextHeadIconV187(site){
+  const frame=document.createElement("div");
+  frame.className="context-head-icon";
+  const source=createSiteIcon(site,"context-head-source");
+  source.removeAttribute("title");
+  source.querySelector(".longpress-ring")?.remove();
+  frame.append(source);
+  requestAnimationFrame(()=>source.__startIconUpgrade?.());
+  return frame;
 }
 
 function recordRecent(id){
@@ -4656,7 +4539,6 @@ function attachQuickManage(target,link,site){
 function createCard(site){
   const card=document.createElement("div");
   card.className="card glass";
-  card.dataset.siteId=String(site.id||"");
 
   const link=document.createElement("a");
   link.className="card-link";
@@ -4984,10 +4866,7 @@ function buildCategoryContext(site){
   const head=document.createElement("div");
   head.className="context-head";
 
-  const iconWrap=document.createElement("div");
-  iconWrap.className="context-head-icon";
-  const icon=createSiteIcon(site,"custom-mini-icon");
-  while(icon.firstChild)iconWrap.append(icon.firstChild);
+  const iconWrap=createContextHeadIconV187(site);
 
   const copy=document.createElement("div");
   copy.className="context-head-copy";
@@ -4996,7 +4875,7 @@ function buildCategoryContext(site){
   name.textContent=site.name;
   const cat=document.createElement("div");
   cat.className="context-head-category";
-  cat.textContent=`当前分类：${displayCategory(effectiveCategory(site))}`;
+  cat.textContent=`当前分类：${contextCategoryLabelV187(effectiveCategory(site))}`;
   copy.append(name,cat);
   head.append(iconWrap,copy);
 
@@ -5020,7 +4899,7 @@ function buildCategoryContext(site){
 
     const cn=document.createElement("span");
     cn.className="context-cat-name";
-    cn.textContent=displayCategory(c.name);
+    cn.textContent=contextCategoryLabelV187(c.name);
 
     btn.append(ci,cn);
 
@@ -5045,7 +4924,7 @@ function buildCategoryContext(site){
   const restore=document.createElement("button");
   restore.type="button";
   restore.className="context-restore";
-  restore.textContent=`恢复默认：${displayCategory(site.category)}`;
+  restore.textContent=`恢复默认：${contextCategoryLabelV187(site.category)}`;
   restore.hidden=!state.categoryOverrides[site.id];
   restore.onclick=e=>{
     e.preventDefault();
@@ -5108,11 +4987,17 @@ function buildCategoryContext(site){
 }
 
 function openCategoryContext(e,site){
-  contextSiteId=site.id;
-  const menu=$("#categoryContext");
-  buildCategoryContext(site);
-  menu.setAttribute("aria-hidden","false");
-  positionCategoryContext(menu,e.clientX,e.clientY);
+  try{
+    contextSiteId=site.id;
+    const menu=$("#categoryContext");
+    buildCategoryContext(site);
+    menu.setAttribute("aria-hidden","false");
+    positionCategoryContext(menu,Number(e?.clientX)||24,Number(e?.clientY)||24);
+  }catch(err){
+    console.error("V18.7 context menu error",err);
+    closeCategoryContext();
+    toast("右键菜单加载失败，请刷新页面后重试");
+  }
 }
 
 function applyContextCategory(site,target){
@@ -5837,10 +5722,10 @@ function resetCategoryOrder(){state.categoryOrder=[...CATEGORIES.map(c=>c.name),
 /* V13 context menu */
 function buildCategoryContext(site){
   const menu=$("#categoryContext");menu.innerHTML="";
-  const head=document.createElement("div");head.className="context-head";const iconWrap=createContextHeadIconV186(site);const copy=document.createElement("div");copy.className="context-head-copy";const name=document.createElement("div");name.className="context-head-name";name.textContent=site.name;const cat=document.createElement("div");cat.className="context-head-category";cat.textContent=`当前分类：${displayCategory(effectiveCategory(site))}`;copy.append(name,cat);head.append(iconWrap,copy);
+  const head=document.createElement("div");head.className="context-head";const iconWrap=createContextHeadIconV187(site);const copy=document.createElement("div");copy.className="context-head-copy";const name=document.createElement("div");name.className="context-head-name";name.textContent=site.name;const cat=document.createElement("div");cat.className="context-head-category";cat.textContent=`当前分类：${contextCategoryLabelV187(effectiveCategory(site))}`;copy.append(name,cat);head.append(iconWrap,copy);
   const label=document.createElement("div");label.className="context-label";label.textContent="移动到分类";const grid=document.createElement("div");grid.className="context-grid";const current=effectiveCategory(site);
-  allCategories().forEach(c=>{const btn=document.createElement("button");btn.type="button";btn.className="context-item"+(c.name===current?" current":"");const ci=document.createElement("span");ci.className="context-cat-icon";ci.textContent=c.icon||"•";const cn=document.createElement("span");cn.className="context-cat-name";cn.textContent=displayCategory(c.name);btn.append(ci,cn);if(c.name===current){const check=document.createElement("span");check.className="context-check";check.textContent="✓";btn.append(check)}btn.onclick=e=>{e.preventDefault();e.stopPropagation();applyContextCategory(site,c.name)};grid.append(btn)});
-  const footer=document.createElement("div");footer.className="context-footer";const restore=document.createElement("button");restore.type="button";restore.className="context-restore";restore.textContent=`恢复默认：${displayCategory(site.category)}`;restore.hidden=!state.categoryOverrides[site.id];restore.onclick=e=>{e.preventDefault();e.stopPropagation();restoreContextCategory(site)};const tip=document.createElement("span");tip.className="context-tip";tip.textContent="右键 / 长按管理";footer.append(restore,tip);
+  allCategories().forEach(c=>{const btn=document.createElement("button");btn.type="button";btn.className="context-item"+(c.name===current?" current":"");const ci=document.createElement("span");ci.className="context-cat-icon";ci.textContent=c.icon||"•";const cn=document.createElement("span");cn.className="context-cat-name";cn.textContent=contextCategoryLabelV187(c.name);btn.append(ci,cn);if(c.name===current){const check=document.createElement("span");check.className="context-check";check.textContent="✓";btn.append(check)}btn.onclick=e=>{e.preventDefault();e.stopPropagation();applyContextCategory(site,c.name)};grid.append(btn)});
+  const footer=document.createElement("div");footer.className="context-footer";const restore=document.createElement("button");restore.type="button";restore.className="context-restore";restore.textContent=`恢复默认：${contextCategoryLabelV187(site.category)}`;restore.hidden=!state.categoryOverrides[site.id];restore.onclick=e=>{e.preventDefault();e.stopPropagation();restoreContextCategory(site)};const tip=document.createElement("span");tip.className="context-tip";tip.textContent="右键 / 长按管理";footer.append(restore,tip);
   const tools=document.createElement("div");tools.className="context-tools";
   const editBtn=document.createElement("button");editBtn.type="button";editBtn.className="context-tool edit-site";editBtn.innerHTML='<span class="context-tool-icon">✎</span><span>编辑网站信息</span>';editBtn.onclick=e=>{e.preventDefault();e.stopPropagation();openSiteEditor(site)};
   const iconBtn=document.createElement("button");iconBtn.type="button";iconBtn.className="context-tool";iconBtn.innerHTML='<span class="context-tool-icon">▧</span><span>自定义图标</span>';iconBtn.onclick=e=>{e.preventDefault();e.stopPropagation();chooseContextIcon(site)};
@@ -5857,7 +5742,7 @@ function buildCategoryContext(site){
 /* ===================== V17 · Data Driven Runtime ===================== */
 const V17_API="/api/data";
 const V17_CACHE_KEY="fxnav_v17_bootstrap_cache";
-const V17={revision:0,ready:false,syncing:false,suppress:false,pushTimer:0,lastSnapshot:"",pullTimer:0,cloudOnline:false,lastCloudError:"",lastCloudStatus:0};
+const V17={revision:0,ready:false,syncing:false,suppress:false,pushTimer:0,lastSnapshot:"",pullTimer:0};
 
 function v17Query(mode,extra={}){
   const u=new URL(V17_API,location.origin);u.searchParams.set("mode",mode);
@@ -5903,7 +5788,7 @@ function applyBootstrapV17(payload,{cache=true}={}){
     rows.slice().sort((a,b)=>Number(a.sort_order)-Number(b.sort_order)).forEach(r=>{(grouped[r.category_name]??=[]).push(r.id)});state.siteOrder=grouped;
     sanitizeState();saveLocalState();applyTheme();if(typeof applyDensityV157==="function")applyDensityV157();buildNav();buildCategorySelect();buildMoveCategorySelect();buildMoveSiteOptions();render();renderCategoryManager();renderDeletedList();renderCustomList();refreshIconPreview();updateStorageUsage();
     V17.revision=Number(payload.revision)||0;V17.ready=true;V17.lastSnapshot=JSON.stringify(makeV17Snapshot());if(cache)STORE.set(V17_CACHE_KEY,JSON.stringify(payload));
-    if(typeof renderCloudStatusV186==="function")renderCloudStatusV186();return true;
+    setCloudStatus("synced","D1 已同步",`Cloudflare D1 SQLite 数据库 · 数据版本 ${V17.revision} · KV 图标缓存正常`);return true;
   }finally{V17.suppress=false}
 }
 function makeV17Snapshot(){
@@ -5928,134 +5813,15 @@ async function pushV17({force=false}={}){
 }
 function scheduleDataSyncV17(){if(!V17.ready||V17.suppress)return;clearTimeout(V17.pushTimer);setCloudStatus("syncing","D1 保存中…","本地已保存 · 准备写入 Cloudflare D1 SQLite 数据库");V17.pushTimer=setTimeout(()=>pushV17(),280)}
 window.__fxCloudSchedulePush=scheduleDataSyncV17;
-let __d1ReconnectTimerV186=0;
-let __d1RetryingV186=false;
-
-function d1RetryableV186(err){
-  const s=Number(err?.status)||0;
-  return !s || s===408 || s===425 || s===429 || s>=500;
+async function refreshV17FromServer({quiet=false}={}){
+  try{const payload=await v17Request("bootstrap");if(Number(payload.revision)!==V17.revision||!V17.ready)applyBootstrapV17(payload);else if(!quiet)setCloudStatus("synced","D1 已同步",`Cloudflare D1 SQLite 数据库 · 数据版本 ${V17.revision}`);return true}
+  catch(err){if(err.status===401)showLoginGateV161("请登录后读取 D1 数据");else if(!quiet)setCloudStatus("error","D1 未连接",err.message||"无法读取 D1");return false}
 }
-
-function cloudStatusTextV186(){
-  if(V17.cloudOnline){
-    return AUTH_V161?.authenticated
-      ? {mode:"synced",text:"D1 已同步",title:`Cloudflare D1 SQLite 数据库 · 数据版本 ${V17.revision} · KV 图标缓存`}
-      : {mode:"synced",text:"D1 只读",title:`Cloudflare D1 SQLite 数据库 · 公开数据已连接 · 数据版本 ${V17.revision}`};
-  }
-  if(V17.ready){
-    return {mode:"offline",text:"D1 重连中",title:V17.lastCloudError||"当前使用最近一次云端数据，后台正在自动重连 D1"};
-  }
-  if(!V17.lastCloudError){
-    return {mode:"syncing",text:"D1 连接中…",title:"正在读取 Cloudflare D1 SQLite 数据库"};
-  }
-  return {mode:"error",text:"D1 未连接",title:V17.lastCloudError};
-}
-
-function renderCloudStatusV186(){
-  const s=cloudStatusTextV186();
-  setCloudStatus(s.mode,s.text,s.title);
-}
-
-async function diagnoseDataApiV186(){
-  try{
-    const res=await fetch(v17Query("healthz"),{headers:{Accept:"application/json"},credentials:"include",cache:"no-store"});
-    let data=null;try{data=await res.json()}catch{}
-    if(res.ok&&data?.ok){
-      if(data.db===false)return "Cloudflare Pages 缺少 D1 绑定 DB";
-      return data.kv===false?"D1 可用，但 KV 绑定缺失":"D1 / KV 后端接口可用";
-    }
-    if(res.status===404)return "找不到 /api/data：请部署 functions/api/data.js";
-    return data?.error||`/api/data 健康检查失败 · HTTP ${res.status}`;
-  }catch{
-    return "浏览器无法访问 /api/data；请检查 Cloudflare Pages Functions 部署";
-  }
-}
-
-async function refreshV17FromServer({quiet=false,retries=2}={}){
-  let lastErr=null;
-  for(let attempt=0;attempt<=retries;attempt++){
-    try{
-      const payload=await v17Request("bootstrap");
-      V17.cloudOnline=true;
-      V17.lastCloudError="";
-      V17.lastCloudStatus=200;
-      if(Number(payload.revision)!==V17.revision||!V17.ready){
-        applyBootstrapV17(payload);
-      }else{
-        renderCloudStatusV186();
-      }
-      __d1RetryingV186=false;
-      clearTimeout(__d1ReconnectTimerV186);
-      return true;
-    }catch(err){
-      lastErr=err;
-      V17.cloudOnline=false;
-      V17.lastCloudStatus=Number(err?.status)||0;
-      if(err.status===401){
-        V17.lastCloudError="管理员会话已过期；公开导航仍可继续读取";
-        break;
-      }
-      if(attempt<retries && d1RetryableV186(err)){
-        if(!quiet)setCloudStatus("syncing","D1 重连中…",`云端暂时无响应，正在第 ${attempt+2} 次尝试`);
-        await new Promise(r=>setTimeout(r,attempt===0?320:850));
-        continue;
-      }
-      break;
-    }
-  }
-
-  const status=Number(lastErr?.status)||0;
-  let reason=lastErr?.message||"无法读取 D1";
-  if(!quiet){
-    const diagnosis=await diagnoseDataApiV186();
-    reason=status?`${reason} · HTTP ${status} · ${diagnosis}`:`${reason} · ${diagnosis}`;
-  }
-  V17.lastCloudError=reason;
-  renderCloudStatusV186();
-  return false;
-}
-
-function scheduleD1ReconnectV186(delay=2600){
-  clearTimeout(__d1ReconnectTimerV186);
-  __d1ReconnectTimerV186=setTimeout(async()=>{
-    if(!navigator.onLine||__d1RetryingV186)return scheduleD1ReconnectV186(7000);
-    __d1RetryingV186=true;
-    const ok=await refreshV17FromServer({quiet:true,retries:2});
-    __d1RetryingV186=false;
-    if(ok){
-      renderCloudStatusV186();
-      updateAccessUIV178?.();
-    }else{
-      scheduleD1ReconnectV186(7000);
-    }
-  },delay);
-}
-
 async function initDataDrivenV17(){
   setCloudStatus("syncing","D1 连接中…","正在读取 Cloudflare D1 SQLite 数据库");
-  V17.cloudOnline=false;
-  const ok=await refreshV17FromServer({quiet:false,retries:2});
-  if(!ok){
-    const cached=parseStored(V17_CACHE_KEY,null);
-    if(cached){
-      V17.cloudOnline=false;
-      applyBootstrapV17(cached,{cache:false});
-      V17.lastCloudError=V17.lastCloudError||"当前使用最近一次 D1 缓存";
-      renderCloudStatusV186();
-    }
-    scheduleD1ReconnectV186();
-  }
-
-  clearInterval(V17.pullTimer);
-  V17.pullTimer=setInterval(()=>{
-    if(document.visibilityState==="visible"&&navigator.onLine){
-      refreshV17FromServer({quiet:true,retries:1});
-    }
-  },45000);
-
-  window.addEventListener("focus",()=>{
-    if(navigator.onLine)refreshV17FromServer({quiet:true,retries:1});
-  });
+  const ok=await refreshV17FromServer();if(!ok){const cached=parseStored(V17_CACHE_KEY,null);if(cached){applyBootstrapV17(cached,{cache:false});setCloudStatus("offline","本地缓存","暂时使用最近一次 D1 缓存")}}
+  clearInterval(V17.pullTimer);V17.pullTimer=setInterval(()=>{if(document.visibilityState==="visible"&&navigator.onLine)refreshV17FromServer({quiet:true})},45000);
+  window.addEventListener("focus",()=>{if(AUTH_V161.authenticated&&navigator.onLine)refreshV17FromServer({quiet:true})});
 }
 
 /* ===================== V16.1 · Private Login Runtime ===================== */
@@ -6213,7 +5979,7 @@ $("#logoutBtn")?.addEventListener("click",()=>{
   if(confirm("退出私人导航登录？"))logoutV161();
 });
 
-/* ===================== V18.6 · Cloud Status ===================== */
+/* ===================== V18.7 · Cloud Status ===================== */
 function setCloudStatus(mode,text,title=""){
   const el=$("#cloudStatus"),txt=$("#cloudStatusText"),compact=$("#compactCloudStatus");
   const detail=title||text||"Cloudflare D1 SQLite 数据库";
@@ -6227,24 +5993,6 @@ function setCloudStatus(mode,text,title=""){
     compact.title=detail;
   }
 }
-
-/* V18.6 · D1 状态按钮支持手动重连 */
-queueMicrotask(()=>{
-  const retry=async()=>{
-    const el=$("#cloudStatus");
-    if(el?.dataset.state==="syncing")return;
-    setCloudStatus("syncing","D1 重连中…","正在重新连接 Cloudflare D1 SQLite 数据库");
-    const ok=await refreshV17FromServer({quiet:false,retries:2});
-    if(ok){
-      renderCloudStatusV186();
-      updateAccessUIV178?.();
-      toast("D1 已重新连接");
-    }
-  };
-  $("#cloudStatus")?.addEventListener("click",retry);
-  $("#compactCloudStatus")?.addEventListener("click",retry);
-  $("#cloudStatus")?.style.setProperty("cursor","pointer");
-});
 
 const __v15Migrated=migrateBuiltinDataV15();sanitizeState();if(save()&&__v15Migrated)STORE.set(V15_BUILTIN_DATA_KEY,V15_BUILTIN_DATA_VERSION);applyTheme();buildNav();buildCategorySelect();buildMoveCategorySelect();buildMoveSiteOptions();render();renderCategoryManager();renderDeletedList();refreshIconPreview();updateStorageUsage();setTimeout(initPublicAdminV178,80);
 
@@ -6294,7 +6042,7 @@ $("#closeDrawer").onclick=closeDrawer;
 $("#backdrop").onclick=closeDrawer;
 $("#sortModeBtn").onclick=toggleSortMode;
 $("#compactSortBtn").onclick=toggleSortMode;
-/* V18.6：Hero 右侧已改为日历 + 时钟。 */
+/* V18.7：Hero 右侧已改为日历 + 时钟。 */
 $("#addCategoryBtn").onclick=addCustomCategory;
 $("#resetCategoryOrderBtn").onclick=resetCategoryOrder;
 $("#resetSiteOrderBtn").onclick=resetSiteOrder;
@@ -6364,7 +6112,7 @@ $("#importFile").addEventListener("change",async e=>{
     state.custom=Array.isArray(d.custom)?d.custom:[];state.recents=Array.isArray(d.recents)?d.recents:[];state.favorites=new Set(Array.isArray(d.favorites)?d.favorites:[]);state.categoryOverrides=(d.categoryOverrides&&typeof d.categoryOverrides==="object"&&!Array.isArray(d.categoryOverrides))?d.categoryOverrides:{};state.iconOverrides=(d.iconOverrides&&typeof d.iconOverrides==="object"&&!Array.isArray(d.iconOverrides))?d.iconOverrides:{};state.hiddenSites=new Set(Array.isArray(d.hiddenSites)?d.hiddenSites:[]);state.siteEdits=(d.siteEdits&&typeof d.siteEdits==="object"&&!Array.isArray(d.siteEdits))?d.siteEdits:{};state.customCategories=Array.isArray(d.customCategories)?d.customCategories:[];state.categoryOrder=Array.isArray(d.categoryOrder)?d.categoryOrder:[];state.categoryIconOverrides=(d.categoryIconOverrides&&typeof d.categoryIconOverrides==="object"&&!Array.isArray(d.categoryIconOverrides))?d.categoryIconOverrides:{};state.siteOrder=(d.siteOrder&&typeof d.siteOrder==="object"&&!Array.isArray(d.siteOrder))?d.siteOrder:{};state.categoryTitleOverrides=(d.categoryTitleOverrides&&typeof d.categoryTitleOverrides==="object"&&!Array.isArray(d.categoryTitleOverrides))?d.categoryTitleOverrides:{};state.duplicateIgnoreKeys=new Set(Array.isArray(d.duplicateIgnoreKeys)?d.duplicateIgnoreKeys:[]);if(d.usageStats&&typeof d.usageStats==="object"&&!Array.isArray(d.usageStats))STORE.set("fxnav_usage_stats_v157",JSON.stringify(d.usageStats));if(d.density==="compact"||d.density==="comfortable")STORE.set(V157_DENSITY_KEY,d.density);applyDensityV157();
     sanitizeState();
     if(!save()){Object.assign(state,{custom:snapshot.custom,recents:snapshot.recents,favorites:snapshot.favorites,categoryOverrides:snapshot.categoryOverrides,iconOverrides:snapshot.iconOverrides,hiddenSites:snapshot.hiddenSites,siteEdits:snapshot.siteEdits,customCategories:snapshot.customCategories,categoryOrder:snapshot.categoryOrder,categoryIconOverrides:snapshot.categoryIconOverrides,siteOrder:snapshot.siteOrder,categoryTitleOverrides:snapshot.categoryTitleOverrides,duplicateIgnoreKeys:snapshot.duplicateIgnoreKeys});throw new Error("导入数据超过浏览器本地存储容量，已恢复原配置")}
-    refreshCategoryUI();renderDeletedList();updateStorageUsage();toast("V18.6 配置已导入");
+    refreshCategoryUI();renderDeletedList();updateStorageUsage();toast("V18.7 配置已导入");
   }catch(err){alert(err?.message||"配置文件无效")}finally{e.target.value=""}
 });
 
@@ -6428,7 +6176,6 @@ function handleWindowScroll(){
     const menu=$("#categoryContext");
     if(menu?.classList.contains("show"))closeCategoryContext();
 
-    __fxLastScrollAt=performance.now();
     if(!document.documentElement.classList.contains("is-scrolling")){
       document.documentElement.classList.add("is-scrolling");
     }
@@ -6436,7 +6183,7 @@ function handleWindowScroll(){
     clearTimeout(__fxScrollIdleTimer);
     __fxScrollIdleTimer=setTimeout(()=>{
       document.documentElement.classList.remove("is-scrolling");
-    },90);
+    },140);
   });
 }
 
@@ -6467,34 +6214,15 @@ document.addEventListener("keydown",e=>{
 
 
 
-/* V18.6 · restored delegated mouse-follow glow */
-let __cardGlowRAF=0,__cardGlowTarget=null,__cardGlowX="22%",__cardGlowY="28%";
-let __fxLastScrollAt=0;
+/* V15.3 delegated mouse-follow glow */
+let __cardGlowRAF=0,__cardGlowTarget=null,__cardGlowX=0,__cardGlowY=0;
 if(window.matchMedia?.("(hover:hover) and (pointer:fine)").matches){
   $("#content").addEventListener("pointermove",e=>{
-    const card=e.target.closest(".card");
-    if(!card)return;
-
-    /* 某些浏览器/触控板快速滚停后 timeout 会延后；
-       鼠标已经开始移动时，超过 95ms 就恢复 hover 光感。 */
-    if(document.documentElement.classList.contains("is-scrolling") &&
-       performance.now()-__fxLastScrollAt>95){
-      document.documentElement.classList.remove("is-scrolling");
-    }
-
+    const card=e.target.closest(".card");if(!card)return;
     const r=card.getBoundingClientRect();
-    __cardGlowTarget=card;
-    __cardGlowX=Math.max(0,Math.min(100,(e.clientX-r.left)/r.width*100)).toFixed(1)+"%";
-    __cardGlowY=Math.max(0,Math.min(100,(e.clientY-r.top)/r.height*100)).toFixed(1)+"%";
-
+    __cardGlowTarget=card;__cardGlowX=((e.clientX-r.left)/r.width*100).toFixed(1)+"%";__cardGlowY=((e.clientY-r.top)/r.height*100).toFixed(1)+"%";
     if(__cardGlowRAF)return;
-    __cardGlowRAF=requestAnimationFrame(()=>{
-      __cardGlowRAF=0;
-      if(__cardGlowTarget){
-        __cardGlowTarget.style.setProperty("--mx",__cardGlowX);
-        __cardGlowTarget.style.setProperty("--my",__cardGlowY);
-      }
-    });
+    __cardGlowRAF=requestAnimationFrame(()=>{__cardGlowRAF=0;if(__cardGlowTarget){__cardGlowTarget.style.setProperty("--mx",__cardGlowX);__cardGlowTarget.style.setProperty("--my",__cardGlowY)}});
   },{passive:true});
 }
 
@@ -6692,7 +6420,7 @@ if(__sidebarV158){
    这里增加统一同步入口，后端 API 接入后无需重构页面。
 */
 const FX_SYNC={
-  version:"V18.6",
+  version:"V18.7",
   enabled:false,
   user:null,
   endpoint:"",
@@ -6843,7 +6571,7 @@ const FX_SYNC={
         else form.insertAdjacentElement('afterend',panel);
       }
     }
-    /* V18.6: duplicate scan is handled only by Manager Center. */
+    /* V18.7: duplicate scan is handled only by Manager Center. */
     document.getElementById('jumpDeletedBtn')?.addEventListener('click',()=>document.getElementById('deletedList')?.scrollIntoView({behavior:'smooth',block:'start'}));
     document.getElementById('addForm')?.classList.add('admin-surface');
     document.getElementById('movePreview')?.classList.add('admin-surface');
@@ -7091,7 +6819,7 @@ window.__fxCloudSchedulePush=scheduleDataSyncV17;
     if(wasOpen)unlockOverlay();
   };
 
-  // V18.6：悬浮菜单关闭统一由主 RAF scroll handler 处理。
+  // V18.7：悬浮菜单关闭统一由主 RAF scroll handler 处理。
 
   // iOS / 高刷新屏上减少第一次 overlay 出现时的布局跳动。
   requestAnimationFrame(()=>body.classList.add("motion-system-ready"));
@@ -7155,7 +6883,8 @@ function updateAccessUIV178(){
   }
   const compact=$("#compactManageBtn");if(compact){compact.textContent=admin?"＋":"⌁";compact.title=admin?"管理导航":"管理员登录后管理导航"}
   const logout=$("#logoutBtn");if(logout)logout.hidden=!admin;
-  if(typeof renderCloudStatusV186==="function")renderCloudStatusV186();
+  if(admin)setCloudStatus("synced","D1 已同步","管理员模式 · Cloudflare D1 SQLite 可读写 · KV 图标可上传");
+  else setCloudStatus("synced","访客只读","无需登录即可浏览；修改操作仅管理员可用");
 }
 function closeLoginGateV178(){
   if(AUTH_V161.authenticated){hideLoginGateV161();updateAccessUIV178();return}
@@ -7280,10 +7009,10 @@ buildCategoryContext=function(site){
   if(AUTH_V161.authenticated)return __buildContextBeforeV178(site);
   const menu=$("#categoryContext");menu.innerHTML="";
   const head=document.createElement("div");head.className="context-head";
-  const iconWrap=createContextHeadIconV186(site);
+  const iconWrap=createContextHeadIconV187(site);
   const copy=document.createElement("div");copy.className="context-head-copy";
   const name=document.createElement("div");name.className="context-head-name";name.textContent=site.name;
-  const cat=document.createElement("div");cat.className="context-head-category";cat.textContent=`${displayCategory(effectiveCategory(site))} · 访客只读`;
+  const cat=document.createElement("div");cat.className="context-head-category";cat.textContent=`${contextCategoryLabelV187(effectiveCategory(site))} · 访客只读`;
   copy.append(name,cat);head.append(iconWrap,copy);
   const tools=document.createElement("div");tools.className="context-tools";
   const openBtn=document.createElement("button");openBtn.type="button";openBtn.className="context-tool full";openBtn.innerHTML='<span class="context-tool-icon">↗</span><span>打开网站</span>';openBtn.onclick=e=>{e.preventDefault();e.stopPropagation();recordRecent(site.id);closeCategoryContext();window.open(site.url,"_blank","noopener")};
@@ -7309,7 +7038,7 @@ updateAccessUIV178();
 </script>
 
 <script>
-/* ===================== V18.6 · Manager Center Runtime ===================== */
+/* ===================== V18.7 · Manager Center Runtime ===================== */
 (function(){
   const MGR_TAB_KEY="fxnav_manager_tab_v18";
   const CAT_TITLE_KEY="fxnav_category_title_overrides_v18";
@@ -8178,7 +7907,7 @@ updateAccessUIV178();
 
 
 <script>
-/* ===================== V18.6 · Final Logic Runtime ===================== */
+/* ===================== V18.7 · Final Logic Runtime ===================== */
 (function(){
   let forceAddOnceV183=false;
   let pendingDuplicateV183=null;
@@ -8403,7 +8132,7 @@ updateAccessUIV178();
 
 
 <script>
-/* ===================== V18.6 · Precision Clock Calendar Runtime ===================== */
+/* ===================== V18.7 · Precision Clock Calendar Runtime ===================== */
 (function(){
   const $id=id=>document.getElementById(id);
   const pad=n=>String(n).padStart(2,"0");
