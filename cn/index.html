@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>私人导航工具箱 · V18.7 Verified Release</title>
+<title>私人导航工具箱 · V18.8 Liquid Glass</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https: http:; connect-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -29,6 +29,21 @@ html[data-theme="light"]{
   --shadow:0 22px 60px rgba(82,101,140,.15);--shadow-soft:0 10px 28px rgba(78,96,128,.09);
   --option-bg:#fff;--option-text:#172033;
 }
+
+html[data-theme="liquid"]{
+  color-scheme:light;
+  --bg:#eef4ff;--bg2:#f8fbff;--text:#182238;--muted:#66758f;--muted2:#8a97ad;
+  --line:rgba(255,255,255,.64);--line2:rgba(104,124,171,.20);
+  --glass:rgba(255,255,255,.40);--glass-strong:rgba(255,255,255,.57);
+  --soft:rgba(255,255,255,.32);--soft2:rgba(255,255,255,.47);
+  --sidebar-bg:rgba(246,250,255,.52);--drawer-bg:rgba(248,251,255,.66);
+  --accent:#6f7cf6;--accent2:#b65ce8;--accent-soft:rgba(103,120,244,.12);
+  --danger:#e55f76;
+  --shadow:0 22px 56px rgba(79,96,138,.13),inset 0 1px 0 rgba(255,255,255,.72);
+  --shadow-soft:0 10px 30px rgba(82,101,145,.095),inset 0 1px 0 rgba(255,255,255,.65);
+  --option-bg:#f7faff;--option-text:#182238;
+}
+
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;scrollbar-gutter:stable}
 html,body,.sidebar,.drawer{-webkit-overflow-scrolling:touch}
@@ -3784,6 +3799,278 @@ html[data-theme="light"] .context-head-icon{
   border-color:rgba(31,48,78,.095)!important;
 }
 
+
+/* ===================== V18.8 · Liquid Glass Theme ===================== */
+html[data-theme="liquid"] body{
+  color:var(--text);
+  background:
+    radial-gradient(36rem 28rem at 8% 7%,rgba(70,130,255,.26),transparent 62%),
+    radial-gradient(34rem 27rem at 86% 8%,rgba(255,91,164,.20),transparent 64%),
+    radial-gradient(32rem 27rem at 86% 78%,rgba(64,212,151,.17),transparent 64%),
+    radial-gradient(28rem 24rem at 12% 86%,rgba(118,99,255,.13),transparent 65%),
+    linear-gradient(135deg,#edf4ff 0%,#f9fbff 48%,#eef9f6 100%)!important;
+}
+html[data-theme="liquid"] body::before{
+  opacity:.92;
+  background:
+    radial-gradient(18rem 8rem at 14% 16%,rgba(255,255,255,.55),transparent 70%),
+    radial-gradient(18rem 9rem at 76% 13%,rgba(255,255,255,.36),transparent 72%),
+    linear-gradient(rgba(255,255,255,.095) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.085) 1px,transparent 1px)!important;
+  background-size:auto,auto,56px 56px,56px 56px!important;
+  mask-image:linear-gradient(to bottom,rgba(0,0,0,.62),transparent 78%)!important;
+}
+
+html[data-theme="liquid"] .sidebar{
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.62),rgba(241,247,255,.43))!important;
+  border-right:1px solid rgba(255,255,255,.74)!important;
+  box-shadow:
+    16px 0 44px rgba(77,96,139,.09),
+    inset -1px 0 0 rgba(130,151,194,.06)!important;
+  backdrop-filter:blur(25px) saturate(168%)!important;
+  -webkit-backdrop-filter:blur(25px) saturate(168%)!important;
+}
+
+html[data-theme="liquid"] .glass{
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.54),rgba(255,255,255,.29))!important;
+  border-color:rgba(255,255,255,.76)!important;
+  box-shadow:
+    0 22px 58px rgba(75,93,137,.11),
+    inset 0 1px 0 rgba(255,255,255,.86),
+    inset 0 -1px 0 rgba(112,132,180,.055)!important;
+  backdrop-filter:blur(18px) saturate(170%)!important;
+  -webkit-backdrop-filter:blur(18px) saturate(170%)!important;
+}
+html[data-theme="liquid"] .glass-strong{
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.67),rgba(255,255,255,.42))!important;
+  border-color:rgba(255,255,255,.84)!important;
+  box-shadow:
+    0 14px 34px rgba(76,94,137,.09),
+    inset 0 1px 0 rgba(255,255,255,.93)!important;
+  backdrop-filter:blur(21px) saturate(175%)!important;
+  -webkit-backdrop-filter:blur(21px) saturate(175%)!important;
+}
+
+/* Cards use optical gradients instead of per-card backdrop blur for smooth scrolling. */
+html[data-theme="liquid"] .card.glass{
+  background:
+    radial-gradient(140px 88px at 0% 0%,rgba(255,255,255,.62),transparent 68%),
+    linear-gradient(145deg,rgba(255,255,255,.56),rgba(246,249,255,.35))!important;
+  border:1px solid rgba(255,255,255,.76)!important;
+  box-shadow:
+    0 8px 22px rgba(76,94,137,.075),
+    inset 0 1px 0 rgba(255,255,255,.92),
+    inset 0 -1px 0 rgba(93,113,160,.045)!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+html[data-theme="liquid"] .card:hover{
+  border-color:rgba(255,255,255,.96)!important;
+  background:
+    radial-gradient(190px 105px at var(--mx,22%) var(--my,28%),rgba(255,255,255,.84),rgba(135,151,255,.13) 38%,transparent 70%),
+    linear-gradient(145deg,rgba(255,255,255,.72),rgba(244,248,255,.43))!important;
+  box-shadow:
+    0 15px 34px rgba(75,93,137,.13),
+    0 0 0 1px rgba(255,255,255,.60) inset!important;
+}
+html[data-theme="liquid"] .card::before{
+  background:
+    radial-gradient(
+      220px 120px at var(--mx,22%) var(--my,28%),
+      rgba(116,135,255,.12),
+      rgba(164,92,246,.055) 42%,
+      transparent 72%
+    )!important;
+}
+html[data-theme="liquid"] .card:hover .site-name{color:#17233b!important}
+html[data-theme="liquid"] .card:hover .site-domain{color:#697a96!important}
+
+html[data-theme="liquid"] .site-icon,
+html[data-theme="liquid"] .custom-mini-icon,
+html[data-theme="liquid"] .context-site-icon{
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.78),rgba(255,255,255,.38))!important;
+  border-color:rgba(255,255,255,.86)!important;
+  box-shadow:
+    0 6px 16px rgba(76,94,137,.08),
+    inset 0 1px 0 rgba(255,255,255,.96),
+    inset 0 -1px 0 rgba(84,105,153,.05)!important;
+}
+
+html[data-theme="liquid"] .hero{
+  background:
+    radial-gradient(300px 210px at 93% 10%,rgba(96,119,255,.14),transparent 68%),
+    radial-gradient(260px 190px at 7% 100%,rgba(65,211,155,.10),transparent 70%),
+    linear-gradient(145deg,rgba(255,255,255,.52),rgba(255,255,255,.27))!important;
+}
+html[data-theme="liquid"] .hero::before{
+  background:
+    radial-gradient(circle,rgba(91,120,255,.20),rgba(178,91,235,.075) 44%,transparent 70%)!important;
+  filter:blur(12px)!important;
+}
+html[data-theme="liquid"] .hero::after{
+  background:radial-gradient(circle,rgba(70,211,158,.12),transparent 69%)!important;
+}
+
+html[data-theme="liquid"] .search-row,
+html[data-theme="liquid"] .field input,
+html[data-theme="liquid"] .field select,
+html[data-theme="liquid"] .compact-search,
+html[data-theme="liquid"] .login-form input{
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.58),rgba(255,255,255,.32))!important;
+  border-color:rgba(255,255,255,.76)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.88),
+    0 5px 14px rgba(76,94,137,.045)!important;
+}
+html[data-theme="liquid"] .search-row:focus-within,
+html[data-theme="liquid"] .field input:focus,
+html[data-theme="liquid"] .field select:focus{
+  border-color:rgba(113,128,238,.36)!important;
+  box-shadow:
+    0 0 0 3px rgba(116,135,255,.08),
+    inset 0 1px 0 rgba(255,255,255,.92)!important;
+}
+
+html[data-theme="liquid"] .tool-cluster,
+html[data-theme="liquid"] .compact-bar{
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.61),rgba(255,255,255,.36))!important;
+  border-color:rgba(255,255,255,.80)!important;
+  box-shadow:
+    0 10px 28px rgba(73,91,134,.09),
+    inset 0 1px 0 rgba(255,255,255,.90)!important;
+  backdrop-filter:blur(22px) saturate(175%)!important;
+  -webkit-backdrop-filter:blur(22px) saturate(175%)!important;
+}
+html[data-theme="liquid"] .tool-btn:hover,
+html[data-theme="liquid"] .compact-action:hover{
+  background:rgba(255,255,255,.54)!important;
+  color:#25314c!important;
+}
+
+html[data-theme="liquid"] .hero-datetime{
+  background:
+    radial-gradient(230px 150px at 100% 0%,rgba(118,130,255,.13),transparent 70%),
+    linear-gradient(145deg,rgba(255,255,255,.58),rgba(255,255,255,.30))!important;
+  border-color:rgba(255,255,255,.80)!important;
+  box-shadow:
+    0 13px 33px rgba(76,94,137,.085),
+    inset 0 1px 0 rgba(255,255,255,.90)!important;
+  backdrop-filter:blur(18px) saturate(165%)!important;
+  -webkit-backdrop-filter:blur(18px) saturate(165%)!important;
+}
+html[data-theme="liquid"] .datetime-clock{
+  border-color:rgba(102,120,160,.09)!important;
+}
+html[data-theme="liquid"] .calendar-day{color:#61718d!important}
+html[data-theme="liquid"] .calendar-day:hover{
+  color:#26324b!important;
+  background:rgba(255,255,255,.52)!important;
+}
+html[data-theme="liquid"] .calendar-day.today{
+  color:#fff!important;
+  background:linear-gradient(135deg,#6e82ff,#ad5de6)!important;
+  box-shadow:
+    0 5px 15px rgba(111,105,231,.22),
+    inset 0 1px 0 rgba(255,255,255,.30)!important;
+}
+
+html[data-theme="liquid"] .nav-btn:hover{
+  background:rgba(255,255,255,.36)!important;
+  border-color:rgba(255,255,255,.68)!important;
+}
+html[data-theme="liquid"] .nav-btn.active,
+html[data-theme="liquid"] .nav-btn.scroll-active{
+  background:
+    linear-gradient(100deg,rgba(121,133,255,.17),rgba(188,92,230,.09)),
+    rgba(255,255,255,.38)!important;
+  border-color:rgba(255,255,255,.78)!important;
+  box-shadow:
+    0 7px 18px rgba(86,99,164,.065),
+    inset 0 1px 0 rgba(255,255,255,.78)!important;
+}
+html[data-theme="liquid"] .nav-icon,
+html[data-theme="liquid"] .nav-count,
+html[data-theme="liquid"] .section-badge,
+html[data-theme="liquid"] .pill,
+html[data-theme="liquid"] .eyebrow{
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.56),rgba(255,255,255,.30))!important;
+  border-color:rgba(255,255,255,.72)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.86)!important;
+}
+
+html[data-theme="liquid"] .drawer,
+html[data-theme="liquid"] .drawer-head,
+html[data-theme="liquid"] .category-context,
+html[data-theme="liquid"] .site-editor-panel,
+html[data-theme="liquid"] .command-panel,
+html[data-theme="liquid"] .login-card{
+  background:
+    linear-gradient(145deg,rgba(251,253,255,.74),rgba(241,247,255,.58))!important;
+  border-color:rgba(255,255,255,.82)!important;
+  box-shadow:
+    0 24px 70px rgba(73,91,134,.14),
+    inset 0 1px 0 rgba(255,255,255,.92)!important;
+  backdrop-filter:blur(27px) saturate(170%)!important;
+  -webkit-backdrop-filter:blur(27px) saturate(170%)!important;
+}
+html[data-theme="liquid"] .site-editor-backdrop,
+html[data-theme="liquid"] .command-backdrop,
+html[data-theme="liquid"] .login-gate,
+html[data-theme="liquid"] .backdrop{
+  background:rgba(82,97,132,.16)!important;
+  backdrop-filter:blur(8px) saturate(135%)!important;
+  -webkit-backdrop-filter:blur(8px) saturate(135%)!important;
+}
+
+html[data-theme="liquid"] .manager-overview-hero,
+html[data-theme="liquid"] .manager-site-row,
+html[data-theme="liquid"] .manager-data-card,
+html[data-theme="liquid"] .manager-backup-row,
+html[data-theme="liquid"] .manager-site-toolbar,
+html[data-theme="liquid"] .manager-batch-bar{
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.57),rgba(255,255,255,.32))!important;
+  border-color:rgba(255,255,255,.75)!important;
+  box-shadow:
+    0 7px 20px rgba(76,94,137,.055),
+    inset 0 1px 0 rgba(255,255,255,.84)!important;
+}
+
+html[data-theme="liquid"] .brand-copy b{color:#1d2941!important}
+html[data-theme="liquid"] .brand-copy small{color:#71809a!important}
+html[data-theme="liquid"] .brand-mark img,
+html[data-theme="liquid"] .login-brand img{
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  filter:none!important;
+}
+html[data-theme="liquid"] ::selection{
+  background:rgba(111,124,246,.22);
+  color:#182238;
+}
+html[data-theme="liquid"] ::-webkit-scrollbar-thumb{
+  background:linear-gradient(180deg,rgba(99,121,247,.42),rgba(183,88,228,.28))!important;
+}
+
+/* Gentle theme transition without touching card mouse-follow animation. */
+html.theme-switching body,
+html.theme-switching .sidebar,
+html.theme-switching .hero,
+html.theme-switching .tool-cluster,
+html.theme-switching .compact-bar,
+html.theme-switching .hero-datetime,
+html.theme-switching .drawer{
+  transition:background .24s ease,border-color .24s ease,box-shadow .24s ease,color .24s ease!important;
+}
+
 </style>
 
 <!-- V18.7 transparent favicon: clean logo only, no background / no dark halo -->
@@ -5282,14 +5569,34 @@ function syncNavActive(){
 }
 
 function applyTheme(){
-  const saved=localStorage.getItem(KEYS.theme);const theme=saved||((window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light");
-  document.documentElement.dataset.theme=theme;updateThemeButton()
+  const saved=localStorage.getItem(KEYS.theme);
+  const allowed=new Set(["dark","light","liquid"]);
+  const fallback=(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";
+  const theme=allowed.has(saved)?saved:fallback;
+  document.documentElement.dataset.theme=theme;
+  updateThemeButton();
 }
 function updateThemeButton(){
-  const dark=document.documentElement.dataset.theme==="dark";
-  $("#themeBtn").textContent=dark?"☀":"☾";
+  const theme=document.documentElement.dataset.theme||"dark";
+  const map={
+    dark:{icon:"☾",name:"深色",color:"#09111f"},
+    light:{icon:"☀",name:"浅色",color:"#eef3ff"},
+    liquid:{icon:"◐",name:"液态玻璃",color:"#eef4ff"}
+  };
+  const info=map[theme]||map.dark;
+  const main=$("#themeBtn"),compact=$("#compactThemeBtn");
+  if(main){
+    main.textContent=info.icon;
+    main.title=`当前：${info.name}主题 · 点击切换`;
+    main.setAttribute("aria-label",`当前${info.name}主题，点击切换`);
+  }
+  if(compact){
+    compact.textContent=info.icon;
+    compact.title=`当前：${info.name}主题 · 点击切换`;
+    compact.setAttribute("aria-label",`当前${info.name}主题，点击切换`);
+  }
   const meta=document.querySelector('meta[name="theme-color"]');
-  if(meta)meta.content=dark?"#09111f":"#eef3ff";
+  if(meta)meta.content=info.color;
 }
 
 
@@ -5783,7 +6090,7 @@ function applyBootstrapV17(payload,{cache=true}={}){
     state.recents=Array.isArray(settings.recents)?settings.recents:[];
     if(settings.usageStats&&typeof settings.usageStats==="object")STORE.set("fxnav_usage_stats_v157",JSON.stringify(settings.usageStats));
     if(settings.density==="compact"||settings.density==="comfortable")STORE.set(V157_DENSITY_KEY,settings.density);
-    if(settings.theme==="dark"||settings.theme==="light"){STORE.set(KEYS.theme,settings.theme);document.documentElement.dataset.theme=settings.theme}
+    if(["dark","light","liquid"].includes(settings.theme)){STORE.set(KEYS.theme,settings.theme);document.documentElement.dataset.theme=settings.theme}
     const grouped={};
     rows.slice().sort((a,b)=>Number(a.sort_order)-Number(b.sort_order)).forEach(r=>{(grouped[r.category_name]??=[]).push(r.id)});state.siteOrder=grouped;
     sanitizeState();saveLocalState();applyTheme();if(typeof applyDensityV157==="function")applyDensityV157();buildNav();buildCategorySelect();buildMoveCategorySelect();buildMoveSiteOptions();render();renderCategoryManager();renderDeletedList();renderCustomList();refreshIconPreview();updateStorageUsage();
@@ -6032,7 +6339,24 @@ document.addEventListener("keydown",e=>{
   if(e.key==="Escape"&&!document.activeElement.matches("#searchInput,#compactSearchInput")){closeDrawer();$("#sidebar").classList.remove("show")}
 });
 
-function toggleThemeV153(){const next=document.documentElement.dataset.theme==="dark"?"light":"dark";document.documentElement.dataset.theme=next;localStorage.setItem(KEYS.theme,next);updateThemeButton();syncCompactControls()}
+function toggleThemeV153(){
+  const current=document.documentElement.dataset.theme||"dark";
+  const order=["dark","light","liquid"];
+  const next=order[(Math.max(0,order.indexOf(current))+1)%order.length];
+  document.documentElement.classList.add("theme-switching");
+  document.documentElement.dataset.theme=next;
+  localStorage.setItem(KEYS.theme,next);
+  updateThemeButton();
+  syncCompactControls();
+  const names={dark:"深色主题",light:"浅色主题",liquid:"液态玻璃主题"};
+  toast(`已切换${names[next]}`);
+  clearTimeout(toggleThemeV153._timer);
+  toggleThemeV153._timer=setTimeout(()=>document.documentElement.classList.remove("theme-switching"),280);
+  if(typeof AUTH_V161!=="undefined"&&AUTH_V161?.authenticated){
+    clearTimeout(toggleThemeV153._cloudTimer);
+    toggleThemeV153._cloudTimer=setTimeout(()=>save(),120);
+  }
+}
 $("#themeBtn").onclick=toggleThemeV153;
 $("#compactThemeBtn").onclick=toggleThemeV153;
 $("#mobileMenuBtn").onclick=()=>$("#sidebar").classList.toggle("show");
@@ -6042,7 +6366,7 @@ $("#closeDrawer").onclick=closeDrawer;
 $("#backdrop").onclick=closeDrawer;
 $("#sortModeBtn").onclick=toggleSortMode;
 $("#compactSortBtn").onclick=toggleSortMode;
-/* V18.7：Hero 右侧已改为日历 + 时钟。 */
+/* V18.8：Hero 右侧已改为日历 + 时钟。 */
 $("#addCategoryBtn").onclick=addCustomCategory;
 $("#resetCategoryOrderBtn").onclick=resetCategoryOrder;
 $("#resetSiteOrderBtn").onclick=resetSiteOrder;
@@ -6098,8 +6422,8 @@ $("#addForm").addEventListener("submit",e=>{
   }catch(err){alert(err?.message||"添加失败")}
 });
 $("#exportBtn").onclick=()=>{
-  const payload={version:"18.3",favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides,iconOverrides:state.iconOverrides,hiddenSites:[...state.hiddenSites],siteEdits:state.siteEdits,customCategories:state.customCategories,categoryOrder:state.categoryOrder,categoryIconOverrides:state.categoryIconOverrides,siteOrder:state.siteOrder,categoryTitleOverrides:{...(state.categoryTitleOverrides||{})},duplicateIgnoreKeys:[...(state.duplicateIgnoreKeys||new Set())],usageStats:getUsageStatsV157(),density:STORE.get(V157_DENSITY_KEY)||"comfortable",theme:document.documentElement.dataset.theme||"dark",cloudRevision:V17.revision};
-  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);const ds=new Date().toISOString().slice(0,10).replaceAll("-","");a.download=`private-nav-v18.3-${ds}.json`;a.click();URL.revokeObjectURL(a.href);
+  const payload={version:"18.8",favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides,iconOverrides:state.iconOverrides,hiddenSites:[...state.hiddenSites],siteEdits:state.siteEdits,customCategories:state.customCategories,categoryOrder:state.categoryOrder,categoryIconOverrides:state.categoryIconOverrides,siteOrder:state.siteOrder,categoryTitleOverrides:{...(state.categoryTitleOverrides||{})},duplicateIgnoreKeys:[...(state.duplicateIgnoreKeys||new Set())],usageStats:getUsageStatsV157(),density:STORE.get(V157_DENSITY_KEY)||"comfortable",theme:document.documentElement.dataset.theme||"dark",cloudRevision:V17.revision};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);const ds=new Date().toISOString().slice(0,10).replaceAll("-","");a.download=`private-nav-v18.8-${ds}.json`;a.click();URL.revokeObjectURL(a.href);
 };
 $("#importBtn").onclick=()=>$("#importFile").click();
 $("#importFile").addEventListener("change",async e=>{
@@ -6109,10 +6433,10 @@ $("#importFile").addEventListener("change",async e=>{
     const d=JSON.parse(await file.text());if(!d||typeof d!=="object")throw new Error("配置格式无效");
     if(!confirm("导入配置会覆盖当前浏览器里的网站修改、分类、排序、收藏、自定义图标和删除状态。继续？"))return;
     const snapshot={custom:cloneJSON(state.custom),recents:[...state.recents],favorites:new Set(state.favorites),categoryOverrides:cloneJSON(state.categoryOverrides),iconOverrides:cloneJSON(state.iconOverrides),hiddenSites:new Set(state.hiddenSites),siteEdits:cloneJSON(state.siteEdits),customCategories:cloneJSON(state.customCategories),categoryOrder:[...state.categoryOrder],categoryIconOverrides:cloneJSON(state.categoryIconOverrides),siteOrder:cloneJSON(state.siteOrder),categoryTitleOverrides:cloneJSON(state.categoryTitleOverrides||{}),duplicateIgnoreKeys:new Set(state.duplicateIgnoreKeys||[])};
-    state.custom=Array.isArray(d.custom)?d.custom:[];state.recents=Array.isArray(d.recents)?d.recents:[];state.favorites=new Set(Array.isArray(d.favorites)?d.favorites:[]);state.categoryOverrides=(d.categoryOverrides&&typeof d.categoryOverrides==="object"&&!Array.isArray(d.categoryOverrides))?d.categoryOverrides:{};state.iconOverrides=(d.iconOverrides&&typeof d.iconOverrides==="object"&&!Array.isArray(d.iconOverrides))?d.iconOverrides:{};state.hiddenSites=new Set(Array.isArray(d.hiddenSites)?d.hiddenSites:[]);state.siteEdits=(d.siteEdits&&typeof d.siteEdits==="object"&&!Array.isArray(d.siteEdits))?d.siteEdits:{};state.customCategories=Array.isArray(d.customCategories)?d.customCategories:[];state.categoryOrder=Array.isArray(d.categoryOrder)?d.categoryOrder:[];state.categoryIconOverrides=(d.categoryIconOverrides&&typeof d.categoryIconOverrides==="object"&&!Array.isArray(d.categoryIconOverrides))?d.categoryIconOverrides:{};state.siteOrder=(d.siteOrder&&typeof d.siteOrder==="object"&&!Array.isArray(d.siteOrder))?d.siteOrder:{};state.categoryTitleOverrides=(d.categoryTitleOverrides&&typeof d.categoryTitleOverrides==="object"&&!Array.isArray(d.categoryTitleOverrides))?d.categoryTitleOverrides:{};state.duplicateIgnoreKeys=new Set(Array.isArray(d.duplicateIgnoreKeys)?d.duplicateIgnoreKeys:[]);if(d.usageStats&&typeof d.usageStats==="object"&&!Array.isArray(d.usageStats))STORE.set("fxnav_usage_stats_v157",JSON.stringify(d.usageStats));if(d.density==="compact"||d.density==="comfortable")STORE.set(V157_DENSITY_KEY,d.density);applyDensityV157();
+    state.custom=Array.isArray(d.custom)?d.custom:[];state.recents=Array.isArray(d.recents)?d.recents:[];state.favorites=new Set(Array.isArray(d.favorites)?d.favorites:[]);state.categoryOverrides=(d.categoryOverrides&&typeof d.categoryOverrides==="object"&&!Array.isArray(d.categoryOverrides))?d.categoryOverrides:{};state.iconOverrides=(d.iconOverrides&&typeof d.iconOverrides==="object"&&!Array.isArray(d.iconOverrides))?d.iconOverrides:{};state.hiddenSites=new Set(Array.isArray(d.hiddenSites)?d.hiddenSites:[]);state.siteEdits=(d.siteEdits&&typeof d.siteEdits==="object"&&!Array.isArray(d.siteEdits))?d.siteEdits:{};state.customCategories=Array.isArray(d.customCategories)?d.customCategories:[];state.categoryOrder=Array.isArray(d.categoryOrder)?d.categoryOrder:[];state.categoryIconOverrides=(d.categoryIconOverrides&&typeof d.categoryIconOverrides==="object"&&!Array.isArray(d.categoryIconOverrides))?d.categoryIconOverrides:{};state.siteOrder=(d.siteOrder&&typeof d.siteOrder==="object"&&!Array.isArray(d.siteOrder))?d.siteOrder:{};state.categoryTitleOverrides=(d.categoryTitleOverrides&&typeof d.categoryTitleOverrides==="object"&&!Array.isArray(d.categoryTitleOverrides))?d.categoryTitleOverrides:{};state.duplicateIgnoreKeys=new Set(Array.isArray(d.duplicateIgnoreKeys)?d.duplicateIgnoreKeys:[]);if(d.usageStats&&typeof d.usageStats==="object"&&!Array.isArray(d.usageStats))STORE.set("fxnav_usage_stats_v157",JSON.stringify(d.usageStats));if(d.density==="compact"||d.density==="comfortable")STORE.set(V157_DENSITY_KEY,d.density);if(["dark","light","liquid"].includes(d.theme)){STORE.set(KEYS.theme,d.theme);document.documentElement.dataset.theme=d.theme;applyTheme()}applyDensityV157();
     sanitizeState();
     if(!save()){Object.assign(state,{custom:snapshot.custom,recents:snapshot.recents,favorites:snapshot.favorites,categoryOverrides:snapshot.categoryOverrides,iconOverrides:snapshot.iconOverrides,hiddenSites:snapshot.hiddenSites,siteEdits:snapshot.siteEdits,customCategories:snapshot.customCategories,categoryOrder:snapshot.categoryOrder,categoryIconOverrides:snapshot.categoryIconOverrides,siteOrder:snapshot.siteOrder,categoryTitleOverrides:snapshot.categoryTitleOverrides,duplicateIgnoreKeys:snapshot.duplicateIgnoreKeys});throw new Error("导入数据超过浏览器本地存储容量，已恢复原配置")}
-    refreshCategoryUI();renderDeletedList();updateStorageUsage();toast("V18.7 配置已导入");
+    refreshCategoryUI();renderDeletedList();updateStorageUsage();toast("V18.8 配置已导入");
   }catch(err){alert(err?.message||"配置文件无效")}finally{e.target.value=""}
 });
 
@@ -6819,7 +7143,7 @@ window.__fxCloudSchedulePush=scheduleDataSyncV17;
     if(wasOpen)unlockOverlay();
   };
 
-  // V18.7：悬浮菜单关闭统一由主 RAF scroll handler 处理。
+  // V18.8：悬浮菜单关闭统一由主 RAF scroll handler 处理。
 
   // iOS / 高刷新屏上减少第一次 overlay 出现时的布局跳动。
   requestAnimationFrame(()=>body.classList.add("motion-system-ready"));
