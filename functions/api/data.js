@@ -6,13 +6,21 @@ const BACKUP_KEEP=20,MAX_ICON_BYTES=1024*1024;
 function normalizeUrl(value){try{const u=new URL(String(value));if(!/^https?:$/.test(u.protocol))return "";u.hash="";u.hostname=u.hostname.toLowerCase();if(u.pathname!=="/")u.pathname=u.pathname.replace(/\/+$/,"");return u.href}catch{return ""}}
 function domainOf(value){try{return new URL(value).hostname.toLowerCase().replace(/^www\./,"")}catch{return ""}}
 function rootDomain(host){const clean=String(host||"").toLowerCase().replace(/^www\./,"");const p=clean.split(".").filter(Boolean);if(p.length<=2)return clean;const s=p.slice(-2).join("."),special=new Set(["com.cn","net.cn","org.cn","gov.cn","edu.cn","co.uk","com.hk","com.tw","com.au","co.jp","com.sg"]);return special.has(s)&&p.length>=3?p.slice(-3).join("."):p.slice(-2).join(".")}
+let __schemaReadyPromiseV186=null;
 async function ensureSchema(env){
+  if(!env?.DB)throw new Error("Missing D1 binding: DB");
+  if(!__schemaReadyPromiseV186){
+    __schemaReadyPromiseV186=(async()=>{
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS categories_v17(name TEXT PRIMARY KEY,icon TEXT NOT NULL DEFAULT '•',sort_order INTEGER NOT NULL DEFAULT 0,is_builtin INTEGER NOT NULL DEFAULT 0,updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`).run();
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS sites_v17(id TEXT PRIMARY KEY,name TEXT NOT NULL,url TEXT NOT NULL,normalized_url TEXT NOT NULL UNIQUE,domain TEXT NOT NULL,root_domain TEXT NOT NULL,full_title TEXT,category_name TEXT NOT NULL,sort_order INTEGER NOT NULL DEFAULT 0,is_favorite INTEGER NOT NULL DEFAULT 0,is_deleted INTEGER NOT NULL DEFAULT 0,is_custom INTEGER NOT NULL DEFAULT 0,icon_url TEXT,icon_key TEXT,visit_count INTEGER NOT NULL DEFAULT 0,last_visited_at TEXT,updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`).run();
   await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_sites_v17_category_sort ON sites_v17(category_name,sort_order)`).run();
   await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_sites_v17_root_domain ON sites_v17(root_domain)`).run();
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS settings_v17(owner TEXT NOT NULL,key TEXT NOT NULL,value TEXT NOT NULL,updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,PRIMARY KEY(owner,key))`).run();
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS backups_v17(id INTEGER PRIMARY KEY AUTOINCREMENT,owner TEXT NOT NULL,revision INTEGER NOT NULL,snapshot TEXT NOT NULL,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`).run();
+
+    })().catch(err=>{__schemaReadyPromiseV186=null;throw err});
+  }
+  return __schemaReadyPromiseV186;
 }
 async function getSetting(env,owner,key){const r=await env.DB.prepare(`SELECT value FROM settings_v17 WHERE owner=? AND key=?`).bind(owner,key).first();return r?.value??null}
 async function setSetting(env,owner,key,value){await env.DB.prepare(`INSERT INTO settings_v17(owner,key,value,updated_at) VALUES(?,?,?,CURRENT_TIMESTAMP) ON CONFLICT(owner,key) DO UPDATE SET value=excluded.value,updated_at=CURRENT_TIMESTAMP`).bind(owner,key,String(value)).run()}
@@ -93,7 +101,7 @@ async function restoreBackup(env,owner,id){
 function privateHost(host){
   const h=String(host||"").toLowerCase();
   if(!h||h==="localhost"||h.endsWith(".localhost")||h.endsWith(".local")||h.endsWith(".internal")||h.endsWith(".lan"))return true;
-  if(h==="::1"||h==="0:0:0:0:0:0:0:1")return true;
+  if(h==="::1"||h==="0:0:0:0:0:0:0:1"||h.startsWith("fc")||h.startsWith("fd")||h.startsWith("fe80:"))return true;
   const m=h.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
   if(m){
     const a=Number(m[1]),b=Number(m[2]);
@@ -127,8 +135,9 @@ async function refreshIcons(env,owner,ids){
     const site=await env.DB.prepare(`SELECT * FROM sites_v17 WHERE id=? LIMIT 1`).bind(id).first();
     if(!site){skipped++;continue}
     if(site.icon_key&&String(site.icon_key).startsWith("custom:")){skipped++;continue}
-    const root=site.root_domain||rootDomain(site.domain),key=`favicon:${root}`;
-    await env.KV.delete(key);
+    const hostKey=faviconCacheKeyV186(site),legacyKey=legacyFaviconKeyV186(site);
+    if(hostKey)await env.KV.delete(hostKey);
+    if(legacyKey)await env.KV.delete(legacyKey);
     await serveIcon(env,site);
     await env.DB.prepare(`UPDATE sites_v17 SET updated_at=CURRENT_TIMESTAMP WHERE id=?`).bind(id).run();
     refreshed++;
@@ -159,10 +168,60 @@ async function syncSnapshot(env,owner,body){const {cats,sites,dups}=validateSnap
 function kvIconResponse(value,metadata={}){const type=metadata?.contentType||"image/png";return new Response(value,{headers:{"Content-Type":type,"Cache-Control":"public, max-age=86400, stale-while-revalidate=604800","X-Content-Type-Options":"nosniff"}})}
 function fallbackSvg(name){const ch=String(name||"?").trim().charAt(0).toUpperCase()||"?";return `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#7187ff"/><stop offset="1" stop-color="#a45cf6"/></linearGradient></defs><rect width="128" height="128" rx="28" fill="url(#g)"/><text x="64" y="80" text-anchor="middle" font-family="Arial,sans-serif" font-size="64" font-weight="700" fill="white">${ch.replace(/[<>&]/g,"")}</text></svg>`}
 async function fetchCandidate(url){const ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),3500);try{const r=await fetch(url,{redirect:"follow",signal:ctl.signal,headers:{"User-Agent":"Mozilla/5.0"}});if(!r.ok)return null;const ct=(r.headers.get("content-type")||"").split(";")[0].trim();if(!ct.startsWith("image/"))return null;const buf=await r.arrayBuffer();if(buf.byteLength<350||buf.byteLength>MAX_ICON_BYTES)return null;return {buf,type:ct}}catch{return null}finally{clearTimeout(t)}}
+function faviconHost(site){return domainOf(site?.url)||String(site?.domain||"").toLowerCase().replace(/^www\./,"")}
+function faviconCacheKeyV186(site){const host=faviconHost(site);return host?`favicon:v2:${host}`:""}
+function legacyFaviconKeyV186(site){const root=site?.root_domain||rootDomain(site?.domain);return root?`favicon:${root}`:""}
 async function getKvIcon(env,key){if(!env.KV)return null;const got=await env.KV.getWithMetadata(key,{type:"arrayBuffer",cacheTtl:86400});if(!got?.value)return null;return {value:got.value,metadata:got.metadata||{}}}
-async function serveIcon(env,site){if(!env.KV)return new Response(fallbackSvg(site.name),{headers:{"Content-Type":"image/svg+xml; charset=utf-8","Cache-Control":"no-store"}});if(site.icon_key){const custom=await getKvIcon(env,site.icon_key);if(custom)return kvIconResponse(custom.value,custom.metadata)}const root=site.root_domain||rootDomain(site.domain),key=`favicon:${root}`,cached=await getKvIcon(env,key);if(cached)return kvIconResponse(cached.value,cached.metadata);const sources=[];if(site.icon_url&&/^https?:\/\//i.test(site.icon_url))sources.push(site.icon_url);sources.push(`https://www.google.com/s2/favicons?sz=256&domain_url=${encodeURIComponent(site.url)}`,`https://icon.horse/icon/${encodeURIComponent(site.domain)}`,`https://icons.duckduckgo.com/ip3/${encodeURIComponent(site.domain)}.ico`);for(const u of sources){const got=await fetchCandidate(u);if(!got)continue;await env.KV.put(key,got.buf,{expirationTtl:60*60*24*30,metadata:{contentType:got.type,kind:"favicon",source:u,domain:site.domain}});return kvIconResponse(got.buf,{contentType:got.type})}return new Response(fallbackSvg(site.name),{headers:{"Content-Type":"image/svg+xml; charset=utf-8","Cache-Control":"public, max-age=3600"}})}
+async function serveIcon(env,site){
+  if(!env.KV)return new Response(fallbackSvg(site.name),{headers:{"Content-Type":"image/svg+xml; charset=utf-8","Cache-Control":"no-store"}});
+  if(site.icon_key){
+    const custom=await getKvIcon(env,site.icon_key);
+    if(custom)return kvIconResponse(custom.value,custom.metadata);
+  }
 
-export async function onRequest(context){const {request,env}=context;try{await ensureSchema(env);const url=new URL(request.url),mode=String(url.searchParams.get("mode")||"");const owner=normalizeUsername(env.NAV_USERNAME||"admin");
+  const host=faviconHost(site),key=faviconCacheKeyV186(site);
+  if(key){
+    const cached=await getKvIcon(env,key);
+    if(cached)return kvIconResponse(cached.value,cached.metadata);
+  }
+
+  /* Backward compatibility only when hostname itself is the root domain.
+     Subdomains such as mail.google.com must not inherit google.com favicon cache. */
+  const root=site.root_domain||rootDomain(site.domain);
+  if(host&&root&&host===root){
+    const legacyKey=legacyFaviconKeyV186(site),legacy=legacyKey?await getKvIcon(env,legacyKey):null;
+    if(legacy){
+      if(key)await env.KV.put(key,legacy.value,{expirationTtl:60*60*24*30,metadata:{...(legacy.metadata||{}),domain:host,migrated:"v18.6"}});
+      return kvIconResponse(legacy.value,legacy.metadata);
+    }
+  }
+
+  const sources=[];
+  if(site.icon_url&&/^https?:\/\//i.test(site.icon_url)){
+    try{const u=new URL(site.icon_url);if(!privateHost(u.hostname))sources.push(u.href)}catch{}
+  }
+  sources.push(
+    `https://www.google.com/s2/favicons?sz=256&domain_url=${encodeURIComponent(site.url)}`,
+    `https://icon.horse/icon/${encodeURIComponent(host||site.domain)}`,
+    `https://icons.duckduckgo.com/ip3/${encodeURIComponent(host||site.domain)}.ico`
+  );
+
+  for(const u of sources){
+    const got=await fetchCandidate(u);if(!got)continue;
+    if(key)await env.KV.put(key,got.buf,{expirationTtl:60*60*24*30,metadata:{contentType:got.type,kind:"favicon",source:u,domain:host}});
+    return kvIconResponse(got.buf,{contentType:got.type});
+  }
+  return new Response(fallbackSvg(site.name),{headers:{"Content-Type":"image/svg+xml; charset=utf-8","Cache-Control":"public, max-age=3600"}});
+}
+
+export async function onRequest(context){const {request,env}=context;try{const url=new URL(request.url),mode=String(url.searchParams.get("mode")||"");
+  if(mode==="healthz"&&request.method==="GET"){
+    if(!env?.DB)return json({ok:false,db:false,kv:!!env?.KV,error:"Missing D1 binding: DB"},500);
+    await ensureSchema(env);
+    let revision=0;try{revision=await getRevision(env,normalizeUsername(env.NAV_USERNAME||"admin"))}catch{}
+    return json({ok:true,db:true,kv:!!env.KV,revision,apiVersion:"18.6"});
+  }
+  await ensureSchema(env);const owner=normalizeUsername(env.NAV_USERNAME||"admin");
   // Public read endpoints: no password required.
   if(mode==="bootstrap"&&request.method==="GET"){
     const seeded=await seedIfNeeded(env);let session=null;try{session=await verifySession(request,env)}catch{}
@@ -184,4 +243,4 @@ export async function onRequest(context){const {request,env}=context;try{await e
   if(mode==="upload-icon"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);if(!env.KV)return json({ok:false,error:"Missing KV binding: KV"},500);const id=String(url.searchParams.get("site")||""),site=await env.DB.prepare(`SELECT id,icon_key FROM sites_v17 WHERE id=? LIMIT 1`).bind(id).first();if(!site)return json({ok:false,error:"Site not found."},404);const type=(request.headers.get("content-type")||"").split(";")[0].trim().toLowerCase(),allowed=new Set(["image/png","image/jpeg","image/webp","image/gif","image/x-icon","image/vnd.microsoft.icon"]);if(!allowed.has(type))return json({ok:false,error:"Only PNG/JPG/WebP/GIF/ICO are allowed."},415);const buf=await request.arrayBuffer();if(!buf.byteLength||buf.byteLength>MAX_ICON_BYTES)return json({ok:false,error:"Icon must be 1MB or smaller."},413);const key=`custom:${auth.owner}:${id}:${crypto.randomUUID()}`;await env.KV.put(key,buf,{metadata:{contentType:type,kind:"custom"}});if(site.icon_key&&String(site.icon_key).startsWith("custom:"))await env.KV.delete(site.icon_key);await env.DB.prepare(`UPDATE sites_v17 SET icon_key=?,updated_at=CURRENT_TIMESTAMP WHERE id=?`).bind(key,id).run();const rev=await getRevision(env,auth.owner)+1;await setSetting(env,auth.owner,"revision",String(rev));return json({ok:true,revision:rev})}
   if(mode==="reset-icon"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);const id=String(url.searchParams.get("site")||""),site=await env.DB.prepare(`SELECT icon_key FROM sites_v17 WHERE id=? LIMIT 1`).bind(id).first();if(!site)return json({ok:false,error:"Site not found."},404);if(env.KV&&site.icon_key&&String(site.icon_key).startsWith("custom:"))await env.KV.delete(site.icon_key);await env.DB.prepare(`UPDATE sites_v17 SET icon_key=NULL,updated_at=CURRENT_TIMESTAMP WHERE id=?`).bind(id).run();const rev=await getRevision(env,auth.owner)+1;await setSetting(env,auth.owner,"revision",String(rev));return json({ok:true,revision:rev})}
   return json({ok:false,error:"Not found."},404)
-}catch(e){return json({ok:false,error:"V18.1 API error: "+String(e?.message||e)},500)}}
+}catch(e){return json({ok:false,error:"V18.6 API error: "+String(e?.message||e)},500)}}
