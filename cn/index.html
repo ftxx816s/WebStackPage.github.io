@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>私人导航工具箱 · V18.11 Liquid Compact Glass</title>
+<title>私人导航工具箱 · V18.14 Final</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https: http:; connect-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -17,7 +17,7 @@
   --soft:rgba(255,255,255,.048);--soft2:rgba(255,255,255,.072);
   --sidebar-bg:rgba(8,15,28,.68);--drawer-bg:rgba(8,15,28,.84);
   --accent:#7487ff;--accent2:#a45cf6;--accent-soft:rgba(116,135,255,.15);
-  --danger:#ff7187;--shadow:0 22px 60px rgba(0,0,0,.28);--shadow-soft:0 10px 28px rgba(0,0,0,.13);
+  --danger:#ff7187;--good:#55d6a6;--muted-2:var(--muted2);--shadow:0 22px 60px rgba(0,0,0,.28);--shadow-soft:0 10px 28px rgba(0,0,0,.13);
   --option-bg:#121b2d;--option-text:#edf3ff;
 }
 html[data-theme="light"]{
@@ -4067,6 +4067,19 @@ html[data-theme="liquid"] .mini-calendar{
 }
 
 /* Small glass elements. */
+/* V18.13 · Color accent for the hero eyebrow. */
+.eyebrow-private-nav{font-weight:850;letter-spacing:.02em}
+html[data-theme="liquid"] .eyebrow-private-nav{
+  background:linear-gradient(90deg,#16b9f4 0%,#3b86ff 34%,#7069ff 66%,#b466ef 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent!important;
+  text-shadow:0 0 12px rgba(76,125,255,.10);
+}
+html[data-theme="light"] .eyebrow-private-nav{
+  background:linear-gradient(90deg,#168be8 0%,#466fff 54%,#8a5be8 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent!important;
+}
+html[data-theme="dark"] .eyebrow-private-nav{color:#9fb0ff}
+
 html[data-theme="liquid"] :is(.search-row,.nav-icon,.nav-count,.pill,.eyebrow,.section-badge,.site-icon){
   background:linear-gradient(145deg,rgba(255,255,255,.34),rgba(229,239,249,.15))!important;
   border-color:rgba(255,255,255,.54)!important;
@@ -4107,7 +4120,32 @@ html[data-theme="liquid"] #compactThemeBtn{
   background:rgba(255,255,255,.26)!important;border:1px solid rgba(255,255,255,.55)!important;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.82),0 3px 8px rgba(77,96,129,.07)!important;
 }
-html[data-theme="liquid"] .cloud-status{background:rgba(225,255,238,.45)!important;border-color:rgba(113,216,159,.30)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.70)!important}
+html[data-theme="liquid"] .cloud-status{
+  color:#176f4d!important;
+  background:linear-gradient(145deg,rgba(225,255,239,.82),rgba(199,248,222,.62))!important;
+  border-color:rgba(39,183,111,.46)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.94),0 4px 12px rgba(36,167,102,.10)!important;
+  text-shadow:none!important;
+}
+html[data-theme="liquid"] .cloud-status[data-state="synced"]{
+  color:#126c48!important;
+  border-color:rgba(31,179,104,.52)!important;
+  font-weight:820!important;
+}
+html[data-theme="liquid"] .cloud-status[data-state="synced"] i{
+  background:#16c875!important;
+  box-shadow:0 0 0 3px rgba(22,200,117,.16),0 0 10px rgba(22,200,117,.42)!important;
+}
+html[data-theme="light"] .cloud-status[data-state="synced"]{
+  color:#14704c!important;
+  background:rgba(224,250,236,.92)!important;
+  border-color:rgba(39,177,108,.34)!important;
+  font-weight:820!important;
+}
+html[data-theme="light"] .cloud-status[data-state="synced"] i{
+  background:#19bd72!important;
+  box-shadow:0 0 0 3px rgba(25,189,114,.13)!important;
+}
 
 
 /* V18.11 · Liquid compact floating bar
@@ -4267,6 +4305,16 @@ html.theme-switching .drawer{
 }
 
 
+
+/* ===================== V18.14 · Final stability polish ===================== */
+:root{color-scheme:dark}
+html[data-theme="light"],html[data-theme="liquid"]{color-scheme:light}
+button:disabled{cursor:not-allowed}
+@media (hover:none){.star{opacity:1}}
+@media (max-width:650px){
+  .btn,.tool-btn,.mini-btn,.cat-mini,.context-tool,.restore-site-btn{min-height:40px}
+  .to-top{right:14px;bottom:14px}
+}
 </style>
 
 <!-- V18.7 transparent favicon: clean logo only, no background / no dark halo -->
@@ -4274,7 +4322,313 @@ html.theme-switching .drawer{
 <link rel="shortcut icon" type="image/png" href="data:image/png;base64,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">
 <meta name="theme-color" content="#081426">
 
-<meta name="x-build" content="V18.7-logo-clean-20260908">
+<meta name="x-build" content="V18.14-final-20260910">
+
+<style id="v1812-theme-aware-manager">
+/* ===================== V18.12 · Theme-Aware Manager =====================
+   管理中心严格跟随当前主题：
+   dark  = 深色海军蓝管理面板
+   light = 浅色白蓝管理面板
+   liquid= 透明液态玻璃管理面板
+   只改管理相关视觉，不改 D1/KV/管理逻辑。
+*/
+:root{
+  --mgr-bg:linear-gradient(180deg,rgba(7,14,27,.995),rgba(8,15,29,.985));
+  --mgr-head:rgba(8,15,28,.985);
+  --mgr-surface:linear-gradient(180deg,rgba(15,24,47,.86),rgba(10,18,38,.94));
+  --mgr-surface-soft:rgba(255,255,255,.026);
+  --mgr-control:rgba(255,255,255,.042);
+  --mgr-hover:rgba(116,135,255,.075);
+  --mgr-line:rgba(116,135,255,.15);
+  --mgr-line-strong:rgba(116,135,255,.28);
+  --mgr-text:#f4f7ff;
+  --mgr-muted:#9ba8bf;
+  --mgr-muted2:#74829a;
+  --mgr-tab-active:#eef2ff;
+  --mgr-tab-bg:linear-gradient(135deg,rgba(116,135,255,.20),rgba(164,92,246,.13));
+  --mgr-shadow:-28px 0 72px rgba(0,0,0,.30);
+  --mgr-panel-shadow:0 12px 30px rgba(5,8,18,.17),inset 0 1px 0 rgba(255,255,255,.035);
+  --mgr-input-placeholder:#697791;
+}
+html[data-theme="light"]{
+  --mgr-bg:linear-gradient(180deg,rgba(248,251,255,.995),rgba(242,247,253,.985));
+  --mgr-head:rgba(249,252,255,.965);
+  --mgr-surface:linear-gradient(180deg,rgba(255,255,255,.91),rgba(247,250,255,.82));
+  --mgr-surface-soft:rgba(255,255,255,.76);
+  --mgr-control:rgba(255,255,255,.96);
+  --mgr-hover:rgba(87,105,216,.075);
+  --mgr-line:rgba(43,61,92,.105);
+  --mgr-line-strong:rgba(91,108,223,.24);
+  --mgr-text:#182238;
+  --mgr-muted:#687892;
+  --mgr-muted2:#8a97aa;
+  --mgr-tab-active:#33406c;
+  --mgr-tab-bg:linear-gradient(135deg,rgba(103,121,244,.13),rgba(171,91,235,.075));
+  --mgr-shadow:-24px 0 64px rgba(74,91,123,.14);
+  --mgr-panel-shadow:0 10px 26px rgba(75,94,128,.075),inset 0 1px 0 rgba(255,255,255,.96);
+  --mgr-input-placeholder:#9aa5b6;
+}
+html[data-theme="liquid"]{
+  --mgr-bg:linear-gradient(145deg,rgba(247,252,255,.48),rgba(218,231,245,.29));
+  --mgr-head:linear-gradient(145deg,rgba(253,255,255,.57),rgba(224,236,248,.35));
+  --mgr-surface:linear-gradient(145deg,rgba(255,255,255,.38),rgba(224,237,249,.19));
+  --mgr-surface-soft:linear-gradient(145deg,rgba(255,255,255,.31),rgba(223,235,247,.16));
+  --mgr-control:rgba(250,253,255,.57);
+  --mgr-hover:rgba(102,125,239,.105);
+  --mgr-line:rgba(255,255,255,.62);
+  --mgr-line-strong:rgba(102,124,170,.22);
+  --mgr-text:#18304e;
+  --mgr-muted:#607896;
+  --mgr-muted2:#8292a8;
+  --mgr-tab-active:#304a79;
+  --mgr-tab-bg:linear-gradient(120deg,rgba(62,183,255,.17),rgba(111,111,246,.16) 52%,rgba(193,92,225,.13));
+  --mgr-shadow:-22px 0 62px rgba(67,88,120,.12),inset 1px 0 0 rgba(255,255,255,.68);
+  --mgr-panel-shadow:0 12px 30px rgba(74,96,129,.07),inset 0 1px 0 rgba(255,255,255,.76);
+  --mgr-input-placeholder:#8b9bb0;
+}
+
+/* Drawer shell */
+.drawer{
+  color:var(--mgr-text)!important;
+  background:var(--mgr-bg)!important;
+  border-left:1px solid var(--mgr-line)!important;
+  box-shadow:var(--mgr-shadow)!important;
+}
+.drawer-head{
+  color:var(--mgr-text)!important;
+  background:var(--mgr-head)!important;
+  border-bottom:1px solid var(--mgr-line)!important;
+}
+.drawer-title h2,
+.drawer .manager-panel-title h3,
+.drawer .custom-title-row h3,
+.drawer .custom-grow b,
+.drawer .category-manager-copy b,
+.drawer .manager-site-copy b,
+.drawer .manager-data-card b,
+.drawer .manager-backup-row b{color:var(--mgr-text)!important}
+.drawer-title p,
+.drawer .manager-panel-title p,
+.drawer .manager-quick small,
+.drawer .custom-grow small,
+.drawer .category-manager-copy small,
+.drawer .manager-site-copy small,
+.drawer .manager-data-card p,
+.drawer .manager-backup-row small,
+.drawer .admin-note,
+.drawer .manager-dup-intro{color:var(--mgr-muted)!important}
+
+/* Tabs */
+.manager-tab{color:var(--mgr-muted)!important}
+.manager-tab:hover{
+  color:var(--mgr-text)!important;
+  background:var(--mgr-hover)!important;
+  border-color:var(--mgr-line)!important;
+}
+.manager-tab.active{
+  color:var(--mgr-tab-active)!important;
+  background:var(--mgr-tab-bg)!important;
+  border-color:var(--mgr-line-strong)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.38),0 5px 14px rgba(75,91,142,.07)!important;
+}
+.manager-tab-badge{
+  color:var(--mgr-muted)!important;
+  background:var(--mgr-surface-soft)!important;
+  border:1px solid var(--mgr-line)!important;
+}
+.manager-tab.active .manager-tab-badge{
+  color:var(--mgr-tab-active)!important;
+  background:rgba(116,135,255,.12)!important;
+}
+
+/* All manager surfaces use current theme material */
+.drawer :is(
+  .admin-note,.admin-surface,#addForm,#movePreview,#customList,#deletedList,
+  .category-manager-list,.duplicate-panel,.move-preview,.manager-overview-hero,
+  .manager-quick,.manager-site-row,.manager-data-card,.manager-backup-row,
+  .manager-dup-intro,.metric-card,.duplicate-group,.dup-item,.custom-item,
+  .category-manager-item,.deleted-item
+){
+  color:var(--mgr-text)!important;
+  background:var(--mgr-surface)!important;
+  border-color:var(--mgr-line)!important;
+  box-shadow:var(--mgr-panel-shadow)!important;
+}
+.drawer :is(.duplicate-group-head,.duplicate-panel .admin-note){
+  color:var(--mgr-text)!important;
+  background:var(--mgr-surface-soft)!important;
+  border-color:var(--mgr-line)!important;
+}
+.manager-site-toolbar,
+.manager-batch-bar{
+  color:var(--mgr-text)!important;
+  background:var(--mgr-head)!important;
+  border-color:var(--mgr-line)!important;
+  box-shadow:var(--mgr-panel-shadow)!important;
+}
+
+/* Inputs / selects / editor controls */
+.drawer :is(.field input,.field select,.field textarea,.manager-site-toolbar input,.manager-site-toolbar select){
+  color:var(--mgr-text)!important;
+  background:var(--mgr-control)!important;
+  border-color:var(--mgr-line)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.34)!important;
+}
+.drawer :is(input,textarea)::placeholder{color:var(--mgr-input-placeholder)!important;opacity:1}
+.drawer .field label{color:var(--mgr-text)!important}
+.drawer :is(.field input,.field select,.field textarea,.manager-site-toolbar input,.manager-site-toolbar select):focus{
+  border-color:rgba(110,130,244,.45)!important;
+  box-shadow:0 0 0 3px rgba(103,121,244,.095),inset 0 1px 0 rgba(255,255,255,.42)!important;
+}
+.drawer select option{background:var(--option-bg)!important;color:var(--option-text)!important}
+
+/* Secondary actions */
+.drawer :is(.mini-btn,.cat-mini,.btn:not(.primary):not(.danger)){
+  color:var(--mgr-text)!important;
+  background:var(--mgr-surface-soft)!important;
+  border-color:var(--mgr-line)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.20)!important;
+}
+.drawer :is(.mini-btn,.cat-mini,.btn:not(.primary):not(.danger)):hover{
+  color:var(--mgr-text)!important;
+  background:var(--mgr-hover)!important;
+  border-color:var(--mgr-line-strong)!important;
+}
+.drawer .btn.primary{
+  color:#fff!important;
+  border-color:rgba(111,128,245,.30)!important;
+  background:linear-gradient(135deg,#7184ff,#9c63ef 58%,#c25ddd)!important;
+  box-shadow:0 8px 18px rgba(101,100,222,.16),inset 0 1px 0 rgba(255,255,255,.30)!important;
+}
+.drawer :is(.mini-btn.danger,.cat-mini.danger,.btn.danger){color:#e7657c!important}
+.manager-site-kind,.manager-health-chip,.custom-count,.dup-chip{
+  border-color:var(--mgr-line)!important;
+  background:var(--mgr-surface-soft)!important;
+}
+.manager-batch-count,.manager-category-title-btn,.manager-locate-btn{color:var(--mgr-tab-active)!important}
+.category-manager-copy .category-display-sub{color:var(--mgr-muted2)!important}
+.category-manager-copy .category-display-sub.is-custom-title{color:#7284b7!important}
+
+/* Light manager: clean white-blue interface */
+html[data-theme="light"] .drawer{
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+html[data-theme="light"] #drawer .drawer-head{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+html[data-theme="light"] .drawer .site-icon,
+html[data-theme="light"] .drawer .custom-mini-icon{
+  background:rgba(255,255,255,.92)!important;
+  border-color:rgba(44,61,91,.10)!important;
+  box-shadow:inset 0 1px 0 #fff,0 3px 9px rgba(69,88,121,.07)!important;
+}
+
+/* Liquid manager: actual transparent glass, never dark navy. */
+html[data-theme="liquid"] #drawer{
+  backdrop-filter:blur(20px) saturate(134%)!important;
+  -webkit-backdrop-filter:blur(20px) saturate(134%)!important;
+}
+html[data-theme="liquid"] #drawer .drawer-head{
+  backdrop-filter:blur(16px) saturate(132%)!important;
+  -webkit-backdrop-filter:blur(16px) saturate(132%)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.74)!important;
+}
+/* Blur only larger glass surfaces. Repeated list rows stay translucent without per-row blur,
+   which keeps long manager lists smooth while preserving the liquid material. */
+html[data-theme="liquid"] #drawer :is(
+  .admin-note,.admin-surface,#addForm,#movePreview,#customList,#deletedList,
+  .category-manager-list,.duplicate-panel,.move-preview,.manager-overview-hero,
+  .manager-data-card,.manager-dup-intro,.duplicate-group,.manager-site-toolbar,.manager-batch-bar
+){
+  backdrop-filter:blur(9px) saturate(120%)!important;
+  -webkit-backdrop-filter:blur(9px) saturate(120%)!important;
+}
+html[data-theme="liquid"] #drawer :is(
+  .manager-quick,.manager-site-row,.manager-backup-row,.metric-card,.dup-item,
+  .custom-item,.category-manager-item,.deleted-item
+){
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+html[data-theme="liquid"] .manager-site-row:hover,
+html[data-theme="liquid"] :is(.custom-item,.category-manager-item,.deleted-item):hover{
+  background:linear-gradient(135deg,rgba(255,255,255,.47),rgba(113,139,247,.10),rgba(196,101,225,.07))!important;
+  border-color:rgba(255,255,255,.78)!important;
+  box-shadow:0 10px 24px rgba(70,91,126,.08),inset 0 1px 0 rgba(255,255,255,.84)!important;
+}
+html[data-theme="liquid"] .drawer .site-icon,
+html[data-theme="liquid"] .drawer .custom-mini-icon{
+  background:linear-gradient(145deg,rgba(255,255,255,.55),rgba(222,235,247,.28))!important;
+  border-color:rgba(255,255,255,.67)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.88),0 4px 12px rgba(65,87,119,.07)!important;
+}
+
+/* Backdrop and editor follow the same theme family. */
+html[data-theme="dark"] .backdrop.show{background:rgba(1,6,15,.64)!important}
+html[data-theme="light"] .backdrop.show{
+  background:rgba(55,72,102,.18)!important;
+  backdrop-filter:blur(3px)!important;-webkit-backdrop-filter:blur(3px)!important;
+}
+html[data-theme="liquid"] .backdrop.show{
+  background:rgba(65,86,116,.14)!important;
+  backdrop-filter:blur(7px) saturate(112%)!important;-webkit-backdrop-filter:blur(7px) saturate(112%)!important;
+}
+html[data-theme="light"] .site-editor,
+html[data-theme="light"] .site-editor-head{
+  color:var(--mgr-text)!important;background:rgba(249,252,255,.96)!important;border-color:var(--mgr-line)!important;
+}
+html[data-theme="liquid"] .site-editor{
+  color:var(--mgr-text)!important;
+  background:linear-gradient(145deg,rgba(249,253,255,.58),rgba(221,234,247,.34))!important;
+  border:1px solid rgba(255,255,255,.70)!important;
+  box-shadow:0 26px 70px rgba(64,86,119,.16),inset 0 1px 0 rgba(255,255,255,.86)!important;
+  backdrop-filter:blur(25px) saturate(140%)!important;-webkit-backdrop-filter:blur(25px) saturate(140%)!important;
+}
+html[data-theme="liquid"] .site-editor-head{
+  color:var(--mgr-text)!important;
+  background:rgba(248,252,255,.43)!important;
+  border-color:rgba(255,255,255,.62)!important;
+  backdrop-filter:blur(20px) saturate(135%)!important;-webkit-backdrop-filter:blur(20px) saturate(135%)!important;
+}
+
+/* Theme-consistent overlays / menus / authentication surfaces. */
+html[data-theme="light"] :is(.site-editor-backdrop.show,.command-backdrop.show,.login-gate.show){
+  background:rgba(61,76,105,.18)!important;
+  backdrop-filter:blur(3px)!important;
+  -webkit-backdrop-filter:blur(3px)!important;
+}
+html[data-theme="liquid"] :is(.site-editor-backdrop.show,.command-backdrop.show,.login-gate.show){
+  background:rgba(68,88,116,.13)!important;
+  backdrop-filter:blur(5px) saturate(112%)!important;
+  -webkit-backdrop-filter:blur(5px) saturate(112%)!important;
+}
+html[data-theme="liquid"] .category-context{
+  color:var(--mgr-text)!important;
+  background:linear-gradient(145deg,rgba(249,253,255,.68),rgba(220,234,247,.44))!important;
+  border-color:rgba(255,255,255,.72)!important;
+  box-shadow:0 18px 46px rgba(64,86,119,.16),inset 0 1px 0 rgba(255,255,255,.88)!important;
+}
+html[data-theme="liquid"] #commandBackdrop .command-panel,
+html[data-theme="liquid"] #loginGate .login-card{
+  color:var(--mgr-text)!important;
+  background:linear-gradient(145deg,rgba(249,253,255,.70),rgba(220,234,247,.46))!important;
+  border-color:rgba(255,255,255,.74)!important;
+  box-shadow:0 26px 70px rgba(64,86,119,.17),inset 0 1px 0 rgba(255,255,255,.90)!important;
+  backdrop-filter:blur(20px) saturate(136%)!important;
+  -webkit-backdrop-filter:blur(20px) saturate(136%)!important;
+}
+html[data-theme="liquid"] #loginGate .login-form input,
+html[data-theme="liquid"] #commandBackdrop .command-search{
+  color:var(--mgr-text)!important;
+  background:rgba(250,253,255,.52)!important;
+  border-color:rgba(255,255,255,.62)!important;
+}
+
+/* Scrollbar tone follows theme. */
+html[data-theme="dark"] .drawer{scrollbar-color:rgba(116,135,255,.42) transparent}
+html[data-theme="light"] .drawer{scrollbar-color:rgba(87,105,166,.24) transparent}
+html[data-theme="liquid"] .drawer{scrollbar-color:rgba(102,121,184,.28) transparent}
+</style>
+
 </head>
 <body><div class="ambient-scene" aria-hidden="true"><i class="glass-capsule"></i><i class="glass-capsule"></i><i class="glass-capsule"></i><i class="glass-capsule"></i></div>
 <div class="app">
@@ -4289,9 +4643,9 @@ html.theme-switching .drawer{
     <span class="nav-active-indicator" id="navActiveIndicator" aria-hidden="true"></span>
 
     <div class="side-label">快速访问</div>
-    <button class="nav-btn active" data-filter="all"><span class="nav-icon">⌂</span><span class="nav-name">全部网站</span><span class="nav-count" id="allCount">0</span></button>
-    <button class="nav-btn" data-filter="favorite"><span class="nav-icon">★</span><span class="nav-name">我的收藏</span><span class="nav-count" id="favCount">0</span></button>
-    <button class="nav-btn" data-filter="recent"><span class="nav-icon">↺</span><span class="nav-name">最近访问</span><span class="nav-count" id="recentCount">0</span></button>
+    <button type="button" class="nav-btn active" data-filter="all"><span class="nav-icon">⌂</span><span class="nav-name">全部网站</span><span class="nav-count" id="allCount">0</span></button>
+    <button type="button" class="nav-btn" data-filter="favorite"><span class="nav-icon">★</span><span class="nav-name">我的收藏</span><span class="nav-count" id="favCount">0</span></button>
+    <button type="button" class="nav-btn" data-filter="recent"><span class="nav-icon">↺</span><span class="nav-name">最近访问</span><span class="nav-count" id="recentCount">0</span></button>
 
     <div class="side-label">分类</div>
     <div id="categoryNav"></div>
@@ -4300,14 +4654,14 @@ html.theme-switching .drawer{
 
   <main class="main">
     <div class="topbar">
-      <button class="btn icon mobile-menu" id="mobileMenuBtn" aria-label="菜单">☰</button>
+      <button type="button" class="btn icon mobile-menu" id="mobileMenuBtn" aria-label="菜单">☰</button>
       <div class="tool-cluster" aria-label="页面工具">
-        <button class="tool-btn hide-sm" id="sortModeBtn" title="拖拽网站调整顺序"><span class="tool-glyph">↕</span><span>排序</span></button>
-        <button class="tool-btn hide-sm" id="manageBtn"><span class="tool-glyph">＋</span><span>管理导航</span></button>
-        <button class="tool-btn hide-sm" id="densityBtn" title="切换卡片密度"><span class="tool-glyph">▦</span><span>紧凑</span></button>
+        <button type="button" class="tool-btn hide-sm" id="sortModeBtn" title="拖拽网站调整顺序"><span class="tool-glyph">↕</span><span>排序</span></button>
+        <button type="button" class="tool-btn hide-sm" id="manageBtn"><span class="tool-glyph">＋</span><span>管理导航</span></button>
+        <button type="button" class="tool-btn hide-sm" id="densityBtn" title="切换卡片密度"><span class="tool-glyph">▦</span><span>紧凑</span></button>
         <span class="cloud-status" id="cloudStatus" title="云同步状态"><i></i><span id="cloudStatusText">未登录</span></span>
-        <button class="tool-btn icon-only auth-logout-btn" id="logoutBtn" title="退出登录" aria-label="退出登录" hidden>↪</button>
-        <button class="tool-btn icon-only" id="themeBtn" aria-label="切换主题">☾</button>
+        <button type="button" class="tool-btn icon-only auth-logout-btn" id="logoutBtn" title="退出登录" aria-label="退出登录" hidden>↪</button>
+        <button type="button" class="tool-btn icon-only" id="themeBtn" aria-label="切换主题">☾</button>
       </div>
     </div>
     <div class="compact-bar" id="compactBar" aria-hidden="true">
@@ -4318,17 +4672,17 @@ html.theme-switching .drawer{
       </div>
       <div class="compact-actions">
         <span class="compact-count"><b id="compactSiteCount">0</b> 个网站</span>
-        <button class="compact-action hide-sm" id="compactSortBtn" title="排序">↕</button>
-        <button class="compact-action" id="compactManageBtn" title="管理导航">＋</button>
-        <button class="compact-action hide-sm" id="compactDensityBtn" title="切换卡片密度">▦</button>
+        <button type="button" class="compact-action hide-sm" id="compactSortBtn" title="排序">↕</button>
+        <button type="button" class="compact-action" id="compactManageBtn" title="管理导航">＋</button>
+        <button type="button" class="compact-action hide-sm" id="compactDensityBtn" title="切换卡片密度">▦</button>
         <span class="compact-cloud-status" id="compactCloudStatus" title="云同步状态">●</span>
-        <button class="compact-action" id="compactThemeBtn" title="切换主题">☾</button>
+        <button type="button" class="compact-action" id="compactThemeBtn" title="切换主题">☾</button>
       </div>
     </div>
 
     <div class="home-layout"><section class="hero glass" id="hero"><div class="hero-art" aria-hidden="true"><i class="glass-capsule"></i><i class="glass-capsule"></i></div>
         <div class="hero-primary">
-          <span class="eyebrow">✦ PRIVATE NAV TOOLBOX · START PAGE</span>
+          <span class="eyebrow">✦ <span class="eyebrow-private-nav">PRIVATE NAV</span><span class="eyebrow-rest"> TOOLBOX · START PAGE</span></span>
           <h1>找到你要去的<span class="liquid-title-accent">地方</span>。</h1>
           <p>收藏夹已按网页功能重新整理，输入名称、域名或关键词即可快速定位。</p>
 
@@ -4337,7 +4691,7 @@ html.theme-switching .drawer{
               <div class="search-row">
                 <span class="search-symbol">⌕</span>
                 <input id="searchInput" class="search-input" autocomplete="off" spellcheck="false" placeholder="站内搜索：网站名称、域名、关键词…">
-                <button class="clear-search" id="clearSearch" aria-label="清空搜索">×</button>
+                <button type="button" class="clear-search" id="clearSearch" aria-label="清空搜索">×</button>
                 <button class="liquid-search-btn" id="liquidSearchBtn" type="button" aria-label="聚焦搜索">⌕</button>
               </div>
               <div class="search-info">
@@ -4390,7 +4744,7 @@ html.theme-switching .drawer{
         </aside></div>
 
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V18.11</div>
+    <div class="footer">© 2026 私人导航工具箱 · V18.14</div>
   </main>
 </div>
 
@@ -4399,7 +4753,7 @@ html.theme-switching .drawer{
   <div class="drawer-head">
     <div class="drawer-head-row">
       <div class="drawer-title"><h2>管理导航</h2><p>网站编辑 · 分类管理 · D1 数据源 · KV 图标缓存</p></div>
-      <button class="btn icon" id="closeDrawer">×</button>
+      <button type="button" class="btn icon" id="closeDrawer">×</button>
     </div>
   </div>
   <div class="drawer-body">
@@ -4500,7 +4854,7 @@ html.theme-switching .drawer{
   </div>
 </aside>
 
-<button class="to-top" id="toTop" aria-label="回到顶部">↑</button>
+<button type="button" class="to-top" id="toTop" aria-label="回到顶部">↑</button>
 
 <div class="login-gate" id="loginGate" aria-hidden="true">
   <div class="login-card" role="dialog" aria-modal="true" aria-labelledby="loginTitle"><button class="login-close" id="closeLoginGate" type="button" aria-label="关闭登录">×</button>
@@ -5769,7 +6123,7 @@ function syncNavActive(){
 }
 
 function applyTheme(){
-  const saved=localStorage.getItem(KEYS.theme);
+  const saved=STORE.get(KEYS.theme);
   const allowed=new Set(["dark","light","liquid"]);
   const fallback=(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";
   const theme=allowed.has(saved)?saved:fallback;
@@ -6308,15 +6662,48 @@ function makeV17Snapshot(){
   return {baseRevision:V17.revision,categories:cats.map((c,i)=>({name:c.name,icon:c.icon||"•",sortOrder:i,isBuiltin:!!c.builtin})),sites:siteRows,settings:{recents:state.recents.slice(0,30),density:STORE.get(V157_DENSITY_KEY)||"comfortable",theme:document.documentElement.dataset.theme||"dark",usageStats:typeof getUsageStatsV157==="function"?getUsageStatsV157():{}}};
 }
 async function pushV17({force=false}={}){
-  if(!V17.ready||V17.suppress||V17.syncing)return false;const snap=makeV17Snapshot();const hash=JSON.stringify(snap);if(!force&&hash===V17.lastSnapshot)return true;
-  V17.syncing=true;setCloudStatus("syncing","D1 保存中…","Cloudflare D1 SQLite 数据库 · 正在同步网站、分类与设置");
-  try{const res=await v17Request("sync","POST",{...snap,force});V17.revision=Number(res.revision)||V17.revision;V17.lastSnapshot=JSON.stringify(makeV17Snapshot());setCloudStatus("synced","D1 已同步",`Cloudflare D1 SQLite 数据库 · 数据版本 ${V17.revision}`);return true}
-  catch(err){
-    if(err.status===409&&err.payload?.revision){V17.revision=Number(err.payload.revision)||V17.revision;try{return await pushV17({force:true})}catch{}}
+  if(!V17.ready||V17.suppress)return false;
+  if(V17.syncing){
+    clearTimeout(V17.pushTimer);
+    V17.pushTimer=setTimeout(()=>pushV17({force}),360);
+    return false;
+  }
+  const snap=makeV17Snapshot();
+  const hash=JSON.stringify(snap);
+  if(!force&&hash===V17.lastSnapshot)return true;
+  V17.syncing=true;
+  setCloudStatus("syncing","D1 保存中…","Cloudflare D1 SQLite 数据库 · 正在同步网站、分类与设置");
+  try{
+    let sentSnap=snap;
+    let res;
+    try{
+      res=await v17Request("sync","POST",{...sentSnap,force});
+    }catch(err){
+      if(err.status===409&&err.payload?.revision){
+        V17.revision=Number(err.payload.revision)||V17.revision;
+        sentSnap=makeV17Snapshot();
+        res=await v17Request("sync","POST",{...sentSnap,force:true});
+      }else{
+        throw err;
+      }
+    }
+    V17.revision=Number(res.revision)||V17.revision;
+    V17.lastSnapshot=JSON.stringify({...sentSnap,baseRevision:V17.revision});
+    setCloudStatus("synced","D1 已同步",`Cloudflare D1 SQLite 数据库 · 数据版本 ${V17.revision}`);
+    // If local state changed while the request was in flight, queue one more save.
+    if(JSON.stringify(makeV17Snapshot())!==V17.lastSnapshot){
+      clearTimeout(V17.pushTimer);
+      V17.pushTimer=setTimeout(()=>pushV17(),180);
+    }
+    return true;
+  }catch(err){
     if(err.status===401){showLoginGateV161("登录已失效，请重新登录。");setCloudStatus("error","登录失效","请重新登录")}
     else if(!navigator.onLine)setCloudStatus("offline","D1 离线","网络不可用 · 本地修改已保留，联网后自动同步")
-    else setCloudStatus("error","D1 同步失败",err.message||"同步失败");return false
-  }finally{V17.syncing=false}
+    else setCloudStatus("error","D1 同步失败",err.message||"同步失败");
+    return false;
+  }finally{
+    V17.syncing=false;
+  }
 }
 function scheduleDataSyncV17(){if(!V17.ready||V17.suppress)return;clearTimeout(V17.pushTimer);setCloudStatus("syncing","D1 保存中…","本地已保存 · 准备写入 Cloudflare D1 SQLite 数据库");V17.pushTimer=setTimeout(()=>pushV17(),280)}
 window.__fxCloudSchedulePush=scheduleDataSyncV17;
@@ -6324,11 +6711,15 @@ async function refreshV17FromServer({quiet=false}={}){
   try{const payload=await v17Request("bootstrap");if(Number(payload.revision)!==V17.revision||!V17.ready)applyBootstrapV17(payload);else if(!quiet)setCloudStatus("synced","D1 已同步",`Cloudflare D1 SQLite 数据库 · 数据版本 ${V17.revision}`);return true}
   catch(err){if(err.status===401)showLoginGateV161("请登录后读取 D1 数据");else if(!quiet)setCloudStatus("error","D1 未连接",err.message||"无法读取 D1");return false}
 }
+function handleV17WindowFocus(){
+  if(AUTH_V161.authenticated&&navigator.onLine)refreshV17FromServer({quiet:true});
+}
 async function initDataDrivenV17(){
   setCloudStatus("syncing","D1 连接中…","正在读取 Cloudflare D1 SQLite 数据库");
   const ok=await refreshV17FromServer();if(!ok){const cached=parseStored(V17_CACHE_KEY,null);if(cached){applyBootstrapV17(cached,{cache:false});setCloudStatus("offline","本地缓存","暂时使用最近一次 D1 缓存")}}
   clearInterval(V17.pullTimer);V17.pullTimer=setInterval(()=>{if(document.visibilityState==="visible"&&navigator.onLine)refreshV17FromServer({quiet:true})},45000);
-  window.addEventListener("focus",()=>{if(AUTH_V161.authenticated&&navigator.onLine)refreshV17FromServer({quiet:true})});
+  window.removeEventListener("focus",handleV17WindowFocus);
+  window.addEventListener("focus",handleV17WindowFocus);
 }
 
 /* ===================== V16.1 · Private Login Runtime ===================== */
@@ -6545,7 +6936,7 @@ function toggleThemeV153(){
   const next=order[(Math.max(0,order.indexOf(current))+1)%order.length];
   document.documentElement.classList.add("theme-switching");
   document.documentElement.dataset.theme=next;
-  localStorage.setItem(KEYS.theme,next);
+  STORE.set(KEYS.theme,next);
   updateThemeButton();
   syncCompactControls();
   const names={dark:"深色主题",light:"浅色主题",liquid:"液态玻璃主题"};
@@ -6944,7 +7335,7 @@ if(__sidebarV158){
    这里增加统一同步入口，后端 API 接入后无需重构页面。
 */
 const FX_SYNC={
-  version:"V18.7",
+  version:"V18.14",
   enabled:false,
   user:null,
   endpoint:"",
@@ -6952,7 +7343,7 @@ const FX_SYNC={
     return {
       version:this.version,
       time:Date.now(),
-      theme:localStorage.getItem(KEYS.theme),
+      theme:STORE.get(KEYS.theme),
       favorites:[...state.favorites],
       recents:state.recents,
       custom:state.custom,
@@ -8356,7 +8747,11 @@ updateAccessUIV178();
         row.append(copy,tag,restore);box.append(row);
       });
     }catch(err){
-      box.innerHTML=`<div class="manager-backup-empty">版本列表读取失败：${String(err?.message||"未知错误")}</div>`;
+      box.innerHTML="";
+      const empty=document.createElement("div");
+      empty.className="manager-backup-empty";
+      empty.textContent=`版本列表读取失败：${String(err?.message||"未知错误")}`;
+      box.append(empty);
     }
   }
   async function createBackupNowV181(){
