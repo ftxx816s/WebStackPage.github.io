@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>私人导航工具箱 · V18.60 Import & Disaster Backup</title>
+<title>私人导航工具箱 · V18.61 完整备份排版优化版</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https: http:; connect-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -3243,6 +3243,16 @@ html[data-theme="light"] .login-brand img{
 .manager-data-card b{display:block;font-size:12px}
 .manager-data-card p{margin:6px 0 12px;color:var(--muted);font-size:10px;line-height:1.55}
 .manager-data-actions{display:flex;gap:7px;flex-wrap:wrap}
+.admin-transfer-panel{margin-top:12px;padding:14px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.022)}
+.admin-transfer-panel b{display:block;font-size:12px}
+.admin-transfer-panel p{margin:6px 0 0;color:var(--muted);font-size:10px;line-height:1.6}
+.transfer-action-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px;align-items:stretch}
+.transfer-action-grid .btn{width:100%;min-height:42px;padding:0 14px}
+.transfer-action-grid .btn.primary{grid-column:1/-1;min-height:46px}
+.transfer-helper{grid-column:1/-1;display:block;margin-top:-2px;color:var(--muted2);font-size:10px;line-height:1.65;padding:0 2px}
+.manager-transfer-card{background:linear-gradient(180deg,rgba(255,255,255,.028),rgba(255,255,255,.016))}
+html[data-theme="light"] .admin-transfer-panel,html[data-theme="light"] .manager-transfer-card{background:rgba(255,255,255,.84)}
+html[data-theme="light"] .transfer-helper{color:#6d7695}
 .manager-stash{display:none!important}
 
 html[data-theme="light"] .drawer-head,
@@ -3256,8 +3266,11 @@ html[data-theme="light"] .manager-site-row,
 html[data-theme="light"] .manager-data-card{
   background:rgba(255,255,255,.76);
 }
+html[data-theme="light"] .manager-transfer-card{background:rgba(255,255,255,.84)!important}
 
 @media(max-width:760px){
+  .transfer-action-grid{grid-template-columns:1fr}
+  .transfer-action-grid .btn.primary{grid-column:auto}
   .drawer{width:100vw!important}
   .drawer-head{padding:14px 14px 0!important}
   .drawer-body{padding:14px!important}
@@ -4602,7 +4615,7 @@ html[data-theme="neon"] :is(.field input,.field select,.compact-search,.login-fo
 <link rel="shortcut icon" type="image/png" href="data:image/png;base64,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">
 <meta name="theme-color" content="#081426">
 
-<meta name="x-build" content="V18.60-import-disaster-20260916">
+<meta name="x-build" content="V18.61-layout-fullbackup-20260916">
 <meta name="x-app-version" content="18.60">
 
 <style id="v1812-theme-aware-manager">
@@ -5347,7 +5360,7 @@ html[data-theme="neon"] .calendar-ref-v1838 .calendar-ref-progress-track i{backg
         </aside></div>
 
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V18.60</div>
+    <div class="footer">© 2026 私人导航工具箱 · V18.61</div>
   </main>
 </div>
 
@@ -5360,7 +5373,7 @@ html[data-theme="neon"] .calendar-ref-v1838 .calendar-ref-progress-track i{backg
     </div>
   </div>
   <div class="drawer-body">
-    <div class="admin-note">V18.60 Data Driven：网站、分类、排序、收藏、删除状态等导航数据以 D1 为正式数据源；主题、卡片密度等纯 UI 偏好只保存在当前设备浏览器，不参与云同步。自定义上传图标进入 Workers KV，自动高清图标由 Cloudflare 服务端抓取并缓存到 KV。<br><span id="storageUsage">正在计算本地数据占用…</span></div>
+    <div class="admin-note">V18.61 Data Driven：网站、分类、排序、收藏、删除状态等导航数据以 D1 为正式数据源；主题、卡片密度等纯 UI 偏好只保存在当前设备浏览器，不参与云同步。自定义上传图标进入 Workers KV，自动高清图标由 Cloudflare 服务端抓取并缓存到 KV。<br><span id="storageUsage">正在计算本地数据占用…</span></div>
 
     <form id="addForm">
       <div class="form-grid">
@@ -5376,13 +5389,18 @@ html[data-theme="neon"] .calendar-ref-v1838 .calendar-ref-progress-track i{backg
         </div>
         <div class="field full"><label>图标预览</label><div class="icon-preview" id="iconPreview"></div><div class="v17-icon-note"><b>V17：</b>上传图标会保存到现有 Cloudflare KV；不上传时自动使用服务端高清 favicon 缓存。</div></div>
       </div>
-      <div class="admin-actions">
-        <button class="btn primary" type="submit">＋ 添加网站</button>
-        <button class="btn" type="button" id="exportBtn">导出配置</button>
-        <button class="btn" type="button" id="exportBookmarksBtn">导出浏览器书签</button>
-        <button class="btn" type="button" id="importBookmarksBtn">导入浏览器书签</button>
-        <button class="btn" type="button" id="disasterBackupBtn">完整灾备导出</button>
-        <button class="btn" type="button" id="importBtn">导入配置</button>
+      <div class="admin-actions"><button class="btn primary" type="submit">＋ 添加网站</button></div>
+      <div class="admin-transfer-panel">
+        <b>配置、浏览器书签与完整备份</b>
+        <p>支持 Chrome / Edge 书签 HTML 导入导出。</p>
+        <div class="transfer-action-grid">
+          <button class="btn" type="button" id="exportBtn">导出配置</button>
+          <button class="btn" type="button" id="importBtn">导入配置</button>
+          <button class="btn" type="button" id="exportBookmarksBtn">导出浏览器书签</button>
+          <button class="btn" type="button" id="importBookmarksBtn">导入浏览器书签</button>
+          <button class="btn primary" type="button" id="disasterBackupBtn">完整备份导出</button>
+          <small class="transfer-helper">导出网站、分类、排序、收藏、设置及自定义图标数据</small>
+        </div>
         <input type="file" id="importFile" accept="application/json" hidden>
         <input type="file" id="importBookmarksFile" accept=".html,.htm,text/html" hidden>
       </div>
@@ -7872,11 +7890,11 @@ function downloadJsonV1860(payload,filename){
   const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 async function exportDisasterBackupV1860(){
-  if(!AUTH_V161.authenticated)return requestAdminV178(exportDisasterBackupV1860,"完整灾备包含 D1 与 KV 自定义图标，仅管理员可以导出。");
+  if(!AUTH_V161.authenticated)return requestAdminV178(exportDisasterBackupV1860,"完整备份包含 D1 与 KV 自定义图标，仅管理员可以导出。");
   const btns=[document.getElementById("disasterBackupBtn"),document.getElementById("managerDisasterBackup")].filter(Boolean);
   btns.forEach(b=>b.disabled=true);
   try{
-    toast("正在生成完整灾备…");
+    toast("正在生成完整备份…");
     const payload=await v17Request("disaster-backup");
     payload.client={
       theme:document.documentElement.dataset.theme||"dark",
@@ -7886,14 +7904,14 @@ async function exportDisasterBackupV1860(){
     };
     const d=new Date(),pad=n=>String(n).padStart(2,"0");
     const stamp=`${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}`;
-    downloadJsonV1860(payload,`private-nav-disaster-v18.60-${stamp}.json`);
+    downloadJsonV1860(payload,`private-nav-backup-v18.61-${stamp}.json`);
     const sites=Array.isArray(payload?.d1?.sites)?payload.d1.sites.length:0;
     const cats=Array.isArray(payload?.d1?.categories)?payload.d1.categories.length:0;
     const icons=Number(payload?.kv?.customIconCount)||0;
-    toast(`完整灾备已导出 · ${sites} 个网站 · ${cats} 个分类 · ${icons} 个自定义图标`);
+    toast(`完整备份已导出 · ${sites} 个网站 · ${cats} 个分类 · ${icons} 个自定义图标`);
   }catch(err){
-    if(err?.status===413){if(typeof window.uiAlertV1821==="function")await window.uiAlertV1821(err.message||"自定义图标数据过大，请先清理无用图标后重试",{title:"完整灾备过大"});else alert(err.message||"完整灾备过大");}
-    else toast(err?.message||"完整灾备导出失败");
+    if(err?.status===413){if(typeof window.uiAlertV1821==="function")await window.uiAlertV1821(err.message||"自定义图标数据过大，请先清理无用图标后重试",{title:"完整备份过大"});else alert(err.message||"完整备份过大");}
+    else toast(err?.message||"完整备份导出失败");
   }finally{btns.forEach(b=>b.disabled=false)}
 }
 
@@ -7908,7 +7926,7 @@ $("#exportBookmarksBtn").onclick=exportBrowserBookmarksV1852;
 
 $("#exportBtn").onclick=()=>{
   const payload={version:"18.60",favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides,iconOverrides:state.iconOverrides,hiddenSites:[...state.hiddenSites],siteEdits:state.siteEdits,customCategories:state.customCategories,categoryOrder:state.categoryOrder,categoryIconOverrides:state.categoryIconOverrides,siteOrder:state.siteOrder,categoryTitleOverrides:{...(state.categoryTitleOverrides||{})},duplicateIgnoreKeys:[...(state.duplicateIgnoreKeys||new Set())],usageStats:getUsageStatsV157(),density:STORE.get(V157_DENSITY_KEY)||"comfortable",theme:document.documentElement.dataset.theme||"dark",cloudRevision:V17.revision};
-  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);const ds=new Date().toISOString().slice(0,10).replaceAll("-","");a.download=`private-nav-v18.60-${ds}.json`;a.click();URL.revokeObjectURL(a.href);
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);const ds=new Date().toISOString().slice(0,10).replaceAll("-","");a.download=`private-nav-v18.61-${ds}.json`;a.click();URL.revokeObjectURL(a.href);
 };
 $("#importBtn").onclick=()=>$("#importFile").click();
 $("#importFile").addEventListener("change",async e=>{
@@ -7921,7 +7939,7 @@ $("#importFile").addEventListener("change",async e=>{
     state.custom=Array.isArray(d.custom)?d.custom:[];state.recents=Array.isArray(d.recents)?d.recents:[];state.favorites=new Set(Array.isArray(d.favorites)?d.favorites:[]);state.categoryOverrides=(d.categoryOverrides&&typeof d.categoryOverrides==="object"&&!Array.isArray(d.categoryOverrides))?d.categoryOverrides:{};state.iconOverrides=(d.iconOverrides&&typeof d.iconOverrides==="object"&&!Array.isArray(d.iconOverrides))?d.iconOverrides:{};state.hiddenSites=new Set(Array.isArray(d.hiddenSites)?d.hiddenSites:[]);state.siteEdits=(d.siteEdits&&typeof d.siteEdits==="object"&&!Array.isArray(d.siteEdits))?d.siteEdits:{};state.customCategories=Array.isArray(d.customCategories)?d.customCategories:[];state.categoryOrder=Array.isArray(d.categoryOrder)?d.categoryOrder:[];state.categoryIconOverrides=(d.categoryIconOverrides&&typeof d.categoryIconOverrides==="object"&&!Array.isArray(d.categoryIconOverrides))?d.categoryIconOverrides:{};state.siteOrder=(d.siteOrder&&typeof d.siteOrder==="object"&&!Array.isArray(d.siteOrder))?d.siteOrder:{};state.categoryTitleOverrides=(d.categoryTitleOverrides&&typeof d.categoryTitleOverrides==="object"&&!Array.isArray(d.categoryTitleOverrides))?d.categoryTitleOverrides:{};state.duplicateIgnoreKeys=new Set(Array.isArray(d.duplicateIgnoreKeys)?d.duplicateIgnoreKeys:[]);if(d.usageStats&&typeof d.usageStats==="object"&&!Array.isArray(d.usageStats))STORE.set("fxnav_usage_stats_v157",JSON.stringify(d.usageStats));if(d.density==="compact"||d.density==="comfortable")STORE.set(V157_DENSITY_KEY,d.density);if(["dark","light","liquid","neon"].includes(d.theme)){STORE.set(KEYS.theme,d.theme);document.documentElement.dataset.theme=d.theme;applyTheme()}applyDensityV157();
     sanitizeState();
     if(!save()){Object.assign(state,{custom:snapshot.custom,recents:snapshot.recents,favorites:snapshot.favorites,categoryOverrides:snapshot.categoryOverrides,iconOverrides:snapshot.iconOverrides,hiddenSites:snapshot.hiddenSites,siteEdits:snapshot.siteEdits,customCategories:snapshot.customCategories,categoryOrder:snapshot.categoryOrder,categoryIconOverrides:snapshot.categoryIconOverrides,siteOrder:snapshot.siteOrder,categoryTitleOverrides:snapshot.categoryTitleOverrides,duplicateIgnoreKeys:snapshot.duplicateIgnoreKeys});throw new Error("导入数据超过浏览器本地存储容量，已恢复原配置")}
-    refreshCategoryUI();renderDeletedList();updateStorageUsage();toast("V18.60 配置已导入");
+    refreshCategoryUI();renderDeletedList();updateStorageUsage();toast("V18.61 配置已导入");
   }catch(err){alert(err?.message||"配置文件无效")}finally{e.target.value=""}
 });
 
@@ -8235,7 +8253,7 @@ if(__sidebarV158){
    这里增加统一同步入口，后端 API 接入后无需重构页面。
 */
 const FX_SYNC={
-  version:"V18.60",
+  version:"V18.61",
   enabled:false,
   user:null,
   endpoint:"",
@@ -9197,15 +9215,16 @@ updateAccessUIV178();
             <button class="btn" type="button" id="managerRefreshCloud">从云端刷新</button>
           </div>
         </div>
-        <div class="manager-data-card">
-          <b>配置、浏览器书签与完整灾备</b>
-          <p>可导入 Chrome / Edge 书签 HTML；完整灾备会导出当前 D1 导航数据与 KV 自定义 Logo，自动 favicon 缓存无需备份。</p>
-          <div class="manager-data-actions">
+        <div class="manager-data-card manager-transfer-card">
+          <b>配置、浏览器书签与完整备份</b>
+          <p>支持 Chrome / Edge 书签 HTML 导入导出。</p>
+          <div class="transfer-action-grid">
             <button class="btn" type="button" id="managerExport">导出配置</button>
+            <button class="btn" type="button" id="managerImport">导入配置</button>
             <button class="btn" type="button" id="managerExportBookmarks">导出浏览器书签</button>
             <button class="btn" type="button" id="managerImportBookmarks">导入浏览器书签</button>
-            <button class="btn primary" type="button" id="managerDisasterBackup">完整灾备导出</button>
-            <button class="btn" type="button" id="managerImport">导入配置</button>
+            <button class="btn primary" type="button" id="managerDisasterBackup">完整备份导出</button>
+            <small class="transfer-helper">导出网站、分类、排序、收藏、设置及自定义图标数据</small>
           </div>
         </div>
         <div class="manager-data-card">
@@ -11543,7 +11562,7 @@ html[data-theme="neon"] .manager-live-card{background:linear-gradient(145deg,rgb
 </script>
 
 <style id="v1859-consolidated-compat">
-/* V18.60: source-order-preserving merge of late compatibility patches. Visual cascade is unchanged. */
+/* V18.61: source-order-preserving merge of late compatibility patches. Visual cascade is unchanged. */
 /* ---- merged from #v1833-theme-swap-performance ---- */
 /* Offscreen sections need no immediate raster work during theme changes. */
 @supports(content-visibility:auto){
