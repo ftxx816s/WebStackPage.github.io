@@ -1,3 +1,4 @@
+const API_VERSION="18.59";
 import {V17_CATEGORIES,V17_SITES} from "../_data/v17-seed.js";
 import {json,requireAuth,sameOrigin,verifySession,normalizeUsername} from "../_shared/auth.js";
 
@@ -275,7 +276,7 @@ export async function onRequest(context){const {request,env}=context;try{const u
     if(!env?.DB)return json({ok:false,db:false,kv:!!env?.KV,error:"Missing D1 binding: DB"},500);
     await ensureSchema(env);
     let revision=0;try{revision=await getRevision(env,normalizeUsername(env.NAV_USERNAME||"admin"))}catch{}
-    return json({ok:true,db:true,kv:!!env.KV,revision,apiVersion:"18.19"});
+    return json({ok:true,db:true,kv:!!env.KV,revision,apiVersion:API_VERSION});
   }
   await ensureSchema(env);const owner=normalizeUsername(env.NAV_USERNAME||"admin");
   // Public read endpoints: no password required.
@@ -301,4 +302,4 @@ export async function onRequest(context){const {request,env}=context;try{const u
   if(mode==="upload-icon"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);if(!env.KV)return json({ok:false,error:"Missing KV binding: KV"},500);const id=String(url.searchParams.get("site")||""),site=await env.DB.prepare(`SELECT id,icon_key FROM sites_v17 WHERE id=? LIMIT 1`).bind(id).first();if(!site)return json({ok:false,error:"Site not found."},404);const type=(request.headers.get("content-type")||"").split(";")[0].trim().toLowerCase(),allowed=new Set(["image/png","image/jpeg","image/webp","image/gif","image/x-icon","image/vnd.microsoft.icon"]);if(!allowed.has(type))return json({ok:false,error:"Only PNG/JPG/WebP/GIF/ICO are allowed."},415);const buf=await request.arrayBuffer();if(!buf.byteLength||buf.byteLength>MAX_ICON_BYTES)return json({ok:false,error:"Icon must be 1MB or smaller."},413);const key=`custom:${auth.owner}:${id}:${crypto.randomUUID()}`;await env.KV.put(key,buf,{metadata:{contentType:type,kind:"custom"}});if(site.icon_key&&String(site.icon_key).startsWith("custom:"))await env.KV.delete(site.icon_key);await env.DB.prepare(`UPDATE sites_v17 SET icon_key=?,updated_at=CURRENT_TIMESTAMP WHERE id=?`).bind(key,id).run();const rev=await getRevision(env,auth.owner)+1;await setSetting(env,auth.owner,"revision",String(rev));return json({ok:true,revision:rev})}
   if(mode==="reset-icon"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);const id=String(url.searchParams.get("site")||""),site=await env.DB.prepare(`SELECT icon_key FROM sites_v17 WHERE id=? LIMIT 1`).bind(id).first();if(!site)return json({ok:false,error:"Site not found."},404);if(env.KV&&site.icon_key&&String(site.icon_key).startsWith("custom:"))await env.KV.delete(site.icon_key);await env.DB.prepare(`UPDATE sites_v17 SET icon_key=NULL,updated_at=CURRENT_TIMESTAMP WHERE id=?`).bind(id).run();const rev=await getRevision(env,auth.owner)+1;await setSetting(env,auth.owner,"revision",String(rev));return json({ok:true,revision:rev})}
   return json({ok:false,error:"Not found."},404)
-}catch(e){return json({ok:false,error:"V18.19 API error: "+String(e?.message||e)},500)}}
+}catch(e){return json({ok:false,error:"V"+API_VERSION+" API error: "+String(e?.message||e)},500)}}

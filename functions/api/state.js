@@ -1,5 +1,5 @@
 // Cloudflare Pages Function: /api/state
-// V16.1 Private Login - no Cloudflare Zero Trust required.
+// V18.59 Private Login. Legacy nav_state read/write endpoints are retired; /api/data is the only navigation data API.
 //
 // Required Pages bindings / variables:
 //   DB              -> D1 database binding
@@ -11,8 +11,7 @@
 //   GET  /api/state?mode=me
 //   POST /api/state?mode=login
 //   POST /api/state?mode=logout
-//   GET  /api/state
-//   PUT  /api/state
+//   GET/PUT /api/state  -> 410 Gone (legacy cloud-state endpoint retired)
 
 const MAX_JSON_BYTES = 4_500_000;
 const BACKUP_KEEP = 20;
@@ -504,12 +503,12 @@ async function route(context) {
     return handleLogout(request);
   }
 
-  if (!mode && request.method === "GET") {
-    return handleStateGet(request, env);
-  }
-
-  if (!mode && request.method === "PUT") {
-    return handleStatePut(request, env);
+  if (!mode && (request.method === "GET" || request.method === "PUT")) {
+    return json({
+      ok: false,
+      error: "Legacy /api/state navigation storage is retired. Use /api/data.",
+      apiVersion: "18.59"
+    }, 410);
   }
 
   if (request.method === "OPTIONS") {
