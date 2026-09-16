@@ -1,4 +1,4 @@
-const API_VERSION="18.59";
+const API_VERSION="18.60";
 import {V17_CATEGORIES,V17_SITES} from "../_data/v17-seed.js";
 import {json,requireAuth,sameOrigin,verifySession,normalizeUsername} from "../_shared/auth.js";
 
@@ -271,6 +271,55 @@ async function serveIcon(env,site){
   return new Response(fallbackSvg(site.name),{headers:{"Content-Type":"image/svg+xml; charset=utf-8","Cache-Control":"public, max-age=3600"}});
 }
 
+
+const MAX_DISASTER_EXPORT_BYTES=12*1024*1024;
+function arrayBufferToBase64V1860(buffer){
+  const bytes=new Uint8Array(buffer);
+  let binary="";
+  const step=0x8000;
+  for(let i=0;i<bytes.length;i+=step)binary+=String.fromCharCode(...bytes.subarray(i,i+step));
+  return btoa(binary);
+}
+async function buildDisasterBackupV1860(env,owner){
+  const snap=await buildBootstrap(env,owner,"disaster-backup",{publicView:false});
+  const rows=(await env.DB.prepare(`SELECT id,icon_key FROM sites_v17 WHERE icon_key IS NOT NULL AND icon_key LIKE 'custom:%' ORDER BY id`).all()).results||[];
+  const customIcons=[];
+  let totalBytes=0,missingIcons=0;
+  if(env.KV){
+    for(const row of rows){
+      const key=String(row?.icon_key||"");
+      if(!key)continue;
+      const got=await env.KV.getWithMetadata(key,{type:"arrayBuffer"});
+      if(!got?.value){missingIcons++;continue}
+      const bytes=got.value.byteLength||0;
+      totalBytes+=bytes;
+      if(totalBytes>MAX_DISASTER_EXPORT_BYTES){
+        const err=new Error("Custom icon backup is larger than 12MB. Clean unused custom icons and try again.");
+        err.status=413;throw err;
+      }
+      customIcons.push({
+        siteId:String(row.id||""),
+        contentType:String(got.metadata?.contentType||"image/png"),
+        byteLength:bytes,
+        dataBase64:arrayBufferToBase64V1860(got.value)
+      });
+    }
+  }
+  return {
+    ok:true,
+    format:"private-nav-disaster-backup",
+    version:API_VERSION,
+    createdAt:new Date().toISOString(),
+    revision:Number(snap.revision)||0,
+    d1:{categories:snap.categories||[],sites:snap.sites||[],settings:snap.settings||{}},
+    kv:{enabled:!!env.KV,customIconCount:customIcons.length,missingCustomIcons:missingIcons,totalBytes,customIcons,autoFaviconCacheIncluded:false},
+    notes:[
+      "This backup contains the current D1 navigation state and custom KV icons.",
+      "Automatic favicon cache is intentionally excluded because it can be regenerated."
+    ]
+  };
+}
+
 export async function onRequest(context){const {request,env}=context;try{const url=new URL(request.url),mode=String(url.searchParams.get("mode")||"");
   if(mode==="healthz"&&request.method==="GET"){
     if(!env?.DB)return json({ok:false,db:false,kv:!!env?.KV,error:"Missing D1 binding: DB"},500);
@@ -293,6 +342,10 @@ export async function onRequest(context){const {request,env}=context;try{const u
   const auth=await requireAuth(request,env);if(auth.error)return auth.error;
   if(mode==="sync"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);return await syncSnapshot(env,auth.owner,await request.json())}
   if(mode==="backups"&&request.method==="GET"){return await listBackups(env,auth.owner)}
+  if(mode==="disaster-backup"&&request.method==="GET"){
+    try{return json(await buildDisasterBackupV1860(env,auth.owner))}
+    catch(err){if(Number(err?.status)===413)return json({ok:false,error:String(err.message||err)},413);throw err}
+  }
   if(mode==="maintenance"&&request.method==="GET"){return json(await maintenanceReport(env,auth.owner,{clean:false}))}
   if(mode==="maintenance"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);return json(await maintenanceReport(env,auth.owner,{clean:true}))}
   if(mode==="backup-now"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);const rev=await getRevision(env,auth.owner);await backupSnapshot(env,auth.owner,rev);return json({ok:true,revision:rev})}

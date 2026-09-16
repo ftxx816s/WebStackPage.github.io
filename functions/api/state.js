@@ -1,5 +1,5 @@
 // Cloudflare Pages Function: /api/state
-// V18.59 Private Login. Legacy nav_state read/write endpoints are retired; /api/data is the only navigation data API.
+// V18.60 Private Login. Legacy nav_state read/write endpoints are retired; /api/data is the only navigation data API.
 //
 // Required Pages bindings / variables:
 //   DB              -> D1 database binding
@@ -507,7 +507,7 @@ async function route(context) {
     return json({
       ok: false,
       error: "Legacy /api/state navigation storage is retired. Use /api/data.",
-      apiVersion: "18.59"
+      apiVersion: "18.60"
     }, 410);
   }
 
