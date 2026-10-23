@@ -4,13 +4,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>私人导航工具箱 · V19.09 Final</title>
+<title>私人导航工具箱 · V19.11 Final</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https: http:; connect-src 'self' https:; font-src data:; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
 <meta name="theme-color" content="#07101d">
 <script id="app-meta-v1891">
-window.FXNAV_APP=Object.freeze({version:"19.09",build:"V19.09",schemaVersion:3,channel:"final"});
+window.FXNAV_APP=Object.freeze({version:"19.10",build:"V19.11",schemaVersion:3,channel:"final"});
 </script>
 <script id="theme-boot-v1867">
 /* V18.91 · Pre-paint theme bootstrap: apply this device's saved theme before first paint. */
@@ -31,7 +31,7 @@ window.FXNAV_APP=Object.freeze({version:"19.09",build:"V19.09",schemaVersion:3,c
   root.setAttribute("data-theme",theme);
   root.classList.add("theme-booting");
   root.style.colorScheme=(theme==="light"||theme==="liquid")?"light":"dark";
-  var colors={dark:"#07101d",light:"#edf3ff",liquid:"#eef4ff",neon:"#020713",frosted:"#0b0c0e"};
+  var colors={dark:"#07101d",light:"#edf3ff",liquid:"#c7d3df",neon:"#020713",frosted:"#0b0c0e"};
   root.style.backgroundColor=colors[theme]||colors.dark;
   var meta=document.querySelector('meta[name="theme-color"]');
   if(meta)meta.setAttribute("content",colors[theme]||colors.dark);
@@ -4663,8 +4663,8 @@ html[data-theme="neon"] :is(.field input,.field select,.compact-search,.login-fo
 <link rel="icon" type="image/png" sizes="64x64" href="data:image/png;base64,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">
 <link rel="shortcut icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAPRElEQVR42u2aeYxdZ3nGf++3nHOvPR4vSYxjEhvHCZRgkgg7QS2QsSFAGsIabNSUpWWJWqhU1fQPQLTjQa0QrYpARah1KUsQLYxZGsoSkhRngJSI2pAFpw2BNGTzkrE99iz3nvMtb/84Z+yQmODECRA6r/Tpztx7dXSe533e93u+91yYi7mYi7mYi7mYi7mYi7n4tQlFZRg1wwwbReX/B+hhNduH1HEMwMPDakY3quU3kQxFpQF3NL79Ml187UUzK665SJePbtTugz/b+JDvnmjIrxi8ESQDfG+oWpPF/H4QXlhJflolOlBBqsXs72Fu7sEXgrtz9E+vfnq1caPabdskPakJ0GE1MiL5xgvGB3134fuD4a3euWJGYZLIjGYqhKCWaA21gSnSrdOEzSPf6F43PLTdjYxtiE9KAmbBf29d7ww33/9bUdhnj+cqRyH2FVOB9AR6CSpE+6JaGzS6suiTmJH8xx/6evEPw0PqRsYkPqkIGEbNFtBbX8jSOsYbvHerJ7SqosFXQD9DH+gBfYUK6AvMGKESTbWIUV/YvtRv2/qV8mNXrFW/daeEx3o/5pece1k/hBFE+yl8qlO41YdSVWUjPgoEhSAN6EqFShsSplXoqVKBrcnM5DpG6//pDa+pLt+6U8LatTv8k4KA7UPYDWMSv/P8/ub5zr90Ild19uIjEGjA19oQUWWlVqhnP1OoFIKIRMlSaUhB7Kdfs6l/2c6d68LaKx4bCfLLrvsbfrtaY735r0h20SHRIb2c6CvUYujlRv69DDMKPYFahBmUykK0kCxEq7m2RuhajSZe9tXPdL689oodfufWdeHXTgGKyrbbkCvY4bOzHx9Y6Dp+iVNZiNhBYeCkLt0FXSqU6ZyocpP5/oNKIYoQpVFD3ZBiolHtazLB+20Xvbn/sp1b14WhYXW/dgrYPqRuw5jEG16sI9HoX44duKW+feJut2d6N1EmWTzQ5bzTzuGZSy/g0GTB3sPT9MTRpyVChMpAZZTkIViIDlIhRKc5e2NyaUJFeNWNW7tXDw2rGxs5vt3hCSdgdKPaTdskjb1EL/j++L4brr33Ft0zvcdEpqXWSXppnKk4Tq2TnHXqSl593h+wsDibuw7MUGGpkCbjBmqrBAfRQ/JCsEouITsyhTWxI3WQ8PIdH+ped7wkyBPd9TeyzYy+aaPf/O3bd9wxMf6sipmgtrb9NEkvTVLpYeo8QT9PMtHfh3WRl1/wZjlz6cV6z/4etZjGEFka8C0BsWh6QfKQCkiOnDvGhkJ6fdVLb/9bv/14SLBPJPxh1ruPyqXpnr2v/pv9h+MrevVkHaK6KtQIYB0khaRCRilcgSrcdNe3KAasrDz9PA5VsdkJrBBNS4Brwbt2eYgOCTbn7KXIHfPaJRe+9zvff5+7i2F1jI3kX7oChs/+YTFy25r6Qq578amLBq9ZtNiEgSXG2vkwWfX46b3j3L/3ILabiKZPL01R6SGiThHyNNPVOM87/3KecdYm7j/Qp6dCtEJwkP0R0KSyLYmjysjatS4UcrjWdPH97ym+y6haNh377PCEEDDr0//8/B8uO4l5O1avPmn5qaeVqRw0tlwk6geUmTQjN/7gf/ns527SQ9M9tIz00zRBDxHyNFF7TFfjnL/uMs48+/XsPtinJ0KyQnLa9IDZUmgJCR5SKaRCcyydi14Pqqahfe8sb2VYDSOSn1ACFJUtw8jIiOSvXxJeaTx/11noVicbYjJqpMhIB/yAMG+J4SkrPXfu3cPw+77G+MQ0WmT6aZpaDxN1hhAOwOI1nPfc32PZ0tPYfThSCUQrjQJm16wSHKSuEAsIRpMuKHwg/o/XA+c/8I6l0w1i0SekBzwY/L9fFN5fGPeRKLJkJtQxJDVZG76NCAhkVSYO1CxftpiVZwwytv12rLNH3EmsJxhY/gIWn/Ua7tu/B+sDJ5+6hOmkRFGilSP9YJaE2CogWiU5TDS5jkv8shnTOZieY/8TtjysH5jHG/yX14etXXHvOlTXYaqqY0xiUoQUIFYQKsh9qA6AdZZU9nnp61az/kWrqKdqOtYjVY/Fyy5g+TNfj7dd5g2cwh27J7jvgXtYuMQipZAcBCdES9McLUQvRKONW/RCdJiY0OT1dagKW0iPuxNsT3cyMiL5qvXhU4Vzb9tXV3Ud1aYoJtYQaiEFIQZIQZg5DItWCWcOCU95ujD/FLjo0tUYNRD6LFy8ilXnXI4zUBYdis4i5g8u5Sf3TXL/+G4GT7ZIAcnqEWucXEuKOUpIcmqyINlxKtcwDxFFf3asZh4H8MowfGl9+Bfv3BvH67pOKi4ipAQxtitATkJvUll4hrDyeYIIpArSFKxavYSuUTrFIGc9ZxPWeKwkfOEoOl1cdyHdxUu5e/cMe/Y9wIKTLaZsu//smiXCC8kq2YkmD2o1kDimH3AnCn7bRsy530yf9c69dn+/rjL4TDO+NAasgiRIppG+my+suABiXxED4gRVMEYoC88z1r2culxEqnoYZ7FWKRxE44k6n25puXfPJKFzkAWnL6I3lVsFaLND+Fl/IGRH1i5KMru4RCpUDfKzO4E7EfDXD2HlvjDqvH/1/n6osuBTBm21NdtujYLYJttLzgK/AGINvhQ0ZYyBvfdNsPK3hhhY/FT2TfUwYtH2AlbAOyisJ2IpO5b79kxzcjnJ/NMX0O/nIztDshCNkq2oOlQ9QtaPArDt4bueeyzgRzB5+drsF/fS58vSv+JgHaqY1WeFrE32haMEQKuCAMUCyBlSBpsVSUJOgd0/PYXBUxYwNVMBFhGaZQQxYA04D4U1JOmS5nn27O+zsOzRPa1DFSBZNFkle7JaVV1SlDoVP8Fr/dfa7KcTIkBRESSPnq1FJn3BW3vp/qqqs4pPuQGf2+wbQBAQbdhIkBKEPmiGnCDUMLAIfnybcssPBskmE5OQpH0CYNpXoSGhVUJ0QjSecr5j/2Rk/sGEXWrJ4mwuBJ2HzSUwFT/O09wfMazmIfl49AQoKltAvnamFhMufLE0/pIDVVVnERe1AacioAravFhpsk0LQgUm7hVireSsLFgg3HOn8rkr4fCMkr2QgSzNUnnQXbckGAPeQi4ge0OWgslKcX3QwbQ3i/Q1yU0E8zE2+q/MHsoYkRMjYAvICJI/7etPzhd/yYF+3czygIyQkqKgYhByo4AUFesaVShgPYzflTnwE8+KdYbv39Bn7BrDwRklF0LMTbNUWiUdKQMQaYpKaMvBQlEq6oxKIbnXcS7l+M28yr6RDe0JcFgNI2gjwxM4DI2idhOSrjyzf1nXl58/RF1Fwac2WwlIWRRRMa1srWkz5o5mDpfxdDAnjXPwpB73/uh0Knqos/QFKmmGHZWF2rbevvX7VYFmj8Sisb11CXEehBJCB6pScj3oXZT8wWqTfSejWrCR8FDr+5gUsKtVYgrm7T3QIJhsILaZms2wMU19Y4SUFQNoEiwQSJRSkIvD+s/f+rDef2hcL33+uyn8CnO47ku0hkhzzfSg6x5prNq01tkqa6sK0/r5wqiRGII9yW+2VwWZeaVsZlRtc0cnoIC28elnVuji6Vzfka09KUhK2SBZWvBytM5bjaoRFRXFOEElUZYd1XIyfem2TxYHpqbwxqI2ce55l2M7K8Ohqm9qaySYJvOhnfqkdgqUO83gI86uElIXYgdSp/2/FM3zSHGJL6o6frB3sX/nIx2Fj8sJbmlJioEFBOnmkMkBNDadPCfIsRlsqAqqQo5ZNDUNMKaMtZ1Uc9he+9/fKOrpTn95+Ywdi9zTrnJhwXW33vzFff3+Pm+7HZtFcxKICqlpJSRAzc8qDTmaOdP6DKNgUDFZnZ0MtV/oNhf/Ub+LTZIaJZygAj5yig5IDD9Sa5cFG7PaZlNVo2Cbm5y9I5GmDFQSvuxEilCM3f3lQwcPTf79GQvOvfKT48+5Y/b6axk+ed7SFa8/dc2rRkJnyeB0rEMsxCan7YGnOeXl9tyfy0YJudNmvwDtNH0hlaAdIZWqsWO06iDBunPDC2TXsVzgcSlAEB1F7Z88IFMx8h0XjeSalGtFozbZD+1pr/X8KUFMqoYiZbS48e5rr75j34/Wfav6w79owctGRi0Mm50yMv7tfW/50OGDu16QbbxTy8InySlLc6hJBrKFbEBt+/fsNmlBraBG0FYdSrtZpJxd11kT6ysAuP7YWI/rMLStffXJfyCEpBLF5EDWCDk0S8Ns9xJSkijZSlb1tzzw3b8e3fey372N9/x4iO1umGED6DY2JRjJKHLF2h3+6h9ceEv08cVq00/FlT4ZTVEaa5uNNH7fQGrfS+ao6croUd/QGi8REQKq1p4PwHrSCRAgaSNq3z4jO0PIf9aN3kkwLgeNJJIksiQykaRRo8++IFHtnbz/8it3P++9OqwGhs0YG+IIDxtQ6tad68LQkLqvfrF7Z/LxpdGl+7IvfbKkbIVklGjkiBrUCupmwbcGzDy0oFWyIllz91iToEd9HN6GpFHUbq6LD/djeouLZnx+KIsyFt7FwrlUuE4ufCcVhYZ0U11VGz64e8W/DqNORkTh509mAcbGJA4Nqdu+rXN7TXxJkrRbvfdRNCUDWbSVfwNerZCNNO+LgpEjbjMByUjOHs1wb2Nmjt0IH/VMcCNqtyHpA+hy59IbkuFFyepTsUQRc4dYc9XMxK7PjbCmnjVQj+b6Q0PqxsYkrnnj5Dn47rXZm6VBQshebC4ULYVcKlpALoRcKLkALYC2QcZSiE5jfXJRhJn0Zi50n2C7uiMO8USHog8FNrtTPPzUKPmxXH+WhLPfWp2XSvuNVNilQUJFoV4LyB0htzuDFs2YXEvIhTYPSTwhLC7Kuo63KO65XE/98yzxY54Kt4cjC+RZoKM0MtsEj+i+jouE9qnOGe+onq3z7Je0Y1eHHOpcquDFaKmSi4YILZrtMXtyKjSFhUUZTNqfU1rPhvKHP28LfBzH4ionCvjY9aaWbZJWvXvyKbXp/qPOs6/MHpLWqgVRC1RLQQuV5MWkAW/jIIScb85V701cPHDzI4H/lf9K7PgmMEcfaCz7q3BZKszbs8u/kxe4jnaa7CcHUROxI7tyYT6RJ+75KJtW9H6RDX5yEAAcmeS2W9kpH9Eza4nnxI6cllz2qWv20bG7ws7rb2Gk/eXYL8j8kzNG1T50rH0Msn7xd550CjhWWTwLYRfCeuB6YAsZeeThx1zMxVzMxVzMxVzMxVw8KP4PnlmuOYyKoWIAAAAASUVORK5CYII=">
 
-<meta name="x-build" content="V19.09-final-20261023">
-<meta name="x-app-version" content="19.09">
+<meta name="x-build" content="V19.11-final-20261023">
+<meta name="x-app-version" content="19.11">
 
 <style id="v1812-theme-aware-manager">
 /* ===================== V18.12 · Theme-Aware Manager =====================
@@ -8968,7 +8968,7 @@ html[data-theme="frosted"] .mobile-calendar-toggle{background:rgba(255,255,255,.
 </style>
 
 <style id="v1897-visual-detail-upgrade">
-/* Historical V18.97 visual-detail layer retained; V19.09 final overrides follow. */
+/* Historical V18.97 visual-detail layer retained; V19.11 final overrides follow. */
 :root{
   --health-direct:#53d6a5;
   --health-vpn:#8b82ff;
@@ -9124,7 +9124,7 @@ body.density-compact .card:hover .star{transform:translateY(-50%)!important}
 
 
 <style id="v1899-final-cleanup">
-/* V19.09 Final · cleaner cards + optically centered favorite + compact data center */
+/* V19.11 Final · cleaner cards + optically centered favorite + compact data center */
 .card-health-dot{display:none!important}
 .card .star{
   top:50%!important;
@@ -9180,7 +9180,7 @@ body.density-compact .card:hover .star{
 
 
 <style id="v1907-frosted-logo-stage-fix">
-/* V19.09 Final · Frosted theme logo containers: match the visual weight of dark theme.
+/* V19.11 Final · Frosted theme logo containers: match the visual weight of dark theme.
    Remove the oversized white tile effect while keeping original logo artwork untouched. */
 html[data-theme="frosted"] .site-icon,
 html[data-theme="frosted"] .custom-mini-icon,
@@ -9195,7 +9195,7 @@ html[data-theme="frosted"] .site-doctor-icon{
     inset 0 1px 0 rgba(255,255,255,.055),
     0 4px 12px rgba(0,0,0,.16)!important;
 }
-/* V19.09: keep V19.06 icon sizing; only the frosted logo stage background is overridden. */
+/* V19.11: keep V19.06 icon sizing; only the frosted logo stage background is overridden. */
 html[data-theme="frosted"] .site-icon img,
 html[data-theme="frosted"] .custom-mini-icon img{
   object-fit:contain!important;
@@ -9249,7 +9249,7 @@ html[data-theme="frosted"] .custom-mini-icon img{
         <span class="console-divider"></span>
         <span class="console-item cache"><span class="k">CACHE</span><strong id="consoleCache">0 KB</strong></span>
         <span class="console-divider"></span>
-        <span class="console-item build"><span class="k">BUILD</span><strong>V19.09</strong></span>
+        <span class="console-item build"><span class="k">BUILD</span><strong>V19.11</strong></span>
         <span class="console-spacer"></span>
         <span class="console-activity">
           <span class="k">SYSTEM ACTIVITY</span>
@@ -9406,7 +9406,7 @@ html[data-theme="frosted"] .custom-mini-icon img{
         </aside></div>
 
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V19.09 Final</div>
+    <div class="footer">© 2026 私人导航工具箱 · V19.11 Final</div>
   </main>
 </div>
 
@@ -9419,7 +9419,7 @@ html[data-theme="frosted"] .custom-mini-icon img{
     </div>
   </div>
   <div class="drawer-body">
-    <div class="admin-note">V19.09 Final：网站、分类、排序、收藏、删除状态等导航数据以 D1 为正式数据源；主题、卡片密度等纯 UI 偏好只保存在当前设备浏览器，不参与云同步。自定义上传图标进入 Workers KV，自动高清图标由 Cloudflare 服务端抓取并缓存到 KV。<br><span id="storageUsage">正在计算本地数据占用…</span></div>
+    <div class="admin-note">V19.11 Final：网站、分类、排序、收藏、删除状态等导航数据以 D1 为正式数据源；主题、卡片密度等纯 UI 偏好只保存在当前设备浏览器，不参与云同步。自定义上传图标进入 Workers KV，自动高清图标由 Cloudflare 服务端抓取并缓存到 KV。<br><span id="storageUsage">正在计算本地数据占用…</span></div>
 
     <form id="addForm">
       <div class="form-grid">
@@ -12071,7 +12071,7 @@ async function exportDisasterBackupV1860(){
     toast("正在生成完整备份…");
     const payload=await v17Request("disaster-backup");
     payload.schemaVersion=window.FXNAV_APP?.schemaVersion||3;
-    payload.appVersion=window.FXNAV_APP?.version||"19.09";
+    payload.appVersion=window.FXNAV_APP?.version||"19.11";
     payload.client={
       theme:document.documentElement.dataset.theme||"dark",
       density:STORE.get(V157_DENSITY_KEY)||"comfortable",
@@ -12080,7 +12080,7 @@ async function exportDisasterBackupV1860(){
     };
     const d=new Date(),pad=n=>String(n).padStart(2,"0");
     const stamp=`${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}`;
-    downloadJsonV1860(payload,`private-nav-backup-v${window.FXNAV_APP?.version||"19.09"}-${stamp}.json`);
+    downloadJsonV1860(payload,`private-nav-backup-v${window.FXNAV_APP?.version||"19.11"}-${stamp}.json`);
     const sites=Array.isArray(payload?.d1?.sites)?payload.d1.sites.length:0;
     const cats=Array.isArray(payload?.d1?.categories)?payload.d1.categories.length:0;
     const icons=Number(payload?.kv?.customIconCount)||0;
@@ -12101,8 +12101,8 @@ $("#disasterBackupBtn").onclick=exportDisasterBackupV1860;
 $("#exportBookmarksBtn").onclick=exportBrowserBookmarksV1852;
 
 $("#exportBtn").onclick=()=>{
-  const payload={schemaVersion:window.FXNAV_APP?.schemaVersion||3,appVersion:window.FXNAV_APP?.version||"19.09",version:window.FXNAV_APP?.version||"19.09",favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides,iconOverrides:state.iconOverrides,hiddenSites:[...state.hiddenSites],siteEdits:state.siteEdits,customCategories:state.customCategories,categoryOrder:state.categoryOrder,categoryIconOverrides:state.categoryIconOverrides,siteOrder:state.siteOrder,categoryTitleOverrides:{...(state.categoryTitleOverrides||{})},duplicateIgnoreKeys:[...(state.duplicateIgnoreKeys||new Set())],usageStats:getUsageStatsV157(),density:STORE.get(V157_DENSITY_KEY)||"comfortable",theme:document.documentElement.dataset.theme||"dark",cloudRevision:V17.revision};
-  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);const ds=new Date().toISOString().slice(0,10).replaceAll("-","");a.download=`private-nav-v${window.FXNAV_APP?.version||"19.09"}-${ds}.json`;a.click();URL.revokeObjectURL(a.href);
+  const payload={schemaVersion:window.FXNAV_APP?.schemaVersion||3,appVersion:window.FXNAV_APP?.version||"19.11",version:window.FXNAV_APP?.version||"19.11",favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides,iconOverrides:state.iconOverrides,hiddenSites:[...state.hiddenSites],siteEdits:state.siteEdits,customCategories:state.customCategories,categoryOrder:state.categoryOrder,categoryIconOverrides:state.categoryIconOverrides,siteOrder:state.siteOrder,categoryTitleOverrides:{...(state.categoryTitleOverrides||{})},duplicateIgnoreKeys:[...(state.duplicateIgnoreKeys||new Set())],usageStats:getUsageStatsV157(),density:STORE.get(V157_DENSITY_KEY)||"comfortable",theme:document.documentElement.dataset.theme||"dark",cloudRevision:V17.revision};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);const ds=new Date().toISOString().slice(0,10).replaceAll("-","");a.download=`private-nav-v${window.FXNAV_APP?.version||"19.11"}-${ds}.json`;a.click();URL.revokeObjectURL(a.href);
 };
 $("#importBtn").onclick=()=>$("#importFile").click();
 $("#importFile").addEventListener("change",async e=>{
@@ -12142,7 +12142,7 @@ $("#importFile").addEventListener("change",async e=>{
     state.custom=Array.isArray(d.custom)?d.custom:[];state.recents=Array.isArray(d.recents)?d.recents:[];state.favorites=new Set(Array.isArray(d.favorites)?d.favorites:[]);state.categoryOverrides=(d.categoryOverrides&&typeof d.categoryOverrides==="object"&&!Array.isArray(d.categoryOverrides))?d.categoryOverrides:{};state.iconOverrides=(d.iconOverrides&&typeof d.iconOverrides==="object"&&!Array.isArray(d.iconOverrides))?d.iconOverrides:{};state.hiddenSites=new Set(Array.isArray(d.hiddenSites)?d.hiddenSites:[]);state.siteEdits=(d.siteEdits&&typeof d.siteEdits==="object"&&!Array.isArray(d.siteEdits))?d.siteEdits:{};state.customCategories=Array.isArray(d.customCategories)?d.customCategories:[];state.categoryOrder=Array.isArray(d.categoryOrder)?d.categoryOrder:[];state.categoryIconOverrides=(d.categoryIconOverrides&&typeof d.categoryIconOverrides==="object"&&!Array.isArray(d.categoryIconOverrides))?d.categoryIconOverrides:{};state.siteOrder=(d.siteOrder&&typeof d.siteOrder==="object"&&!Array.isArray(d.siteOrder))?d.siteOrder:{};state.categoryTitleOverrides=(d.categoryTitleOverrides&&typeof d.categoryTitleOverrides==="object"&&!Array.isArray(d.categoryTitleOverrides))?d.categoryTitleOverrides:{};state.duplicateIgnoreKeys=new Set(Array.isArray(d.duplicateIgnoreKeys)?d.duplicateIgnoreKeys:[]);if(d.usageStats&&typeof d.usageStats==="object"&&!Array.isArray(d.usageStats))STORE.set("fxnav_usage_stats_v157",JSON.stringify(d.usageStats));if(d.density==="compact"||d.density==="comfortable")STORE.set(V157_DENSITY_KEY,d.density);if(["dark","light","liquid","neon","frosted"].includes(d.theme)){STORE.set(KEYS.theme,d.theme);document.documentElement.dataset.theme=d.theme;applyTheme()}applyDensityV157();
     sanitizeState();
     if(!save()){Object.assign(state,{custom:snapshot.custom,recents:snapshot.recents,favorites:snapshot.favorites,categoryOverrides:snapshot.categoryOverrides,iconOverrides:snapshot.iconOverrides,hiddenSites:snapshot.hiddenSites,siteEdits:snapshot.siteEdits,customCategories:snapshot.customCategories,categoryOrder:snapshot.categoryOrder,categoryIconOverrides:snapshot.categoryIconOverrides,siteOrder:snapshot.siteOrder,categoryTitleOverrides:snapshot.categoryTitleOverrides,duplicateIgnoreKeys:snapshot.duplicateIgnoreKeys});throw new Error("导入数据超过浏览器本地存储容量，已恢复原配置")}
-    refreshCategoryUI();renderDeletedList();updateStorageUsage();toast(`${window.FXNAV_APP?.build||"V19.09"} 配置已导入`);
+    refreshCategoryUI();renderDeletedList();updateStorageUsage();toast(`${window.FXNAV_APP?.build||"V19.11"} 配置已导入`);
   }catch(err){alert(err?.message||"配置文件无效")}finally{e.target.value=""}
 });
 
@@ -12456,7 +12456,7 @@ if(__sidebarV158){
    这里增加统一同步入口，后端 API 接入后无需重构页面。
 */
 const FX_SYNC={
-  version:(window.FXNAV_APP?.build||"V19.09"),
+  version:(window.FXNAV_APP?.build||"V19.11"),
   enabled:false,
   user:null,
   endpoint:"",
@@ -15305,7 +15305,7 @@ updateAccessUIV178();
             <button class="mini-btn" type="button" id="doctorVpnRefresh">刷新状态</button>
           </div>
         </div>
-        <div class="site-doctor-route-warning"><b>路由说明：</b>纯网页无法绕过 Windows 系统代理、浏览器代理或 v2rayN TUN 强制指定“本次请求直连”。因此 V19.09 继续采用严格出口识别：第一轮只允许在已记录的直连出口下运行；第二轮只在检测到 VPN 出口后运行；开启代理后点“刷新状态”即可自动变绿。</div>
+        <div class="site-doctor-route-warning"><b>路由说明：</b>纯网页无法绕过 Windows 系统代理、浏览器代理或 v2rayN TUN 强制指定“本次请求直连”。因此 V19.11 继续采用严格出口识别：第一轮只允许在已记录的直连出口下运行；第二轮只在检测到 VPN 出口后运行；开启代理后点“刷新状态”即可自动变绿。</div>
 
         <div class="site-doctor-toolbar">
           <button class="btn primary" type="button" id="doctorScanAll">第一轮：检测全部网站</button>
@@ -15701,7 +15701,7 @@ updateAccessUIV178();
 </script>
 
 <style id="v1896-ui-final-polish">
-/* V19.09 Final — visual cleanup and data-center layout refinement. */
+/* V19.11 Final — visual cleanup and data-center layout refinement. */
 :root{--v1896-focus-ring:color-mix(in srgb,var(--accent) 74%,#fff 8%)}
 
 /* Homepage: trim the shared calendar/hero row by about 8–10% without removing content. */
@@ -15836,7 +15836,7 @@ updateAccessUIV178();
 
 
 <style id="v1900-theme-consistency">
-/* V19.09 Final · theme consistency pass */
+/* V19.11 Final · theme consistency pass */
 
 /* 1) Frosted/black theme: remove the oversized white Focus pill.
    Keep selection visible with a restrained transparent charcoal layer. */
@@ -15963,7 +15963,7 @@ html[data-theme="liquid"] #compactThemeBtn{
 
 
 <style id="v1906-theme-toggle-hover-only">
-/* V19.09 Final · four non-dark themes: theme switch has no permanent tile.
+/* V19.11 Final · four non-dark themes: theme switch has no permanent tile.
    Keep the icon visible; reveal the rounded background only on pointer hover. */
 @media (hover:hover) and (pointer:fine){
   html[data-theme="light"] :is(#themeBtn,#compactThemeBtn):not(:hover),
@@ -15978,247 +15978,261 @@ html[data-theme="liquid"] #compactThemeBtn{
 </style>
 
 
-<style id="v1909-liquid-signature">
-/* V19.09 · Liquid Glass Signature
-   Rebuild only the liquid theme: clearer center, optical rim, environmental tint,
-   layered depth and pointer-reactive highlights. Other themes remain untouched. */
+
+<style id="v1911-glass-signature">
+/* V19.11 · Glass Signature
+   Design-target pass: single optical rim, strong environmental transmission,
+   blue/violet fluid backdrop, centered search control and iridescent selected states.
+   Liquid theme only. */
 html[data-theme="liquid"]{
-  --text:#10233f;
-  --muted:#5c7395;
-  --muted2:#7f91ab;
-  --line:rgba(255,255,255,.52);
-  --line2:rgba(76,103,145,.14);
-  --glass:rgba(245,250,255,.105);
-  --glass-strong:rgba(249,252,255,.17);
-  --soft:rgba(255,255,255,.18);
-  --soft2:rgba(255,255,255,.26);
-  --sidebar-bg:rgba(235,244,252,.20);
-  --drawer-bg:rgba(240,247,253,.58);
-  --lg-rim:rgba(255,255,255,.66);
-  --lg-rim-soft:rgba(255,255,255,.30);
-  --lg-shadow:rgba(61,86,126,.105);
-  --lg-blue:rgba(73,153,255,.19);
-  --lg-violet:rgba(143,100,255,.15);
-  --lg-cyan:rgba(57,216,229,.13);
+  color-scheme:dark;
+  --text:#f7fbff;
+  --muted:#c4d5ed;
+  --muted2:#8fa7c8;
+  --line:rgba(255,255,255,.20);
+  --line2:rgba(255,255,255,.12);
+  --glass:rgba(18,42,82,.20);
+  --glass-strong:rgba(23,51,99,.30);
+  --soft:rgba(255,255,255,.055);
+  --soft2:rgba(255,255,255,.085);
+  --sidebar-bg:rgba(10,27,58,.34);
+  --drawer-bg:rgba(13,30,62,.82);
+  --accent:#59c8ff;
+  --accent2:#b65cff;
 }
 html[data-theme="liquid"] body{
   background:
-    radial-gradient(64rem 36rem at 8% -10%,rgba(255,255,255,.94),transparent 58%),
-    radial-gradient(55rem 38rem at 96% 0%,rgba(96,148,255,.29),transparent 61%),
-    radial-gradient(46rem 34rem at 88% 72%,rgba(208,132,246,.16),transparent 64%),
-    radial-gradient(40rem 30rem at 4% 80%,rgba(61,213,203,.15),transparent 64%),
-    linear-gradient(138deg,#d8e3ef 0%,#eef4f8 31%,#dce6f0 62%,#f1f4f8 100%)!important;
+    radial-gradient(72rem 46rem at 4% -8%,rgba(38,148,255,.50),transparent 58%),
+    radial-gradient(66rem 44rem at 92% -4%,rgba(151,81,244,.47),transparent 60%),
+    radial-gradient(58rem 40rem at 92% 92%,rgba(237,82,191,.28),transparent 62%),
+    radial-gradient(52rem 36rem at 3% 91%,rgba(37,210,214,.24),transparent 62%),
+    linear-gradient(136deg,#07172f 0%,#0b2b60 31%,#1e397d 57%,#432c75 80%,#172148 100%)!important;
   background-attachment:fixed!important;
+  color:var(--text)!important;
 }
-html[data-theme="liquid"] .ambient-scene{display:block!important;opacity:.92!important;animation:v1909AmbientBreath 9s ease-in-out infinite alternate}
-@keyframes v1909AmbientBreath{from{opacity:.76}to{opacity:.98}}
+html[data-theme="liquid"] body::before{
+  content:"";
+  position:fixed;
+  inset:-22vh -14vw;
+  z-index:0;
+  pointer-events:none;
+  background:
+    radial-gradient(52rem 14rem at 28% 30%,rgba(95,202,255,.24),transparent 70%),
+    radial-gradient(48rem 13rem at 70% 36%,rgba(126,103,255,.25),transparent 72%),
+    radial-gradient(46rem 14rem at 58% 74%,rgba(242,103,210,.18),transparent 72%),
+    linear-gradient(162deg,transparent 28%,rgba(99,204,255,.13) 34%,rgba(255,255,255,.07) 38%,transparent 47%),
+    linear-gradient(18deg,transparent 51%,rgba(185,104,255,.12) 58%,rgba(255,122,215,.08) 63%,transparent 72%);
+  filter:blur(34px) saturate(132%);
+  opacity:.95;
+  transform:scale(1.08);
+}
+html[data-theme="liquid"] body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  background:
+    radial-gradient(34rem 16rem at 52% 9%,rgba(255,255,255,.07),transparent 70%),
+    radial-gradient(36rem 18rem at 82% 72%,rgba(255,255,255,.055),transparent 72%);
+  opacity:.9;
+}
+html[data-theme="liquid"] .app{position:relative;z-index:1}
+html[data-theme="liquid"] .ambient-scene{display:block!important;opacity:.78!important;filter:saturate(128%) brightness(.90)!important}
 html[data-theme="liquid"] .ambient-scene .glass-capsule{
-  border-color:rgba(255,255,255,.62)!important;
-  background:
-    linear-gradient(160deg,rgba(255,255,255,.20) 0%,rgba(255,255,255,.035) 37%,rgba(128,164,214,.035) 67%,rgba(255,255,255,.13) 100%)!important;
-  box-shadow:
-    inset 1px 2px 1px rgba(255,255,255,.78),
-    inset -2px -6px 12px rgba(81,111,156,.09),
-    0 20px 46px rgba(61,87,128,.10)!important;
-  backdrop-filter:blur(5px) saturate(138%) brightness(1.03)!important;
-  -webkit-backdrop-filter:blur(5px) saturate(138%) brightness(1.03)!important;
+  background:rgba(255,255,255,.035)!important;
+  border:1px solid rgba(255,255,255,.24)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.34),inset 0 -1px 0 rgba(3,12,28,.25),0 18px 44px rgba(2,10,28,.22)!important;
+  backdrop-filter:blur(8px) saturate(150%)!important;
+  -webkit-backdrop-filter:blur(8px) saturate(150%)!important;
 }
-html[data-theme="liquid"] .ambient-scene .glass-capsule::before{opacity:.60!important;background:linear-gradient(180deg,rgba(255,255,255,.74),rgba(255,255,255,.01))!important}
-html[data-theme="liquid"] .ambient-scene .glass-capsule::after{opacity:.64!important;background:linear-gradient(100deg,rgba(51,196,255,.16),rgba(116,104,255,.13) 48%,rgba(236,117,203,.10))!important;filter:blur(8px)!important}
+html[data-theme="liquid"] .ambient-scene .glass-capsule::before{opacity:.34!important;background:linear-gradient(180deg,rgba(255,255,255,.52),transparent 40%)!important}
+html[data-theme="liquid"] .ambient-scene .glass-capsule::after{opacity:.32!important;background:linear-gradient(100deg,rgba(70,209,255,.26),rgba(107,108,255,.24),rgba(240,96,210,.20))!important;filter:blur(10px)!important}
 
-/* Tier 1 glass: hero + calendar */
+/* Single-rim glass material: no nested white outlines. */
+html[data-theme="liquid"] :is(#hero,.home-layout>.hero-datetime,#hero .search-panel,.tool-cluster,.system-console,.mini-calendar,.sidebar,.card.glass){
+  --glass-x:72%;--glass-y:14%;position:relative;isolation:isolate;
+}
 html[data-theme="liquid"] #hero,
-html[data-theme="liquid"] .home-layout>.hero-datetime{
-  --glass-x:78%;--glass-y:16%;
+html[data-theme="liquid"] .home-layout>.hero-datetime,
+html[data-theme="liquid"] .sidebar,
+html[data-theme="liquid"] .system-console,
+html[data-theme="liquid"] .tool-cluster{
   background:
-    radial-gradient(28rem 18rem at var(--glass-x) var(--glass-y),rgba(255,255,255,.24),transparent 62%),
-    radial-gradient(32rem 22rem at 100% 0%,var(--lg-blue),transparent 68%),
-    radial-gradient(25rem 18rem at 0% 100%,var(--lg-cyan),transparent 72%),
-    linear-gradient(145deg,rgba(255,255,255,.155),rgba(255,255,255,.055) 48%,rgba(187,207,235,.075))!important;
-  border:1px solid rgba(255,255,255,.56)!important;
+    radial-gradient(26rem 13rem at var(--glass-x) var(--glass-y),rgba(255,255,255,.105),transparent 70%),
+    linear-gradient(145deg,rgba(255,255,255,.105),rgba(255,255,255,.032) 48%,rgba(8,24,58,.12) 100%)!important;
+  border:1px solid rgba(255,255,255,.28)!important;
   box-shadow:
-    inset 1px 1px 0 rgba(255,255,255,.82),
-    inset -1px -1px 0 rgba(87,112,151,.095),
-    inset 0 -18px 46px rgba(80,105,145,.028),
-    0 22px 56px var(--lg-shadow)!important;
-  backdrop-filter:blur(22px) saturate(158%) brightness(1.035)!important;
-  -webkit-backdrop-filter:blur(22px) saturate(158%) brightness(1.035)!important;
+    inset 0 1px 0 rgba(255,255,255,.38),
+    inset 0 -1px 0 rgba(4,13,34,.28),
+    0 18px 48px rgba(2,10,30,.17)!important;
+  backdrop-filter:blur(18px) saturate(155%) contrast(108%)!important;
+  -webkit-backdrop-filter:blur(18px) saturate(155%) contrast(108%)!important;
 }
+html[data-theme="liquid"] #hero,
+html[data-theme="liquid"] .home-layout>.hero-datetime{overflow:hidden!important}
 html[data-theme="liquid"] #hero::before,
-html[data-theme="liquid"] .home-layout>.hero-datetime::before{
-  content:""!important;display:block!important;position:absolute!important;inset:6px!important;width:auto!important;height:auto!important;
-  border-radius:24px!important;border:1px solid rgba(255,255,255,.21)!important;pointer-events:none!important;z-index:1!important;
-  background:
-    radial-gradient(26rem 12rem at var(--glass-x) var(--glass-y),rgba(255,255,255,.20),transparent 68%),
-    linear-gradient(135deg,rgba(255,255,255,.07),transparent 42%)!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(75,102,145,.035)!important;
-}
+html[data-theme="liquid"] .home-layout>.hero-datetime::before,
+html[data-theme="liquid"] #hero .search-panel::before{display:none!important;content:none!important}
 html[data-theme="liquid"] #hero::after,
 html[data-theme="liquid"] .home-layout>.hero-datetime::after{
-  content:""!important;position:absolute!important;inset:0!important;height:auto!important;border-radius:inherit!important;pointer-events:none!important;z-index:2!important;
+  content:""!important;display:block!important;position:absolute!important;inset:0!important;height:auto!important;border-radius:inherit!important;pointer-events:none!important;z-index:1!important;
   background:
-    radial-gradient(23rem 11rem at var(--glass-x) calc(var(--glass-y) - 8%),rgba(255,255,255,.26),transparent 65%),
-    linear-gradient(90deg,transparent 4%,rgba(255,255,255,.70) 18%,rgba(255,255,255,.22) 50%,rgba(146,181,255,.30) 82%,transparent 96%) top/100% 1px no-repeat,
-    linear-gradient(90deg,transparent 10%,rgba(85,124,181,.04),rgba(133,97,221,.07),transparent 90%) bottom/100% 1px no-repeat!important;
-  opacity:.82!important;
+    radial-gradient(21rem 9rem at var(--glass-x) var(--glass-y),rgba(255,255,255,.18),transparent 70%),
+    linear-gradient(180deg,rgba(255,255,255,.09),transparent 15%,transparent 80%,rgba(2,12,34,.08))!important;
+  opacity:.72!important;mix-blend-mode:screen;
 }
-html[data-theme="liquid"] #hero>* ,
-html[data-theme="liquid"] .home-layout>.hero-datetime>*{position:relative;z-index:3}
+html[data-theme="liquid"] #hero>*,html[data-theme="liquid"] .home-layout>.hero-datetime>*{position:relative;z-index:2}
 
-/* Hero art becomes part of the optical material instead of floating stickers. */
-html[data-theme="liquid"] .hero-art{opacity:.82!important}
-html[data-theme="liquid"] .hero-art .glass-capsule{
-  border-color:rgba(255,255,255,.62)!important;
-  background:linear-gradient(160deg,rgba(255,255,255,.20),rgba(255,255,255,.035) 52%,rgba(115,153,210,.07))!important;
-  box-shadow:inset 0 1px 1px rgba(255,255,255,.72),inset 0 -6px 14px rgba(88,112,156,.06),0 16px 32px rgba(71,92,128,.08)!important;
-}
-html[data-theme="liquid"] .hero-art i:first-child::after,
-html[data-theme="liquid"] .hero-art i:nth-child(2)::after{filter:saturate(112%) blur(.15px);opacity:.82}
-
-/* Tier 2 glass: search + toolbar + inner calendar */
-html[data-theme="liquid"] #hero .search-panel,
-html[data-theme="liquid"] .tool-cluster,
-html[data-theme="liquid"] .mini-calendar{
-  --glass-x:64%;--glass-y:18%;
-  background:
-    radial-gradient(18rem 8rem at var(--glass-x) var(--glass-y),rgba(255,255,255,.20),transparent 68%),
-    linear-gradient(145deg,rgba(255,255,255,.19),rgba(255,255,255,.065) 54%,rgba(190,211,238,.065))!important;
-  border-color:rgba(255,255,255,.48)!important;
-  box-shadow:
-    inset 1px 1px 0 rgba(255,255,255,.70),
-    inset -1px -1px 0 rgba(79,105,147,.06),
-    0 12px 30px rgba(66,88,123,.07)!important;
-  backdrop-filter:blur(16px) saturate(150%) brightness(1.025)!important;
-  -webkit-backdrop-filter:blur(16px) saturate(150%) brightness(1.025)!important;
-}
-html[data-theme="liquid"] #hero .search-panel::before{
-  inset:5px!important;border-color:rgba(255,255,255,.18)!important;
-  background:linear-gradient(135deg,rgba(255,255,255,.055),transparent 42%)!important;
-}
-html[data-theme="liquid"] #hero .search-row{
-  background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,.085))!important;
-  border-color:rgba(255,255,255,.42)!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.58),inset 0 -1px 0 rgba(86,109,145,.045)!important;
-}
-html[data-theme="liquid"] .liquid-search-btn{
-  background:
-    radial-gradient(circle at 22% 20%,rgba(120,244,255,.96),transparent 30%),
-    radial-gradient(circle at 84% 82%,rgba(236,126,255,.72),transparent 42%),
-    linear-gradient(125deg,#29baf2 0%,#5280ff 41%,#7a66ef 66%,#c66edb 100%)!important;
-  border-color:rgba(255,255,255,.72)!important;
-  box-shadow:inset 0 2px 1px rgba(255,255,255,.54),inset 0 -7px 15px rgba(72,57,173,.14),0 12px 26px rgba(93,104,215,.22)!important;
-}
-html[data-theme="liquid"] .calendar-ref-v1838 .calendar-ref-monthbox,
-html[data-theme="liquid"] .calendar-ref-v1838 .calendar-ref-bottom{
-  background:linear-gradient(145deg,rgba(255,255,255,.11),rgba(255,255,255,.035))!important;
-  border-color:rgba(255,255,255,.29)!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.36)!important;
-}
-
-/* Sidebar: transparent optical sheet, no milky white slab. */
-html[data-theme="liquid"] .sidebar{
-  background:
-    radial-gradient(20rem 22rem at 0% 4%,rgba(255,255,255,.22),transparent 62%),
-    linear-gradient(160deg,rgba(248,252,255,.20),rgba(205,222,241,.085))!important;
-  border-color:rgba(255,255,255,.52)!important;
-  box-shadow:inset 1px 0 0 rgba(255,255,255,.58),14px 0 38px rgba(62,84,118,.07)!important;
-  backdrop-filter:blur(20px) saturate(150%) brightness(1.02)!important;
-  -webkit-backdrop-filter:blur(20px) saturate(150%) brightness(1.02)!important;
-}
-html[data-theme="liquid"] .nav-btn:not(.active):not(.scroll-active):hover{background:rgba(255,255,255,.13)!important;border-color:rgba(255,255,255,.28)!important}
-html[data-theme="liquid"] .nav-btn.active,
-html[data-theme="liquid"] .nav-btn.scroll-active{
-  background:
-    radial-gradient(10rem 6rem at 88% 10%,rgba(255,225,135,.28),transparent 60%),
-    linear-gradient(105deg,rgba(43,185,255,.78),rgba(84,119,255,.79) 36%,rgba(143,93,237,.79) 68%,rgba(229,104,206,.66))!important;
-  border-color:rgba(255,255,255,.50)!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.50),inset 0 -1px 0 rgba(77,72,151,.08),0 10px 24px rgba(91,103,207,.16)!important;
-  backdrop-filter:blur(10px) saturate(160%)!important;
-  -webkit-backdrop-filter:blur(10px) saturate(160%)!important;
-}
-
-/* Tier 3 glass: cards stay cheap at rest; only hovered card gets real local blur. */
-html[data-theme="liquid"] .card.glass{
-  --glass-x:50%;--glass-y:18%;
-  background:
-    radial-gradient(13rem 7rem at var(--glass-x) var(--glass-y),rgba(255,255,255,.105),transparent 70%),
-    linear-gradient(145deg,rgba(255,255,255,.105),rgba(255,255,255,.035) 58%,rgba(175,202,234,.045))!important;
-  border-color:rgba(255,255,255,.31)!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.36),inset 0 -1px 0 rgba(80,106,145,.035),0 7px 18px rgba(68,89,122,.035)!important;
-}
-html[data-theme="liquid"] .card::after{
-  background:radial-gradient(16rem 9rem at var(--glass-x) var(--glass-y),rgba(255,255,255,.90),rgba(109,174,255,.42) 30%,rgba(151,105,244,.28) 54%,transparent 75%)!important;
-}
-@media (hover:hover) and (pointer:fine){
-  html[data-theme="liquid"] .card:hover{
-    background:
-      radial-gradient(16rem 9rem at var(--glass-x) var(--glass-y),rgba(255,255,255,.23),transparent 68%),
-      linear-gradient(145deg,rgba(255,255,255,.16),rgba(255,255,255,.052) 56%,rgba(180,202,235,.065))!important;
-    border-color:rgba(255,255,255,.52)!important;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.58),inset 0 -1px 0 rgba(83,108,150,.05),0 14px 30px rgba(65,88,126,.085)!important;
-    backdrop-filter:blur(9px) saturate(158%) brightness(1.025)!important;
-    -webkit-backdrop-filter:blur(9px) saturate(158%) brightness(1.025)!important;
-  }
-  html[data-theme="liquid"] .card:hover::after{opacity:.74!important}
-}
-html[data-theme="liquid"] .site-icon,
-html[data-theme="liquid"] .section-badge,
-html[data-theme="liquid"] .nav-icon,
-html[data-theme="liquid"] .nav-count,
-html[data-theme="liquid"] .pill,
-html[data-theme="liquid"] .eyebrow{
-  background:linear-gradient(145deg,rgba(255,255,255,.22),rgba(255,255,255,.075))!important;
-  border-color:rgba(255,255,255,.38)!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.49),0 4px 12px rgba(70,92,126,.035)!important;
-}
-
-/* Toolbar theme control keeps V19.06 behavior: no permanent tile, glass appears on hover only. */
-@media (hover:hover) and (pointer:fine){
-  html[data-theme="liquid"] :is(#themeBtn,#compactThemeBtn):not(:hover){background:transparent!important;border-color:transparent!important;box-shadow:none!important}
-  html[data-theme="liquid"] :is(#themeBtn,#compactThemeBtn):hover{
-    background:linear-gradient(145deg,rgba(255,255,255,.24),rgba(185,211,246,.09))!important;
-    border-color:rgba(255,255,255,.36)!important;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.46)!important;
-  }
-}
-
-/* Clearer liquid typography. */
-html[data-theme="liquid"] #hero h1{letter-spacing:-.045em}
+/* Hero typography and side copy */
+html[data-theme="liquid"] #hero h1{color:#fff!important;text-shadow:0 2px 18px rgba(4,17,44,.22);letter-spacing:-.045em}
 html[data-theme="liquid"] #hero h1 .liquid-title-accent,
 html[data-theme="liquid"] #hero h1 strong{
-  background:linear-gradient(94deg,#1b8cf4 0%,#526fff 48%,#8c5ee9 82%,#b85edb 100%)!important;
+  background:linear-gradient(94deg,#5bd8ff 0%,#7e91ff 42%,#b969ff 72%,#ff77cf 100%)!important;
   -webkit-background-clip:text!important;background-clip:text!important;color:transparent!important;
 }
-html[data-theme="liquid"] .brand-copy b{color:#112744!important}
-html[data-theme="liquid"] .brand-copy small{color:#617997!important}
+html[data-theme="liquid"] #hero p{color:#cbdaf0!important}
+html[data-theme="liquid"] .liquid-side-copy{color:#b7c9e4!important;text-shadow:0 2px 14px rgba(3,12,32,.22)}
+html[data-theme="liquid"] .liquid-side-copy .rule{background:rgba(255,255,255,.30)!important}
 
-@media(prefers-reduced-motion:reduce){html[data-theme="liquid"] .ambient-scene{animation:none!important}}
+/* Search assembly: one glass shell + centered iridescent square control. */
+html[data-theme="liquid"] #hero .search-panel{
+  background:linear-gradient(145deg,rgba(255,255,255,.105),rgba(255,255,255,.030) 62%,rgba(5,20,53,.11))!important;
+  border:1px solid rgba(255,255,255,.26)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.32),inset 0 -1px 0 rgba(5,16,41,.22),0 16px 38px rgba(3,12,34,.13)!important;
+  backdrop-filter:blur(16px) saturate(150%)!important;
+  -webkit-backdrop-filter:blur(16px) saturate(150%)!important;
+  padding:9px!important;
+}
+html[data-theme="liquid"] #hero .search-row{
+  position:relative!important;height:58px!important;padding:0 78px 0 15px!important;
+  background:rgba(5,22,54,.16)!important;
+  border:1px solid rgba(255,255,255,.16)!important;
+  border-radius:17px!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),inset 0 -1px 0 rgba(2,10,28,.20)!important;
+  backdrop-filter:blur(10px) saturate(145%)!important;
+  -webkit-backdrop-filter:blur(10px) saturate(145%)!important;
+}
+html[data-theme="liquid"] .search-symbol{color:#eaf4ff!important}
+html[data-theme="liquid"] .search-input{color:#f5f9ff!important}
+html[data-theme="liquid"] .search-input::placeholder{color:#9fb4d1!important}
+html[data-theme="liquid"] .clear-search{position:absolute!important;right:72px!important;top:50%!important;transform:translateY(-50%)!important;background:rgba(255,255,255,.08)!important;color:#d9e8fb!important}
+html[data-theme="liquid"] .liquid-search-btn{
+  display:block!important;position:absolute!important;z-index:5!important;right:8px!important;top:50%!important;transform:translateY(-50%)!important;
+  width:56px!important;height:44px!important;border-radius:15px!important;padding:0!important;margin:0!important;
+  font-size:0!important;line-height:0!important;color:transparent!important;
+  border:1px solid rgba(255,255,255,.52)!important;
+  background:
+    radial-gradient(circle at 22% 18%,rgba(112,245,255,.95),transparent 30%),
+    radial-gradient(circle at 80% 80%,rgba(255,118,220,.78),transparent 42%),
+    linear-gradient(135deg,#23bff1 0%,#4c8cff 35%,#765ff4 63%,#d15ed6 100%)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.62),inset 0 -8px 16px rgba(66,42,151,.18),0 9px 24px rgba(72,94,221,.28)!important;
+  cursor:pointer!important;overflow:hidden!important;
+}
+html[data-theme="liquid"] .liquid-search-btn::before{
+  content:"";position:absolute;width:12px;height:12px;border:2px solid #fff;border-radius:50%;left:50%;top:50%;transform:translate(-62%,-62%);box-sizing:border-box;filter:drop-shadow(0 1px 2px rgba(22,32,92,.28));
+}
+html[data-theme="liquid"] .liquid-search-btn::after{
+  content:"";position:absolute;width:7px;height:2px;border-radius:999px;background:#fff;left:50%;top:50%;transform:translate(15%,155%) rotate(45deg);transform-origin:left center;box-shadow:0 1px 2px rgba(22,32,92,.20);
+}
+@media(hover:hover) and (pointer:fine){
+  html[data-theme="liquid"] .liquid-search-btn:hover{transform:translateY(-50%) scale(1.035)!important;filter:saturate(112%) brightness(1.04)}
+  html[data-theme="liquid"] .liquid-search-btn:active{transform:translateY(-50%) scale(.96)!important}
+}
+html[data-theme="liquid"] .search-info .pill{color:#d9e7f9!important;background:rgba(255,255,255,.055)!important;border-color:rgba(255,255,255,.16)!important}
+
+/* Calendar: transparent notification-style glass, not milky white. */
+html[data-theme="liquid"] .mini-calendar,
+html[data-theme="liquid"] .calendar-ref-v1838 .calendar-ref-monthbox,
+html[data-theme="liquid"] .calendar-ref-v1838 .calendar-ref-bottom{
+  background:rgba(8,25,59,.18)!important;
+  border-color:rgba(255,255,255,.17)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),inset 0 -1px 0 rgba(2,10,28,.18)!important;
+  backdrop-filter:blur(14px) saturate(145%)!important;
+  -webkit-backdrop-filter:blur(14px) saturate(145%)!important;
+  color:#edf5ff!important;
+}
+html[data-theme="liquid"] .calendar-ref-v1838{color:#edf5ff!important}
+html[data-theme="liquid"] .calendar-ref-v1838 :is(.calendar-ref-date,.calendar-ref-weekday,.calendar-ref-month-title,.calendar-ref-subtitle,.calendar-ref-time,.calendar-ref-day){color:inherit}
+
+/* Sidebar and selected state inspired by the supplied iridescent icon. */
+html[data-theme="liquid"] .sidebar{
+  background:linear-gradient(160deg,rgba(8,25,56,.42),rgba(16,38,79,.25))!important;
+  border-color:rgba(255,255,255,.20)!important;
+  box-shadow:inset -1px 0 0 rgba(255,255,255,.09),12px 0 40px rgba(1,8,24,.13)!important;
+  backdrop-filter:blur(20px) saturate(150%)!important;
+  -webkit-backdrop-filter:blur(20px) saturate(150%)!important;
+}
+html[data-theme="liquid"] .brand-copy b{color:#fff!important}
+html[data-theme="liquid"] .brand-copy small,html[data-theme="liquid"] .side-label,html[data-theme="liquid"] .sidebar-bottom{color:#9fb4d1!important}
+html[data-theme="liquid"] .nav-btn{color:#eaf3ff!important;border-color:transparent!important;background:transparent!important}
+html[data-theme="liquid"] .nav-btn:not(.active):not(.scroll-active):hover{background:rgba(255,255,255,.065)!important;border-color:rgba(255,255,255,.10)!important}
+html[data-theme="liquid"] .nav-btn.active,
+html[data-theme="liquid"] .nav-btn.scroll-active{
+  color:#fff!important;
+  background:
+    radial-gradient(10rem 5rem at 15% 6%,rgba(86,230,255,.78),transparent 55%),
+    radial-gradient(9rem 6rem at 88% 86%,rgba(255,107,205,.70),transparent 60%),
+    linear-gradient(112deg,rgba(48,174,246,.88),rgba(80,112,245,.90) 38%,rgba(137,82,234,.88) 70%,rgba(224,91,196,.82))!important;
+  border:1px solid rgba(255,255,255,.32)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.48),inset 0 -1px 0 rgba(53,31,123,.20),0 9px 26px rgba(78,82,207,.22)!important;
+  backdrop-filter:blur(8px) saturate(165%)!important;-webkit-backdrop-filter:blur(8px) saturate(165%)!important;
+}
+html[data-theme="liquid"] .nav-btn.active .nav-icon,
+html[data-theme="liquid"] .nav-btn.scroll-active .nav-icon{background:rgba(255,255,255,.12)!important;border-color:rgba(255,255,255,.30)!important;color:#fff!important}
+html[data-theme="liquid"] .nav-btn.active .nav-count,
+html[data-theme="liquid"] .nav-btn.scroll-active .nav-count{background:rgba(255,255,255,.12)!important;border-color:rgba(255,255,255,.24)!important;color:#fff!important}
+html[data-theme="liquid"] .nav-active-indicator{background:linear-gradient(180deg,#63e9ff,#7b7dff 55%,#ff70d5)!important;box-shadow:0 0 14px rgba(116,115,255,.48)!important}
+
+/* Cards: notification-center clear glass. */
+html[data-theme="liquid"] .section-title,html[data-theme="liquid"] .section-sub{color:#edf5ff!important}
+html[data-theme="liquid"] .section-sub{color:#9fb4d1!important}
+html[data-theme="liquid"] .card.glass{
+  background:linear-gradient(145deg,rgba(255,255,255,.080),rgba(255,255,255,.025) 64%,rgba(4,17,45,.12))!important;
+  border:1px solid rgba(255,255,255,.17)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.20),inset 0 -1px 0 rgba(1,8,24,.20),0 7px 20px rgba(2,10,28,.10)!important;
+  backdrop-filter:blur(12px) saturate(145%)!important;-webkit-backdrop-filter:blur(12px) saturate(145%)!important;
+}
+html[data-theme="liquid"] .card::after{background:radial-gradient(15rem 7rem at var(--glass-x) var(--glass-y),rgba(255,255,255,.24),rgba(88,151,255,.11) 35%,rgba(193,92,232,.08) 55%,transparent 75%)!important;opacity:.18!important}
+html[data-theme="liquid"] .card-title{color:#f6f9ff!important}
+html[data-theme="liquid"] .card-url{color:#9fb4d1!important}
+html[data-theme="liquid"] .site-icon{background:rgba(255,255,255,.075)!important;border-color:rgba(255,255,255,.15)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.20)!important}
+@media(hover:hover) and (pointer:fine){
+  html[data-theme="liquid"] .card:hover{transform:translateY(-1px)!important;background:linear-gradient(145deg,rgba(255,255,255,.115),rgba(255,255,255,.040) 60%,rgba(6,21,55,.13))!important;border-color:rgba(255,255,255,.28)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 13px 30px rgba(3,12,34,.15)!important}
+  html[data-theme="liquid"] .card:hover::after{opacity:.40!important}
+}
+
+/* Header controls */
+html[data-theme="liquid"] .system-console{color:#dce9fb!important}
+html[data-theme="liquid"] .console-brand-copy b,html[data-theme="liquid"] .console-item strong{color:#f6f9ff!important}
+html[data-theme="liquid"] :is(.console-brand-copy small,.console-item .k,.console-activity .k){color:#8fa8ca!important}
+html[data-theme="liquid"] .tool-cluster{color:#dce9fb!important}
+html[data-theme="liquid"] .tool-btn{color:#dce9fb!important}
+html[data-theme="liquid"] .cloud-status{background:rgba(36,226,163,.10)!important;border-color:rgba(98,235,190,.24)!important;color:#baf7e1!important}
+@media(hover:hover) and (pointer:fine){
+  html[data-theme="liquid"] :is(#themeBtn,#compactThemeBtn):not(:hover){background:transparent!important;border-color:transparent!important;box-shadow:none!important}
+  html[data-theme="liquid"] :is(#themeBtn,#compactThemeBtn):hover{background:rgba(255,255,255,.075)!important;border-color:rgba(255,255,255,.15)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.16)!important}
+}
+
+/* Small tokens */
+html[data-theme="liquid"] :is(.nav-icon,.nav-count,.pill,.eyebrow,.section-badge){background:rgba(255,255,255,.055)!important;border-color:rgba(255,255,255,.13)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.14)!important;color:#dce9fb!important}
+html[data-theme="liquid"] .eyebrow-private-nav{color:#65d5ff!important}
+
+@media(max-width:760px){
+  html[data-theme="liquid"] #hero .search-row{padding-right:11px!important}
+  html[data-theme="liquid"] .liquid-search-btn{display:none!important}
+}
 </style>
-
-<script id="v1909-liquid-pointer-light">
+<script id="v1911-glass-pointer">
 (()=>{
   const root=document.documentElement;
-  const selector='#hero,.home-layout>.hero-datetime,#hero .search-panel,.tool-cluster,.card.glass';
+  const selector='#hero,.home-layout>.hero-datetime,#hero .search-panel,.tool-cluster,.system-console,.card.glass';
   let raf=0,pending=null;
-  const paint=()=>{
-    raf=0;
-    if(!pending||root.dataset.theme!=='liquid')return;
-    const {el,x,y}=pending;
-    if(!el?.isConnected)return;
-    el.style.setProperty('--glass-x',x.toFixed(1)+'%');
-    el.style.setProperty('--glass-y',y.toFixed(1)+'%');
-  };
-  document.addEventListener('pointermove',e=>{
-    if(root.dataset.theme!=='liquid'||e.pointerType==='touch')return;
-    const el=e.target.closest?.(selector);
-    if(!el)return;
-    const r=el.getBoundingClientRect();
-    if(!r.width||!r.height)return;
-    pending={el,x:Math.max(0,Math.min(100,(e.clientX-r.left)/r.width*100)),y:Math.max(0,Math.min(100,(e.clientY-r.top)/r.height*100))};
-    if(!raf)raf=requestAnimationFrame(paint);
-  },{passive:true});
+  const paint=()=>{raf=0;if(!pending||root.dataset.theme!=='liquid')return;const {el,x,y}=pending;if(!el?.isConnected)return;el.style.setProperty('--glass-x',x.toFixed(1)+'%');el.style.setProperty('--glass-y',y.toFixed(1)+'%')};
+  document.addEventListener('pointermove',e=>{if(root.dataset.theme!=='liquid'||e.pointerType==='touch')return;const el=e.target.closest?.(selector);if(!el)return;const r=el.getBoundingClientRect();if(!r.width||!r.height)return;pending={el,x:Math.max(0,Math.min(100,(e.clientX-r.left)/r.width*100)),y:Math.max(0,Math.min(100,(e.clientY-r.top)/r.height*100))};if(!raf)raf=requestAnimationFrame(paint)},{passive:true});
 })();
 </script>
+
 
 </body>
 </html>
