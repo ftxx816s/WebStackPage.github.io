@@ -164,14 +164,15 @@ function incomingSite(s){const id=String(s?.id||"").trim(),n=normalizeUrl(s?.url
 function sameCategory(a,b){return !!a&&String(a.icon||"•")===b.icon&&Number(a.sort_order||0)===b.sort_order&&Number(a.is_builtin||0)===b.is_builtin}
 function sameSite(a,b){return !!a&&String(a.name||"")===b.name&&String(a.url||"")===b.url&&String(a.normalized_url||"")===b.normalized_url&&String(a.domain||"")===b.domain&&String(a.root_domain||"")===b.root_domain&&String(a.full_title||"")===b.full_title&&String(a.category_name||"")===b.category_name&&Number(a.sort_order||0)===b.sort_order&&Number(a.is_favorite||0)===b.is_favorite&&Number(a.is_deleted||0)===b.is_deleted&&Number(a.is_custom||0)===b.is_custom&&String(a.icon_url||"")===b.icon_url}
 async function runBatches(env,statements,size=40){for(let i=0;i<statements.length;i+=size)await env.DB.batch(statements.slice(i,i+size))}
-async function planSnapshotDiff(env,owner,cats,sites,ui){
+async function planSnapshotDiff(env,owner,cats,sites,ui,options={}){
   const dbCats=(await env.DB.prepare(`SELECT name,icon,sort_order,is_builtin FROM categories_v17`).all()).results||[];
   const dbSites=(await env.DB.prepare(`SELECT id,name,url,normalized_url,domain,root_domain,full_title,category_name,sort_order,is_favorite,is_deleted,is_custom,icon_url,icon_key FROM sites_v17`).all()).results||[];
   const catMap=new Map(dbCats.map(r=>[String(r.name),r])),siteMap=new Map(dbSites.map(r=>[String(r.id),r]));
   const inCats=cats.map(incomingCategory).filter(Boolean),inSites=sites.map(incomingSite).filter(Boolean);
   const inCatNames=new Set(inCats.map(r=>r.name)),inSiteIds=new Set(inSites.map(r=>r.id));
   const categoryUpserts=inCats.filter(r=>!sameCategory(catMap.get(r.name),r));
-  const categoryDeletes=dbCats.filter(r=>Number(r.is_builtin)===0&&!inCatNames.has(String(r.name)));
+  const authorizedBuiltinDeletes=new Set((Array.isArray(options?.deleteBuiltinCategories)?options.deleteBuiltinCategories:[]).map(String));
+  const categoryDeletes=dbCats.filter(r=>!inCatNames.has(String(r.name))&&(Number(r.is_builtin)===0||authorizedBuiltinDeletes.has(String(r.name))));
   const siteUpserts=inSites.filter(r=>!sameSite(siteMap.get(r.id),r));
   const siteDeletes=dbSites.filter(r=>Number(r.is_custom)!==0&&!inSiteIds.has(String(r.id)));
   const uiJson=JSON.stringify(ui||{}),oldUi=await getSetting(env,owner,"ui");
@@ -179,9 +180,14 @@ async function planSnapshotDiff(env,owner,cats,sites,ui){
 }
 async function syncSnapshot(env,owner,body){
   const {cats,sites,dups}=validateSnapshot(body);if(dups.length)return json({ok:false,error:"Duplicate URL detected.",duplicates:dups},409);
+  // Never remove categories when the incoming snapshot is empty or still references them.
+  const names=new Set(cats.map(c=>String(c?.name||"").trim()).filter(Boolean));
+  if(!names.size)return json({ok:false,error:"At least one category must remain."},400);
+  if(sites.some(s=>!names.has(String(s?.category_name??s?.category??""))))
+    return json({ok:false,error:"A site references a deleted category; migrate sites before deleting the category."},400);
   const current=await getRevision(env,owner),base=Math.max(0,Number(body?.baseRevision)||0),force=body?.force===true;if(!force&&base!==current)return json({ok:false,error:"Revision conflict.",revision:current},409);
   const ui=body?.settings&&typeof body.settings==="object"?body.settings:{};
-  const plan=await planSnapshotDiff(env,owner,cats,sites,ui);
+  const plan=await planSnapshotDiff(env,owner,cats,sites,ui,body);
   if(!plan.structuralChanged&&!plan.settingsChanged)return json({ok:true,revision:current,unchanged:true,writes:0});
   // Only structural changes need a recovery snapshot. Recents/theme/usage-only changes no longer create full snapshots.
   if(plan.structuralChanged)await backupSnapshot(env,owner,current);
