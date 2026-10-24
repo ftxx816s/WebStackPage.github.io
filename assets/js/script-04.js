@@ -120,7 +120,8 @@
     return r;
   };
 
-  // Category manager: every category gets a "标题" button without changing its internal key.
+  // Category manager: one unified display-name action for built-in and custom categories.
+  // Removes duplicate custom-category rename UI without changing D1 grouping keys.
   const __renderCategoryManagerV18=renderCategoryManager;
   renderCategoryManager=function(){
     const r=__renderCategoryManagerV18();
@@ -146,8 +147,8 @@
         const btn=document.createElement("button");
         btn.type="button";
         btn.className="cat-mini manager-category-title-btn";
-        btn.textContent="标题";
-        btn.title="修改前台显示标题，不改变分类内部键和网站归属";
+        btn.textContent="改名";
+        btn.title="修改分类显示名称（不更改内部分类键和网站归属）";
         btn.onclick=async()=>{
           const current=displayCategory(key);
           const next=await uiPromptV1821(`自定义分类标题\n\n内部分类：${key}\n留空或输入原名称可恢复默认标题。`,current);

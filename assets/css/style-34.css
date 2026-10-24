@@ -1,5 +1,5 @@
 
-/* V19.27 canonical liquid-glass layer.
+/* V19.28 canonical liquid-glass layer.
    All previous V19.21–V19.26 glass override layers were removed and consolidated here.
    Base layout/background remains in v1912; this layer owns glass material, rim, toolbar and manager styling. */
 html[data-theme="liquid"]{
@@ -15,22 +15,22 @@ html[data-theme="liquid"]{
   --liquid-border-alpha:.166;
   --liquid-top-rim-alpha:.056;
   --liquid-side-rim-alpha:.023;
-  --mgr-bg:linear-gradient(145deg,rgba(229,244,250,.78),rgba(158,198,215,.72));
-  --mgr-head:linear-gradient(135deg,rgba(239,249,253,.66),rgba(206,231,241,.56));
-  --mgr-surface:linear-gradient(140deg,rgba(239,249,253,.38),rgba(145,187,206,.25));
+  --mgr-bg:linear-gradient(150deg,rgba(33,77,104,.92),rgba(29,68,91,.94));
+  --mgr-head:linear-gradient(135deg,rgba(54,106,137,.78),rgba(37,84,113,.82));
+  --mgr-surface:linear-gradient(140deg,rgba(112,164,193,.22),rgba(35,91,124,.28));
   --mgr-surface-soft:rgba(227,245,252,.25);
   --mgr-control:rgba(26,67,88,.10);
   --mgr-hover:rgba(63,142,183,.13);
   --mgr-line:rgba(255,255,255,.34);
   --mgr-line-strong:rgba(255,255,255,.48);
-  --mgr-text:#183c52;
-  --mgr-muted:#3b6075;
-  --mgr-muted2:#4e7286;
+  --mgr-text:#f3faff;
+  --mgr-muted:#d1e8f4;
+  --mgr-muted2:#b9d7e7;
   --mgr-tab-active:#fff;
   --mgr-tab-bg:linear-gradient(120deg,rgba(71,174,232,.48),rgba(135,113,239,.42));
   --mgr-shadow:-22px 0 58px rgba(5,23,38,.22);
   --mgr-panel-shadow:inset 0 1px 0 rgba(255,255,255,.40),0 6px 18px rgba(20,55,72,.065);
-  --mgr-input-placeholder:#55788b;
+  --mgr-input-placeholder:#b9d7e7;
   color-scheme:dark;
 }
 
@@ -38,7 +38,7 @@ html[data-theme="liquid"]{
 html[data-theme="liquid"] body :is(
   .sidebar,#hero,.home-layout>.hero-datetime,.system-console,.card.glass,.mini-calendar,
   .calendar-ref-v1838 .calendar-ref-monthbox,.calendar-ref-v1838 .calendar-ref-progress,
-  .calendar-ref-v1838 .calendar-ref-selected,.compact-bar,.eyebrow,.eyebrow-private-nav,
+  .calendar-ref-v1838 .calendar-ref-selected,.compact-bar,.eyebrow,
   .glass-capsule,.manager-activity-wrap
 ){
   border:1px solid rgba(220,242,251,var(--liquid-border-alpha,.166))!important;
@@ -121,14 +121,35 @@ html[data-theme="liquid"] body .sidebar .nav-btn.scroll-active :is(.nav-icon,.na
 html[data-theme="liquid"] body .sidebar .nav-active-indicator{background:linear-gradient(180deg,#72eaff,#8b83ff 55%,#ff81d4)!important;box-shadow:0 0 10px rgba(117,131,255,.25)!important}
 html[data-theme="liquid"] body .section-title{color:#f4fbff!important}
 html[data-theme="liquid"] body .section-sub{color:#d0e1eb!important}
-html[data-theme="liquid"] body .eyebrow,
-html[data-theme="liquid"] body .eyebrow-private-nav{
+html[data-theme="liquid"] body .eyebrow{
   background:linear-gradient(135deg,rgba(226,244,250,.15),rgba(44,84,105,.13))!important;
   border:1px solid rgba(228,246,253,.30)!important;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.20),0 3px 10px rgba(5,25,39,.06)!important;
   color:#f4fbff!important;
 }
 
+/* Hero tag: real gradient glyphs, not a white outlined mini-pill. */
+html[data-theme="liquid"] body .eyebrow-private-nav{
+  display:inline!important; border:0!important; outline:0!important;
+  box-shadow:none!important; padding:0!important; text-shadow:none!important;
+  background:linear-gradient(93deg,#12bff9 0%,#438bff 38%,#916af5 76%,#d07bee 100%)!important;
+  background-clip:text!important;-webkit-background-clip:text!important;
+  color:transparent!important;-webkit-text-fill-color:transparent!important;
+  filter:none!important;
+}
+html[data-theme="liquid"] body .eyebrow-rest{
+  color:#e8f4fa!important;-webkit-text-fill-color:#e8f4fa!important;text-shadow:none!important;
+}
+/* Intro text must be readable against both dark and bright 4K wallpapers. */
+html[data-theme="liquid"] body .liquid-side-copy{
+  color:#f3fbff!important;opacity:1!important;
+  text-shadow:0 1px 3px rgba(12,39,56,.76)!important;
+  font-weight:760!important;
+}
+html[data-theme="liquid"] body .liquid-side-copy :is(.en,.cn){
+  color:#f3fbff!important;opacity:1!important;line-height:1.5!important;
+}
+html[data-theme="liquid"] body .liquid-side-copy .en{font-weight:800!important}
 /* Calendar keeps the background visible but its frame, numbers and labels stay legible. */
 html[data-theme="liquid"] body .mini-calendar,
 html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-monthbox,
@@ -139,6 +160,20 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-selected{
   border-color:rgba(220,242,251,var(--liquid-border-alpha,.166))!important;
 }
 html[data-theme="liquid"] body .calendar-ref-v1838 :is(.calendar-ref-day,.calendar-ref-meta,.calendar-ref-monthline,.calendar-ref-digital,.calendar-ref-current-full,.calendar-weekdays,.calendar-ref-progress-head,.calendar-ref-progress-meta,.calendar-ref-selected-copy){color:#f2f9fd!important}
+html[data-theme="liquid"] body .calendar-ref-v1838 :is(.calendar-ref-progress,.calendar-ref-selected){
+  background:rgba(27,61,80,.28)!important;
+  border:1px solid rgba(224,244,252,.25)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 4px 12px rgba(10,35,52,.07)!important;
+  backdrop-filter:blur(3px)!important;-webkit-backdrop-filter:blur(3px)!important;
+}
+html[data-theme="liquid"] body .calendar-ref-v1838 :is(.calendar-ref-progress,.calendar-ref-selected)::before,
+html[data-theme="liquid"] body .calendar-ref-v1838 :is(.calendar-ref-progress,.calendar-ref-selected)::after{
+  background:none!important;box-shadow:none!important;opacity:0!important;pointer-events:none!important;
+}
+html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-selected-icon{
+  background:rgba(233,249,254,.11)!important;border:1px solid rgba(238,250,255,.21)!important;
+}
+
 html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-day.outside{color:rgba(225,240,248,.46)!important}
 html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-day.selected:not(.today){color:#fff!important}
 
@@ -192,6 +227,14 @@ html[data-theme="liquid"] body .tool-cluster .cloud-status[data-state="synced"]{
 html[data-theme="liquid"] body :is(#liquidBgBtn,#compactLiquidBgBtn){background:transparent!important;border:1px solid transparent!important;box-shadow:none!important;color:#e7f4fa!important}
 @media(hover:hover) and (pointer:fine){html[data-theme="liquid"] body :is(#liquidBgBtn,#compactLiquidBgBtn):hover{background:rgba(30,74,96,.20)!important;border-color:rgba(224,243,251,.22)!important}}
 
+@media(min-width:1024px){
+  html[data-theme="liquid"] body .tool-cluster{
+    margin-left:auto!important;margin-right:0!important;
+    padding:4px 2px 4px 9px!important;gap:2px!important;
+  }
+  html[data-theme="liquid"] body .tool-cluster>.tool-btn{padding-inline:8px!important}
+  html[data-theme="liquid"] body .tool-cluster>.tool-btn.icon-only{width:30px!important;padding:0!important}
+}
 /* Management drawer: same blue glass family, stronger text contrast and consistent radii. */
 html[data-theme="liquid"] body .backdrop.show{
   background:rgba(8,25,37,.34)!important;opacity:1!important;
@@ -213,11 +256,11 @@ html[data-theme="liquid"] body #drawer .drawer-head{
 html[data-theme="liquid"] body #drawer :is(.drawer-title h2,.manager-panel-title h3,.manager-overview-hero h2,
   .manager-quick b,.metric-card strong,.metric-card b,.manager-live-card b,.manager-data-card b,
   .manager-backup-card b,.manager-activity-wrap b,.manager-site-copy b,.manager-trend-card b,
-  .manager-version-strip b,.manager-dup-intro b,.manager-transfer-card b){color:#173d53!important;text-shadow:none!important}
+  .manager-version-strip b,.manager-dup-intro b,.manager-transfer-card b){color:#f2faff!important;text-shadow:none!important}
 html[data-theme="liquid"] body #drawer :is(.drawer-title p,.manager-panel-title p,.manager-quick small,
   .manager-live-card p,.manager-data-card p,.manager-site-copy small,.manager-trend-card small,
   .manager-version-strip,.metric-card small,.manager-activity-wrap small,.manager-tab-badge,
-  .manager-health-chip,.manager-site-kind,.admin-note,.admin-note span){color:#3c6378!important}
+  .manager-health-chip,.manager-site-kind,.admin-note,.admin-note span){color:#cce5f1!important}
 html[data-theme="liquid"] body #drawer :is(
   .admin-note,.admin-surface,#addForm,#movePreview,#customList,#deletedList,
   .category-manager-list,.duplicate-panel,.move-preview,.manager-overview-hero,
@@ -234,12 +277,12 @@ html[data-theme="liquid"] body #drawer :is(
   backdrop-filter:blur(var(--liquid-glass-blur,1.32px)) saturate(116%)!important;-webkit-backdrop-filter:blur(var(--liquid-glass-blur,1.32px)) saturate(116%)!important;
 }
 html[data-theme="liquid"] body #drawer .manager-overview-hero{border-radius:16px!important}
-html[data-theme="liquid"] body #drawer .metric-card span{color:#3c6378!important}
-html[data-theme="liquid"] body #drawer .metric-card strong{color:#173d53!important}
-html[data-theme="liquid"] body #drawer .manager-quick span{color:#3c6378!important}
+html[data-theme="liquid"] body #drawer .metric-card span{color:#cce5f1!important}
+html[data-theme="liquid"] body #drawer .metric-card strong{color:#f2faff!important}
+html[data-theme="liquid"] body #drawer .manager-quick span{color:#cce5f1!important}
 html[data-theme="liquid"] body #drawer :is(.manager-tab,.manager-quick,.manager-live-card,.metric-card){border-radius:12px!important}
 html[data-theme="liquid"] body #drawer .manager-tab{
-  color:#355d73!important;background:rgba(238,249,253,.28)!important;border:1px solid rgba(255,255,255,.35)!important;
+  color:#e8f6ff!important;background:rgba(168,210,231,.12)!important;border:1px solid rgba(255,255,255,.35)!important;
 }
 html[data-theme="liquid"] body #drawer .manager-tab:hover{background:rgba(241,250,254,.45)!important;border-color:rgba(255,255,255,.48)!important}
 html[data-theme="liquid"] body #drawer .manager-tab.active{
@@ -249,19 +292,35 @@ html[data-theme="liquid"] body #drawer .manager-tab.active{
 html[data-theme="liquid"] body #drawer :is(.manager-tab-badge,.manager-health-chip,.manager-site-kind,
   .field input,.field select,.field textarea,.manager-site-toolbar input,.manager-site-toolbar select,
   .mini-btn,.cat-mini,.btn:not(.primary):not(.danger)){
-  color:#244e65!important;background:rgba(237,248,252,.37)!important;
+  color:#f2faff!important;background:rgba(163,207,227,.17)!important;
   border:1px solid rgba(255,255,255,.43)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.40)!important;
 }
-html[data-theme="liquid"] body #drawer :is(.field input,.field select,.field textarea,.manager-site-toolbar input,.manager-site-toolbar select)::placeholder{color:#54788b!important;opacity:1!important}
+html[data-theme="liquid"] body #drawer :is(.field input,.field select,.field textarea,.manager-site-toolbar input,.manager-site-toolbar select)::placeholder{color:#c2dce9!important;opacity:1!important}
 html[data-theme="liquid"] body #drawer :is(.manager-site-row,.manager-quick,.custom-item,.deleted-item):hover{
-  background:linear-gradient(140deg,rgba(247,252,255,.57),rgba(164,205,222,.39))!important;border-color:rgba(255,255,255,.55)!important;
+  background:linear-gradient(140deg,rgba(117,179,207,.26),rgba(55,115,146,.24))!important;border-color:rgba(255,255,255,.55)!important;
 }
-html[data-theme="liquid"] body #drawer select option{background:#e5f2f7!important;color:#173d53!important}
+html[data-theme="liquid"] body #drawer select option{background:#e5f2f7!important;color:#f2faff!important}
 html[data-theme="liquid"] body #drawer .manager-activity-chart{
-  color:#173d53!important;background:rgba(225,243,250,.43)!important;border:1px solid rgba(255,255,255,.48)!important;border-radius:12px!important;
+  color:#f2faff!important;background:rgba(93,151,182,.20)!important;border:1px solid rgba(255,255,255,.48)!important;border-radius:12px!important;
 }
 @media(max-width:760px){html[data-theme="liquid"] body #drawer.drawer{border-radius:0!important}html[data-theme="liquid"] body #drawer .drawer-head{border-radius:0!important}}
 
+/* Unified management text contrast; labels and controls don't inherit pale-theme values. */
+html[data-theme="liquid"] body #drawer :is(.field label,.custom-title-row h3,.category-manager-copy b,.manager-panel-title h3,
+  .manager-panel-title p,.category-glyph-help,.category-glyph-help code,.admin-note,.admin-note *,.manager-quick span,
+  .manager-site-toolbar label,.manager-site-toolbar small){
+  color:#f2faff!important;text-shadow:none!important;opacity:1!important;
+}
+html[data-theme="liquid"] body #drawer :is(.category-manager-copy small,.manager-site-copy small,
+  .manager-panel-title p,.category-glyph-help,.manager-site-kind){color:#c8e3f0!important;opacity:1!important}
+html[data-theme="liquid"] body #drawer :is(.btn:disabled,.cat-mini:disabled,.mini-btn:disabled){
+  opacity:.52!important;color:#bbd5e3!important;
+}
+html[data-theme="liquid"] body #drawer :is(input,select,textarea){
+  color:#f2faff!important;caret-color:#f4fbff!important;
+  background-color:rgba(43,92,120,.46)!important;
+}
+html[data-theme="liquid"] body #drawer :is(input,textarea)::placeholder{color:#bfdae7!important;opacity:1!important}
 /* Settings panel is intentionally dark glass so controls remain legible over every wallpaper. */
 .liquid-glass-settings{
   position:fixed;z-index:10080;width:min(300px,calc(100vw - 24px));max-height:min(78vh,480px);

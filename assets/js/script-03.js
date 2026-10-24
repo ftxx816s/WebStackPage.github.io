@@ -1302,6 +1302,79 @@ function renderCategoryIcon(target,value){
   target.textContent=normalized.value||"•";
 }
 function updateNewCategoryGlyphPreview(){const preview=$("#newCategoryGlyphPreview");if(preview)renderCategoryIcon(preview,$("#newCategoryGlyph")?.value||"◆")}
+/* V19.28: one searchable icon picker shared by new and existing categories.
+   Uses the already embedded Font Awesome 4.7 font. No CDN or additional data store. */
+let categoryIconPickerTarget=null;
+let categoryIconPickerReturnFocus=null;
+const CATEGORY_ICON_KEYWORDS={
+  "搜索":"search","首页":"home","主页":"home","网站":"globe","网络":"wifi",
+  "服务器":"server","代理":"shield","安全":"lock","开发":"code","代码":"code",
+  "设计":"paint-brush","图片":"picture-o","照片":"camera","视频":"film",
+  "购物":"shopping-cart","电商":"shopping-bag","文件":"file-text-o","下载":"download",
+  "上传":"upload","收藏":"star","音乐":"music","日历":"calendar","图标":"th-large",
+  "系统":"cog","工具":"wrench","人工智能":"magic","信息":"info-circle",
+  "学习":"book","文档":"file-word-o","分类":"folder-open-o","邮件":"envelope",
+  "客服":"comments-o","导航":"compass","测速":"tachometer","网络代理":"shield",
+  "AI":"magic","VPN":"shield","IP":"globe"
+};
+const CATEGORY_ICON_POPULAR=["search","home","globe","compass","star","magic","picture-o","paint-brush",
+  "server","cloud","tachometer","shield","shopping-cart","shopping-bag","cubes","code",
+  "file-text-o","download","upload","folder-open-o","book","comments-o","camera","video-camera",
+  "wifi","bolt","calendar","mobile","laptop","desktop","cog","wrench","database","sitemap",
+  "film","music","plane","paper-plane-o","users","briefcase","lock","gamepad","link","rocket"];
+function openCategoryIconPicker(targetId){
+  const target=document.getElementById(targetId),overlay=document.getElementById("categoryIconPickerBackdrop");
+  if(!target||!overlay)return;
+  categoryIconPickerTarget=target;
+  categoryIconPickerReturnFocus=document.activeElement;
+  overlay.classList.add("show");overlay.setAttribute("aria-hidden","false");
+  document.getElementById("categoryIconPickerSearch").value="";
+  renderCategoryIconPicker();
+  document.getElementById("categoryIconPickerSearch").focus();
+}
+function closeCategoryIconPicker(){
+  const overlay=document.getElementById("categoryIconPickerBackdrop");
+  if(!overlay||!overlay.classList.contains("show"))return;
+  overlay.classList.remove("show");overlay.setAttribute("aria-hidden","true");
+  categoryIconPickerTarget=null;
+  const focus=categoryIconPickerReturnFocus;categoryIconPickerReturnFocus=null;
+  if(focus?.isConnected)focus.focus({preventScroll:true});
+}
+function renderCategoryIconPicker(){
+  const list=document.getElementById("categoryIconPickerGrid"),meta=document.getElementById("categoryIconPickerMeta");
+  const input=document.getElementById("categoryIconPickerSearch");
+  if(!list||!meta||!input)return;
+  const query=input.value.trim().toLowerCase();
+  const terms=[query];
+  Object.entries(CATEGORY_ICON_KEYWORDS).forEach(([cn,en])=>{if(query&&cn.toLowerCase().includes(query))terms.push(en)});
+  const names=Array.from(FA47_ICON_NAMES);
+  const popular=CATEGORY_ICON_POPULAR.filter(name=>FA47_ICON_NAMES.has(name));
+  const matched=query?names.filter(name=>terms.some(term=>term&&name.includes(term))):popular;
+  matched.sort((a,b)=>{
+    const ia=popular.indexOf(a),ib=popular.indexOf(b);
+    return (ia===-1?1000:ia)-(ib===-1?1000:ib)||a.localeCompare(b);
+  });
+  const visible=matched.slice(0,100);
+  meta.textContent=query?`找到 ${matched.length} 个图标${matched.length>100?'，显示前 100 个':''}`:'常用图标 · 可输入中文或英文搜索';
+  list.replaceChildren();
+  if(!visible.length){const msg=document.createElement("p");msg.className="category-icon-picker-empty";
+    msg.textContent="没有匹配的图标。试试 search、server、home 或「购物」。";list.append(msg);return}
+  const frag=document.createDocumentFragment();
+  for(const name of visible){
+    const btn=document.createElement("button");btn.type="button";btn.className="category-icon-option";
+    btn.title=`fa fa-${name}`;btn.setAttribute("aria-label",`选择 ${name} 图标`);
+    const glyph=document.createElement("i");glyph.className=`fa fa-${name}`;glyph.setAttribute("aria-hidden","true");
+    const label=document.createElement("span");label.textContent=name;
+    btn.append(glyph,label);
+    btn.addEventListener("click",()=>{
+      if(!categoryIconPickerTarget)return;
+      categoryIconPickerTarget.value=`fa fa-${name}`;
+      categoryIconPickerTarget.dispatchEvent(new Event("input",{bubbles:true}));
+      closeCategoryIconPicker();
+    });frag.append(btn);
+  }
+  list.append(frag);
+}
 const RECOMMENDED_CATEGORY_ICONS={
   "常用·搜索":"fa fa-search","AI 助手·聚合":"fa fa-magic","AI 图像·视频":"fa fa-picture-o",
   "设计·灵感":"fa fa-paint-brush","素材·字体·PPT":"fa fa-cubes","图片·文档工具":"fa fa-file-text-o",
@@ -1316,7 +1389,12 @@ function recommendedCategoryIcon(name){
   if(RECOMMENDED_CATEGORY_ICONS[name])return RECOMMENDED_CATEGORY_ICONS[name];
   const key=String(name||"").replace(/[·・\-\s]/g,"").toLowerCase();
   const entry=Object.entries(RECOMMENDED_CATEGORY_ICONS).find(([label])=>label.replace(/[·・\-\s]/g,"").toLowerCase()===key);
-  return entry?.[1]||"";
+  if(entry)return entry[1];
+  const normalized=String(name||"").toLowerCase();
+  for(const [cn,en] of Object.entries(CATEGORY_ICON_KEYWORDS)){
+    if(normalized.includes(cn.toLowerCase())&&FA47_ICON_NAMES.has(en))return `fa fa-${en}`;
+  }
+  return "";
 }
 async function applyRecommendedCategoryIcons(){
   const changes=allCategories().map(cat=>({cat,icon:recommendedCategoryIcon(cat.name)})).filter(item=>item.icon);
@@ -1737,7 +1815,7 @@ function updateCounts(){
 /* V13 categories */
 function renderCategoryManager(){
   const box=$("#categoryManagerList");if(!box)return;box.innerHTML="";const cats=allCategories();$("#categoryManageCount").textContent=cats.length+" 个分类";
-  cats.forEach((cat,index)=>{const row=document.createElement("div");row.className="category-manager-item";row.draggable=true;row.dataset.category=cat.name;const drag=document.createElement("span");drag.className="category-drag";drag.textContent="⋮⋮";drag.title="拖拽调整分类顺序";const icon=document.createElement("span");icon.className="category-manager-icon";renderCategoryIcon(icon,cat.icon);const copy=document.createElement("div");copy.className="category-manager-copy";const b=document.createElement("b");b.textContent=cat.name;const sm=document.createElement("small");sm.textContent=`${cat.builtin?"内置分类":"自定义分类"} · ${categoryCount(cat.name)} 个网站`;copy.append(b,sm);const actions=document.createElement("div");actions.className="category-manager-actions";const up=document.createElement("button");up.className="cat-mini";up.textContent="↑";up.disabled=index===0;up.onclick=()=>moveCategoryStep(cat.name,-1);const down=document.createElement("button");down.className="cat-mini";down.textContent="↓";down.disabled=index===cats.length-1;down.onclick=()=>moveCategoryStep(cat.name,1);const iconBtn=document.createElement("button");iconBtn.className="cat-mini";iconBtn.textContent="图标";iconBtn.onclick=()=>editCategoryIcon(cat);actions.append(up,down,iconBtn);if(!cat.builtin){const rename=document.createElement("button");rename.className="cat-mini";rename.textContent="重命名";rename.onclick=()=>renameCustomCategory(cat.name);const del=document.createElement("button");del.className="cat-mini danger";del.textContent="删除";del.onclick=()=>deleteCustomCategory(cat.name);actions.append(rename,del)}row.append(drag,icon,copy,actions);bindCategoryDrag(row);box.append(row)});
+  cats.forEach((cat,index)=>{const row=document.createElement("div");row.className="category-manager-item";row.draggable=true;row.dataset.category=cat.name;const drag=document.createElement("span");drag.className="category-drag";drag.textContent="⋮⋮";drag.title="拖拽调整分类顺序";const icon=document.createElement("span");icon.className="category-manager-icon";renderCategoryIcon(icon,cat.icon);const copy=document.createElement("div");copy.className="category-manager-copy";const b=document.createElement("b");b.textContent=cat.name;const sm=document.createElement("small");sm.textContent=`${cat.builtin?"内置分类":"自定义分类"} · ${categoryCount(cat.name)} 个网站`;copy.append(b,sm);const actions=document.createElement("div");actions.className="category-manager-actions";const up=document.createElement("button");up.className="cat-mini";up.textContent="↑";up.disabled=index===0;up.onclick=()=>moveCategoryStep(cat.name,-1);const down=document.createElement("button");down.className="cat-mini";down.textContent="↓";down.disabled=index===cats.length-1;down.onclick=()=>moveCategoryStep(cat.name,1);const iconBtn=document.createElement("button");iconBtn.className="cat-mini";iconBtn.textContent="图标";iconBtn.onclick=()=>editCategoryIcon(cat);actions.append(up,down,iconBtn);if(!cat.builtin){const del=document.createElement("button");del.className="cat-mini danger";del.textContent="删除";del.onclick=()=>deleteCustomCategory(cat.name);actions.append(del)}row.append(drag,icon,copy,actions);bindCategoryDrag(row);box.append(row)});
 }
 function addCustomCategory(){const name=$("#newCategoryName").value.trim().slice(0,24),iconResult=normalizeCategoryIconInput($("#newCategoryGlyph").value);if(!name)return alert("请输入分类名称");if(categoryByName(name))return alert("这个分类已经存在");if(!iconResult.ok)return alert(iconResult.error);const icon=iconResult.value;state.customCategories.push({name,icon});state.categoryOrder.push(name);if(!save()){state.customCategories=state.customCategories.filter(c=>c.name!==name);state.categoryOrder=state.categoryOrder.filter(n=>n!==name);return}$("#newCategoryName").value="";$("#newCategoryGlyph").value="";updateNewCategoryGlyphPreview();refreshCategoryUI();toast(`已新增分类「${name}」`)}
 function editCategoryIcon(cat){openCategoryIconEditor(cat)}
@@ -1769,7 +1847,6 @@ function saveCategoryIconEditor(){
   closeCategoryIconEditor();refreshCategoryUI();toast("分类图标已更新");
 }
 
-async function renameCustomCategory(oldName){const item=state.customCategories.find(c=>c.name===oldName);if(!item)return;const input=await uiPromptV1821("新的分类名称",oldName);if(input===null)return;const next=String(input).trim().slice(0,24);if(!next||next===oldName)return;if(categoryByName(next))return alert("这个分类已经存在");item.name=next;state.categoryOrder=state.categoryOrder.map(n=>n===oldName?next:n);if(state.siteOrder[oldName]){state.siteOrder[next]=state.siteOrder[oldName];delete state.siteOrder[oldName]}state.custom.forEach(site=>{if(site.category===oldName)site.category=next});for(const id of Object.keys(state.categoryOverrides))if(state.categoryOverrides[id]===oldName)state.categoryOverrides[id]=next;if(state.filter===oldName)state.filter=next;if(!save())return;refreshCategoryUI();toast(`已重命名为「${next}」`)}
 async function deleteCustomCategory(name){const count=rawSites().filter(site=>effectiveCategory(site)===name).length;if(count)return alert(`「${name}」还有 ${count} 个网站（包含已删除/隐藏的网站），请先把这些网站移动到其他分类。`);if(!await uiConfirmV1821(`删除分类「${name}」？`))return;state.customCategories=state.customCategories.filter(c=>c.name!==name);state.categoryOrder=state.categoryOrder.filter(n=>n!==name);delete state.siteOrder[name];if(state.filter===name)state.filter="all";if(!save())return;refreshCategoryUI();toast("分类已删除")}
 function refreshCategoryUI(){buildNav();buildCategorySelect();buildMoveCategorySelect();buildMoveSiteOptions();renderCategoryManager();render();renderCustomList();if(editingSiteId){const s=rawSites().find(x=>x.id===editingSiteId);if(s)fillCategorySelect($("#editSiteCategory"),effectiveCategory(s))}}
 function moveCategoryStep(name,delta){const order=allCategories().map(c=>c.name),i=order.indexOf(name),j=i+delta;if(i<0||j<0||j>=order.length)return;[order[i],order[j]]=[order[j],order[i]];state.categoryOrder=order;if(!save())return;refreshCategoryUI()}
@@ -2298,6 +2375,20 @@ $("#compactSortBtn").onclick=toggleSortMode;
 /* V18.8：Hero 右侧已改为日历 + 时钟。 */
 $("#addCategoryBtn").onclick=addCustomCategory;
 $("#applyRecommendedCategoryIconsBtn").onclick=applyRecommendedCategoryIcons;
+$("#newCategoryIconSearchBtn").onclick=()=>openCategoryIconPicker("newCategoryGlyph");
+$("#categoryIconEditorSearchBtn").onclick=()=>openCategoryIconPicker("categoryIconEditorInput");
+$("#categoryIconPickerClose").onclick=closeCategoryIconPicker;
+$("#categoryIconPickerSearch").addEventListener("input",renderCategoryIconPicker);
+$("#categoryIconPickerBackdrop").addEventListener("pointerdown",e=>{
+  if(e.target===$("#categoryIconPickerBackdrop"))closeCategoryIconPicker();
+});
+// Capture Escape first so it closes only the topmost picker, not its underlying editor.
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"&&$("#categoryIconPickerBackdrop")?.classList.contains("show")){
+    e.stopImmediatePropagation();e.preventDefault();closeCategoryIconPicker();
+  }
+},true);
+
 $("#newCategoryGlyph").addEventListener("input",updateNewCategoryGlyphPreview);
 updateNewCategoryGlyphPreview();
 $("#categoryIconEditorInput").addEventListener("input",updateCategoryIconEditorPreview);
