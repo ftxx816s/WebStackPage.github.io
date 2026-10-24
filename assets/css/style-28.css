@@ -11,7 +11,7 @@ html[data-theme="liquid"]{
   --line2:transparent;
   --soft:rgba(208,229,238,.10);
   --soft2:rgba(207,230,239,.15);
-  --liquid-default-bg:url("../assets/liquid-bg-v19.20.png?v=19.27");
+  --liquid-default-bg:url("../liquid-bg-v19.20.png?v=19.27");
   --liquid-bg-image:var(--liquid-default-bg);
 }
 html[data-theme="liquid"] body{
