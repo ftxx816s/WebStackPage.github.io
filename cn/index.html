@@ -8316,7 +8316,6 @@ html[data-theme="frosted"] .custom-mini-icon img{
     </div>
     <span class="nav-active-indicator" id="navActiveIndicator" aria-hidden="true"></span>
 
-    <div class="side-label">快速访问</div>
     <button type="button" class="nav-btn active" data-filter="all"><span class="nav-icon">⌂</span><span class="nav-name">全部网站</span><span class="nav-count" id="allCount">0</span></button>
     <button type="button" class="nav-btn" data-filter="favorite"><span class="nav-icon">★</span><span class="nav-name">我的收藏</span><span class="nav-count" id="favCount">0</span></button>
     <button type="button" class="nav-btn" data-filter="recent"><span class="nav-icon">↺</span><span class="nav-name">最近访问</span><span class="nav-count" id="recentCount">0</span></button>
@@ -8571,7 +8570,7 @@ html[data-theme="frosted"] .custom-mini-icon img{
       <span class="custom-count" id="categoryManageCount">0 个分类</span>
     </div>
     <div class="admin-note">
-      可新增自定义分类、修改分类图标和调整分类顺序。图标支持符号 / Emoji 与 Font Awesome 4.7 代码；“应用推荐图标”可一次套用常用分类图标。所有分类均可修改显示标题或删除。删除分类时先迁移全部网站到保留分类，保留网站、收藏与图标。
+      可新增自定义分类、修改分类图标和调整分类顺序。图标支持符号 / Emoji 与 Font Awesome 4.7 代码；“智能匹配图标”支持新分类的关键词识别；也可点击单项“图标”搜索挑选。所有分类均可修改显示标题或删除。删除分类时先迁移全部网站到保留分类，保留网站、收藏与图标。
     </div>
     <div class="form-grid">
       <div class="field">
@@ -8589,7 +8588,7 @@ html[data-theme="frosted"] .custom-mini-icon img{
     </div>
     <div class="admin-actions">
       <button class="btn primary" type="button" id="addCategoryBtn">＋ 新增分类</button>
-      <button class="btn" type="button" id="applyRecommendedCategoryIconsBtn">应用推荐图标</button>
+      <button class="btn" type="button" id="applyRecommendedCategoryIconsBtn">智能匹配图标</button>
       <button class="btn" type="button" id="resetCategoryOrderBtn">恢复分类排序</button>
       <button class="btn" type="button" id="resetSiteOrderBtn">恢复网站排序</button>
     </div>
@@ -10048,23 +10047,64 @@ const RECOMMENDED_CATEGORY_ICONS={
   "社交·社区":"fa fa-comments-o","文件·下载·传输":"fa fa-download","其他收藏":"fa fa-folder-open-o",
   "电商网站":"fa fa-shopping-bag","VPS服务器":"fa fa-server"
 };
+/* V19.33 分类图标推荐：精确名称 > 关键词语义 > 所属网站关键词 > 通用图标。
+   自定义分类不再必须与内置分类同名，所有分类均可一键匹配；
+   用户仍可在“图标”中用搜索器逐个选择并覆盖结果。 */
+const CATEGORY_ICON_KEYWORDS=[
+  [/vps|服务器|主机|云服务|hosting|server|cloud|托管|域名|dns/i,"fa fa-server"],
+  [/测速|speedtest|带宽|网络测试|网络检测|ip检测|公网ip|ip定位|网络诊断/i,"fa fa-tachometer"],
+  [/vpn|代理|科学上网|翻墙|节点|v2ray|clash|proxy/i,"fa fa-shield"],
+  [/搜索|search|引擎|查找|检索/i,"fa fa-search"],
+  [/图像|图片|照片|相册|摄影|绘图|绘画|修图|画图|摄影|picture|photo|image/i,"fa fa-picture-o"],
+  [/视频|影视|电影|剪辑|媒体|影音|直播|音乐|bilibili|youtube|video|movie|music/i,"fa fa-play-circle-o"],
+  [/设计|创意|灵感|design|素材|字体|ppt|模板|icon|图标/i,"fa fa-paint-brush"],
+  [/ai|人工智能|模型|gpt|智能助手|机器学习|智能体/i,"fa fa-magic"],
+  [/开发|编程|代码|前端|后端|github|git|技术|dev|code|程序/i,"fa fa-code"],
+  [/软件|系统|windows|macos|mac|app|应用|工具箱/i,"fa fa-cog"],
+  [/办公|office|文档|word|pdf|表格|excel|文件处理/i,"fa fa-file-text-o"],
+  [/学习|知识|教育|读书|考试|school|learn|course|教程/i,"fa fa-book"],
+  [/下载|传输|网盘|upload|download|transfer|存储/i,"fa fa-download"],
+  [/购物|电商|商城|淘宝|京东|shop|store|买卖|商品/i,"fa fa-shopping-cart"],
+  [/旅行|出行|生活|地图|交通|车|travel|trip/i,"fa fa-paper-plane-o"],
+  [/社交|论坛|社区|论坛|博客|聊天|微信|telegram|discord/i,"fa fa-comments-o"],
+  [/游戏|电竞|game|steam|玩乐/i,"fa fa-gamepad"],
+  [/安全|隐私|加密|密码|security|防护/i,"fa fa-lock"],
+  [/账号|账户|订阅|会员|支付|金融|钱|财务/i,"fa fa-id-card-o"],
+  [/法律|政府|政务|律师|政策|法规/i,"fa fa-balance-scale"],
+  [/收藏|书签|常用|favorite|bookmark/i,"fa fa-star"],
+  [/导航|网站|网址|web|link/i,"fa fa-compass"]
+];
 function recommendedCategoryIcon(name){
   if(RECOMMENDED_CATEGORY_ICONS[name])return RECOMMENDED_CATEGORY_ICONS[name];
-  const key=String(name||"").replace(/[·・\-\s]/g,"").toLowerCase();
-  const entry=Object.entries(RECOMMENDED_CATEGORY_ICONS).find(([label])=>label.replace(/[·・\-\s]/g,"").toLowerCase()===key);
-  return entry?.[1]||"";
+  const label=String(name||"").trim();
+  const normalized=label.replace(/[·・\-\s_]+/g,"").toLowerCase();
+  const same=Object.entries(RECOMMENDED_CATEGORY_ICONS).find(([k])=>k.replace(/[·・\-\s_]+/g,"").toLowerCase()===normalized);
+  if(same)return same[1];
+  const byName=CATEGORY_ICON_KEYWORDS.find(([pattern])=>pattern.test(label));
+  if(byName)return byName[1];
+  // 自定义标题可能不体现内容，允许通过分类内的网站名称/域名来推断。
+  const linked=allSites().filter(s=>effectiveCategory(s)===label).slice(0,25);
+  const scores=new Map();
+  linked.forEach(site=>{
+    const hint=[site.name,site.domain].filter(Boolean).join(' ');
+    CATEGORY_ICON_KEYWORDS.forEach(([p,icon])=>{if(p.test(hint))scores.set(icon,(scores.get(icon)||0)+1)});
+  });
+  const ranked=[...scores].sort((a,b)=>b[1]-a[1]);
+  return ranked[0]?.[0]||"fa fa-folder-open-o";
 }
 async function applyRecommendedCategoryIcons(){
-  const changes=allCategories().map(cat=>({cat,icon:recommendedCategoryIcon(cat.name)})).filter(item=>item.icon);
-  if(!changes.length){toast("没有找到可匹配的推荐分类");return}
-  if(!await uiConfirmV1821(`将为 ${changes.length} 个匹配分类应用 Font Awesome 推荐图标。\n\n只修改分类图标，不会改动网站、分类名称、排序或主题。继续？`))return;
+  const changes=allCategories().map(cat=>({cat,icon:recommendedCategoryIcon(cat.name)}))
+    .filter(item=>item.icon!==cleanCategoryGlyph(item.cat.icon));
+  if(!changes.length){toast("全部分类已使用推荐图标，可通过“图标”按钮单独调整");return}
+  const generic=changes.filter(x=>x.icon==="fa fa-folder-open-o").length;
+  if(!await uiConfirmV1821(`将为 ${changes.length} 个分类应用推荐图标（包括自定义分类）。\n\n按名称关键词和所属网站匹配；其中 ${generic} 个未识别的分类使用文件夹图标，之后可单独修改。\n仅修改分类图标，不修改网站或 D1 分类键。继续？`))return;
   for(const {cat,icon} of changes){
     if(cat.builtin)state.categoryIconOverrides[cat.name]=icon;
     else{const item=state.customCategories.find(x=>x.name===cat.name);if(item)item.icon=icon}
   }
   if(!save())return;
   refreshCategoryUI();
-  toast(`已应用推荐图标 · ${changes.length} 个分类`);
+  toast(`已匹配分类图标 · ${changes.length} 个（包含自定义分类）`);
 }
 function allCategories(){
   const base=CATEGORIES.map(c=>({name:c.name,icon:cleanCategoryGlyph(state.categoryIconOverrides?.[c.name]||c.icon),builtin:true}));
@@ -10279,43 +10319,74 @@ function syncCompactControls(){
 }
 
 
-/* ===================== V15.7 helpers ===================== */
-let __sectionSpyObserver=null,__sectionSpyTimer=0;
+/* ===================== V19.33 左右分类联动（取代旧 IntersectionObserver） ===================== */
+let __sectionSpyTimer=0, __sectionSpyRAF=0, __sectionSpyBound=false;
+let __lastSidebarAutoCategory="",__lastSidebarAutoscrollAt=0;
 function clearSectionSpy(){
   $$(".nav-btn.scroll-active").forEach(btn=>btn.classList.remove("scroll-active"));
   document.body.classList.remove("scroll-spy-active");
+  __lastSidebarAutoCategory="";
+}
+function revealSidebarCategory(btn){
+  const sidebar=$("sidebar");
+  if(!sidebar||!btn||!sidebar.contains(btn)||window.innerWidth<=980)return;
+  const container=sidebar.getBoundingClientRect(),target=btn.getBoundingClientRect();
+  // 当前分类处于可见区时不动；仅在离开视口后平滑移动侧栏，不影响右侧网页。
+  const upper=container.top+Math.min(115,Math.round(container.height*.15));
+  const lower=container.bottom-Math.min(95,Math.round(container.height*.13));
+  if(target.top>=upper&&target.bottom<=lower)return;
+  const current=sidebar.scrollTop;
+  const desired=Math.max(0,Math.min(sidebar.scrollHeight-sidebar.clientHeight,
+    current+(target.top-container.top)-Math.round(container.height*.45)));
+  if(Math.abs(current-desired)<10)return;
+  sidebar.scrollTo({top:desired,behavior:window.matchMedia('(prefers-reduced-motion:reduce)').matches?'instant':'smooth'});
+  __lastSidebarAutoscrollAt=Date.now();
 }
 function setScrollSpyCategory(cat){
   if(state.filter!=="all"||state.query.trim())return clearSectionSpy();
-  let matched=false;
+  let selected=null;
   $$(".nav-btn").forEach(btn=>{
     const on=btn.dataset.filter===cat;
     btn.classList.toggle("scroll-active",on);
-    if(on)matched=true;
+    if(on)selected=btn;
   });
-  document.body.classList.toggle("scroll-spy-active",matched);
-  if(matched)requestAnimationFrame(updateNavIndicator);
+  document.body.classList.toggle("scroll-spy-active",!!selected);
+  if(selected){
+    requestAnimationFrame(updateNavIndicator);
+    if(cat!==__lastSidebarAutoCategory){
+      __lastSidebarAutoCategory=cat;
+      revealSidebarCategory(selected);
+    }
+  }
 }
-function initSectionSpy(){
-  if(__sectionSpyObserver){__sectionSpyObserver.disconnect();__sectionSpyObserver=null}
-  clearSectionSpy();
-  if(state.filter!=="all"||state.query.trim())return;
+function updateSectionSpyByScroll(){
+  if(state.filter!=="all"||state.query.trim()){clearSectionSpy();return}
   const sections=$$("#content .section[data-category]").filter(s=>s.dataset.category);
-  if(!sections.length)return;
-
-  __sectionSpyObserver=new IntersectionObserver(entries=>{
-    const candidates=entries.filter(e=>e.isIntersecting&&e.target.dataset.category);
-    if(!candidates.length)return;
-    candidates.sort((a,b)=>Math.abs(a.boundingClientRect.top-105)-Math.abs(b.boundingClientRect.top-105));
-    setScrollSpyCategory(candidates[0].target.dataset.category);
-  },{root:null,rootMargin:"-86px 0px -62% 0px",threshold:[0,.01]});
-  sections.forEach(sec=>__sectionSpyObserver.observe(sec));
+  if(!sections.length){clearSectionSpy();return}
+  // 阈值位于可视区约 28%，滚动过长卡片列表时也能找到正确分类。
+  const marker=Math.min(window.innerHeight*.28,225),maxScroll=document.documentElement.scrollHeight-window.innerHeight;
+  let selected=sections[0];
+  for(const sec of sections){
+    if(sec.getBoundingClientRect().top<=marker)selected=sec;
+    else break;
+  }
+  if(maxScroll>50&&window.scrollY>=maxScroll-12)selected=sections[sections.length-1];
+  setScrollSpyCategory(selected.dataset.category);
 }
 function scheduleSectionSpy(){
   clearTimeout(__sectionSpyTimer);
-  __sectionSpyTimer=setTimeout(initSectionSpy,30);
+  __sectionSpyTimer=setTimeout(()=>{
+    if(!__sectionSpyBound){
+      __sectionSpyBound=true;
+      window.addEventListener('scroll',()=>{
+        if(__sectionSpyRAF)return;
+        __sectionSpyRAF=requestAnimationFrame(()=>{__sectionSpyRAF=0;updateSectionSpyByScroll()});
+      },{passive:true});
+      window.addEventListener('resize',updateSectionSpyByScroll,{passive:true});
+    }
+    updateSectionSpyByScroll();
+  },50);
 }
-
 const V157_DENSITY_KEY="fxnav_density_v157";
 function applyDensityV157(){
   const compact=STORE.get(V157_DENSITY_KEY)==="compact";
@@ -15580,9 +15651,8 @@ html[data-theme="liquid"] body #drawer .cat-mini.danger:hover{
 #liquidBgBtn,#compactLiquidBgBtn{width:29px!important;min-width:29px!important;height:29px!important;min-height:29px!important;padding:5px!important;border-radius:9px!important;flex:0 0 29px!important}
 #liquidBgBtn .liquid-bg-svg,#compactLiquidBgBtn .liquid-bg-svg{width:16px!important;height:16px!important}
 /* Sidebar scrolling must work independently of the main page. */
-#sidebar.sidebar{height:100dvh!important;max-height:100dvh!important;overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior-y:contain!important;scrollbar-width:thin!important;scrollbar-color:rgba(191,211,230,.3) transparent!important;-webkit-overflow-scrolling:touch}
-#sidebar.sidebar::-webkit-scrollbar{display:block!important;width:5px!important}
-#sidebar.sidebar::-webkit-scrollbar-thumb{background:rgba(201,225,245,.28)!important;border-radius:10px!important}
+#sidebar.sidebar{height:100dvh!important;max-height:100dvh!important;overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior-y:contain!important;scrollbar-width:none!important;-ms-overflow-style:none!important;-webkit-overflow-scrolling:touch}
+#sidebar.sidebar::-webkit-scrollbar{display:none!important;width:0!important;height:0!important}
 @media(max-width:980px){#sidebar.sidebar{overscroll-behavior-y:contain!important;touch-action:pan-y!important}}
 
 </style>
