@@ -4,14 +4,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>私人导航工具箱 · V19.35 Liquid Glass</title>
+<title>私人导航工具箱 · V19.38 Liquid Glass</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https: http:; connect-src 'self' https:; font-src data:; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
 <meta name="theme-color" content="#07101d">
 <script  id="app-meta-v1891"  data-module="script-01.js">
 
-window.FXNAV_APP=Object.freeze({version:"19.35",build:"V19.35",schemaVersion:3,channel:"candidate"});
+window.FXNAV_APP=Object.freeze({version:"19.38",build:"V19.38",schemaVersion:3,channel:"candidate"});
 
 </script>
 <script  id="theme-boot-v1867"  data-module="script-02.js">
@@ -8499,7 +8499,7 @@ html[data-theme="frosted"] .custom-mini-icon img{
         </aside></div>
 
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V19.35 测试候选版</div>
+    <div class="footer">© 2026 私人导航工具箱 · V19.38 测试候选版</div>
   </main>
 </div>
 
@@ -8511,14 +8511,26 @@ html[data-theme="frosted"] .custom-mini-icon img{
   </div>
   <div class="liquid-glass-preset-info" aria-live="polite">
     <span class="lg-preset-icon">✦</span>
-    <span><strong>iOS 通知卡片质感</strong><small>通透深灰 · 柔和折射 · 清晰文字</small></span>
+    <span><strong>iOS 通知卡片质感</strong><small>玻璃材质 · 通透与可读性平衡</small></span>
     <span class="lg-preset-tick" aria-hidden="true">✓</span>
+  </div>
+  <div class="liquid-glass-tuning" aria-label="液态玻璃通透程度调节">
+    <div class="liquid-glass-tuning-title"><b>玻璃显示效果</b><span id="liquidTintValue" aria-live="polite">45%</span></div>
+    <div class="liquid-glass-tuning-preview" aria-hidden="true">
+      <div class="liquid-glass-tuning-preview-card"><span class="liquid-glass-tuning-spark">✦</span><span><b>液态玻璃</b><small>内容清晰，背景可见</small></span></div>
+    </div>
+    <input id="liquidTintRange" class="liquid-glass-tuning-range" type="range" min="0" max="100" step="1" value="45" aria-label="玻璃透明与色调调节：左侧透明，右侧色调">
+    <div class="liquid-glass-tuning-ends">
+      <button type="button" id="liquidTintClear" class="liquid-glass-tuning-end"><b>透明</b><small>更通透</small></button>
+      <button type="button" id="liquidTintTone" class="liquid-glass-tuning-end"><b>色调</b><small>更清晰</small></button>
+    </div>
+    <p class="liquid-glass-tuning-help">向左可看见更多背景；向右增加玻璃底色，让文字和控制项更醒目。不会改变壁纸原图。</p>
   </div>
   <div class="liquid-glass-actions">
     <button type="button" id="liquidGlassUpload">上传背景</button>
     <button type="button" id="liquidGlassReset">恢复默认背景</button>
   </div>
-  <small class="liquid-glass-note">玻璃效果已统一优化，无须调节。背景原图按原文件保存，不压缩。</small>
+  <small class="liquid-glass-note">仅调节第三款液态主题。背景原图按原文件保存，不压缩。</small>
 </div>
 
 <div class="backdrop" id="backdrop"></div>
@@ -15263,9 +15275,31 @@ html[data-theme="light"] .nav-btn.scroll-active .nav-count{
   let dbPromise=null;
   let currentObjectUrl='';
   const toastSafe=msg=>{try{if(typeof toast==='function')toast(msg)}catch{}};
-  // The old three-slider system is intentionally retired. Legacy D1 values remain
-  // untouched for backwards compatibility, but cannot override this fixed material.
-  function applyMaterial(){root.dataset.glassRecipe='notification'}
+  // V19.38: one optical control, replacing the retired three-slider system.
+  // Wallpaper bytes and D1 navigation state are independent of this device-side visual preference.
+  const TINT_KEY='fxnav_liquid_tint_v1938';
+  const clampTint=n=>Math.max(0,Math.min(100,Math.round(Number(n)||0)));
+  let tint=45;
+  try{const saved=localStorage.getItem(TINT_KEY);if(saved!==null&&saved!==''&&Number.isFinite(Number(saved)))tint=clampTint(saved)}catch{}
+  function applyMaterial(){
+    root.dataset.glassRecipe='notification';
+    root.style.setProperty('--lg-pane-alpha',(0.10+tint*.0038).toFixed(3));
+    root.style.setProperty('--lg-side-alpha',(0.25+tint*.0044).toFixed(3));
+    root.style.setProperty('--lg-card-alpha',(0.12+tint*.0036).toFixed(3));
+    root.style.setProperty('--lg-float-alpha',(0.20+tint*.0051).toFixed(3));
+    root.style.setProperty('--lg-blur',`${Math.round(9+tint*.06)}px`);
+    const range=$('liquidTintRange'),value=$('liquidTintValue');
+    if(range){range.value=String(tint);range.style.setProperty('--tint-fill',`${tint}%`)}
+    if(value)value.textContent=`${tint}%`;
+    const a=$('liquidTintClear'),b=$('liquidTintTone');
+    if(a)a.setAttribute('aria-pressed',String(tint===0));
+    if(b)b.setAttribute('aria-pressed',String(tint===75));
+  }
+  function setTint(value){
+    tint=clampTint(value);
+    applyMaterial();
+    try{localStorage.setItem(TINT_KEY,String(tint))}catch{}
+  }
   window.__fxLiquidRefreshV1927=applyMaterial;
   function openBgDb(){
     if(!('indexedDB' in window))return Promise.reject(new Error('indexeddb-unavailable'));
@@ -15428,6 +15462,9 @@ html[data-theme="light"] .nav-btn.scroll-active .nav-count{
     bindTrigger($('liquidBgBtn'));
     bindTrigger($('compactLiquidBgBtn'));
     $('liquidGlassClose')?.addEventListener('click',closePanel);
+    $('liquidTintRange')?.addEventListener('input',e=>setTint(e.target.value));
+    $('liquidTintClear')?.addEventListener('click',()=>setTint(0));
+    $('liquidTintTone')?.addEventListener('click',()=>setTint(75));
     $('liquidGlassUpload')?.addEventListener('click',()=>bgInput()?.click());
     $('liquidGlassReset')?.addEventListener('click',()=>{void resetBackground()});
     const input=bgInput();
@@ -15474,7 +15511,7 @@ html[data-theme="liquid"]{
   --line:rgba(255,255,255,.24);--line2:rgba(255,255,255,.14);
   --soft:rgba(255,255,255,.08);--soft2:rgba(255,255,255,.13);
   --lg-edge:linear-gradient(132deg,rgba(255,255,255,.57) 0%,rgba(255,255,255,.20) 20%,rgba(255,255,255,.09) 63%,rgba(255,255,255,.34) 100%);
-  --lg-surface:linear-gradient(140deg,rgba(40,45,52,.40),rgba(23,28,35,.30) 57%,rgba(22,28,35,.39));
+  --lg-surface:linear-gradient(140deg,rgba(40,45,52,var(--lg-pane-alpha,.271)),rgba(23,28,35,var(--lg-pane-alpha,.271)) 57%,rgba(22,28,35,var(--lg-pane-alpha,.271)));
   --lg-depth:0 13px 31px rgba(8,14,22,.18),inset 0 1px 0 rgba(255,255,255,.14),inset 0 -1px 0 rgba(5,10,17,.22);
   --lg-blur:13px;
 }
@@ -15503,14 +15540,14 @@ html[data-theme="liquid"] body :is(.sidebar,#hero,.home-layout>.hero-datetime){b
 html[data-theme="liquid"] body :is(#hero,.home-layout>.hero-datetime)::before,
 html[data-theme="liquid"] body :is(#hero,.home-layout>.hero-datetime)::after,
 html[data-theme="liquid"] body #hero .search-panel::before{display:none!important;content:none!important}
-html[data-theme="liquid"] body .sidebar{background:linear-gradient(140deg,rgba(24,32,40,.62),rgba(19,29,40,.49)) padding-box,var(--lg-edge) border-box!important}
-html[data-theme="liquid"] body .home-layout>.hero-datetime{background:linear-gradient(146deg,rgba(34,39,46,.40),rgba(26,32,39,.36)) padding-box,var(--lg-edge) border-box!important}
+html[data-theme="liquid"] body .sidebar{background:linear-gradient(140deg,rgba(24,32,40,var(--lg-side-alpha,.448)),rgba(19,29,40,var(--lg-side-alpha,.448))) padding-box,var(--lg-edge) border-box!important}
+html[data-theme="liquid"] body .home-layout>.hero-datetime{background:linear-gradient(146deg,rgba(34,39,46,var(--lg-pane-alpha,.271)),rgba(26,32,39,var(--lg-pane-alpha,.271))) padding-box,var(--lg-edge) border-box!important}
 html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-monthbox{
-  background:linear-gradient(145deg,rgba(29,32,38,.49),rgba(25,27,34,.42)) padding-box,var(--lg-edge) border-box!important;
+  background:linear-gradient(145deg,rgba(29,32,38,var(--lg-pane-alpha,.271)),rgba(25,27,34,var(--lg-pane-alpha,.271))) padding-box,var(--lg-edge) border-box!important;
   border-radius:18px!important;
 }
 html[data-theme="liquid"] body :is(.calendar-ref-progress,.calendar-ref-selected){
- background:linear-gradient(141deg,rgba(34,37,45,.36),rgba(29,34,42,.27)) padding-box,var(--lg-edge) border-box!important;
+ background:linear-gradient(141deg,rgba(34,37,45,var(--lg-pane-alpha,.271)),rgba(29,34,42,var(--lg-pane-alpha,.271))) padding-box,var(--lg-edge) border-box!important;
  border-radius:15px!important;
 }
 html[data-theme="liquid"] body .calendar-ref-bottom{background:transparent!important;border:none!important;box-shadow:none!important;gap:10px!important;overflow:visible!important}
@@ -15522,7 +15559,7 @@ html[data-theme="liquid"] body .calendar-ref-progress-track{background:rgba(0,0,
 html[data-theme="liquid"] body .datetime-today{background:rgba(255,255,255,.08)!important;color:#f4faff!important}
 /* High card count: translucent foreground only; no individual GPU backdrop filters. */
 html[data-theme="liquid"] body .card.glass{
-  background:linear-gradient(132deg,rgba(31,38,46,.37),rgba(31,37,44,.29) 55%,rgba(29,35,43,.35)) padding-box,var(--lg-edge) border-box!important;
+  background:linear-gradient(132deg,rgba(31,38,46,var(--lg-card-alpha,.282)),rgba(31,37,44,var(--lg-card-alpha,.282)) 55%,rgba(29,35,43,var(--lg-card-alpha,.282))) padding-box,var(--lg-edge) border-box!important;
   backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
   border:1px solid transparent!important;border-radius:18px!important;
   box-shadow:0 7px 19px rgba(9,19,29,.13),inset 0 1px 0 rgba(255,255,255,.13)!important;
@@ -15533,7 +15570,7 @@ html[data-theme="liquid"] body .card.glass::after{display:none!important;content
 @media(hover:hover) and (pointer:fine){
  html[data-theme="liquid"] body .card.glass:hover{
   transform:translateY(-3px)!important;
-  background:linear-gradient(132deg,rgba(44,50,60,.52),rgba(30,37,45,.38) 55%,rgba(27,35,45,.46)) padding-box,var(--lg-edge) border-box!important;
+  background:linear-gradient(132deg,rgba(44,50,60,var(--lg-card-alpha,.282)),rgba(30,37,45,var(--lg-card-alpha,.282)) 55%,rgba(27,35,45,var(--lg-card-alpha,.282))) padding-box,var(--lg-edge) border-box!important;
   box-shadow:0 11px 25px rgba(3,15,25,.24),inset 0 1px 0 rgba(255,255,255,.24)!important;
  }
 }
@@ -15542,10 +15579,10 @@ html[data-theme="liquid"] body :is(.card-title,.section-title){color:#fcfdff!imp
 html[data-theme="liquid"] body :is(.card-url,.section-sub){color:#d7e1ec!important;text-shadow:none!important}
 html[data-theme="liquid"] body .site-icon{background:rgba(255,255,255,.08)!important;border:1px solid rgba(255,255,255,.13)!important}
 /* Header tools + hero: prevent unwanted hover-independent button plates. */
-html[data-theme="liquid"] body .system-console{background:linear-gradient(115deg,rgba(29,38,46,.42),rgba(36,42,54,.32)) padding-box,var(--lg-edge) border-box!important}
+html[data-theme="liquid"] body .system-console{background:linear-gradient(115deg,rgba(29,38,46,var(--lg-pane-alpha,.271)),rgba(36,42,54,var(--lg-pane-alpha,.271))) padding-box,var(--lg-edge) border-box!important}
 html[data-theme="liquid"] body .system-console :is(.console-brand-copy b,.console-item strong){color:#effbff!important}
 html[data-theme="liquid"] body .system-console :is(.console-brand-copy small,.console-item .k,.console-activity .k){color:#bccfdd!important}
-html[data-theme="liquid"] body .tool-cluster{background:rgba(35,41,50,.28) padding-box,var(--lg-edge) border-box!important}
+html[data-theme="liquid"] body .tool-cluster{background:rgba(35,41,50,var(--lg-pane-alpha,.271)) padding-box,var(--lg-edge) border-box!important}
 html[data-theme="liquid"] body .tool-cluster :is(.tool-btn,.compact-action){background:transparent!important;border-color:transparent!important;color:#eef9ff!important;box-shadow:none!important;text-shadow:none!important;filter:none!important}
 html[data-theme="liquid"] body .tool-cluster .tool-glyph{color:#e3f1fa!important}
 html[data-theme="liquid"] body .cloud-status[data-state="synced"]{background:rgba(45,177,130,.21)!important;color:#8bf4c4!important;border:1px solid rgba(84,238,167,.23)!important}
@@ -15583,7 +15620,7 @@ html[data-theme="liquid"] body .compact-search{background:rgba(13,19,27,.22)!imp
 html[data-theme="liquid"] body .compact-search input{color:#fff!important}
 /* Manager and move context: deeper notification-glass tint to protect readable white text. */
 html[data-theme="liquid"] body .backdrop.show{background:rgba(6,10,16,.30)!important;opacity:1!important;backdrop-filter:blur(5px)!important;-webkit-backdrop-filter:blur(5px)!important}
-html[data-theme="liquid"] body #drawer.drawer{background:linear-gradient(145deg,rgba(26,31,39,.73),rgba(21,27,36,.67)) padding-box,var(--lg-edge) border-box!important;border:1px solid transparent!important;border-right:0!important;border-radius:22px 0 0 22px!important;box-shadow:-16px 0 45px rgba(0,0,0,.28),inset 1px 1px rgba(255,255,255,.17)!important;backdrop-filter:blur(18px) saturate(110%)!important;-webkit-backdrop-filter:blur(18px) saturate(110%)!important;color:#f3f9ff!important;overflow:hidden}
+html[data-theme="liquid"] body #drawer.drawer{background:linear-gradient(145deg,rgba(26,31,39,var(--lg-float-alpha,.430)),rgba(21,27,36,var(--lg-float-alpha,.430))) padding-box,var(--lg-edge) border-box!important;border:1px solid transparent!important;border-right:0!important;border-radius:22px 0 0 22px!important;box-shadow:-16px 0 45px rgba(0,0,0,.28),inset 1px 1px rgba(255,255,255,.17)!important;backdrop-filter:blur(18px) saturate(110%)!important;-webkit-backdrop-filter:blur(18px) saturate(110%)!important;color:#f3f9ff!important;overflow:hidden}
 html[data-theme="liquid"] body #drawer .drawer-head{background:rgba(22,28,37,.34)!important;border-bottom:1px solid rgba(255,255,255,.18)!important;border-radius:20px 0 0 0!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.09)!important}
 html[data-theme="liquid"] body #drawer :is(.drawer-title h2,.manager-panel-title h3,.manager-overview-hero h2,.manager-quick b,.metric-card strong,.metric-card b,.manager-live-card b,.manager-data-card b,.manager-backup-card b,.manager-activity-wrap b,.manager-site-copy b,.manager-trend-card b,.manager-version-strip b,.manager-dup-intro b,.manager-transfer-card b,.admin-title,.field label){color:#f9fcff!important;text-shadow:none!important;font-weight:600!important}
 html[data-theme="liquid"] body #drawer :is(.drawer-title p,.manager-panel-title p,.manager-quick small,.manager-live-card p,.manager-data-card p,.manager-site-copy small,.manager-trend-card small,.manager-version-strip,.metric-card small,.manager-activity-wrap small,.manager-tab-badge,.manager-health-chip,.manager-site-kind,.admin-note,.admin-note span){color:#c9d5e1!important;opacity:1!important}
@@ -15595,18 +15632,18 @@ html[data-theme="liquid"] body #drawer :is(input,select,textarea)::placeholder{c
 html[data-theme="liquid"] body #drawer :is(.manager-site-row,.manager-quick,.custom-item,.deleted-item):hover{background:rgba(255,255,255,.14)!important;border-color:rgba(255,255,255,.35)!important}
 html[data-theme="liquid"] body #drawer select option{background:#1c2633;color:#f7faff}
 html[data-theme="liquid"] body #drawer .manager-activity-chart{background:rgba(14,21,30,.24)!important}
-html[data-theme="liquid"] body .category-context{background:linear-gradient(141deg,rgba(25,31,39,.76),rgba(15,20,27,.72)) padding-box,var(--lg-edge) border-box!important;border:1px solid transparent!important;color:#f9fcff!important;border-radius:22px!important;box-shadow:0 18px 55px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.18)!important;backdrop-filter:blur(17px) saturate(110%)!important;-webkit-backdrop-filter:blur(17px) saturate(110%)!important}
+html[data-theme="liquid"] body .category-context{background:linear-gradient(141deg,rgba(25,31,39,var(--lg-float-alpha,.430)),rgba(15,20,27,var(--lg-float-alpha,.430))) padding-box,var(--lg-edge) border-box!important;border:1px solid transparent!important;color:#f9fcff!important;border-radius:22px!important;box-shadow:0 18px 55px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.18)!important;backdrop-filter:blur(17px) saturate(110%)!important;-webkit-backdrop-filter:blur(17px) saturate(110%)!important}
 html[data-theme="liquid"] body .category-context :is(.context-head-name,.context-label,.context-cat-name,.context-tool){color:#f6fbff!important;text-shadow:none!important}
 html[data-theme="liquid"] body .category-context :is(.context-head-category,.context-tip,.context-footer){color:#c8d4e0!important}
 html[data-theme="liquid"] body .category-context .context-item{background:rgba(235,243,255,.08)!important;border:1px solid rgba(255,255,255,.14)!important;color:#f9fbff!important;border-radius:11px!important}
 html[data-theme="liquid"] body .category-context .context-item:hover{background:rgba(240,250,255,.16)!important;border-color:rgba(255,255,255,.26)!important}
 html[data-theme="liquid"] body .category-context .context-item.current{background:rgba(104,111,232,.25)!important;border-color:rgba(172,185,255,.35)!important}
 html[data-theme="liquid"] body .category-icon-editor-backdrop{background:rgba(7,12,20,.32)!important;backdrop-filter:blur(4px)!important;-webkit-backdrop-filter:blur(4px)!important}
-html[data-theme="liquid"] body .category-icon-editor{background:linear-gradient(143deg,rgba(38,43,52,.86),rgba(21,27,36,.84)) padding-box,var(--lg-edge) border-box!important;border:1px solid transparent!important;color:#f4faff!important;border-radius:21px!important;box-shadow:0 20px 54px rgba(0,0,0,.3)!important;backdrop-filter:blur(15px)!important;-webkit-backdrop-filter:blur(15px)!important}
+html[data-theme="liquid"] body .category-icon-editor{background:linear-gradient(143deg,rgba(38,43,52,var(--lg-float-alpha,.430)),rgba(21,27,36,var(--lg-float-alpha,.430))) padding-box,var(--lg-edge) border-box!important;border:1px solid transparent!important;color:#f4faff!important;border-radius:21px!important;box-shadow:0 20px 54px rgba(0,0,0,.3)!important;backdrop-filter:blur(15px)!important;-webkit-backdrop-filter:blur(15px)!important}
 html[data-theme="liquid"] body .category-icon-editor :is(h2,p,label,small){color:#eff8ff!important}
 html[data-theme="liquid"] body .category-icon-editor input{color:#f7fbff!important;background:rgba(255,255,255,.10)!important;border:1px solid rgba(255,255,255,.21)!important}
 /* The only settings surface: wallpaper picker, no experimental sliders or stale presets. */
-.liquid-glass-settings{position:fixed;z-index:10080;width:min(318px,calc(100vw - 24px));max-height:min(75vh,450px);overflow-y:auto;overscroll-behavior:contain;padding:15px 14px 14px;border-radius:21px;background:linear-gradient(145deg,rgba(44,49,57,.38),rgba(25,29,36,.48)) padding-box,linear-gradient(132deg,rgba(255,255,255,.48),rgba(255,255,255,.13) 40%,rgba(255,255,255,.08) 70%,rgba(255,255,255,.27)) border-box;border:1px solid transparent;color:#f8fcff;box-shadow:0 16px 44px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.18),inset 0 -1px 0 rgba(0,0,0,.06);backdrop-filter:blur(17px) saturate(135%);-webkit-backdrop-filter:blur(17px) saturate(135%)}
+.liquid-glass-settings{position:fixed;z-index:10080;width:min(318px,calc(100vw - 24px));max-height:min(75vh,450px);overflow-y:auto;overscroll-behavior:contain;padding:15px 14px 14px;border-radius:21px;background:linear-gradient(145deg,rgba(44,49,57,var(--lg-float-alpha,.430)),rgba(25,29,36,var(--lg-float-alpha,.430))) padding-box,linear-gradient(132deg,rgba(255,255,255,.48),rgba(255,255,255,.13) 40%,rgba(255,255,255,.08) 70%,rgba(255,255,255,.27)) border-box;border:1px solid transparent;color:#f8fcff;box-shadow:0 16px 44px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.18),inset 0 -1px 0 rgba(0,0,0,.06);backdrop-filter:blur(17px) saturate(135%);-webkit-backdrop-filter:blur(17px) saturate(135%)}
 .liquid-glass-settings[hidden]{display:none!important}
 .liquid-glass-settings-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:13px}
 .liquid-glass-settings-head b{display:block;font-size:14px;font-weight:650;color:#f9fdff}
@@ -15633,7 +15670,7 @@ html[data-theme="liquid"] body .command-backdrop{
   background:rgba(7,11,17,.28);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
 }
 html[data-theme="liquid"] body .command-panel{
-  background:linear-gradient(145deg,rgba(39,43,52,.44),rgba(19,24,34,.54)) padding-box,
+  background:linear-gradient(145deg,rgba(39,43,52,var(--lg-float-alpha,.430)),rgba(19,24,34,var(--lg-float-alpha,.430))) padding-box,
     linear-gradient(135deg,rgba(255,255,255,.49),rgba(255,255,255,.11) 37%,rgba(255,255,255,.08) 70%,rgba(255,255,255,.30)) border-box;
   border:1px solid transparent;border-radius:24px;
   box-shadow:0 20px 55px rgba(0,0,0,.23),inset 0 1px 0 rgba(255,255,255,.18),inset 0 -1px 0 rgba(0,0,0,.08);
@@ -15657,7 +15694,7 @@ html[data-theme="liquid"] body .command-group-title,
 html[data-theme="liquid"] body .command-footer{color:rgba(234,243,253,.76);text-shadow:none}
 html[data-theme="liquid"] body .command-body{scrollbar-color:rgba(240,248,255,.20) transparent}
 html[data-theme="liquid"] body .site-doctor-row{
-  background:linear-gradient(140deg,rgba(240,246,255,.095),rgba(24,29,38,.14)) padding-box,
+  background:linear-gradient(140deg,rgba(44,50,60,var(--lg-card-alpha,.282)),rgba(24,29,38,var(--lg-card-alpha,.282))) padding-box,
     linear-gradient(130deg,rgba(255,255,255,.38),rgba(255,255,255,.10) 42%,rgba(255,255,255,.19)) border-box;
   border:1px solid transparent;border-radius:16px;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.13),0 5px 18px rgba(0,0,0,.07);
@@ -15674,7 +15711,7 @@ html[data-theme="liquid"] body .site-doctor-row .site-doctor-evidence small{colo
 html[data-theme="liquid"] body .site-doctor-row .mini-btn{background:rgba(235,243,253,.10);border-color:rgba(245,251,255,.19);color:#edf6ff}
 html[data-theme="liquid"] body .site-doctor-row .mini-btn:hover{background:rgba(245,251,255,.19);border-color:rgba(255,255,255,.30)}
 /* notification glass background picker: keep text and buttons readable over photographs */
-html[data-theme="liquid"] body .liquid-glass-settings{background:linear-gradient(145deg,rgba(44,49,57,.38),rgba(25,29,36,.48)) padding-box,linear-gradient(132deg,rgba(255,255,255,.48),rgba(255,255,255,.13) 40%,rgba(255,255,255,.08) 70%,rgba(255,255,255,.27)) border-box}
+html[data-theme="liquid"] body .liquid-glass-settings{background:linear-gradient(145deg,rgba(44,49,57,var(--lg-float-alpha,.430)),rgba(25,29,36,var(--lg-float-alpha,.430))) padding-box,linear-gradient(132deg,rgba(255,255,255,.48),rgba(255,255,255,.13) 40%,rgba(255,255,255,.08) 70%,rgba(255,255,255,.27)) border-box}
 html[data-theme="liquid"] body .liquid-glass-settings .liquid-glass-preset-info{background:rgba(232,242,252,.085);border-color:rgba(255,255,255,.20);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px)}
 @media(max-width:700px){
  html[data-theme="liquid"] body .command-backdrop{padding:62px 10px 85px}
@@ -15697,7 +15734,7 @@ html[data-theme="liquid"] body :is(.ui-prompt-card,.ui-prompt,.v1821-prompt,.v18
   -webkit-backdrop-filter:blur(17px) saturate(125%)!important;
 }
 html[data-theme="liquid"] body :is(.category-manager-item,.custom-item,.deleted-item,.manager-site-row,.manager-quick,.manager-data-card,.manager-live-card,.manager-trend-card,.manager-activity-wrap,.manager-overview-hero){
-  background:rgba(90,103,118,.18)!important;
+  background:rgba(42,50,62,var(--lg-card-alpha,.282))!important;
   border:1px solid rgba(248,252,255,.25)!important;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.11),0 4px 12px rgba(0,0,0,.06)!important;
 }
@@ -15716,6 +15753,35 @@ html[data-theme="liquid"] body #drawer .cat-mini.danger:hover{
 #sidebar.sidebar::-webkit-scrollbar{display:none!important;width:0!important;height:0!important}
 @media(max-width:980px){#sidebar.sidebar{overscroll-behavior-y:contain!important;touch-action:pan-y!important}}
 
+
+/* V19.38 · one continuous Transparent ⇄ Tinted glass control */
+html[data-theme="liquid"]{
+ --lg-pane-alpha:.271;--lg-side-alpha:.448;--lg-card-alpha:.282;--lg-float-alpha:.430;
+}
+.liquid-glass-tuning{padding:11px 11px 10px;margin-bottom:12px;border:1px solid rgba(255,255,255,.19);border-radius:15px;background:rgba(13,21,30,.22)}
+.liquid-glass-tuning-title{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px;font-size:12px;color:#f7fbff}
+.liquid-glass-tuning-title b{font-weight:650}
+#liquidTintValue{font:650 11px ui-monospace,SFMono-Regular,Consolas,monospace;color:#9fcbff;font-variant-numeric:tabular-nums}
+.liquid-glass-tuning-preview{position:relative;overflow:hidden;height:77px;border-radius:13px;display:grid;place-items:center;background:radial-gradient(120px 75px at 70% 30%,rgba(158,199,224,.48),transparent),linear-gradient(120deg,#252e3c 0%,#7795aa 52%,#182636 100%);}
+.liquid-glass-tuning-preview::before{content:"";position:absolute;inset:-30px 45% -30px 30%;transform:rotate(-33deg);background:linear-gradient(90deg,transparent,rgba(244,251,255,.50),transparent);filter:blur(8px)}
+.liquid-glass-tuning-preview-card{z-index:1;display:flex;align-items:center;gap:9px;width:87%;padding:9px 11px;border-radius:13px;border:1px solid rgba(250,255,255,.35);background:rgba(25,32,40,var(--lg-float-alpha,.430));box-shadow:inset 0 1px rgba(255,255,255,.22),0 7px 15px rgba(0,0,0,.17);backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px)}
+.liquid-glass-tuning-preview-card b,.liquid-glass-tuning-preview-card small{display:block;color:#f8fcff!important}
+.liquid-glass-tuning-preview-card b{font-size:12px;font-weight:650}
+.liquid-glass-tuning-preview-card small{font-size:10px;opacity:.82;margin-top:2px}
+.liquid-glass-tuning-spark{display:grid;place-items:center;width:27px;height:27px;border-radius:9px;background:rgba(255,255,255,.15);color:#f6fbff}
+#liquidTintRange{display:block;appearance:none;-webkit-appearance:none;width:100%;height:6px;margin:15px 0 10px;border:0;border-radius:999px;background:linear-gradient(90deg,#5da5ff var(--tint-fill,45%),rgba(255,255,255,.26) var(--tint-fill,45%));cursor:pointer;touch-action:pan-x}
+#liquidTintRange::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:19px;height:19px;border-radius:50%;background:#fff;border:1px solid rgba(255,255,255,.9);box-shadow:0 2px 7px rgba(0,0,0,.28)}
+#liquidTintRange::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;border:1px solid rgba(255,255,255,.9);box-shadow:0 2px 7px rgba(0,0,0,.28)}
+#liquidTintRange:focus-visible{outline:2px solid #a6cfff;outline-offset:6px}
+.liquid-glass-tuning-ends{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.liquid-glass-tuning-end{border:1px solid transparent;background:transparent;color:#e9f3ff;padding:4px 8px;border-radius:10px;text-align:left;cursor:pointer}
+.liquid-glass-tuning-end:last-child{text-align:right}
+.liquid-glass-tuning-end:hover,.liquid-glass-tuning-end[aria-pressed="true"]{background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.20)}
+.liquid-glass-tuning-end b,.liquid-glass-tuning-end small{display:block}
+.liquid-glass-tuning-end b{font-size:12px;font-weight:650}
+.liquid-glass-tuning-end small{font-size:10px;margin-top:3px;color:#b5c7dc}
+.liquid-glass-tuning-help{color:#c4d2e2;font-size:10px;line-height:1.6;margin:6px 0 0}
+@media(max-width:650px){.liquid-glass-tuning-preview{height:69px}}
 </style>
 </body>
 </html>
