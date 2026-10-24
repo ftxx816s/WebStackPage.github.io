@@ -1,0 +1,303 @@
+
+/* ===================== V18.12 · Theme-Aware Manager =====================
+   管理中心严格跟随当前主题：
+   dark  = 深色海军蓝管理面板
+   light = 浅色白蓝管理面板
+   liquid= 透明液态玻璃管理面板
+   只改管理相关视觉，不改 D1/KV/管理逻辑。
+*/
+:root{
+  --mgr-bg:linear-gradient(180deg,rgba(7,14,27,.995),rgba(8,15,29,.985));
+  --mgr-head:rgba(8,15,28,.985);
+  --mgr-surface:linear-gradient(180deg,rgba(15,24,47,.86),rgba(10,18,38,.94));
+  --mgr-surface-soft:rgba(255,255,255,.026);
+  --mgr-control:rgba(255,255,255,.042);
+  --mgr-hover:rgba(116,135,255,.075);
+  --mgr-line:rgba(116,135,255,.15);
+  --mgr-line-strong:rgba(116,135,255,.28);
+  --mgr-text:#f4f7ff;
+  --mgr-muted:#9ba8bf;
+  --mgr-muted2:#74829a;
+  --mgr-tab-active:#eef2ff;
+  --mgr-tab-bg:linear-gradient(135deg,rgba(116,135,255,.20),rgba(164,92,246,.13));
+  --mgr-shadow:-28px 0 72px rgba(0,0,0,.30);
+  --mgr-panel-shadow:0 12px 30px rgba(5,8,18,.17),inset 0 1px 0 rgba(255,255,255,.035);
+  --mgr-input-placeholder:#697791;
+}
+html[data-theme="light"]{
+  --mgr-bg:linear-gradient(180deg,rgba(248,251,255,.995),rgba(242,247,253,.985));
+  --mgr-head:rgba(249,252,255,.965);
+  --mgr-surface:linear-gradient(180deg,rgba(255,255,255,.91),rgba(247,250,255,.82));
+  --mgr-surface-soft:rgba(255,255,255,.76);
+  --mgr-control:rgba(255,255,255,.96);
+  --mgr-hover:rgba(87,105,216,.075);
+  --mgr-line:rgba(43,61,92,.105);
+  --mgr-line-strong:rgba(91,108,223,.24);
+  --mgr-text:#182238;
+  --mgr-muted:#687892;
+  --mgr-muted2:#8a97aa;
+  --mgr-tab-active:#33406c;
+  --mgr-tab-bg:linear-gradient(135deg,rgba(103,121,244,.13),rgba(171,91,235,.075));
+  --mgr-shadow:-24px 0 64px rgba(74,91,123,.14);
+  --mgr-panel-shadow:0 10px 26px rgba(75,94,128,.075),inset 0 1px 0 rgba(255,255,255,.96);
+  --mgr-input-placeholder:#9aa5b6;
+}
+html[data-theme="liquid"]{
+  --mgr-bg:linear-gradient(145deg,rgba(247,252,255,.48),rgba(218,231,245,.29));
+  --mgr-head:linear-gradient(145deg,rgba(253,255,255,.57),rgba(224,236,248,.35));
+  --mgr-surface:linear-gradient(145deg,rgba(255,255,255,.38),rgba(224,237,249,.19));
+  --mgr-surface-soft:linear-gradient(145deg,rgba(255,255,255,.31),rgba(223,235,247,.16));
+  --mgr-control:rgba(250,253,255,.57);
+  --mgr-hover:rgba(102,125,239,.105);
+  --mgr-line:rgba(255,255,255,.62);
+  --mgr-line-strong:rgba(102,124,170,.22);
+  --mgr-text:#18304e;
+  --mgr-muted:#607896;
+  --mgr-muted2:#8292a8;
+  --mgr-tab-active:#304a79;
+  --mgr-tab-bg:linear-gradient(120deg,rgba(62,183,255,.17),rgba(111,111,246,.16) 52%,rgba(193,92,225,.13));
+  --mgr-shadow:-22px 0 62px rgba(67,88,120,.12),inset 1px 0 0 rgba(255,255,255,.68);
+  --mgr-panel-shadow:0 12px 30px rgba(74,96,129,.07),inset 0 1px 0 rgba(255,255,255,.76);
+  --mgr-input-placeholder:#8b9bb0;
+}
+
+/* Drawer shell */
+.drawer{
+  color:var(--mgr-text)!important;
+  background:var(--mgr-bg)!important;
+  border-left:1px solid var(--mgr-line)!important;
+  box-shadow:var(--mgr-shadow)!important;
+}
+.drawer-head{
+  color:var(--mgr-text)!important;
+  background:var(--mgr-head)!important;
+  border-bottom:1px solid var(--mgr-line)!important;
+}
+.drawer-title h2,
+.drawer .manager-panel-title h3,
+.drawer .custom-title-row h3,
+.drawer .custom-grow b,
+.drawer .category-manager-copy b,
+.drawer .manager-site-copy b,
+.drawer .manager-data-card b,
+.drawer .manager-backup-row b{color:var(--mgr-text)!important}
+.drawer-title p,
+.drawer .manager-panel-title p,
+.drawer .manager-quick small,
+.drawer .custom-grow small,
+.drawer .category-manager-copy small,
+.drawer .manager-site-copy small,
+.drawer .manager-data-card p,
+.drawer .manager-backup-row small,
+.drawer .admin-note,
+.drawer .manager-dup-intro{color:var(--mgr-muted)!important}
+
+/* Tabs */
+.manager-tab{color:var(--mgr-muted)!important}
+.manager-tab:hover{
+  color:var(--mgr-text)!important;
+  background:var(--mgr-hover)!important;
+  border-color:var(--mgr-line)!important;
+}
+.manager-tab.active{
+  color:var(--mgr-tab-active)!important;
+  background:var(--mgr-tab-bg)!important;
+  border-color:var(--mgr-line-strong)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.38),0 5px 14px rgba(75,91,142,.07)!important;
+}
+.manager-tab-badge{
+  color:var(--mgr-muted)!important;
+  background:var(--mgr-surface-soft)!important;
+  border:1px solid var(--mgr-line)!important;
+}
+.manager-tab.active .manager-tab-badge{
+  color:var(--mgr-tab-active)!important;
+  background:rgba(116,135,255,.12)!important;
+}
+
+/* All manager surfaces use current theme material */
+.drawer :is(
+  .admin-note,.admin-surface,#addForm,#movePreview,#customList,#deletedList,
+  .category-manager-list,.duplicate-panel,.move-preview,.manager-overview-hero,
+  .manager-quick,.manager-site-row,.manager-data-card,.manager-backup-row,
+  .manager-dup-intro,.metric-card,.duplicate-group,.dup-item,.custom-item,
+  .category-manager-item,.deleted-item
+){
+  color:var(--mgr-text)!important;
+  background:var(--mgr-surface)!important;
+  border-color:var(--mgr-line)!important;
+  box-shadow:var(--mgr-panel-shadow)!important;
+}
+.drawer :is(.duplicate-group-head,.duplicate-panel .admin-note){
+  color:var(--mgr-text)!important;
+  background:var(--mgr-surface-soft)!important;
+  border-color:var(--mgr-line)!important;
+}
+.manager-site-toolbar,
+.manager-batch-bar{
+  color:var(--mgr-text)!important;
+  background:var(--mgr-head)!important;
+  border-color:var(--mgr-line)!important;
+  box-shadow:var(--mgr-panel-shadow)!important;
+}
+
+/* Inputs / selects / editor controls */
+.drawer :is(.field input,.field select,.field textarea,.manager-site-toolbar input,.manager-site-toolbar select){
+  color:var(--mgr-text)!important;
+  background:var(--mgr-control)!important;
+  border-color:var(--mgr-line)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.34)!important;
+}
+.drawer :is(input,textarea)::placeholder{color:var(--mgr-input-placeholder)!important;opacity:1}
+.drawer .field label{color:var(--mgr-text)!important}
+.drawer :is(.field input,.field select,.field textarea,.manager-site-toolbar input,.manager-site-toolbar select):focus{
+  border-color:rgba(110,130,244,.45)!important;
+  box-shadow:0 0 0 3px rgba(103,121,244,.095),inset 0 1px 0 rgba(255,255,255,.42)!important;
+}
+.drawer select option{background:var(--option-bg)!important;color:var(--option-text)!important}
+
+/* Secondary actions */
+.drawer :is(.mini-btn,.cat-mini,.btn:not(.primary):not(.danger)){
+  color:var(--mgr-text)!important;
+  background:var(--mgr-surface-soft)!important;
+  border-color:var(--mgr-line)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.20)!important;
+}
+.drawer :is(.mini-btn,.cat-mini,.btn:not(.primary):not(.danger)):hover{
+  color:var(--mgr-text)!important;
+  background:var(--mgr-hover)!important;
+  border-color:var(--mgr-line-strong)!important;
+}
+.drawer .btn.primary{
+  color:#fff!important;
+  border-color:rgba(111,128,245,.30)!important;
+  background:linear-gradient(135deg,#7184ff,#9c63ef 58%,#c25ddd)!important;
+  box-shadow:0 8px 18px rgba(101,100,222,.16),inset 0 1px 0 rgba(255,255,255,.30)!important;
+}
+.drawer :is(.mini-btn.danger,.cat-mini.danger,.btn.danger){color:#e7657c!important}
+.manager-site-kind,.manager-health-chip,.custom-count,.dup-chip{
+  border-color:var(--mgr-line)!important;
+  background:var(--mgr-surface-soft)!important;
+}
+.manager-batch-count,.manager-category-title-btn,.manager-locate-btn{color:var(--mgr-tab-active)!important}
+.category-manager-copy .category-display-sub{color:var(--mgr-muted2)!important}
+.category-manager-copy .category-display-sub.is-custom-title{color:#7284b7!important}
+
+/* Light manager: clean white-blue interface */
+html[data-theme="light"] .drawer{
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+html[data-theme="light"] #drawer .drawer-head{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+html[data-theme="light"] .drawer .site-icon,
+html[data-theme="light"] .drawer .custom-mini-icon{
+  background:rgba(255,255,255,.92)!important;
+  border-color:rgba(44,61,91,.10)!important;
+  box-shadow:inset 0 1px 0 #fff,0 3px 9px rgba(69,88,121,.07)!important;
+}
+
+/* Liquid manager: actual transparent glass, never dark navy. */
+html[data-theme="liquid"] #drawer{
+  backdrop-filter:blur(20px) saturate(134%)!important;
+  -webkit-backdrop-filter:blur(20px) saturate(134%)!important;
+}
+html[data-theme="liquid"] #drawer .drawer-head{
+  backdrop-filter:blur(16px) saturate(132%)!important;
+  -webkit-backdrop-filter:blur(16px) saturate(132%)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.74)!important;
+}
+/* Blur only larger glass surfaces. Repeated list rows stay translucent without per-row blur,
+   which keeps long manager lists smooth while preserving the liquid material. */
+html[data-theme="liquid"] #drawer :is(
+  .admin-note,.admin-surface,#addForm,#movePreview,#customList,#deletedList,
+  .category-manager-list,.duplicate-panel,.move-preview,.manager-overview-hero,
+  .manager-data-card,.manager-dup-intro,.duplicate-group,.manager-site-toolbar,.manager-batch-bar
+){
+  backdrop-filter:blur(9px) saturate(120%)!important;
+  -webkit-backdrop-filter:blur(9px) saturate(120%)!important;
+}
+html[data-theme="liquid"] #drawer :is(
+  .manager-quick,.manager-site-row,.manager-backup-row,.metric-card,.dup-item,
+  .custom-item,.category-manager-item,.deleted-item
+){
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+html[data-theme="liquid"] .manager-site-row:hover,
+html[data-theme="liquid"] :is(.custom-item,.category-manager-item,.deleted-item):hover{
+  background:linear-gradient(135deg,rgba(255,255,255,.47),rgba(113,139,247,.10),rgba(196,101,225,.07))!important;
+  border-color:rgba(255,255,255,.78)!important;
+  box-shadow:0 10px 24px rgba(70,91,126,.08),inset 0 1px 0 rgba(255,255,255,.84)!important;
+}
+html[data-theme="liquid"] .drawer .site-icon,
+html[data-theme="liquid"] .drawer .custom-mini-icon{
+  background:linear-gradient(145deg,rgba(255,255,255,.55),rgba(222,235,247,.28))!important;
+  border-color:rgba(255,255,255,.67)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.88),0 4px 12px rgba(65,87,119,.07)!important;
+}
+
+/* Backdrop and editor follow the same theme family. */
+html[data-theme="dark"] .backdrop.show{background:rgba(1,6,15,.64)!important}
+html[data-theme="light"] .backdrop.show{
+  background:rgba(55,72,102,.18)!important;
+  backdrop-filter:blur(3px)!important;-webkit-backdrop-filter:blur(3px)!important;
+}
+html[data-theme="liquid"] .backdrop.show{
+  background:rgba(65,86,116,.14)!important;
+  backdrop-filter:blur(7px) saturate(112%)!important;-webkit-backdrop-filter:blur(7px) saturate(112%)!important;
+}
+html[data-theme="light"] .site-editor,
+html[data-theme="light"] .site-editor-head{
+  color:var(--mgr-text)!important;background:rgba(249,252,255,.96)!important;border-color:var(--mgr-line)!important;
+}
+html[data-theme="liquid"] .site-editor{
+  color:var(--mgr-text)!important;
+  background:linear-gradient(145deg,rgba(249,253,255,.58),rgba(221,234,247,.34))!important;
+  border:1px solid rgba(255,255,255,.70)!important;
+  box-shadow:0 26px 70px rgba(64,86,119,.16),inset 0 1px 0 rgba(255,255,255,.86)!important;
+  backdrop-filter:blur(25px) saturate(140%)!important;-webkit-backdrop-filter:blur(25px) saturate(140%)!important;
+}
+html[data-theme="liquid"] .site-editor-head{
+  color:var(--mgr-text)!important;
+  background:rgba(248,252,255,.43)!important;
+  border-color:rgba(255,255,255,.62)!important;
+  backdrop-filter:blur(20px) saturate(135%)!important;-webkit-backdrop-filter:blur(20px) saturate(135%)!important;
+}
+
+/* Theme-consistent overlays / menus / authentication surfaces. */
+html[data-theme="light"] :is(.site-editor-backdrop.show,.command-backdrop.show,.login-gate.show){
+  background:rgba(61,76,105,.18)!important;
+  backdrop-filter:blur(3px)!important;
+  -webkit-backdrop-filter:blur(3px)!important;
+}
+html[data-theme="liquid"] :is(.site-editor-backdrop.show,.command-backdrop.show,.login-gate.show){
+  background:rgba(68,88,116,.13)!important;
+  backdrop-filter:blur(5px) saturate(112%)!important;
+  -webkit-backdrop-filter:blur(5px) saturate(112%)!important;
+}
+html[data-theme="liquid"] .category-context{
+  color:var(--mgr-text)!important;
+  background:linear-gradient(145deg,rgba(249,253,255,.68),rgba(220,234,247,.44))!important;
+  border-color:rgba(255,255,255,.72)!important;
+  box-shadow:0 18px 46px rgba(64,86,119,.16),inset 0 1px 0 rgba(255,255,255,.88)!important;
+}
+html[data-theme="liquid"] #commandBackdrop .command-panel,
+html[data-theme="liquid"] #loginGate .login-card{
+  color:var(--mgr-text)!important;
+  background:linear-gradient(145deg,rgba(249,253,255,.70),rgba(220,234,247,.46))!important;
+  border-color:rgba(255,255,255,.74)!important;
+  box-shadow:0 26px 70px rgba(64,86,119,.17),inset 0 1px 0 rgba(255,255,255,.90)!important;
+  backdrop-filter:blur(20px) saturate(136%)!important;
+  -webkit-backdrop-filter:blur(20px) saturate(136%)!important;
+}
+html[data-theme="liquid"] #loginGate .login-form input,
+html[data-theme="liquid"] #commandBackdrop .command-search{
+  color:var(--mgr-text)!important;
+  background:rgba(250,253,255,.52)!important;
+  border-color:rgba(255,255,255,.62)!important;
+}
+
+/* Scrollbar tone follows theme. */
+html[data-theme="dark"] .drawer{scrollbar-color:rgba(116,135,255,.42) transparent}
+html[data-theme="light"] .drawer{scrollbar-color:rgba(87,105,166,.24) transparent}
+html[data-theme="liquid"] .drawer{scrollbar-color:rgba(102,121,184,.28) transparent}

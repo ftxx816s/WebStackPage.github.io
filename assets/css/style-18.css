@@ -1,0 +1,26 @@
+
+.site-doctor-summary{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+.site-doctor-stat.pending{--doctor-color:#f4b85f}
+.site-doctor-stat.vpnok{--doctor-color:#7d8cff}
+.site-doctor-state.pending{--state:#f4b85f}
+.site-doctor-state.checking{--state:#58b9ff}
+.site-doctor-state.vpnchecking{--state:#9a7cff}
+.site-doctor-state.vpnok{--state:#7d8cff}
+.site-doctor-state.dead{--state:#ff6577}
+.site-doctor-row.is-checking{border-color:color-mix(in srgb,var(--accent) 34%,var(--mgr-line));background:linear-gradient(90deg,color-mix(in srgb,var(--accent) 6%,var(--mgr-surface)),var(--mgr-surface))}
+.site-doctor-row.is-checking .site-doctor-state i{animation:v1887DoctorPulse .9s ease-in-out infinite alternate}
+@keyframes v1887DoctorPulse{to{transform:scale(1.35);filter:brightness(1.25)}}
+.site-doctor-vpnbar.direct .lamp{background:#58b9ff!important;box-shadow:0 0 0 5px color-mix(in srgb,#58b9ff 14%,transparent)!important}
+.site-doctor-vpnbar.online .lamp{background:#53d6a5!important;box-shadow:0 0 0 5px color-mix(in srgb,#53d6a5 14%,transparent)!important}
+.site-doctor-vpnbar.offline .lamp{background:#ff6577!important;box-shadow:0 0 0 5px color-mix(in srgb,#ff6577 14%,transparent)!important}
+.site-doctor-vpnbar.unknown .lamp{background:#f4b85f!important;box-shadow:0 0 0 5px color-mix(in srgb,#f4b85f 14%,transparent)!important}
+.site-doctor-live-current{display:flex;align-items:center;gap:7px;min-width:0;flex:1 1 230px;color:var(--mgr-muted);font-size:10px}
+.site-doctor-live-current i{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 12%,transparent)}
+.site-doctor-live-current b{color:var(--mgr-text);font-weight:750;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.site-doctor-auto-note{display:flex;align-items:center;gap:7px;color:var(--mgr-muted);font-size:9.5px}
+.site-doctor-auto-note i{width:7px;height:7px;border-radius:50%;background:#53d6a5;box-shadow:0 0 0 4px rgba(83,214,165,.08)}
+.site-doctor-actions .mini-btn.restore{border-color:color-mix(in srgb,#53d6a5 38%,var(--mgr-line));color:color-mix(in srgb,#53d6a5 74%,var(--mgr-text))}
+@media(max-width:760px){
+  .site-doctor-summary{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .site-doctor-live-current{flex-basis:100%}
+}

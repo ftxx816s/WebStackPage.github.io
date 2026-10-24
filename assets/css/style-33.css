@@ -1,0 +1,11 @@
+
+html[data-theme="liquid"] body{
+  background-color:transparent!important;
+  background-image:var(--liquid-bg-image)!important;
+  background-size:cover!important;
+  background-position:center center!important;
+  background-repeat:no-repeat!important;
+  background-attachment:fixed!important;
+  image-rendering:auto!important;
+  filter:none!important;
+}

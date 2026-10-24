@@ -1,0 +1,13 @@
+
+/* V19.20 Final · four non-dark themes: theme switch has no permanent tile.
+   Keep the icon visible; reveal the rounded background only on pointer hover. */
+@media (hover:hover) and (pointer:fine){
+  html[data-theme="light"] :is(#themeBtn,#compactThemeBtn):not(:hover),
+  html[data-theme="liquid"] :is(#themeBtn,#compactThemeBtn):not(:hover),
+  html[data-theme="neon"] :is(#themeBtn,#compactThemeBtn):not(:hover),
+  html[data-theme="frosted"] :is(#themeBtn,#compactThemeBtn):not(:hover){
+    background:transparent!important;
+    border-color:transparent!important;
+    box-shadow:none!important;
+  }
+}

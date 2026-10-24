@@ -1,0 +1,54 @@
+
+.system-console{
+  position:relative;flex:1;min-width:0;height:42px;min-height:42px;max-height:42px;
+  display:flex;align-items:center;gap:0;padding:4px 7px;border-radius:15px;border:1px solid var(--line);
+  background:rgba(9,16,30,.80);box-shadow:0 8px 24px rgba(0,0,0,.08);--wave-a:#56d7ff;--wave-b:#8b6dff;
+  backdrop-filter:blur(16px) saturate(145%);-webkit-backdrop-filter:blur(16px) saturate(145%);
+  overflow:hidden;white-space:nowrap
+}
+.system-console::before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(255,255,255,.025),transparent 28%,transparent 78%,rgba(255,255,255,.018));opacity:.9}
+.console-brand,.console-item,.console-activity{position:relative;z-index:1;height:32px;display:inline-flex;align-items:center}
+.console-brand{gap:8px;padding:0 10px 0 8px;min-width:154px}
+.console-pulse{width:7px;height:7px;border-radius:50%;background:var(--good);box-shadow:0 0 0 3px rgba(85,214,166,.10);flex:0 0 7px}
+.console-brand-copy{display:flex;flex-direction:column;line-height:1.05;gap:3px}
+.console-brand-copy b{font-size:10px;letter-spacing:.12em;color:var(--text);font-weight:850}
+.console-brand-copy small{font-size:8.5px;color:var(--muted2);letter-spacing:.04em}
+.console-divider{position:relative;z-index:1;width:1px;height:18px;background:var(--line);opacity:.8;flex:0 0 1px}
+.console-item{gap:6px;padding:0 11px;color:var(--muted);font-size:10px;font-weight:700;min-width:0}
+.console-item .k{color:var(--muted2);font-size:9px;letter-spacing:.08em}
+.console-item strong{color:var(--text);font-size:11px;font-weight:820;letter-spacing:-.01em}
+.console-item.sync strong{max-width:88px;overflow:hidden;text-overflow:ellipsis}
+.console-spacer{flex:1;min-width:10px}
+.console-activity{gap:9px;padding:0 6px 0 10px;min-width:248px;justify-content:flex-end}
+.console-activity .k{font-size:9px;color:var(--muted2);letter-spacing:.08em;flex:0 0 auto}
+.console-wave{position:relative;width:205px;height:28px;overflow:hidden;border-radius:8px;mask-image:linear-gradient(90deg,transparent 0,#000 9%,#000 92%,transparent 100%);-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 9%,#000 92%,transparent 100%)}
+.console-wave::after{content:"";position:absolute;left:0;right:0;bottom:1px;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent);pointer-events:none}
+.console-wave svg{display:block;width:100%;height:100%;overflow:visible}
+.console-wave-track{transform-box:fill-box;transform-origin:left center;animation:consoleWaveFlow 5.6s linear infinite;will-change:transform}
+.console-wave-line{fill:none;stroke:url(#consoleWaveStrokeV1878);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke;filter:drop-shadow(0 0 4px color-mix(in srgb,var(--wave-a) 28%,transparent))}
+.console-wave-area{fill:url(#consoleWaveFillV1878);opacity:.95}
+.console-wave .wave-stop-a{stop-color:var(--wave-a)}
+.console-wave .wave-stop-b{stop-color:var(--wave-b)}
+.console-wave .wave-fill-top{stop-color:var(--wave-a);stop-opacity:.32}
+.console-wave .wave-fill-mid{stop-color:var(--wave-b);stop-opacity:.14}
+.console-wave .wave-fill-zero{stop-color:var(--wave-b);stop-opacity:0}
+@keyframes consoleWaveFlow{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.console-wave-track{animation:none!important}}
+html[data-theme="light"] .system-console{background:rgba(255,255,255,.82);border-color:rgba(64,86,128,.10);box-shadow:0 8px 24px rgba(73,89,119,.065);--wave-a:#4d8dff;--wave-b:#9b6cff}
+html[data-theme="light"] .console-brand-copy b,html[data-theme="light"] .console-item strong{color:#15213a}
+html[data-theme="light"] .console-brand-copy small,html[data-theme="light"] .console-item,html[data-theme="light"] .console-item .k,html[data-theme="light"] .console-activity .k{color:#73829b}
+html[data-theme="light"] .console-divider{background:rgba(64,86,128,.12)}
+html[data-theme="dark"] .system-console{background:rgba(10,18,34,.88);border-color:rgba(116,135,255,.13);--wave-a:#45d9ff;--wave-b:#8e6dff}
+html[data-theme="liquid"] .system-console{background:linear-gradient(145deg,rgba(255,255,255,.58),rgba(236,244,252,.36));border-color:rgba(255,255,255,.54);box-shadow:inset 0 1px 0 rgba(255,255,255,.75),0 10px 25px rgba(97,117,153,.08);--wave-a:#38cfff;--wave-b:#9766ff}
+html[data-theme="liquid"] .console-brand-copy b,html[data-theme="liquid"] .console-item strong{color:#20314d}
+html[data-theme="liquid"] .console-brand-copy small,html[data-theme="liquid"] .console-item,html[data-theme="liquid"] .console-item .k,html[data-theme="liquid"] .console-activity .k{color:#647996}
+html[data-theme="neon"] .system-console{background:linear-gradient(100deg,rgba(8,42,78,.72),rgba(27,21,75,.72) 58%,rgba(73,26,78,.72));border-color:rgba(81,161,255,.18);box-shadow:0 8px 24px rgba(0,0,0,.12);--wave-a:#37f1ff;--wave-b:#d25cff}
+html[data-theme="neon"] .console-brand-copy small,html[data-theme="neon"] .console-item,html[data-theme="neon"] .console-item .k,html[data-theme="neon"] .console-activity .k{color:#9fc0e7}
+html[data-theme="frosted"] .system-console{background:linear-gradient(115deg,rgba(18,19,21,.90),rgba(44,45,48,.74));border-color:rgba(255,255,255,.10);box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 8px 22px rgba(0,0,0,.12);--wave-a:#f3f3f4;--wave-b:#8e8f94}
+html[data-theme="frosted"] .console-brand-copy b,html[data-theme="frosted"] .console-item strong{color:#fff}
+html[data-theme="frosted"] .console-brand-copy small,html[data-theme="frosted"] .console-item,html[data-theme="frosted"] .console-item .k,html[data-theme="frosted"] .console-activity .k{color:rgba(255,255,255,.62)}
+html[data-theme="frosted"] .console-divider{background:rgba(255,255,255,.10)}
+@media(max-width:1500px){.console-item.cache{display:none}.console-activity{min-width:205px}.console-wave{width:165px}}
+@media(max-width:1370px){.console-item.build{display:none}.console-activity{min-width:170px}.console-wave{width:132px}}
+@media(max-width:1260px){.console-brand-copy small{display:none}.console-brand{min-width:116px}.console-item.sync{display:none}.console-activity .k{display:none}.console-activity{min-width:142px}.console-wave{width:132px}}
+@media(max-width:1179px){.system-console{display:none!important}}

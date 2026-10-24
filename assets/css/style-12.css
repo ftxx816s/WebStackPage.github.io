@@ -1,0 +1,84 @@
+
+/* V18.91 · Calendar festival labels + seamless live signal */
+.calendar-ref-v1838{
+  --holiday-accent:var(--cal-accent,var(--accent));
+}
+.calendar-ref-v1838 .calendar-days{
+  min-height:156px!important;
+}
+.calendar-ref-v1838 .calendar-day{
+  height:24px!important;
+  overflow:visible;
+}
+.calendar-day-num{
+  position:relative;
+  z-index:1;
+  display:block;
+  line-height:1;
+  transition:transform .12s ease;
+}
+.calendar-day.has-holiday .calendar-day-num{
+  transform:translateY(-3px);
+}
+.calendar-holiday-tag{
+  position:absolute;
+  z-index:2;
+  left:50%;
+  bottom:1px;
+  transform:translateX(-50%);
+  max-width:94%;
+  font-size:6px;
+  line-height:1;
+  font-weight:850;
+  letter-spacing:-.02em;
+  white-space:nowrap;
+  color:var(--holiday-accent);
+  opacity:.92;
+  pointer-events:none;
+  text-shadow:0 1px 4px color-mix(in srgb,var(--holiday-accent) 18%,transparent);
+}
+.calendar-day.holiday-major .calendar-holiday-tag{
+  font-weight:900;
+}
+.calendar-day.today .calendar-holiday-tag,
+.calendar-day.selected .calendar-holiday-tag{
+  color:currentColor;
+  opacity:.88;
+  text-shadow:none;
+}
+.calendar-day.outside .calendar-holiday-tag{
+  opacity:.55;
+}
+html[data-theme="light"] .calendar-ref-v1838{--holiday-accent:#6574ff}
+html[data-theme="dark"] .calendar-ref-v1838{--holiday-accent:#8c90ff}
+html[data-theme="liquid"] .calendar-ref-v1838{--holiday-accent:#607cff}
+html[data-theme="neon"] .calendar-ref-v1838{--holiday-accent:#57dfff}
+html[data-theme="frosted"] .calendar-ref-v1838{--holiday-accent:rgba(255,255,255,.76)}
+@media(max-width:1179px){
+  .calendar-day.has-holiday .calendar-day-num{transform:translateY(-4px)}
+  .calendar-holiday-tag{font-size:7px;bottom:2px}
+}
+
+/* Seamless loop: 3 identical 180-unit segments live in a 540-unit track.
+   Moving exactly one segment keeps the first and last frame identical. */
+.console-wave{
+  mask-image:linear-gradient(90deg,transparent 0,#000 3%,#000 97%,transparent 100%)!important;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 3%,#000 97%,transparent 100%)!important;
+}
+.console-wave-track{
+  animation:consoleWaveFlowV1878 6.8s linear infinite!important;
+  transform-box:fill-box;
+  transform-origin:left center;
+  will-change:transform;
+}
+@keyframes consoleWaveFlowV1878{
+  from{transform:translateX(0)}
+  to{transform:translateX(-33.333333%)}
+}
+@media(prefers-reduced-motion:reduce){
+  .console-wave-track{animation:none!important}
+}
+@media(min-width:1600px){
+  .console-activity{min-width:300px}
+  .console-wave{width:248px}
+}
