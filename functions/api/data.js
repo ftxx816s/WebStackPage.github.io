@@ -1,8 +1,8 @@
-const API_VERSION="18.60";
+const API_VERSION="19.64";
 import {V17_CATEGORIES,V17_SITES} from "../_data/v17-seed.js";
 import {json,requireAuth,sameOrigin,verifySession,normalizeUsername} from "../_shared/auth.js";
 
-const BACKUP_KEEP=20,MAX_ICON_BYTES=1024*1024,AUTO_MAINTENANCE_MS=7*24*60*60*1000,KV_ORPHAN_DELETE_LIMIT=100;
+const BACKUP_KEEP=20,MAX_ICON_BYTES=1024*1024,AUTO_MAINTENANCE_MS=7*24*60*60*1000,KV_ORPHAN_DELETE_LIMIT=100,MAX_PURGE_SITES_V1964=500;
 
 function normalizeUrl(value){try{const u=new URL(String(value));if(!/^https?:$/.test(u.protocol))return "";u.hash="";u.hostname=u.hostname.toLowerCase();if(u.pathname!=="/")u.pathname=u.pathname.replace(/\/+$/,"");return u.href}catch{return ""}}
 function domainOf(value){try{return new URL(value).hostname.toLowerCase().replace(/^www\./,"")}catch{return ""}}
@@ -18,6 +18,8 @@ async function ensureSchema(env){
   await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_sites_v17_root_domain ON sites_v17(root_domain)`).run();
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS settings_v17(owner TEXT NOT NULL,key TEXT NOT NULL,value TEXT NOT NULL,updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,PRIMARY KEY(owner,key))`).run();
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS backups_v17(id INTEGER PRIMARY KEY AUTOINCREMENT,owner TEXT NOT NULL,revision INTEGER NOT NULL,snapshot TEXT NOT NULL,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`).run();
+  // Permanent deletion markers prevent older devices and restored snapshots from reviving purged IDs.
+  await env.DB.prepare(`CREATE TABLE IF NOT EXISTS purged_sites_v1964(owner TEXT NOT NULL,id TEXT NOT NULL,deleted_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,PRIMARY KEY(owner,id))`).run();
 
     })().catch(err=>{__schemaReadyPromiseV186=null;throw err});
   }
@@ -26,7 +28,9 @@ async function ensureSchema(env){
 async function getSetting(env,owner,key){const r=await env.DB.prepare(`SELECT value FROM settings_v17 WHERE owner=? AND key=?`).bind(owner,key).first();return r?.value??null}
 async function setSetting(env,owner,key,value){await env.DB.prepare(`INSERT INTO settings_v17(owner,key,value,updated_at) VALUES(?,?,?,CURRENT_TIMESTAMP) ON CONFLICT(owner,key) DO UPDATE SET value=excluded.value,updated_at=CURRENT_TIMESTAMP`).bind(owner,key,String(value)).run()}
 async function getRevision(env,owner){return Number(await getSetting(env,owner,"revision"))||0}
-async function seedIfNeeded(env){const row=await env.DB.prepare(`SELECT COUNT(*) AS c FROM sites_v17`).first();if(Number(row?.c)||0)return false;const catStatements=V17_CATEGORIES.map(c=>env.DB.prepare(`INSERT OR IGNORE INTO categories_v17(name,icon,sort_order,is_builtin) VALUES(?,?,?,1)`).bind(c.name,c.icon,c.sort));await env.DB.batch(catStatements);const siteStatements=V17_SITES.map(s=>{const n=normalizeUrl(s.url),d=domainOf(s.url);return env.DB.prepare(`INSERT OR IGNORE INTO sites_v17(id,name,url,normalized_url,domain,root_domain,full_title,category_name,sort_order,is_custom) VALUES(?,?,?,?,?,?,?,?,?,0)`).bind(s.id,s.name,s.url,n,d,rootDomain(d),s.fullTitle,s.category,s.sort)});for(let i=0;i<siteStatements.length;i+=70)await env.DB.batch(siteStatements.slice(i,i+70));return true}
+async function seedIfNeeded(env){const row=await env.DB.prepare(`SELECT COUNT(*) AS c FROM sites_v17`).first();if(Number(row?.c)||0)return false;
+  // A previously initialized empty database is intentional: never resurrect purged seed sites.
+  if(await getSetting(env,normalizeUsername(env.NAV_USERNAME||"admin"),"revision")!==null)return false;const catStatements=V17_CATEGORIES.map(c=>env.DB.prepare(`INSERT OR IGNORE INTO categories_v17(name,icon,sort_order,is_builtin) VALUES(?,?,?,1)`).bind(c.name,c.icon,c.sort));await env.DB.batch(catStatements);const siteStatements=V17_SITES.map(s=>{const n=normalizeUrl(s.url),d=domainOf(s.url);return env.DB.prepare(`INSERT OR IGNORE INTO sites_v17(id,name,url,normalized_url,domain,root_domain,full_title,category_name,sort_order,is_custom) VALUES(?,?,?,?,?,?,?,?,?,0)`).bind(s.id,s.name,s.url,n,d,rootDomain(d),s.fullTitle,s.category,s.sort)});for(let i=0;i<siteStatements.length;i+=70)await env.DB.batch(siteStatements.slice(i,i+70));return true}
 function dataUrlParts(v){const m=String(v||"").match(/^data:(image\/(?:png|jpeg|jpg|webp|gif|x-icon|vnd\.microsoft\.icon));base64,(.+)$/i);if(!m)return null;try{const raw=atob(m[2]),bytes=Uint8Array.from(raw,c=>c.charCodeAt(0));return {type:m[1].replace("image/jpg","image/jpeg"),bytes}}catch{return null}}
 async function migrateFromV16(env,owner){if(await getSetting(env,owner,"migrated_v16"))return "already";let source="seed-only";try{const old=await env.DB.prepare(`SELECT data FROM nav_state WHERE owner=? LIMIT 1`).bind(owner).first();if(old?.data){const d=JSON.parse(old.data);source="nav_state";
     if(Array.isArray(d.customCategories)){for(let i=0;i<d.customCategories.length;i++){const c=d.customCategories[i];if(c?.name)await env.DB.prepare(`INSERT OR IGNORE INTO categories_v17(name,icon,sort_order,is_builtin) VALUES(?,?,?,0)`).bind(String(c.name),String(c.icon||"•"),100+i).run()}}
@@ -169,6 +173,9 @@ async function planSnapshotDiff(env,owner,cats,sites,ui,options={}){
   const dbSites=(await env.DB.prepare(`SELECT id,name,url,normalized_url,domain,root_domain,full_title,category_name,sort_order,is_favorite,is_deleted,is_custom,icon_url,icon_key FROM sites_v17`).all()).results||[];
   const catMap=new Map(dbCats.map(r=>[String(r.name),r])),siteMap=new Map(dbSites.map(r=>[String(r.id),r]));
   const inCats=cats.map(incomingCategory).filter(Boolean),inSites=sites.map(incomingSite).filter(Boolean);
+  const purged=(await env.DB.prepare(`SELECT id FROM purged_sites_v1964 WHERE owner=?`).bind(owner).all()).results||[];
+  const purgedSet=new Set(purged.map(r=>String(r.id)));
+  const forbiddenIds=[...new Set(inSites.filter(s=>purgedSet.has(s.id)).map(s=>s.id))];
   const inCatNames=new Set(inCats.map(r=>r.name)),inSiteIds=new Set(inSites.map(r=>r.id));
   const categoryUpserts=inCats.filter(r=>!sameCategory(catMap.get(r.name),r));
   const authorizedBuiltinDeletes=new Set((Array.isArray(options?.deleteBuiltinCategories)?options.deleteBuiltinCategories:[]).map(String));
@@ -176,7 +183,7 @@ async function planSnapshotDiff(env,owner,cats,sites,ui,options={}){
   const siteUpserts=inSites.filter(r=>!sameSite(siteMap.get(r.id),r));
   const siteDeletes=dbSites.filter(r=>Number(r.is_custom)!==0&&!inSiteIds.has(String(r.id)));
   const uiJson=JSON.stringify(ui||{}),oldUi=await getSetting(env,owner,"ui");
-  return {categoryUpserts,categoryDeletes,siteUpserts,siteDeletes,uiJson,settingsChanged:String(oldUi??"")!==uiJson,structuralChanged:categoryUpserts.length>0||categoryDeletes.length>0||siteUpserts.length>0||siteDeletes.length>0};
+  return {categoryUpserts,categoryDeletes,siteUpserts,siteDeletes,forbiddenIds,uiJson,settingsChanged:String(oldUi??"")!==uiJson,structuralChanged:categoryUpserts.length>0||categoryDeletes.length>0||siteUpserts.length>0||siteDeletes.length>0};
 }
 async function syncSnapshot(env,owner,body){
   const {cats,sites,dups}=validateSnapshot(body);if(dups.length)return json({ok:false,error:"Duplicate URL detected.",duplicates:dups},409);
@@ -188,6 +195,7 @@ async function syncSnapshot(env,owner,body){
   const current=await getRevision(env,owner),base=Math.max(0,Number(body?.baseRevision)||0),force=body?.force===true;if(!force&&base!==current)return json({ok:false,error:"Revision conflict.",revision:current},409);
   const ui=body?.settings&&typeof body.settings==="object"?body.settings:{};
   const plan=await planSnapshotDiff(env,owner,cats,sites,ui,body);
+  if(plan.forbiddenIds.length)return json({ok:false,error:"Permanently deleted site IDs cannot be restored by an old snapshot. Refresh from D1.",revision:current,purgedIds:plan.forbiddenIds},409);
   if(!plan.structuralChanged&&!plan.settingsChanged)return json({ok:true,revision:current,unchanged:true,writes:0});
   // Only structural changes need a recovery snapshot. Recents/theme/usage-only changes no longer create full snapshots.
   if(plan.structuralChanged)await backupSnapshot(env,owner,current);
@@ -198,13 +206,109 @@ async function syncSnapshot(env,owner,body){
   await runBatches(env,deletes);
   const catStatements=plan.categoryUpserts.map(c=>env.DB.prepare(`INSERT INTO categories_v17(name,icon,sort_order,is_builtin,updated_at) VALUES(?,?,?,?,CURRENT_TIMESTAMP) ON CONFLICT(name) DO UPDATE SET icon=excluded.icon,sort_order=excluded.sort_order,is_builtin=excluded.is_builtin,updated_at=CURRENT_TIMESTAMP`).bind(c.name,c.icon,c.sort_order,c.is_builtin));
   await runBatches(env,catStatements);
-  const siteStatements=plan.siteUpserts.map(s=>env.DB.prepare(`INSERT INTO sites_v17(id,name,url,normalized_url,domain,root_domain,full_title,category_name,sort_order,is_favorite,is_deleted,is_custom,icon_url,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP) ON CONFLICT(id) DO UPDATE SET name=excluded.name,url=excluded.url,normalized_url=excluded.normalized_url,domain=excluded.domain,root_domain=excluded.root_domain,full_title=excluded.full_title,category_name=excluded.category_name,sort_order=excluded.sort_order,is_favorite=excluded.is_favorite,is_deleted=excluded.is_deleted,is_custom=excluded.is_custom,icon_url=excluded.icon_url,updated_at=CURRENT_TIMESTAMP`).bind(s.id,s.name,s.url,s.normalized_url,s.domain,s.root_domain,s.full_title,s.category_name,s.sort_order,s.is_favorite,s.is_deleted,s.is_custom,s.icon_url));
+  const siteStatements=plan.siteUpserts.map(s=>env.DB.prepare(`INSERT INTO sites_v17(id,name,url,normalized_url,domain,root_domain,full_title,category_name,sort_order,is_favorite,is_deleted,is_custom,icon_url,updated_at) SELECT ?,?,?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM purged_sites_v1964 WHERE owner=? AND id=?) ON CONFLICT(id) DO UPDATE SET name=excluded.name,url=excluded.url,normalized_url=excluded.normalized_url,domain=excluded.domain,root_domain=excluded.root_domain,full_title=excluded.full_title,category_name=excluded.category_name,sort_order=excluded.sort_order,is_favorite=excluded.is_favorite,is_deleted=excluded.is_deleted,is_custom=excluded.is_custom,icon_url=excluded.icon_url,updated_at=CURRENT_TIMESTAMP`).bind(s.id,s.name,s.url,s.normalized_url,s.domain,s.root_domain,s.full_title,s.category_name,s.sort_order,s.is_favorite,s.is_deleted,s.is_custom,s.icon_url,owner,s.id));
   await runBatches(env,siteStatements);
   if(plan.settingsChanged)await setSetting(env,owner,"ui",plan.uiJson);
   const revision=current+1;await setSetting(env,owner,"revision",String(revision));
   const writes=plan.categoryUpserts.length+plan.categoryDeletes.length+plan.siteUpserts.length+plan.siteDeletes.length+(plan.settingsChanged?1:0)+1+(plan.structuralChanged?1:0);
   return json({ok:true,revision,writes,changed:{sites:plan.siteUpserts.length,siteDeletes:plan.siteDeletes.length,categories:plan.categoryUpserts.length,categoryDeletes:plan.categoryDeletes.length,settings:plan.settingsChanged,backup:plan.structuralChanged}})
 }
+/* V19.64 · Hard-delete only items already in the recycle bin.
+   D1's transactional batch records tombstones, removes records and scrubs D1
+   historical snapshot copies together. Old full-state syncs cannot revive IDs. */
+function removePurgedUiRefsV1964(ui,ids){
+  if(!ui||typeof ui!=="object"||Array.isArray(ui))return {};
+  const copy={...ui};
+  if(Array.isArray(copy.recents))copy.recents=copy.recents.filter(id=>!ids.has(String(id)));
+  if(copy.usageStats&&typeof copy.usageStats==="object"&&!Array.isArray(copy.usageStats)){
+    copy.usageStats={...copy.usageStats};
+    for(const id of ids)delete copy.usageStats[id];
+  }
+  return copy;
+}
+async function purgeDeletedSitesV1964(env,owner,body){
+  const ids=body?.ids;
+  if(!Array.isArray(ids)||ids.length<1||ids.length>MAX_PURGE_SITES_V1964||
+     ids.some(id=>typeof id!=="string"||!id.trim()||id.length>256)||
+     new Set(ids).size!==ids.length){
+    return json({ok:false,error:"Provide 1-500 distinct valid site IDs."},400);
+  }
+  const expected=Number(body?.baseRevision);
+  if(!Number.isSafeInteger(expected)||expected<0||body?.baseRevision===undefined||body?.baseRevision===null){
+    return json({ok:false,error:"Valid baseRevision is required."},400);
+  }
+  const current=await getRevision(env,owner);
+  if(expected!==current)return json({ok:false,error:"Revision conflict. Refresh D1 before permanently deleting.",revision:current},409);
+
+  const existing=[];
+  for(let i=0;i<ids.length;i+=80){
+    const part=ids.slice(i,i+80),marks=part.map(()=>"?").join(",");
+    existing.push(...((await env.DB.prepare(`SELECT id,is_deleted,icon_key FROM sites_v17 WHERE id IN (${marks})`).bind(...part).all()).results||[]));
+  }
+  const found=new Map(existing.map(row=>[String(row.id),row]));
+  const missing=ids.filter(id=>!found.has(id));
+  if(missing.length)return json({ok:false,error:"Some sites are no longer present in D1. Refresh before deleting.",missingIds:missing},404);
+  const active=ids.filter(id=>Number(found.get(id).is_deleted)!==1);
+  if(active.length)return json({ok:false,error:"Only sites already in the recycle bin can be permanently deleted.",activeIds:active},409);
+
+  // Remove copies from D1-backed historical backups, not just the live sites table.
+  // Existing exported backup files and Cloudflare's platform-level snapshots cannot be changed here.
+  const erased=new Set(ids);
+  const backupRows=(await env.DB.prepare(`SELECT id,snapshot FROM backups_v17 WHERE owner=?`).bind(owner).all()).results||[];
+  const backupUpdates=[];
+  for(const row of backupRows){
+    let snapshot;
+    try{snapshot=JSON.parse(row.snapshot)}
+    catch{return json({ok:false,error:`Cannot safely purge: D1 backup ${row.id} is invalid JSON.`},409)}
+    if(!snapshot||typeof snapshot!=="object"||!Array.isArray(snapshot.sites)){
+      return json({ok:false,error:`Cannot safely purge: D1 backup ${row.id} is malformed.`},409);
+    }
+    const before=snapshot.sites.length;
+    snapshot.sites=snapshot.sites.filter(site=>!erased.has(String(site?.id)));
+    snapshot.settings=removePurgedUiRefsV1964(snapshot.settings,erased);
+    if(snapshot.sites.length!==before||snapshot.settings?.recents?.length!==undefined){
+      const next=JSON.stringify(snapshot);
+      if(next!==row.snapshot)backupUpdates.push(env.DB.prepare(`UPDATE backups_v17 SET snapshot=? WHERE owner=? AND id=?`).bind(next,owner,row.id));
+    }
+  }
+
+  const uiText=await getSetting(env,owner,"ui");
+  let ui={};
+  try{ui=JSON.parse(uiText||"{}")||{}}
+  catch{return json({ok:false,error:"Cannot safely purge: current D1 settings are invalid JSON."},409)}
+  const nextUi=JSON.stringify(removePurgedUiRefsV1964(ui,erased));
+  const statements=[];
+  for(let i=0;i<ids.length;i+=40){
+    const part=ids.slice(i,i+40);
+    const values=part.map(()=>"(?,?,CURRENT_TIMESTAMP)").join(",");
+    statements.push(env.DB.prepare(`INSERT OR IGNORE INTO purged_sites_v1964(owner,id,deleted_at) VALUES ${values}`).bind(...part.flatMap(id=>[owner,id])));
+    statements.push(env.DB.prepare(`DELETE FROM sites_v17 WHERE is_deleted=1 AND id IN (${part.map(()=>"?").join(",")})`).bind(...part));
+  }
+  statements.push(...backupUpdates);
+  if(nextUi!==uiText)statements.push(env.DB.prepare(`INSERT INTO settings_v17(owner,key,value,updated_at) VALUES(?, 'ui', ?,CURRENT_TIMESTAMP) ON CONFLICT(owner,key) DO UPDATE SET value=excluded.value,updated_at=CURRENT_TIMESTAMP`).bind(owner,nextUi));
+  const revision=current+1;
+  statements.push(env.DB.prepare(`INSERT INTO settings_v17(owner,key,value,updated_at) VALUES(?, 'revision', ?,CURRENT_TIMESTAMP) ON CONFLICT(owner,key) DO UPDATE SET value=excluded.value,updated_at=CURRENT_TIMESTAMP`).bind(owner,String(revision)));
+  // D1 .batch() is transactional. A failing SQL statement rolls back deletion and markers.
+  await env.DB.batch(statements);
+  // Do not rely exclusively on meta query introspection; verify the committed result.
+  const remaining=[];
+  for(let i=0;i<ids.length;i+=80){
+    const part=ids.slice(i,i+80);
+    remaining.push(...((await env.DB.prepare(`SELECT id FROM sites_v17 WHERE id IN (${part.map(()=>"?").join(",")})`).bind(...part).all()).results||[]));
+  }
+  if(remaining.length)return json({ok:false,error:"D1 deletion verification failed; reload data and inspect the affected IDs.",remainingIds:remaining.map(r=>r.id)},500);
+  let kvCleanupPending=0;
+  if(env.KV){
+    for(const id of ids){
+      const key=String(found.get(id)?.icon_key||"");
+      if(key.startsWith(`custom:${owner}:`)){
+        try{await env.KV.delete(key)}catch{kvCleanupPending++}
+      }
+    }
+  }
+  return json({ok:true,deletedIds:ids,revision,deletedCount:ids.length,kvCleanupPending,historyBackupsScrubbed:backupUpdates.length});
+}
+
 async function listKvPrefix(env,prefix,maxKeys=5000){
   if(!env.KV)return {keys:[],complete:true};let cursor=undefined,keys=[],complete=false;
   do{const page=await env.KV.list({prefix,limit:1000,...(cursor?{cursor}:{})});keys.push(...(page.keys||[]));complete=!!page.list_complete;cursor=page.cursor||undefined;if(keys.length>=maxKeys)break}while(!complete&&cursor);
@@ -347,6 +451,7 @@ export async function onRequest(context){const {request,env}=context;try{const u
   // Everything below mutates cloud state and therefore requires admin auth.
   const auth=await requireAuth(request,env);if(auth.error)return auth.error;
   if(mode==="sync"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);return await syncSnapshot(env,auth.owner,await request.json())}
+  if(mode==="purge-sites"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);return await purgeDeletedSitesV1964(env,auth.owner,await request.json())}
   if(mode==="backups"&&request.method==="GET"){return await listBackups(env,auth.owner)}
   if(mode==="disaster-backup"&&request.method==="GET"){
     try{return json(await buildDisasterBackupV1860(env,auth.owner))}
