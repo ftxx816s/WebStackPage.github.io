@@ -4,14 +4,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>私人导航工具箱 · V19.61 Liquid Glass</title>
+<title>私人导航工具箱 · V19.63 Liquid Glass</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https: http:; connect-src 'self' https:; font-src data:; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
 <meta name="theme-color" content="#07101d">
 <script  id="app-meta-v1891"  data-module="script-01.js">
 
-window.FXNAV_APP=Object.freeze({version:"19.61",build:"V19.61",schemaVersion:3,channel:"stable"});
+window.FXNAV_APP=Object.freeze({version:"19.63",build:"V19.63",schemaVersion:3,channel:"stable"});
 
 </script>
 <script  id="theme-boot-v1867"  data-module="script-02.js">
@@ -33,7 +33,7 @@ window.FXNAV_APP=Object.freeze({version:"19.61",build:"V19.61",schemaVersion:3,c
   var root=document.documentElement;
   root.setAttribute("data-theme",theme);
   root.classList.add("theme-booting");
-  // V19.61: nonblocking, theme-matched first paint. The wallpaper loads normally
+  // V19.63: nonblocking, theme-matched first paint. The wallpaper loads normally
   // in the existing IndexedDB restoration flow, never delaying the interface.
   root.style.colorScheme=theme==="light"?"light":"dark";
   var colors={dark:"#07101d",light:"#edf3ff",liquid:"#747678",neon:"#020713",frosted:"#1b1b1d"};
@@ -68,7 +68,7 @@ window.FXNAV_APP=Object.freeze({version:"19.61",build:"V19.61",schemaVersion:3,c
 
 </script>
 <style data-module="style-01.css">
-/* V19.61: do not paint partial/default-theme DOM while the inline CSS is still streaming. */
+/* V19.63: do not paint partial/default-theme DOM while the inline CSS is still streaming. */
 html.theme-booting,html.theme-booting body{margin:0;min-height:100%;transition:none!important}
 html.theme-booting body{visibility:hidden!important}
 html.theme-booting *,html.theme-booting *::before,html.theme-booting *::after{transition:none!important}
@@ -79,7 +79,7 @@ html:not([data-theme="liquid"]) body .compact-actions #compactLiquidBgBtn{displa
 html.theme-booting[data-theme="dark"],html.theme-booting[data-theme="dark"] body{background:#07101d!important;color:#f4f7ff}
 html.theme-booting[data-theme="light"],html.theme-booting[data-theme="light"] body{background:#edf3ff!important;color:#172033}
 html.theme-booting[data-theme="neon"],html.theme-booting[data-theme="neon"] body{background:#020713!important;color:#f7f9ff}
-/* V19.61 neutral graphite-gray placeholder: similar to the selected glass theme. */
+/* V19.63 neutral graphite-gray placeholder: similar to the selected glass theme. */
 html.theme-booting[data-theme="liquid"],html.theme-booting[data-theme="liquid"] body{background:#747678!important;color:#f8fbff!important}
 /* Avoid flashing a different default image while IndexedDB restores the saved one. */
 html.liquid-wallpaper-pending[data-theme="liquid"] body{
@@ -3626,7 +3626,7 @@ html[data-theme="light"] .context-head-icon{
   background:linear-gradient(90deg,#20c0f3 0%,#4386fb 22%,#745df1 40%,#df4bad 60%,#ff7259 76%,#ffd451 90%,#6bd95c 100%);
   box-shadow:0 12px 22px rgba(105,99,171,.17),inset 0 2px 2px rgba(255,255,255,.30);z-index:-1;
 }
-/* V19.61 — theme isolation: this control belongs to Liquid Glass only.
+/* V19.63 — theme isolation: this control belongs to Liquid Glass only.
    Prevent default UA button chrome appearing as a white square in Dark/Light/Neon/Frosted,
    including phone and tablet widths. The later liquid-only selector deliberately overrides this. */
 #hero .liquid-search-btn{display:none!important}
@@ -3937,8 +3937,8 @@ html[data-theme="neon"] .tool-cluster{border-radius:14px}}
 <link rel="icon" type="image/png" sizes="64x64" href="data:image/png;base64,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">
 <link rel="shortcut icon" type="image/png" href="data:image/png;base64,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">
 
-<meta name="x-build" content="V19.61-20261027">
-<meta name="x-app-version" content="19.61">
+<meta name="x-build" content="V19.63-20261027">
+<meta name="x-app-version" content="19.63">
 
 <style data-module="style-03.css">
 :root{
@@ -4609,7 +4609,7 @@ body.sort-mode .card-link{padding-left:52px!important;padding-right:38px!importa
 .site-icon,.card-link,.nav-btn,.tool-btn,.btn{touch-action:manipulation}
 body.sort-mode .sort-handle{touch-action:none!important}
 .star{opacity:1!important}}
-/* V19.61 - one stable SVG for the sort action in desktop/mobile/tablet and sticky toolbar. */
+/* V19.63 - one stable SVG for the sort action in desktop/mobile/tablet and sticky toolbar. */
 #sortModeBtn .sort-glyph{
   display:inline-flex!important;align-items:center!important;justify-content:center!important;
   flex:0 0 16px!important;width:16px!important;height:16px!important;
@@ -5251,7 +5251,7 @@ html.theme-switching{scroll-behavior:auto!important}
 .calendar-ref-v1838 .calendar-ref-selected-icon{width:38px!important;height:38px!important;border-radius:12px!important}
 .calendar-ref-v1838 .calendar-ref-selected-icon svg{width:18px!important;height:18px!important}
 .calendar-ref-v1838 .calendar-ref-selected-copy strong{font-size:13px!important;line-height:1.08!important}
-.calendar-ref-v1838 .calendar-ref-selected-copy span{margin-top:2px!important;font-size:8px!important;line-height:1.22!important;white-space:normal!important;display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important;text-overflow:clip!important}
+.calendar-ref-v1838 .calendar-ref-selected-copy span{margin-top:2px!important;font-size:8px!important;line-height:1.22!important;white-space:normal!important;display:-webkit-box!important;line-clamp:2!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important;text-overflow:clip!important}
 .calendar-ref-v1838 .calendar-ref-selected-copy small{margin-top:2px!important;font-size:7.4px!important;line-height:1.12!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
 .calendar-ref-v1838 .datetime-today{width:44px!important;min-width:44px!important;height:32px!important;border-radius:10px!important;font-size:9px!important}}
 @media  (min-width:1080px) and (max-width:1380px){.home-layout{grid-template-columns:minmax(0,1fr) 372px!important}
@@ -7410,11 +7410,11 @@ html[data-theme="frosted"] .mobile-calendar-toggle{background:rgba(255,255,255,.
 .fa-pulse{-webkit-animation:fa-spin 1s infinite steps(8);animation:fa-spin 1s infinite steps(8)}
 @-webkit-keyframes fa-spin{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg)}100%{-webkit-transform:rotate(359deg);transform:rotate(359deg)}}
 @keyframes fa-spin{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg)}100%{-webkit-transform:rotate(359deg);transform:rotate(359deg)}}
-.fa-rotate-90{-ms-filter:"progid:DXImageTransform.Microsoft.BasicImage(rotation=1)";-webkit-transform:rotate(90deg);-ms-transform:rotate(90deg);transform:rotate(90deg)}
-.fa-rotate-180{-ms-filter:"progid:DXImageTransform.Microsoft.BasicImage(rotation=2)";-webkit-transform:rotate(180deg);-ms-transform:rotate(180deg);transform:rotate(180deg)}
-.fa-rotate-270{-ms-filter:"progid:DXImageTransform.Microsoft.BasicImage(rotation=3)";-webkit-transform:rotate(270deg);-ms-transform:rotate(270deg);transform:rotate(270deg)}
-.fa-flip-horizontal{-ms-filter:"progid:DXImageTransform.Microsoft.BasicImage(rotation=0, mirror=1)";-webkit-transform:scale(-1, 1);-ms-transform:scale(-1, 1);transform:scale(-1, 1)}
-.fa-flip-vertical{-ms-filter:"progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1)";-webkit-transform:scale(1, -1);-ms-transform:scale(1, -1);transform:scale(1, -1)}
+.fa-rotate-90{-webkit-transform:rotate(90deg);-ms-transform:rotate(90deg);transform:rotate(90deg)}
+.fa-rotate-180{-webkit-transform:rotate(180deg);-ms-transform:rotate(180deg);transform:rotate(180deg)}
+.fa-rotate-270{-webkit-transform:rotate(270deg);-ms-transform:rotate(270deg);transform:rotate(270deg)}
+.fa-flip-horizontal{-webkit-transform:scale(-1, 1);-ms-transform:scale(-1, 1);transform:scale(-1, 1)}
+.fa-flip-vertical{-webkit-transform:scale(1, -1);-ms-transform:scale(1, -1);transform:scale(1, -1)}
 :root .fa-rotate-90,:root .fa-rotate-180,:root .fa-rotate-270,:root .fa-flip-horizontal,:root .fa-flip-vertical{filter:none}
 .fa-stack{position:relative;display:inline-block;width:2em;height:2em;line-height:2em;vertical-align:middle}
 .fa-stack-1x,.fa-stack-2x{position:absolute;left:0;width:100%;text-align:center}
@@ -8153,6 +8153,7 @@ html[data-theme="light"] .site-doctor-icon{
   padding:1px;
   opacity:0;
   background:linear-gradient(135deg,rgba(93,198,255,.72),rgba(139,92,246,.50) 54%,rgba(216,92,222,.38));
+  mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
   -webkit-mask-composite:xor;
   mask-composite:exclude;
@@ -8549,7 +8550,7 @@ html[data-theme="light"] body .login-error{color:#bb2b55!important;}
         <span class="console-divider"></span>
         <span class="console-item cache"><span class="k">CACHE</span><strong id="consoleCache">0 KB</strong></span>
         <span class="console-divider"></span>
-        <span class="console-item build"><span class="k">BUILD</span><strong>V19.61</strong></span>
+        <span class="console-item build"><span class="k">BUILD</span><strong>V19.63</strong></span>
         <span class="console-spacer"></span>
         <span class="console-activity">
           <span class="k">SYSTEM ACTIVITY</span>
@@ -8709,7 +8710,7 @@ html[data-theme="light"] body .login-error{color:#bb2b55!important;}
 
     <div id="fxD1LoadingV1946" class="fx-d1-loading-v1946" role="status">正在读取完整云端导航数据…</div>
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V19.61 版本</div>
+    <div class="footer">© 2026 私人导航工具箱 · V19.63 版本</div>
   </main>
 </div>
 
@@ -8785,12 +8786,12 @@ html[data-theme="light"] body .login-error{color:#bb2b55!important;}
 <aside class="drawer" id="drawer">
   <div class="drawer-head">
     <div class="drawer-head-row">
-      <div class="drawer-title"><h2>管理导航</h2><p>网站编辑 · 分类管理 · D1 数据源 · KV 图标缓存</p></div>
+      <div class="drawer-title"><h2>管理导航</h2></div>
       <button type="button" class="btn icon" id="closeDrawer">×</button>
     </div>
   </div>
   <div class="drawer-body">
-    <div class="admin-note">V19.61 版本：网站、分类、排序、收藏、删除状态等导航数据以 D1 为正式数据源；第三款主题已固定为通知卡片玻璃，旧玻璃调节参数停止使用；自定义壁纸由独立 D1 壁纸库存储与同步。自定义上传图标进入 Workers KV，自动高清图标由 Cloudflare 服务端抓取并缓存到 KV。<br><span id="storageUsage">正在计算本地数据占用…</span></div>
+    <div class="admin-note" hidden><span id="storageUsage" aria-hidden="true"></span></div>
 
     <form id="addForm">
       <div class="form-grid">
@@ -8804,19 +8805,17 @@ html[data-theme="light"] body .login-error{color:#bb2b55!important;}
             <label class="icon-upload-label">上传图标（自动高清圆角）<input type="file" id="newIconFile" accept="image/*" hidden></label>
           </div>
         </div>
-        <div class="field full"><label>图标预览</label><div class="icon-preview" id="iconPreview"></div><div class="v17-icon-note"><b>图标说明：</b>上传图标会保存到现有 Cloudflare KV；不上传时自动使用服务端高清 favicon 缓存。</div></div>
+        <div class="field full"><label>图标预览</label><div class="icon-preview" id="iconPreview"></div></div>
       </div>
       <div class="admin-actions"><button class="btn primary" type="submit">＋ 添加网站</button></div>
       <div class="admin-transfer-panel">
         <b>配置、浏览器书签与完整备份</b>
-        <p>支持 Chrome / Edge 书签 HTML 导入导出。</p>
         <div class="transfer-action-grid">
           <button class="btn" type="button" id="exportBtn">导出配置</button>
           <button class="btn" type="button" id="importBtn">导入配置</button>
           <button class="btn" type="button" id="exportBookmarksBtn">导出浏览器书签</button>
           <button class="btn" type="button" id="importBookmarksBtn">导入浏览器书签</button>
           <button class="btn primary" type="button" id="disasterBackupBtn">完整备份导出</button>
-          <small class="transfer-helper">导出网站、分类、排序、收藏、设置及自定义图标数据</small>
         </div>
         <input type="file" id="importFile" accept="application/json" hidden>
         <input type="file" id="importBookmarksFile" accept=".html,.htm,text/html" hidden>
@@ -8829,9 +8828,6 @@ html[data-theme="light"] body .login-error{color:#bb2b55!important;}
       <h3>分类管理</h3>
       <span class="custom-count" id="categoryManageCount">0 个分类</span>
     </div>
-    <div class="admin-note">
-      可新增自定义分类、修改分类图标和调整分类顺序。图标支持符号 / Emoji 与 Font Awesome 4.7 代码；“智能匹配图标”支持新分类的关键词识别；也可点击单项“图标”搜索挑选。所有分类均可修改显示标题或删除。删除分类时先迁移全部网站到保留分类，保留网站、收藏与图标。
-    </div>
     <div class="form-grid">
       <div class="field">
         <label>新分类名称</label>
@@ -8843,7 +8839,6 @@ html[data-theme="light"] body .login-error{color:#bb2b55!important;}
           <input id="newCategoryGlyph" maxlength="96" placeholder="◆ 或 fa fa-search" autocomplete="off" spellcheck="false">
           <span class="category-glyph-preview" id="newCategoryGlyphPreview" aria-label="分类图标预览">◆</span>
         </div>
-        <small class="category-glyph-help">支持符号 / Emoji 与 Font Awesome 4.7 代码；也可使用下方“选择图标”直接挑选。</small>
       </div>
     </div>
     <div class="admin-actions">
@@ -8860,9 +8855,6 @@ html[data-theme="light"] body .login-error{color:#bb2b55!important;}
     <div class="custom-title-row">
       <h3>分类移动</h3>
       <span class="custom-count" id="movedCount">0 个已调整</span>
-    </div>
-    <div class="admin-note">
-      可修改全部网站的分类，包括最初导入的收藏夹网站。前台也可以直接在网站图标上点右键快速移动分类。这里只覆盖“分类”，不会修改网址、名称或图标。
     </div>
 
     <div class="form-grid">
@@ -8893,7 +8885,6 @@ html[data-theme="light"] body .login-error{color:#bb2b55!important;}
 
     <div class="admin-divider"></div>
     <div class="custom-title-row"><h3>已删除网站</h3><span class="custom-count" id="deletedCount">0 个</span></div>
-    <div class="admin-note">右键菜单删除的网站会先从导航中隐藏，可在这里恢复。内置网站不会被真正破坏。</div>
     <div class="admin-actions deleted-actions">
       <button class="btn" type="button" id="restoreAllDeletedBtn">全部恢复</button>
       <button class="btn danger-text" type="button" id="purgeDeletedCustomBtn">清理已删除的自建网站</button>
@@ -8973,7 +8964,7 @@ html[data-theme="light"] body .login-error{color:#bb2b55!important;}
     <div class="category-icon-editor-head">
       <div>
         <h2 id="categoryIconEditorTitle">修改分类图标</h2>
-        <p>点击“打开图标库”直接选择，也可手动输入代码</p>
+        
       </div>
       <button class="btn icon" type="button" id="closeCategoryIconEditor" aria-label="关闭图标编辑">×</button>
     </div>
@@ -12929,17 +12920,6 @@ updateAccessUIV178();
       const copy=row.querySelector(".category-manager-copy");
       const b=copy?.querySelector("b");
       if(b)b.textContent=displayCategory(key);
-      if(copy){
-        let sub=copy.querySelector(".category-display-sub");
-        if(!sub){
-          sub=document.createElement("span");
-          sub.className="category-display-sub";
-          copy.append(sub);
-        }
-        const custom=displayCategory(key)!==key;
-        sub.classList.toggle("is-custom-title",custom);
-        sub.textContent=custom?`内部分类键：${key}`:"标题与内部分类键一致";
-      }
       const actions=row.querySelector(".category-manager-actions");
       if(actions&&!actions.querySelector(".manager-category-title-btn")){
         const btn=document.createElement("button");
@@ -13058,16 +13038,12 @@ updateAccessUIV178();
     const firstNote=body.querySelector(":scope > .admin-note");
     const metrics=document.getElementById("managerMetrics");
     overview.innerHTML=`
-      <div class="manager-overview-hero">
-        <strong>导航管理中心</strong>
-        <p>功能按任务拆分，不再需要在一个超长页面里来回滚动。网站、分类、重复项、回收站和数据工具各自独立。</p>
-      </div>
       <div class="manager-quick-grid">
-        <button class="manager-quick" type="button" data-go="sites" data-add="1"><b>＋ 新增网站</b><small>添加网站与自定义 Logo</small></button>
-        <button class="manager-quick" type="button" data-go="duplicates" data-scan="1"><b>扫描重复</b><small>三级重复检测 + 忽略规则</small></button>
-        <button class="manager-quick" type="button" data-go="health"><b>网站体检</b><small>两轮检测 · 直连 / VPN / 疑似失效</small></button>
-        <button class="manager-quick" type="button" data-go="categories"><b>分类设置</b><small>标题、图标、排序与移动</small></button>
-        <button class="manager-quick" type="button" data-go="data"><b>数据与备份</b><small>D1 / KV / 导入导出</small></button>
+        <button class="manager-quick" type="button" data-go="sites" data-add="1"><b>＋ 新增网站</b></button>
+        <button class="manager-quick" type="button" data-go="duplicates" data-scan="1"><b>扫描重复</b></button>
+        <button class="manager-quick" type="button" data-go="health"><b>网站体检</b></button>
+        <button class="manager-quick" type="button" data-go="categories"><b>分类设置</b></button>
+        <button class="manager-quick" type="button" data-go="data"><b>数据与备份</b></button>
       </div>
       <div class="manager-overview-dashboard" id="managerOverviewDashboard" aria-live="polite"></div>
     `;
@@ -13076,9 +13052,6 @@ updateAccessUIV178();
 
     // Sites
     sites.innerHTML=`
-      <div class="manager-panel-title">
-        <div><h3>网站管理</h3><p>搜索、筛选、批量移动、批量删除。列表按需渲染，避免一次生成全部 DOM。</p></div>
-      </div>
       <div class="manager-site-toolbar">
         <input id="managerSiteSearch" placeholder="搜索名称、域名或分类">
         <select id="managerCategoryFilter"><option value="">全部分类</option></select>
@@ -13101,18 +13074,24 @@ updateAccessUIV178();
     if(addForm)addWrap.append(addForm);
 
     // Categories: move existing blocks.
-    categories.innerHTML=`
-      <div class="manager-panel-title"><div><h3>分类管理</h3><p>“标题”只改变前台显示名称，不改内部分类键，因此不会破坏网站归属。</p></div></div>
-    `;
+    categories.innerHTML="";
     moveBlockFromTitle("分类管理",categories,"分类移动");
     moveBlockFromTitle("分类移动",categories,"我的新增");
+    // 版本 V19.63：分类页不再出现重复标题及冗长说明。
+    // “分类 23”已显示在顶部标签，保留隐藏的原分类数接口，避免影响计数逻辑。
+    const redundantCategoryHeading=categories.querySelector(':scope > .custom-title-row');
+    if(redundantCategoryHeading){
+      const countNode=redundantCategoryHeading.querySelector('#categoryManageCount');
+      if(countNode){countNode.hidden=true;categories.prepend(countNode)}
+      redundantCategoryHeading.remove();
+    }
 
     // Duplicates
     const dupPanel=document.getElementById("duplicatePanel");
     if(dupPanel){
       duplicates.append(dupPanel);
       const note=dupPanel.querySelector(".admin-note");
-      if(note)note.textContent="重复检测分三级：完全同网址、同 hostname 不同路径、同主域名疑似重复。网址不同也能发现；疑似不同服务可点“忽略此组”。";
+      if(note)note.remove();
       const jump=dupPanel.querySelector("#jumpDeletedBtn");
       if(jump){jump.textContent="打开回收站";jump.onclick=()=>setTab("recycle")}
     }else{
@@ -13121,13 +13100,11 @@ updateAccessUIV178();
 
     // Recycle
     recycle.innerHTML=`
-      <div class="manager-panel-title"><div><h3>回收站</h3><p>已删除网站集中管理，不再放在页面最底部。</p></div></div>
     `;
     moveBlockFromTitle("已删除网站",recycle,"");
 
     // Data
     data.innerHTML=`
-      <div class="manager-panel-title"><div><h3>数据中心</h3><p>D1 是正式数据源，KV 用于自定义 Logo 与高清 favicon 缓存。</p></div></div>
       <div class="manager-trend-head"><span>实时数据概览</span><small>折线为本机最近采样</small></div>
       <div class="manager-trend-grid" id="managerTrendGrid"></div>
       <div class="manager-data-grid manager-data-columns">
@@ -13142,7 +13119,6 @@ updateAccessUIV178();
           </div>
           <div class="manager-data-card">
             <b>KV 图标缓存</b>
-            <p>自定义 Logo 保存在 Workers KV；自动 favicon 缓存 30 天后自动过期，孤儿自定义图标由维护器清理。</p>
             <div class="manager-data-actions">
               <button class="btn" type="button" id="managerGoSites">管理网站图标</button>
             </div>
@@ -13158,15 +13134,13 @@ updateAccessUIV178();
         <div class="manager-data-column">
           <div class="manager-data-card manager-transfer-card">
             <b>配置、浏览器书签与完整备份</b>
-            <p>支持 Chrome / Edge 书签 HTML 导入导出。</p>
             <div class="transfer-action-grid">
               <button class="btn" type="button" id="managerExport">导出配置</button>
               <button class="btn" type="button" id="managerImport">导入配置</button>
               <button class="btn" type="button" id="managerExportBookmarks">导出浏览器书签</button>
               <button class="btn" type="button" id="managerImportBookmarks">导入浏览器书签</button>
               <button class="btn primary" type="button" id="managerDisasterBackup">完整备份导出</button>
-              <small class="transfer-helper">导出网站、分类、排序、收藏、设置及自定义图标数据</small>
-            </div>
+                </div>
           </div>
           <div class="manager-data-card">
             <b>D1 / KV 存储维护</b>
@@ -13179,7 +13153,6 @@ updateAccessUIV178();
         </div>
         <div class="manager-data-card manager-backup-card">
           <b>D1 版本恢复</b>
-          <p>只有网站/分类等结构变化前才自动保留旧版本，最多 20 个快照；最近访问等轻量云端数据不生成整库快照。主题和卡片密度属于本机偏好，不进入 D1。恢复前仍会备份当前导航数据状态。</p>
           <div class="manager-backup-toolbar">
             <button class="btn primary" type="button" id="managerBackupNow">立即创建快照</button>
             <button class="btn" type="button" id="managerReloadBackups">刷新版本列表</button>
@@ -16021,7 +15994,7 @@ html[data-theme="liquid"]{
   --accent:#5b9bff;--accent2:#a66be6;
   --line:rgba(242,248,255,.16);--line2:rgba(242,248,255,.12);
   --soft:rgba(246,251,255,.065);--soft2:rgba(246,251,255,.10);
-  /* V19.61: a restrained optical edge, not a uniform white outline. */
+  /* V19.63: a restrained optical edge, not a uniform white outline. */
   --lg-edge:linear-gradient(147deg,rgba(255,255,255,.245) 0%,rgba(255,255,255,.115) 14%,rgba(255,255,255,.045) 44%,rgba(255,255,255,.027) 74%,rgba(255,255,255,.085) 100%);
   --lg-sheen:radial-gradient(100% 110% at 5% -37%,rgba(255,255,255,.052) 0%,rgba(255,255,255,.014) 43%,transparent 78%);
   --lg-surface:linear-gradient(151deg,rgba(32,38,47,var(--lg-pane-alpha,.271)),rgba(27,34,43,var(--lg-pane-alpha,.271)) 57%,rgba(28,36,44,var(--lg-pane-alpha,.271)));
@@ -16346,7 +16319,7 @@ html[data-theme="liquid"] body #drawer .cat-mini.danger{
 html[data-theme="liquid"] body #drawer .cat-mini.danger:hover{
   background:rgba(153,61,72,.35)!important;border-color:rgba(255,169,179,.44)!important;
 }
-/* V19.61: theme-specific visibility uses the same specificity on every viewport. */
+/* V19.63: theme-specific visibility uses the same specificity on every viewport. */
 html:not([data-theme="liquid"]) body .tool-cluster #liquidBgBtn,
 html:not([data-theme="liquid"]) body .compact-actions #compactLiquidBgBtn{display:none!important;visibility:hidden!important;pointer-events:none!important}
 /* One hit-target size for all three toolbar icon buttons in every interaction state. */
@@ -16467,7 +16440,7 @@ body.sidebar-is-scrolling.scroll-spy-active #sidebar .sidebar-pinned .nav-btn[da
 
 
 
-/* V19.61 visual system: color roles only; no functionality/layout/data changes.
+/* V19.63 visual system: color roles only; no functionality/layout/data changes.
    Liquid uses its canonical material above; the remaining themes retain separate identities. */
 html[data-theme="dark"]{
   --fx-optical-line:rgba(185,205,238,.105);--fx-optical-top:rgba(255,255,255,.065);
@@ -16509,7 +16482,7 @@ html:not([data-theme="liquid"]) body :is(.card-url,.section-desc,.section-sub){
   html[data-theme="liquid"] .home-layout #hero{min-height:400px!important}
 }
 
-/* V19.61 Responsive glass: one stationary wallpaper plane, no body-attached scrolling wallpaper.
+/* V19.63 Responsive glass: one stationary wallpaper plane, no body-attached scrolling wallpaper.
    The blurred cover fills unused bands when a landscape picture is shown entirely on a portrait screen. */
 @media (max-width:1100px), (hover:none) and (pointer:coarse){
   html[data-theme="liquid"] body{
@@ -16649,7 +16622,7 @@ html:not([data-theme="liquid"]) body :is(.card-url,.section-desc,.section-sub){
   .fx-responsive-wallpaper::before,.fx-responsive-wallpaper::after{transition:none!important}
 }
 
-/* V19.61 — wallpaper gallery: fixed footprint, responsive columns and theme-linked delete confirmation.
+/* V19.63 — wallpaper gallery: fixed footprint, responsive columns and theme-linked delete confirmation.
    This entire section replaces the V19.59 implementation, not an override stack. */
 .fx-wallpaper-overlay[hidden],.fx-wp-confirm-layer[hidden]{display:none!important}
 .fx-wallpaper-overlay{
