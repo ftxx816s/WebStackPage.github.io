@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>私人导航工具箱 · V19.68 Liquid Glass</title>
+<title>私人导航工具箱 · V19.69 Liquid Glass</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https: http:; connect-src 'self' https:; font-src data:; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -18,7 +18,7 @@
 </style>
 <script  id="app-meta-v1891"  data-module="script-01.js">
 
-window.FXNAV_APP=Object.freeze({version:"19.68",build:"V19.68",schemaVersion:3,channel:"stable"});
+window.FXNAV_APP=Object.freeze({version:"19.69",build:"V19.69",schemaVersion:3,channel:"stable"});
 
 </script>
 <script  id="theme-boot-v1867"  data-module="script-02.js">
@@ -54,7 +54,7 @@ window.FXNAV_APP=Object.freeze({version:"19.68",build:"V19.68",schemaVersion:3,c
   // V19.68: nonblocking, theme-matched first paint. The wallpaper loads normally
   // in the existing IndexedDB restoration flow, never delaying the interface.
   root.style.colorScheme=(theme==="light"||theme==="liquid")?"light":"dark";
-  var colors={dark:"#07101d",light:"#edf3ff",liquid:"#747678",neon:"#020713",frosted:"#1b1b1d"};
+  var colors={dark:"#0b0d0f",light:"#edf3ff",liquid:"#747678",neon:"#020713",frosted:"#1b1b1d"};
   root.style.backgroundColor=colors[theme]||colors.dark;
   if(theme==="liquid")root.classList.add("liquid-wallpaper-pending");
   // Keep the neutral grey surface until the existing wallpaper decoder completes.
@@ -94,7 +94,7 @@ html.theme-booting *,html.theme-booting *::before,html.theme-booting *::after{tr
 #liquidBgBtn,#compactLiquidBgBtn{display:none!important}
 html:not([data-theme="liquid"]) body .tool-cluster #liquidBgBtn,
 html:not([data-theme="liquid"]) body .compact-actions #compactLiquidBgBtn{display:none!important;visibility:hidden!important;pointer-events:none!important}
-html.theme-booting[data-theme="dark"],html.theme-booting[data-theme="dark"] body{background:#07101d!important;color:#f4f7ff}
+html.theme-booting[data-theme="dark"],html.theme-booting[data-theme="dark"] body{background:#0b0d0f!important;color:#f3eee5}
 html.theme-booting[data-theme="light"],html.theme-booting[data-theme="light"] body{background:#edf3ff!important;color:#172033}
 html.theme-booting[data-theme="neon"],html.theme-booting[data-theme="neon"] body{background:#020713!important;color:#f7f9ff}
 /* V19.68 neutral graphite-gray placeholder: similar to the selected glass theme. */
@@ -3955,8 +3955,8 @@ html[data-theme="neon"] .tool-cluster{border-radius:14px}}
 <link rel="icon" type="image/png" sizes="64x64" href="data:image/png;base64,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">
 <link rel="shortcut icon" type="image/png" href="data:image/png;base64,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">
 
-<meta name="x-build" content="V19.68-20261028">
-<meta name="x-app-version" content="19.68">
+<meta name="x-build" content="V19.69-20261028">
+<meta name="x-app-version" content="19.69">
 
 <style data-module="style-03.css">
 :root{
@@ -8568,7 +8568,7 @@ html[data-theme="light"] body .login-error{color:#bb2b55!important;}
         <span class="console-divider"></span>
         <span class="console-item cache"><span class="k">CACHE</span><strong id="consoleCache">0 KB</strong></span>
         <span class="console-divider"></span>
-        <span class="console-item build"><span class="k">BUILD</span><strong>V19.68</strong></span>
+        <span class="console-item build"><span class="k">BUILD</span><strong>V19.69</strong></span>
         <span class="console-spacer"></span>
         <span class="console-activity">
           <span class="k">SYSTEM ACTIVITY</span>
@@ -8728,7 +8728,7 @@ html[data-theme="light"] body .login-error{color:#bb2b55!important;}
 
     <div id="fxD1LoadingV1946" class="fx-d1-loading-v1946" role="status">正在读取完整云端导航数据…</div>
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V19.68 版本</div>
+    <div class="footer">© 2026 私人导航工具箱 · V19.69 版本</div>
   </main>
 </div>
 
@@ -16967,6 +16967,427 @@ html[data-theme] body .compact-actions .compact-action:focus-visible{
 /* A few mobile engines apply native dark form control styling without an explicit scheme. */
 html[data-theme="light"] input,html[data-theme="light"] textarea,
 html[data-theme="light"] select{color-scheme:light}
+
+
+/* V19.69 | Dark theme: restrained charcoal + champagne-gold material system.
+   All selectors are scoped to [data-theme="dark"] only.  The other four themes,
+   website icons, semantic status colors, spacing and interactions stay intact.
+   This is a visual palette update, not a new theme or a data migration. */
+html[data-theme="dark"]{
+  --bg:#090b0d;--bg2:#121210;
+  --text:#f3eee5;--muted:#b9ad9a;--muted2:#8b8070;
+  --line:rgba(205,174,120,.145);--line2:rgba(220,189,137,.255);
+  --glass:rgba(20,20,19,.82);--glass-strong:rgba(24,23,21,.91);
+  --soft:rgba(221,191,138,.047);--soft2:rgba(221,191,138,.078);
+  --sidebar-bg:rgba(14,15,15,.93);--drawer-bg:rgba(16,17,17,.95);
+  --accent:#d1ae72;--accent2:#eed6a4;--accent-soft:rgba(207,170,110,.13);
+  --option-bg:#1b1b1a;--option-text:#f3eee5;
+  --fx-optical-line:rgba(213,185,137,.15);--fx-optical-top:rgba(249,226,183,.065);
+  --fx-caption:#aa9d8b;
+  --login-overlay:rgba(5,5,5,.74);--login-overlay-blur:7px;
+  --login-card-surface:linear-gradient(150deg,rgba(29,28,25,.98),rgba(12,13,13,.985));
+  --login-edge:rgba(212,178,119,.29);--login-sheen:rgba(255,230,184,.065);
+  --login-color:#f6f0e6;--login-secondary:#cfbeaa;--login-tertiary:#a39884;
+  --login-input:rgba(234,208,160,.045);--login-input-edge:rgba(213,180,122,.23);
+  --login-button:linear-gradient(105deg,#b58b51,#e7c894);
+  --login-button-shadow:0 10px 26px rgba(147,97,37,.17);
+  --login-accent:#e1c18c;--login-focus:rgba(215,180,116,.48);
+  --shadow:0 20px 55px rgba(0,0,0,.38);--shadow-soft:0 9px 26px rgba(0,0,0,.21);
+}
+html[data-theme="dark"] body{
+  background:
+    radial-gradient(55rem 31rem at 86% -12%,rgba(178,137,74,.070),transparent 65%),
+    radial-gradient(40rem 31rem at -15% 17%,rgba(186,155,101,.045),transparent 64%),
+    linear-gradient(165deg,#0b0d0f 0%,#111111 56%,#090a0c 100%)!important;
+  color:var(--text)!important;
+}
+html[data-theme="dark"] body::before{
+  background-image:linear-gradient(rgba(224,196,148,.014) 1px,transparent 1px),linear-gradient(90deg,rgba(224,196,148,.012) 1px,transparent 1px);
+}
+html[data-theme="dark"] :is(.sidebar,.tool-cluster,.compact-bar,.system-console){
+  background:linear-gradient(145deg,rgba(27,26,24,.96),rgba(13,14,14,.96))!important;
+  border-color:rgba(217,186,134,.16)!important;
+  box-shadow:inset 0 1px 0 rgba(255,229,175,.046),0 12px 29px rgba(0,0,0,.19)!important;
+}
+html[data-theme="dark"] .sidebar{border-right-color:rgba(217,186,134,.17)!important}
+html[data-theme="dark"] .brand-copy b{color:#f7f0e4!important}
+html[data-theme="dark"] .brand-copy small{color:#b7a688!important}
+html[data-theme="dark"] .nav-btn.active,
+html[data-theme="dark"] .nav-btn.scroll-active{
+  background:linear-gradient(90deg,rgba(197,151,85,.18),rgba(171,131,74,.060))!important;
+  border-color:rgba(213,175,111,.32)!important;
+  color:#f4e5c9!important;
+}
+html[data-theme="dark"] .nav-btn.active::after,
+html[data-theme="dark"] .nav-btn.scroll-active::after{
+  background:linear-gradient(90deg,rgba(206,167,105,.15),transparent 85%)!important;
+}
+html[data-theme="dark"] .nav-btn.active .nav-name,
+html[data-theme="dark"] .nav-btn.scroll-active .nav-name{color:#f6e7c9!important;text-shadow:none!important}
+html[data-theme="dark"] .nav-btn.active .nav-icon,
+html[data-theme="dark"] .nav-btn.scroll-active .nav-icon{
+  background:linear-gradient(145deg,rgba(211,169,105,.26),rgba(158,117,64,.14))!important;
+  color:#e8c995!important;border-color:rgba(220,183,121,.31)!important;
+  box-shadow:inset 0 1px 0 rgba(247,224,173,.095)!important;
+}
+html[data-theme="dark"] .nav-btn.active .nav-count,
+html[data-theme="dark"] .nav-btn.scroll-active .nav-count{
+  background:rgba(204,165,101,.095)!important;border-color:rgba(211,173,111,.23)!important;
+  color:#e4c99e!important;
+}
+html[data-theme="dark"] .nav-active-indicator{
+  background:linear-gradient(180deg,#f1d8a4,#b68b50)!important;
+  box-shadow:0 0 11px rgba(184,139,75,.25)!important;
+}
+@media(hover:hover) and (pointer:fine){
+  html[data-theme="dark"] .nav-btn:hover{background:rgba(204,166,108,.074)!important;border-color:rgba(218,180,120,.15)!important}
+  html[data-theme="dark"] .nav-btn:hover .nav-name{color:#ecd6af!important;text-shadow:none!important}
+  html[data-theme="dark"] .nav-btn:hover .nav-icon{
+    background:rgba(209,170,106,.15)!important;border-color:rgba(207,167,103,.22)!important;
+    color:#e7cb9a!important;box-shadow:none!important;
+  }
+  html[data-theme="dark"] .nav-btn:hover .nav-count{color:#e4cb9e!important;background:rgba(200,161,101,.09)!important;border-color:rgba(213,180,121,.18)!important}
+}
+html[data-theme="dark"] :is(#hero,.home-layout>.hero-datetime){
+  background:linear-gradient(148deg,rgba(31,30,27,.94) 0%,rgba(16,17,18,.96) 59%,rgba(19,18,16,.94) 100%)!important;
+  border-color:rgba(211,177,121,.185)!important;
+  box-shadow:inset 0 1px 0 rgba(253,230,186,.065),0 16px 40px rgba(0,0,0,.19)!important;
+}
+html[data-theme="dark"] #hero::before{
+  background:radial-gradient(circle,rgba(188,141,73,.17),rgba(159,117,63,.045) 48%,transparent 73%)!important;
+}
+html[data-theme="dark"] #hero::after{background:radial-gradient(circle,rgba(218,175,107,.085),transparent 71%)!important}
+html[data-theme="dark"] .hero-art{opacity:.10!important}
+html[data-theme="dark"] .hero-art i:first-child::after{
+  background:linear-gradient(90deg,#8a6a3d,#d4b47d 55%,#6e5233)!important;
+  box-shadow:0 9px 21px rgba(175,131,65,.13)!important;
+}
+html[data-theme="dark"] .hero-art i:nth-child(2)::after{
+  background:linear-gradient(90deg,#6b5238,#cba976 48%,#8a6840 100%)!important;
+  box-shadow:0 9px 20px rgba(172,133,71,.12)!important;
+}
+
+html[data-theme="dark"] #hero .eyebrow{
+  background:rgba(218,183,122,.065)!important;border-color:rgba(215,180,117,.22)!important;
+  color:#cfb993!important;
+}
+html[data-theme="dark"] #hero .eyebrow-private-nav{color:#e4c58f!important}
+html[data-theme="dark"] #hero h1{color:#f5f1e8!important}
+html[data-theme="dark"] #hero h1 .liquid-title-accent{
+  background:linear-gradient(100deg,#f0dab1 5%,#c8a064 53%,#e5c68b 95%)!important;
+  background-clip:text!important;-webkit-background-clip:text!important;
+  -webkit-text-fill-color:transparent!important;color:transparent!important;text-shadow:none!important;
+}
+html[data-theme="dark"] #hero p{color:#b5a995!important}
+html[data-theme="dark"] #hero .search-panel{
+  background:rgba(13,14,14,.42)!important;
+  border-color:rgba(211,177,121,.14)!important;
+}
+html[data-theme="dark"] #hero .search-row{
+  background:linear-gradient(95deg,rgba(12,13,14,.97),rgba(28,27,24,.91))!important;
+  border-color:rgba(211,177,121,.22)!important;
+  box-shadow:inset 0 1px 0 rgba(249,218,170,.035)!important;
+}
+html[data-theme="dark"] #hero .search-symbol{
+  background:rgba(204,161,95,.11)!important;border-color:rgba(216,180,114,.20)!important;color:#e1c18a!important;
+}
+html[data-theme="dark"] :is(.search-input,.search-input::placeholder){color:var(--text)}
+html[data-theme="dark"] :is(.pill,.section-badge,.eyebrow){
+  background:linear-gradient(145deg,rgba(207,167,99,.10),rgba(112,88,52,.045))!important;
+  border-color:rgba(211,177,120,.20)!important;color:#dfc59a!important;
+}
+html[data-theme="dark"] .section-title h2{color:#f4eee1!important}
+html[data-theme="dark"] .section-title small{color:#b9ad9b!important}
+html[data-theme="dark"] .section-badge{box-shadow:inset 0 1px 0 rgba(240,212,160,.07)!important}
+html[data-theme="dark"] .card.glass{
+  background:linear-gradient(145deg,rgba(29,28,26,.97),rgba(19,19,19,.985))!important;
+  border-color:rgba(208,176,123,.135)!important;
+  box-shadow:inset 0 1px 0 rgba(246,223,180,.04),0 7px 20px rgba(0,0,0,.14)!important;
+}
+@media(hover:hover) and (pointer:fine){
+  html[data-theme="dark"] .card.glass:hover{border-color:rgba(224,190,130,.32)!important;box-shadow:inset 0 1px 0 rgba(250,221,175,.075),0 11px 29px rgba(0,0,0,.21)!important}
+}
+html[data-theme="dark"] .site-icon,
+html[data-theme="dark"] .custom-mini-icon{
+  background:rgba(232,196,135,.052)!important;border-color:rgba(222,186,125,.15)!important;
+}
+html[data-theme="dark"] .site-domain{color:#a99e8e!important}
+html[data-theme="dark"] .star.on{color:#e2b968!important}
+html[data-theme="dark"] .btn.primary,
+html[data-theme="dark"] .fx-dialog-btn.primary{
+  background:linear-gradient(105deg,#b99157,#e5c78e)!important;
+  border-color:rgba(235,201,145,.37)!important;
+  color:#20190f!important;box-shadow:0 6px 18px rgba(136,92,36,.15)!important;
+}
+html[data-theme="dark"] :is(.btn:not(.primary):not(.danger),.mini-btn:not(.danger),.cat-mini){
+  border-color:rgba(211,178,125,.18)!important;
+  color:#e3d2b4!important;
+}
+html[data-theme="dark"] :is(.tool-cluster,.compact-bar) :is(.tool-btn,.compact-action){color:#d8c5a6!important}
+html[data-theme="dark"] :is(.tool-cluster,.compact-bar) :is(.tool-btn,.compact-action).active{color:#f3d7a4!important}
+html[data-theme="dark"] .system-console{--wave-a:#b4894f;--wave-b:#e3c489}
+html[data-theme="dark"] .console-pulse{background:#cda96d!important;box-shadow:0 0 0 3px rgba(205,169,109,.14)!important}
+html[data-theme="dark"] .console-activity{color:#bca887!important}
+html[data-theme="dark"] .calendar-ref-v1838{
+  --cal-accent:#d9b477!important;--cal-accent2:#f0dba9!important;--cal-warm:#cfaa70!important;
+  --cal-shell:linear-gradient(155deg,rgba(30,29,26,.98),rgba(14,15,15,.985))!important;
+  --cal-panel:linear-gradient(155deg,rgba(30,29,27,.89),rgba(21,21,20,.94))!important;
+  --cal-panel-strong:linear-gradient(155deg,rgba(34,32,28,.94),rgba(18,18,18,.97))!important;
+  --cal-edge:rgba(211,179,129,.17)!important;
+  background:var(--cal-shell)!important;border-color:rgba(208,175,119,.18)!important;
+}
+html[data-theme="dark"] .calendar-ref-v1838 :is(.calendar-ref-monthbox,.calendar-ref-bottom){
+  background:var(--cal-panel)!important;border-color:rgba(211,176,116,.14)!important;
+}
+html[data-theme="dark"] .calendar-ref-v1838 :is(.calendar-ref-monthline b,.calendar-ref-progress-head b){color:#e5bf82!important}
+html[data-theme="dark"] .calendar-ref-v1838 .calendar-day.today{
+  background:linear-gradient(145deg,#d9b16f,#bd9356)!important;color:#241b10!important;
+  box-shadow:0 5px 14px rgba(157,105,40,.19)!important;
+}
+html[data-theme="dark"] .calendar-ref-v1838 .calendar-day.selected:not(.today){
+  background:rgba(218,180,120,.12)!important;box-shadow:inset 0 0 0 1px rgba(218,180,120,.24)!important;
+  color:#f6e9d2!important;
+}
+html[data-theme="dark"] .calendar-ref-v1838 .calendar-ref-progress-track i{
+  background:linear-gradient(90deg,#b4874a,#e2be82)!important;box-shadow:0 0 10px rgba(210,164,92,.14)!important;
+}
+html[data-theme="dark"] .calendar-ref-v1838 .calendar-ref-selected-icon{
+  background:rgba(209,164,96,.10)!important;color:#e1bc83!important;border-color:rgba(211,172,107,.21)!important;
+}
+html[data-theme="dark"] .drawer,
+html[data-theme="dark"] .drawer-head,
+html[data-theme="dark"] .site-editor,
+html[data-theme="dark"] .site-editor-head,
+html[data-theme="dark"] .command-panel,
+html[data-theme="dark"] .category-context{
+  background:linear-gradient(155deg,rgba(29,28,26,.985),rgba(15,16,16,.99))!important;
+  border-color:rgba(217,185,131,.16)!important;
+}
+html[data-theme="dark"] .manager-tab.active,
+html[data-theme="dark"] .nav-btn.active,
+html[data-theme="dark"] .nav-btn.scroll-active{
+  color:#f1d9ad!important;
+}
+html[data-theme="dark"] .manager-tab.active{
+  background:linear-gradient(115deg,rgba(206,163,95,.18),rgba(156,112,59,.075))!important;
+  border-color:rgba(215,176,111,.32)!important;
+}
+html[data-theme="dark"] .manager-tab.active .manager-tab-badge{
+  background:rgba(220,175,103,.13)!important;color:#e6c591!important;
+}
+html[data-theme="dark"] .drawer :is(.admin-note,.admin-surface,#addForm,#movePreview,#customList,#deletedList,.category-manager-list,.duplicate-panel,.move-preview,.manager-quick,.manager-dup-intro,.metric-card,.duplicate-group,.dup-item,.custom-item,.category-manager-item,.deleted-item,.manager-site-row,.manager-data-card,.manager-backup-row,.admin-transfer-panel){
+  background:linear-gradient(150deg,rgba(31,30,28,.95),rgba(21,21,20,.98))!important;
+  border-color:rgba(214,180,123,.145)!important;
+}
+html[data-theme="dark"] .drawer :is(.field input,.field select,.field textarea,.manager-site-toolbar input,.manager-site-toolbar select){
+  background:rgba(15,16,16,.94)!important;border-color:rgba(218,183,123,.20)!important;color:#f2e9db!important;
+}
+html[data-theme="dark"] .drawer :is(.field input,.field select,.field textarea):focus{
+  border-color:rgba(227,188,125,.56)!important;box-shadow:0 0 0 3px rgba(197,152,87,.11)!important;
+}
+html.fx-glass-fallback[data-theme="dark"] body :is(.glass,.glass-strong){
+  background:rgba(28,27,24,.97)!important;color:#f3eee5!important;
+}
+html[data-theme="dark"] :is(button,input,select,textarea):focus-visible,
+html[data-theme="dark"] a:focus-visible{outline:2px solid #dabc82!important;outline-offset:2px!important}
+html[data-theme="dark"] :is(.sidebar,.drawer){scrollbar-color:rgba(207,170,111,.31) transparent}
+html[data-theme="dark"] :is(.sidebar,.drawer)::-webkit-scrollbar-thumb{background:rgba(207,170,111,.31)!important}
+
+/* V19.69 · DARK/GOLD POPUP AND MANAGEMENT SURFACES.
+   Confined to the existing dark theme. No layout, behavior, data or other theme changes.
+   Keep red for destructive operations and the semantic status palette. */
+html[data-theme="dark"]{
+ --login-button:linear-gradient(165deg,#1b1a17,#10100f);
+ --login-button-shadow:inset 0 1px 0 rgba(245,218,168,.11),0 0 18px rgba(205,166,98,.11);
+ --login-card-shadow:0 26px 83px rgba(0,0,0,.63),inset 0 1px 0 rgba(250,224,172,.10);
+ --mgr-text:#f2eee5;--mgr-muted:#b8ac99;--mgr-muted2:#938671;
+ --mgr-border:rgba(215,182,128,.20);--mgr-accent:#d6b67d;
+}
+/* Modal backdrops share the same warm-black dimmer; no colored blue haze. */
+html[data-theme="dark"] :is(.login-gate,.site-editor-backdrop,.category-icon-editor-backdrop,.command-backdrop,.fx-dialog-backdrop,.fx-icon-library-backdrop){
+ background:rgba(3,3,3,.77)!important;
+ backdrop-filter:blur(9px) saturate(105%);
+ -webkit-backdrop-filter:blur(9px) saturate(105%);
+}
+html[data-theme="dark"] :is(.login-card,.site-editor,.category-icon-editor,.command-panel,.fx-dialog,.fx-icon-library,.category-context,.fx-wallpaper-dialog,.fx-wp-confirm){
+ background:linear-gradient(153deg,#23211d 0%,#121211 48%,#090a0a 100%)!important;
+ border:1px solid rgba(216,181,120,.28)!important;
+ color:#f3ede2!important;
+ box-shadow:0 28px 72px rgba(0,0,0,.49),inset 0 1px 0 rgba(249,225,177,.078)!important;
+}
+html[data-theme="dark"] :is(.login-card,.site-editor,.category-icon-editor,.command-panel,.fx-dialog,.fx-icon-library,.fx-wallpaper-dialog){
+ background-image:radial-gradient(110% 42% at 50% -14%,rgba(207,165,92,.12),transparent 76%),linear-gradient(153deg,#23211d 0%,#121211 48%,#090a0a 100%)!important;
+}
+html[data-theme="dark"] :is(.fx-dialog-accent){
+ height:1px!important;opacity:.85!important;
+ background:linear-gradient(90deg,transparent,#ad844b 18%,#f0d39c 50%,#ad844b 82%,transparent)!important;
+}
+/* Administrator login: black lacquer, thin gold rim, restrained bottom light. */
+html[data-theme="dark"] body .login-card{
+ background:radial-gradient(100% 34% at 50% -10%,rgba(230,190,127,.13),transparent 80%),linear-gradient(160deg,#22201c,#101010 65%,#080909)!important;
+ border-color:rgba(215,179,116,.36)!important;
+ box-shadow:0 34px 94px rgba(0,0,0,.62),0 0 30px rgba(190,149,89,.045),inset 0 1px 0 rgba(246,222,178,.095)!important;
+}
+html[data-theme="dark"] body .login-eyebrow{color:#d8b779!important}
+html[data-theme="dark"] body .login-card h2{color:#eee5d5!important;letter-spacing:.085em!important}
+html[data-theme="dark"] body .login-card>p,
+html[data-theme="dark"] body .login-foot{color:#a99c88!important}
+html[data-theme="dark"] body .login-card :is(input,.login-password-row){
+ background:rgba(11,11,10,.8)!important;
+ border-color:rgba(209,172,112,.22)!important;
+ color:#f4e9d8!important;
+}
+html[data-theme="dark"] body .login-card input:focus{
+ border-color:#b99a69!important;
+ box-shadow:0 0 0 3px rgba(185,147,89,.12)!important;
+}
+html[data-theme="dark"] body .login-submit{
+ background:linear-gradient(180deg,#24211b,#0e0e0d)!important;
+ border:1px solid rgba(223,185,121,.55)!important;
+ color:#e9c88e!important;
+ text-shadow:0 0 13px rgba(228,192,127,.15)!important;
+ box-shadow:inset 0 1px 0 rgba(255,228,171,.12),0 0 21px rgba(169,123,59,.10)!important;
+}
+html[data-theme="dark"] body .login-submit:hover:not(:disabled){
+ border-color:rgba(248,215,153,.77)!important;
+ box-shadow:inset 0 1px 0 rgba(255,235,189,.17),0 0 27px rgba(188,139,69,.16)!important;
+}
+html[data-theme="dark"] :is(.login-close,.category-icon-editor .btn.icon,.site-editor-head .btn.icon,.drawer-head .btn.icon){
+ background:rgba(231,197,142,.055)!important;
+ color:#d3bd99!important;
+ border:1px solid rgba(219,183,124,.22)!important;
+}
+/* Management drawer, its seven tabs and form areas. */
+html[data-theme="dark"] .drawer{
+ background:linear-gradient(164deg,rgba(29,27,23,.99),rgba(13,14,14,.995))!important;
+ border-left:1px solid rgba(217,181,119,.23)!important;
+}
+html[data-theme="dark"] .drawer-head,
+html[data-theme="dark"] .site-editor-head{
+ background:linear-gradient(145deg,rgba(31,29,25,.98),rgba(19,19,18,.99))!important;
+ border-bottom:1px solid rgba(216,177,110,.21)!important;
+}
+html[data-theme="dark"] .drawer-title h2,
+html[data-theme="dark"] :is(.site-editor-head,.category-icon-editor-head,.fx-dialog,.fx-icon-library) :is(h2,h3),
+html[data-theme="dark"] .fx-dialog-title{color:#f6eedf!important}
+html[data-theme="dark"] .drawer :is(.manager-tab,.manager-site-toolbar .btn,.manager-quick .btn){
+ border-color:rgba(213,175,109,.14)!important;color:#d0c1a9!important;
+}
+html[data-theme="dark"] .drawer .manager-tab.active{
+ background:linear-gradient(100deg,rgba(207,165,98,.20),rgba(183,132,67,.045))!important;
+ border-color:rgba(222,183,118,.36)!important;
+ color:#f2d69f!important;
+ box-shadow:inset 0 1px 0 rgba(250,226,175,.075)!important;
+}
+html[data-theme="dark"] .drawer .manager-tab:hover:not(.active){background:rgba(208,166,98,.075)!important;color:#f2e4d0!important}
+html[data-theme="dark"] .drawer :is(.field input,.field select,.field textarea,.manager-site-toolbar input,.manager-site-toolbar select),
+html[data-theme="dark"] :is(.site-editor input,.site-editor select,.site-editor textarea,.category-icon-editor input,.category-icon-editor select,.fx-dialog-input,.command-search input){
+ background:#121211!important;border-color:rgba(214,174,107,.22)!important;color:#f4eee3!important;
+}
+html[data-theme="dark"] :is(.drawer,.site-editor,.category-icon-editor,.fx-dialog,.fx-icon-library) :is(input,textarea)::placeholder{color:#968a77!important;opacity:1}
+html[data-theme="dark"] :is(.site-editor,.category-icon-editor,.fx-dialog) :is(input,select,textarea):focus{
+ border-color:rgba(239,200,133,.61)!important;
+ box-shadow:0 0 0 3px rgba(187,143,79,.115)!important;
+}
+html[data-theme="dark"] :is(.drawer,.site-editor,.category-icon-editor) :is(.field label,.manager-section-title,.panel-title){color:#e8d7b8!important}
+html[data-theme="dark"] :is(.drawer,.site-editor,.category-icon-editor,.fx-dialog,.command-panel,.category-context) :is(small,p,.hint,.muted){text-shadow:none}
+/* Buttons in utility dialogs. Destructive ones intentionally remain red. */
+html[data-theme="dark"] :is(.fx-dialog-btn:not(.danger),.site-editor .btn:not(.danger),.category-icon-editor .btn:not(.danger),.command-panel button:not(.danger),.fx-icon-library button:not(.danger)){
+ background:linear-gradient(160deg,#24221e,#171717)!important;
+ color:#e9d3ad!important;
+ border-color:rgba(215,180,118,.26)!important;
+}
+html[data-theme="dark"] :is(.fx-dialog-btn.primary,.site-editor .btn.primary,.category-icon-editor .btn.primary){
+ background:linear-gradient(112deg,#bd985d,#e4c58b)!important;
+ color:#241b10!important;
+ border-color:rgba(242,205,145,.44)!important;
+}
+html[data-theme="dark"] :is(.fx-dialog-btn:not(.danger),.category-icon-editor .btn:not(.danger),.fx-icon-library button:not(.danger)):hover{
+ border-color:rgba(240,199,130,.5)!important;
+}
+html[data-theme="dark"] .fx-dialog-icon{
+ background:linear-gradient(160deg,rgba(192,147,80,.21),rgba(136,101,52,.10))!important;
+ border-color:rgba(223,182,115,.30)!important;color:#ead0a1!important;
+}
+html[data-theme="dark"] .fx-dialog-message{color:#c6b8a2!important}
+/* Site quick-edit menus and custom category icon selector. */
+html[data-theme="dark"] .category-context :is(.context-head,.context-footer,.context-tip){border-color:rgba(212,176,119,.18)!important}
+html[data-theme="dark"] .category-context :is(.context-head-name,.context-label,.context-cat-name){color:#ebddc5!important}
+html[data-theme="dark"] .category-context :is(.context-tool:not(.danger),.context-item){
+ background:rgba(207,169,105,.052)!important;
+ border-color:rgba(217,179,119,.17)!important;color:#dcc7a6!important;
+}
+html[data-theme="dark"] .category-context :is(.context-tool:not(.danger),.context-item):hover{
+ background:rgba(215,168,94,.13)!important;
+ border-color:rgba(224,183,113,.35)!important;
+}
+html[data-theme="dark"] .category-context .context-item.current{background:rgba(221,170,95,.19)!important;border-color:rgba(235,194,130,.41)!important}
+html[data-theme="dark"] :is(.category-icon-editor,.site-editor) .field .icon-control,
+html[data-theme="dark"] .category-icon-editor :is(.category-icon-preview,.category-icon-pick){border-color:rgba(218,177,107,.20)!important}
+/* 600+ icon library: gold focus and selection, avoid stock blue palette. */
+html[data-theme="dark"] .fx-icon-library header p,
+html[data-theme="dark"] .fx-icon-library-footer{color:#bbab94!important}
+html[data-theme="dark"] .fx-icon-library :is(.fx-icon-library-search,.fx-icon-library-search:focus){
+ background:#101110!important;color:#efe8dc!important;border-color:rgba(223,183,119,.25)!important;
+}
+html[data-theme="dark"] .fx-icon-library :is(.fx-icon-library-tab,.fx-icon-library-cell){
+ background:rgba(207,166,102,.065)!important;
+ border-color:rgba(217,178,114,.18)!important;color:#e7d7bd!important;
+}
+html[data-theme="dark"] .fx-icon-library :is(.fx-icon-library-tab,.fx-icon-library-cell).selected,
+html[data-theme="dark"] .fx-icon-library :is(.fx-icon-library-tab,.fx-icon-library-cell).active{
+ background:rgba(210,164,91,.22)!important;
+ border-color:rgba(229,187,120,.58)!important;color:#f0d49e!important;
+}
+html[data-theme="dark"] .fx-icon-library .fx-icon-library-cell :is(i,span){color:#ddc69f!important}
+html[data-theme="dark"] .fx-icon-library :is(.fx-icon-library-tab,.fx-icon-library-cell):hover{
+ background:rgba(210,168,100,.14)!important;border-color:rgba(237,198,132,.42)!important;
+}
+/* Global quick-search overlay. */
+html[data-theme="dark"] .command-search{border-bottom-color:rgba(216,181,123,.22)!important}
+html[data-theme="dark"] .command-search-symbol{
+ color:#e3c490!important;background:rgba(210,166,98,.12)!important;
+ border-color:rgba(218,179,115,.23)!important;
+}
+html[data-theme="dark"] .command-panel :is(.command-item,.command-result,.command-row){border-color:rgba(210,175,120,.10)!important}
+html[data-theme="dark"] .command-panel :is(.command-item,.command-result,.command-row):hover,
+html[data-theme="dark"] .command-panel :is(.command-item,.command-result,.command-row).active{background:rgba(211,166,95,.12)!important}
+/* Wallpaper chooser, even when called from another theme control path. */
+html[data-theme="dark"] .fx-wallpaper-overlay{background:rgba(3,3,3,.76)!important}
+html[data-theme="dark"] .fx-wallpaper-dialog{display:flex;flex-direction:column;max-height:min(90dvh,860px)!important;width:min(850px,100%)!important;overflow:hidden;border-radius:24px!important}
+html[data-theme="dark"] .fx-wallpaper-dialog :is(.fx-wp-header,.fx-wp-toolbar,.fx-wp-bottom,.fx-wp-card){
+ background:rgba(24,23,21,.86)!important;
+ border-color:rgba(213,177,119,.19)!important;
+ color:#efe4d1!important;
+}
+html[data-theme="dark"] .fx-wallpaper-dialog :is(.fx-wp-kicker,.fx-wp-selected-tag,.fx-wp-meter){color:#d9bb84!important}
+html[data-theme="dark"] .fx-wallpaper-dialog :is(.fx-wp-secondary,.fx-wp-main,.fx-wp-card-actions button){
+ background:linear-gradient(150deg,#2b2823,#171717)!important;color:#e6cda6!important;border-color:rgba(222,181,111,.3)!important;
+}
+html[data-theme="dark"] .fx-wp-confirm-layer{background:rgba(0,0,0,.67)!important}
+html[data-theme="dark"] .fx-wp-confirm :is(h3,p){color:#e9ddca!important}
+html[data-theme="dark"] .fx-wp-confirm .fx-wp-confirm-cancel{
+ background:#1c1b19!important;color:#e4d2b5!important;border-color:rgba(217,181,124,.29)!important;
+}
+/* One-off toast confirmations and old liquid control popover, if opened. */
+html[data-theme="dark"] .toast{
+ background:linear-gradient(145deg,#24211c,#111111)!important;
+ border:1px solid rgba(221,184,120,.30)!important;
+ box-shadow:0 14px 38px rgba(0,0,0,.48)!important;color:#e9d9be!important;
+}
+html[data-theme="dark"] .liquid-glass-settings{
+ background:linear-gradient(155deg,#28251f,#101111)!important;
+ border:1px solid rgba(221,185,123,.32)!important;color:#f4ead7!important;
+ box-shadow:0 24px 62px rgba(0,0,0,.46),inset 0 1px 0 rgba(249,220,166,.08)!important;
+}
+/* Keyboard and narrow-view touch accessibility. */
+html[data-theme="dark"] :is(.fx-dialog,.login-card,.site-editor,.category-icon-editor,.fx-icon-library,.category-context) :is(button,input,select,textarea):focus-visible{
+ outline:2px solid rgba(234,197,127,.87)!important;outline-offset:2px;
+}
+@media(max-width:650px){
+ html[data-theme="dark"] :is(.login-card,.fx-dialog,.site-editor,.category-icon-editor,.fx-icon-library){border-radius:19px!important}
+ html[data-theme="dark"] .fx-wallpaper-dialog{max-height:calc(100dvh - 18px)!important;border-radius:19px!important}
+}
 </style>
 </body>
 </html>
