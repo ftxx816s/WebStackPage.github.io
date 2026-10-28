@@ -39,10 +39,107 @@ async function admin(request,env){
   return requireAuth(request,env);
 }
 function shaHex(digest){return Array.from(new Uint8Array(digest),n=>n.toString(16).padStart(2,'0')).join('')}
-function validSignature(bytes,mime){
-  if(mime==='image/png')return bytes.length>24&&bytes[0]===137&&bytes[1]===80&&bytes[2]===78&&bytes[3]===71&&bytes[4]===13&&bytes[5]===10&&bytes[6]===26&&bytes[7]===10;
-  if(mime==='image/jpeg')return bytes.length>12&&bytes[0]===255&&bytes[1]===216&&bytes[2]===255;
-  if(mime==='image/webp')return bytes.length>20&&String.fromCharCode(...bytes.slice(0,4))==='RIFF'&&String.fromCharCode(...bytes.slice(8,12))==='WEBP';
+// V19.68: structural validation is NOT a header-only check. PNG additionally
+// verifies every chunk's CRC and the full zlib stream without buffering pixels.
+function u32be(b,p){return ((b[p]*16777216)+(b[p+1]<<16)+(b[p+2]<<8)+b[p+3])>>>0}
+const PNG_SIG=[137,80,78,71,13,10,26,10];
+const CRC_TABLE=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let i=0;i<8;i++)c=(c&1)?(0xedb88320^(c>>>1)):(c>>>1);t[n]=c>>>0}return t})();
+function chunkCrc(b,start,end){let crc=0xffffffff;for(let i=start;i<end;i++)crc=CRC_TABLE[(crc^b[i])&255]^(crc>>>8);return (crc^0xffffffff)>>>0}
+function pngExpectedBytes(w,h,bits,channels,interlace){
+  const bytes=(pw,ph)=>pw>0&&ph>0?ph*(1+Math.ceil(pw*bits*channels/8)):0;
+  if(!interlace)return bytes(w,h);
+  const passes=[[0,0,8,8],[4,0,8,8],[0,4,4,8],[2,0,4,4],[0,2,2,4],[1,0,2,2],[0,1,1,2]];
+  return passes.reduce((total,[x,y,dx,dy])=>total+bytes(Math.max(0,Math.ceil((w-x)/dx)),Math.max(0,Math.ceil((h-y)/dy))),0);
+}
+async function validPngV1968(b){
+  if(b.length<57||!PNG_SIG.every((x,i)=>b[i]===x))return false;
+  let pos=8,seenIHDR=false,seenIDAT=false,seenIEND=false,header=null,idat=[];
+  while(pos+12<=b.length){
+    const len=u32be(b,pos),dataStart=pos+8,end=dataStart+len,crcEnd=end+4;
+    if(len>MAX_FILE_BYTES||crcEnd>b.length||end<dataStart)return false;
+    const type=String.fromCharCode(...b.subarray(pos+4,pos+8));
+    if(!/^[A-Za-z]{4}$/.test(type)||chunkCrc(b,pos+4,end)!==u32be(b,end))return false;
+    if(!seenIHDR&&type!=='IHDR')return false;
+    if(type==='IHDR'){
+      if(seenIHDR||len!==13)return false;
+      const w=u32be(b,dataStart),h=u32be(b,dataStart+4),depth=b[dataStart+8],color=b[dataStart+9],compression=b[dataStart+10],filter=b[dataStart+11],interlace=b[dataStart+12];
+      const channels={0:1,2:3,3:1,4:2,6:4}[color];
+      const validDepth={0:[1,2,4,8,16],2:[8,16],3:[1,2,4,8],4:[8,16],6:[8,16]}[color];
+      if(!w||!h||w>16000||h>16000||w*h>100_000_000||!channels||!validDepth.includes(depth)||compression||filter||interlace>1)return false;
+      header={w,h,depth,channels,interlace};seenIHDR=true;
+    }else if(type==='IDAT'){
+      if(seenIEND||!len)return false;
+      seenIDAT=true;idat.push(b.subarray(dataStart,end));
+    }else if(type==='IEND'){
+      if(!seenIDAT||seenIEND||len!==0||crcEnd!==b.length)return false;
+      seenIEND=true;break;
+    }else if(type[0]===type[0].toUpperCase()&&!['PLTE'].includes(type))return false;
+    pos=crcEnd;
+  }
+  if(!header||!seenIEND)return false;
+  // Reject truncated / malformed IDAT streams and zip bombs.
+  const expected=pngExpectedBytes(header.w,header.h,header.depth,header.channels,header.interlace);
+  if(!Number.isSafeInteger(expected)||expected>300_000_000)return false;
+  const compressed=new Uint8Array(idat.reduce((n,v)=>n+v.length,0));
+  let offset=0;for(const part of idat){compressed.set(part,offset);offset+=part.length}
+  try{
+    const reader=new Blob([compressed]).stream().pipeThrough(new DecompressionStream('deflate')).getReader();
+    let decoded=0;
+    try{for(;;){const {done,value}=await reader.read();if(done)break;decoded+=value.byteLength;if(decoded>expected){await reader.cancel();return false}}}
+    finally{try{reader.releaseLock()}catch{}}
+    return decoded===expected;
+  }catch{return false}
+}
+function validJpegV1968(b){
+  if(b.length<64||b[0]!==255||b[1]!==216||b[b.length-2]!==255||b[b.length-1]!==217)return false;
+  let pos=2,hasSOF=false,hasSOS=false;
+  while(pos<b.length-2){
+    if(b[pos]!==255){if(!hasSOS)return false;pos++;continue}
+    while(pos<b.length&&b[pos]===255)pos++;
+    const marker=b[pos++];
+    if(marker===0)return false;
+    if(marker===217)return hasSOF&&hasSOS&&pos===b.length;
+    if(marker===216||marker===1||(marker>=208&&marker<=215))continue;
+    if(pos+2>b.length)return false;
+    const length=(b[pos]<<8)|b[pos+1];
+    if(length<2||pos+length>b.length)return false;
+    if((marker>=192&&marker<=207)&&![196,200,204].includes(marker)){
+      if(length<8)return false;
+      const h=(b[pos+3]<<8)|b[pos+4],w=(b[pos+5]<<8)|b[pos+6];
+      if(!w||!h||w*h>100_000_000)return false;hasSOF=true;
+    }
+    if(marker===218){if(!hasSOF||length<6)return false;hasSOS=true}
+    pos+=length;
+    if(hasSOS){
+      while(pos<b.length-1){
+        if(b[pos]!==255){pos++;continue}
+        const next=b[pos+1];if(next===0||next===255||(next>=208&&next<=215)){pos+=2;continue}
+        break;
+      }
+      if(pos===b.length-2&&b[pos]===255&&b[pos+1]===217)return true;
+    }
+  }
+  return false;
+}
+function validWebpV1968(b){
+  if(b.length<32||String.fromCharCode(...b.subarray(0,4))!=='RIFF'||String.fromCharCode(...b.subarray(8,12))!=='WEBP'||u32beLE(b,4)+8!==b.length)return false;
+  let pos=12,hasImage=false;
+  while(pos+8<=b.length){
+    const type=String.fromCharCode(...b.subarray(pos,pos+4)),len=u32beLE(b,pos+4);
+    const start=pos+8,end=start+len;
+    if(end>b.length)return false;
+    if(type==='VP8 '){if(len<10||b[start+3]!==157||b[start+4]!==1||b[start+5]!==42)return false;hasImage=true}
+    else if(type==='VP8L'){if(len<5||b[start]!==47)return false;hasImage=true}
+    else if(type==='VP8X'){if(len!==10)return false}
+    pos=end+(len&1);
+  }
+  return hasImage&&pos===b.length;
+}
+function u32beLE(b,p){return (b[p]+(b[p+1]<<8)+(b[p+2]<<16)+(b[p+3]*16777216))>>>0}
+async function validImageV1968(bytes,mime){
+  if(mime==='image/png')return validPngV1968(bytes);
+  if(mime==='image/jpeg')return validJpegV1968(bytes);
+  if(mime==='image/webp')return validWebpV1968(bytes);
   return false;
 }
 // Prevent oversized streaming uploads from allocating unlimited memory.
@@ -103,7 +200,7 @@ export async function onRequestPost({request,env}){
     const mime=(request.headers.get('Content-Type')||'').split(';')[0].trim().toLowerCase();
     if(!MIME.includes(mime))return json({ok:false,error:'只允许 PNG、JPEG、WebP。'},415);
     const bytes=await readLimited(request,MAX_FILE_BYTES);
-    if(!bytes.length||!validSignature(bytes,mime))return json({ok:false,error:'图片内容无效，或格式与扩展名不符。'},400);
+    if(!bytes.length||!(await validImageV1968(bytes,mime)))return json({ok:false,error:'图片内容无效，或格式与扩展名不符。'},400);
     let name='自定义壁纸';try{name=decodeURIComponent(request.headers.get('X-Wallpaper-Name')||name)}catch{}
     name=name.replace(/[\u0000-\u001f\u007f]/g,'').trim().slice(0,90)||'自定义壁纸';
     const hash=shaHex(await crypto.subtle.digest('SHA-256',bytes));

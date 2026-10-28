@@ -1,4 +1,4 @@
-const API_VERSION="19.64";
+const API_VERSION="19.68";
 import {V17_CATEGORIES,V17_SITES} from "../_data/v17-seed.js";
 import {json,requireAuth,sameOrigin,verifySession,normalizeUsername} from "../_shared/auth.js";
 
@@ -20,6 +20,8 @@ async function ensureSchema(env){
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS backups_v17(id INTEGER PRIMARY KEY AUTOINCREMENT,owner TEXT NOT NULL,revision INTEGER NOT NULL,snapshot TEXT NOT NULL,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`).run();
   // Permanent deletion markers prevent older devices and restored snapshots from reviving purged IDs.
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS purged_sites_v1964(owner TEXT NOT NULL,id TEXT NOT NULL,deleted_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,PRIMARY KEY(owner,id))`).run();
+  // V19.68: CHECK constraint turns a stale revision into a SQL failure inside the atomic D1 batch.
+  await env.DB.prepare(`CREATE TABLE IF NOT EXISTS sync_revision_guard_v1968(owner TEXT PRIMARY KEY,expected INTEGER NOT NULL,actual INTEGER NOT NULL,CONSTRAINT sync_revision_guard_v1968 CHECK(expected=actual))`).run();
 
     })().catch(err=>{__schemaReadyPromiseV186=null;throw err});
   }
@@ -167,7 +169,25 @@ function incomingCategory(c){const name=String(c?.name||"").trim();if(!name)retu
 function incomingSite(s){const id=String(s?.id||"").trim(),n=normalizeUrl(s?.url);if(!id||!n)return null;const d=domainOf(n);return {id,name:String(s?.name||d),url:n,normalized_url:n,domain:d,root_domain:rootDomain(d),full_title:String(s?.fullTitle||s?.name||d),category_name:String(s?.category||V17_CATEGORIES[0].name),sort_order:Number(s?.sortOrder)||0,is_favorite:s?.isFavorite?1:0,is_deleted:s?.isDeleted?1:0,is_custom:s?.isCustom?1:0,icon_url:String(s?.iconUrl||"")}}
 function sameCategory(a,b){return !!a&&String(a.icon||"•")===b.icon&&Number(a.sort_order||0)===b.sort_order&&Number(a.is_builtin||0)===b.is_builtin}
 function sameSite(a,b){return !!a&&String(a.name||"")===b.name&&String(a.url||"")===b.url&&String(a.normalized_url||"")===b.normalized_url&&String(a.domain||"")===b.domain&&String(a.root_domain||"")===b.root_domain&&String(a.full_title||"")===b.full_title&&String(a.category_name||"")===b.category_name&&Number(a.sort_order||0)===b.sort_order&&Number(a.is_favorite||0)===b.is_favorite&&Number(a.is_deleted||0)===b.is_deleted&&Number(a.is_custom||0)===b.is_custom&&String(a.icon_url||"")===b.icon_url}
-async function runBatches(env,statements,size=40){for(let i=0;i<statements.length;i+=size)await env.DB.batch(statements.slice(i,i+size))}
+// V19.68: an optimistic revision gate executes inside the SAME D1 batch as all writes.
+// A concurrent save changes settings_v17.revision and causes a CHECK failure,
+// rolling back the whole batch instead of accepting a stale diff.
+function revisionGateV1968(env,owner,expected){
+  return env.DB.prepare(`INSERT INTO sync_revision_guard_v1968(owner,expected,actual)
+    VALUES(?,?,COALESCE((SELECT CAST(value AS INTEGER) FROM settings_v17 WHERE owner=? AND key='revision'),0))
+    ON CONFLICT(owner) DO UPDATE SET expected=excluded.expected,actual=excluded.actual`)
+    .bind(owner,expected,owner);
+}
+async function commitAtomicV1968(env,owner,expected,statements){
+  try{return await env.DB.batch([revisionGateV1968(env,owner,expected),...statements])}
+  catch(err){
+    if(String(err?.message||err).includes('sync_revision_guard_v1968')){
+      const conflict=new Error('Revision conflict. Refresh from D1.');
+      conflict.status=409;conflict.revision=await getRevision(env,owner);throw conflict;
+    }
+    throw err;
+  }
+}
 async function planSnapshotDiff(env,owner,cats,sites,ui,options={}){
   const dbCats=(await env.DB.prepare(`SELECT name,icon,sort_order,is_builtin FROM categories_v17`).all()).results||[];
   const dbSites=(await env.DB.prepare(`SELECT id,name,url,normalized_url,domain,root_domain,full_title,category_name,sort_order,is_favorite,is_deleted,is_custom,icon_url,icon_key FROM sites_v17`).all()).results||[];
@@ -197,21 +217,36 @@ async function syncSnapshot(env,owner,body){
   const plan=await planSnapshotDiff(env,owner,cats,sites,ui,body);
   if(plan.forbiddenIds.length)return json({ok:false,error:"Permanently deleted site IDs cannot be restored by an old snapshot. Refresh from D1.",revision:current,purgedIds:plan.forbiddenIds},409);
   if(!plan.structuralChanged&&!plan.settingsChanged)return json({ok:true,revision:current,unchanged:true,writes:0});
-  // Only structural changes need a recovery snapshot. Recents/theme/usage-only changes no longer create full snapshots.
-  if(plan.structuralChanged)await backupSnapshot(env,owner,current);
-  for(const r of plan.siteDeletes){if(env.KV&&r.icon_key&&String(r.icon_key).startsWith("custom:"))await env.KV.delete(r.icon_key)}
-  const deletes=[];
-  for(const r of plan.siteDeletes)deletes.push(env.DB.prepare(`DELETE FROM sites_v17 WHERE id=?`).bind(r.id));
-  for(const r of plan.categoryDeletes)deletes.push(env.DB.prepare(`DELETE FROM categories_v17 WHERE name=?`).bind(r.name));
-  await runBatches(env,deletes);
-  const catStatements=plan.categoryUpserts.map(c=>env.DB.prepare(`INSERT INTO categories_v17(name,icon,sort_order,is_builtin,updated_at) VALUES(?,?,?,?,CURRENT_TIMESTAMP) ON CONFLICT(name) DO UPDATE SET icon=excluded.icon,sort_order=excluded.sort_order,is_builtin=excluded.is_builtin,updated_at=CURRENT_TIMESTAMP`).bind(c.name,c.icon,c.sort_order,c.is_builtin));
-  await runBatches(env,catStatements);
-  const siteStatements=plan.siteUpserts.map(s=>env.DB.prepare(`INSERT INTO sites_v17(id,name,url,normalized_url,domain,root_domain,full_title,category_name,sort_order,is_favorite,is_deleted,is_custom,icon_url,updated_at) SELECT ?,?,?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM purged_sites_v1964 WHERE owner=? AND id=?) ON CONFLICT(id) DO UPDATE SET name=excluded.name,url=excluded.url,normalized_url=excluded.normalized_url,domain=excluded.domain,root_domain=excluded.root_domain,full_title=excluded.full_title,category_name=excluded.category_name,sort_order=excluded.sort_order,is_favorite=excluded.is_favorite,is_deleted=excluded.is_deleted,is_custom=excluded.is_custom,icon_url=excluded.icon_url,updated_at=CURRENT_TIMESTAMP`).bind(s.id,s.name,s.url,s.normalized_url,s.domain,s.root_domain,s.full_title,s.category_name,s.sort_order,s.is_favorite,s.is_deleted,s.is_custom,s.icon_url,owner,s.id));
-  await runBatches(env,siteStatements);
-  if(plan.settingsChanged)await setSetting(env,owner,"ui",plan.uiJson);
-  const revision=current+1;await setSetting(env,owner,"revision",String(revision));
+  // A single D1 batch is one SQL transaction. No KV/backup side effects before commit.
+  // The recovery snapshot and retention pruning must be inside that same transaction.
+  const stmts=[];
+  if(plan.structuralChanged){
+    const backup=await buildBootstrap(env,owner,"backup");
+    stmts.push(env.DB.prepare(`INSERT INTO backups_v17(owner,revision,snapshot,created_at) VALUES(?,?,?,CURRENT_TIMESTAMP)`).bind(owner,current,JSON.stringify(backup)));
+    stmts.push(env.DB.prepare(`DELETE FROM backups_v17 WHERE owner=? AND id NOT IN (SELECT id FROM backups_v17 WHERE owner=? ORDER BY id DESC LIMIT ?)`).bind(owner,owner,BACKUP_KEEP));
+  }
+  for(const r of plan.siteDeletes)stmts.push(env.DB.prepare(`DELETE FROM sites_v17 WHERE id=?`).bind(r.id));
+  for(const r of plan.categoryDeletes)stmts.push(env.DB.prepare(`DELETE FROM categories_v17 WHERE name=?`).bind(r.name));
+  for(const c of plan.categoryUpserts){
+    stmts.push(env.DB.prepare(`INSERT INTO categories_v17(name,icon,sort_order,is_builtin,updated_at) VALUES(?,?,?,?,CURRENT_TIMESTAMP) ON CONFLICT(name) DO UPDATE SET icon=excluded.icon,sort_order=excluded.sort_order,is_builtin=excluded.is_builtin,updated_at=CURRENT_TIMESTAMP`).bind(c.name,c.icon,c.sort_order,c.is_builtin));
+  }
+  for(const s of plan.siteUpserts){
+    stmts.push(env.DB.prepare(`INSERT INTO sites_v17(id,name,url,normalized_url,domain,root_domain,full_title,category_name,sort_order,is_favorite,is_deleted,is_custom,icon_url,updated_at) SELECT ?,?,?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM purged_sites_v1964 WHERE owner=? AND id=?) ON CONFLICT(id) DO UPDATE SET name=excluded.name,url=excluded.url,normalized_url=excluded.normalized_url,domain=excluded.domain,root_domain=excluded.root_domain,full_title=excluded.full_title,category_name=excluded.category_name,sort_order=excluded.sort_order,is_favorite=excluded.is_favorite,is_deleted=excluded.is_deleted,is_custom=excluded.is_custom,icon_url=excluded.icon_url,updated_at=CURRENT_TIMESTAMP`).bind(s.id,s.name,s.url,s.normalized_url,s.domain,s.root_domain,s.full_title,s.category_name,s.sort_order,s.is_favorite,s.is_deleted,s.is_custom,s.icon_url,owner,s.id));
+  }
+  if(plan.settingsChanged)stmts.push(env.DB.prepare(`INSERT INTO settings_v17(owner,key,value,updated_at) VALUES(?,'ui',?,CURRENT_TIMESTAMP) ON CONFLICT(owner,key) DO UPDATE SET value=excluded.value,updated_at=CURRENT_TIMESTAMP`).bind(owner,plan.uiJson));
+  const revision=current+1;
+  stmts.push(env.DB.prepare(`INSERT INTO settings_v17(owner,key,value,updated_at) VALUES(?,'revision',?,CURRENT_TIMESTAMP) ON CONFLICT(owner,key) DO UPDATE SET value=excluded.value,updated_at=CURRENT_TIMESTAMP`).bind(owner,String(revision)));
+  try{await commitAtomicV1968(env,owner,current,stmts)}
+  catch(err){if(err.status===409)return json({ok:false,error:err.message,revision:err.revision},409);throw err}
+  // KV is not part of D1's transaction. Clean old icons ONLY after the commit;
+  // maintenance can safely retry if an individual KV delete fails.
+  let pendingKvDeletes=0;
+  if(env.KV)for(const r of plan.siteDeletes){
+    const key=String(r.icon_key||'');
+    if(key.startsWith(`custom:${owner}:`))try{await env.KV.delete(key)}catch{pendingKvDeletes++}
+  }
   const writes=plan.categoryUpserts.length+plan.categoryDeletes.length+plan.siteUpserts.length+plan.siteDeletes.length+(plan.settingsChanged?1:0)+1+(plan.structuralChanged?1:0);
-  return json({ok:true,revision,writes,changed:{sites:plan.siteUpserts.length,siteDeletes:plan.siteDeletes.length,categories:plan.categoryUpserts.length,categoryDeletes:plan.categoryDeletes.length,settings:plan.settingsChanged,backup:plan.structuralChanged}})
+  return json({ok:true,revision,writes,kvCleanupPending:pendingKvDeletes,changed:{sites:plan.siteUpserts.length,siteDeletes:plan.siteDeletes.length,categories:plan.categoryUpserts.length,categoryDeletes:plan.categoryDeletes.length,settings:plan.settingsChanged,backup:plan.structuralChanged}})
 }
 /* V19.64 · Hard-delete only items already in the recycle bin.
    D1's transactional batch records tombstones, removes records and scrubs D1
@@ -289,7 +324,8 @@ async function purgeDeletedSitesV1964(env,owner,body){
   const revision=current+1;
   statements.push(env.DB.prepare(`INSERT INTO settings_v17(owner,key,value,updated_at) VALUES(?, 'revision', ?,CURRENT_TIMESTAMP) ON CONFLICT(owner,key) DO UPDATE SET value=excluded.value,updated_at=CURRENT_TIMESTAMP`).bind(owner,String(revision)));
   // D1 .batch() is transactional. A failing SQL statement rolls back deletion and markers.
-  await env.DB.batch(statements);
+  try{await commitAtomicV1968(env,owner,current,statements)}
+  catch(err){if(err.status===409)return json({ok:false,error:err.message,revision:err.revision},409);throw err}
   // Do not rely exclusively on meta query introspection; verify the committed result.
   const remaining=[];
   for(let i=0;i<ids.length;i+=80){
