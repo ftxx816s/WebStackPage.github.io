@@ -4,13 +4,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>私人导航工具箱 · V19.66 Liquid Glass</title>
+<title>私人导航工具箱 · V19.67 Liquid Glass</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: blob: https: http:; connect-src 'self' https:; font-src data:; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
 <meta name="theme-color" content="#07101d">
 <style id="recycle-purge-style-v1964">
-/* V19.66 · Permanent-delete actions scoped to the recycle bin only. */
+/* V19.67 · Permanent-delete actions scoped to the recycle bin only. */
 .deleted-actions-v1964{display:flex;align-items:center;justify-content:flex-end;gap:7px;flex-wrap:wrap}
 .deleted-actions-v1964 .mini-btn,.deleted-actions-v1964 .restore-site-btn{white-space:nowrap}
 .deleted-actions-v1964 button:disabled,#purgeDeletedCustomBtn:disabled{opacity:.55;cursor:wait}
@@ -18,7 +18,7 @@
 </style>
 <script  id="app-meta-v1891"  data-module="script-01.js">
 
-window.FXNAV_APP=Object.freeze({version:"19.66",build:"V19.66",schemaVersion:3,channel:"stable"});
+window.FXNAV_APP=Object.freeze({version:"19.67",build:"V19.67",schemaVersion:3,channel:"stable"});
 
 </script>
 <script  id="theme-boot-v1867"  data-module="script-02.js">
@@ -39,8 +39,19 @@ window.FXNAV_APP=Object.freeze({version:"19.66",build:"V19.66",schemaVersion:3,c
   }
   var root=document.documentElement;
   root.setAttribute("data-theme",theme);
+  // V19.67: MQ/QQ WebView and engines without backdrop-filter need an opaque-glass fallback.
+  // Detection is non-blocking and does not alter the five-theme selection/sync flow.
+  try{
+    var agent=String(navigator.userAgent||"");
+    var isQQBrowser=/MQQBrowser|QQBrowser|QQBrowserLite/i.test(agent);
+    var supportsBackdrop=!!(window.CSS&&window.CSS.supports&&(
+      window.CSS.supports("-webkit-backdrop-filter","blur(2px)")||
+      window.CSS.supports("backdrop-filter","blur(2px)")));
+    if(isQQBrowser)root.classList.add("fx-qq-compat");
+    if(!supportsBackdrop)root.classList.add("fx-glass-fallback");
+  }catch(e){root.classList.add("fx-glass-fallback");}
   root.classList.add("theme-booting");
-  // V19.66: nonblocking, theme-matched first paint. The wallpaper loads normally
+  // V19.67: nonblocking, theme-matched first paint. The wallpaper loads normally
   // in the existing IndexedDB restoration flow, never delaying the interface.
   root.style.colorScheme=(theme==="light"||theme==="liquid")?"light":"dark";
   var colors={dark:"#07101d",light:"#edf3ff",liquid:"#747678",neon:"#020713",frosted:"#1b1b1d"};
@@ -75,7 +86,7 @@ window.FXNAV_APP=Object.freeze({version:"19.66",build:"V19.66",schemaVersion:3,c
 
 </script>
 <style data-module="style-01.css">
-/* V19.66: do not paint partial/default-theme DOM while the inline CSS is still streaming. */
+/* V19.67: do not paint partial/default-theme DOM while the inline CSS is still streaming. */
 html.theme-booting,html.theme-booting body{margin:0;min-height:100%;transition:none!important}
 html.theme-booting body{visibility:hidden!important}
 html.theme-booting *,html.theme-booting *::before,html.theme-booting *::after{transition:none!important}
@@ -86,7 +97,7 @@ html:not([data-theme="liquid"]) body .compact-actions #compactLiquidBgBtn{displa
 html.theme-booting[data-theme="dark"],html.theme-booting[data-theme="dark"] body{background:#07101d!important;color:#f4f7ff}
 html.theme-booting[data-theme="light"],html.theme-booting[data-theme="light"] body{background:#edf3ff!important;color:#172033}
 html.theme-booting[data-theme="neon"],html.theme-booting[data-theme="neon"] body{background:#020713!important;color:#f7f9ff}
-/* V19.66 neutral graphite-gray placeholder: similar to the selected glass theme. */
+/* V19.67 neutral graphite-gray placeholder: similar to the selected glass theme. */
 html.theme-booting[data-theme="liquid"],html.theme-booting[data-theme="liquid"] body{background:#747678!important;color:#f8fbff!important}
 /* Avoid flashing a different default image while IndexedDB restores the saved one. */
 html.liquid-wallpaper-pending[data-theme="liquid"] body{
@@ -3633,7 +3644,7 @@ html[data-theme="light"] .context-head-icon{
   background:linear-gradient(90deg,#20c0f3 0%,#4386fb 22%,#745df1 40%,#df4bad 60%,#ff7259 76%,#ffd451 90%,#6bd95c 100%);
   box-shadow:0 12px 22px rgba(105,99,171,.17),inset 0 2px 2px rgba(255,255,255,.30);z-index:-1;
 }
-/* V19.66 — theme isolation: this control belongs to Liquid Glass only.
+/* V19.67 — theme isolation: this control belongs to Liquid Glass only.
    Prevent default UA button chrome appearing as a white square in Dark/Light/Neon/Frosted,
    including phone and tablet widths. The later liquid-only selector deliberately overrides this. */
 #hero .liquid-search-btn{display:none!important}
@@ -3944,8 +3955,8 @@ html[data-theme="neon"] .tool-cluster{border-radius:14px}}
 <link rel="icon" type="image/png" sizes="64x64" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAPRElEQVR42u2aeYxdZ3nGf++3nHOvPR4vSYxjEhvHCZRgkgg7QS2QsSFAGsIabNSUpWWJWqhU1fQPQLTjQa0QrYpARah1KUsQLYxZGsoSkhRngJSI2pAFpw2BNGTzkrE99iz3nvMtb/84Z+yQmODECRA6r/Tpztx7dXSe533e93u+91yYi7mYi7mYi7mYi7mYi7n4tQlFZRg1wwwbReX/B+hhNduH1HEMwMPDakY3quU3kQxFpQF3NL79Ml187UUzK665SJePbtTugz/b+JDvnmjIrxi8ESQDfG+oWpPF/H4QXlhJflolOlBBqsXs72Fu7sEXgrtz9E+vfnq1caPabdskPakJ0GE1MiL5xgvGB3134fuD4a3euWJGYZLIjGYqhKCWaA21gSnSrdOEzSPf6F43PLTdjYxtiE9KAmbBf29d7ww33/9bUdhnj+cqRyH2FVOB9AR6CSpE+6JaGzS6suiTmJH8xx/6evEPw0PqRsYkPqkIGEbNFtBbX8jSOsYbvHerJ7SqosFXQD9DH+gBfYUK6AvMGKESTbWIUV/YvtRv2/qV8mNXrFW/daeEx3o/5pece1k/hBFE+yl8qlO41YdSVWUjPgoEhSAN6EqFShsSplXoqVKBrcnM5DpG6//pDa+pLt+6U8LatTv8k4KA7UPYDWMSv/P8/ub5zr90Ild19uIjEGjA19oQUWWlVqhnP1OoFIKIRMlSaUhB7Kdfs6l/2c6d68LaKx4bCfLLrvsbfrtaY735r0h20SHRIb2c6CvUYujlRv69DDMKPYFahBmUykK0kCxEq7m2RuhajSZe9tXPdL689oodfufWdeHXTgGKyrbbkCvY4bOzHx9Y6Dp+iVNZiNhBYeCkLt0FXSqU6ZyocpP5/oNKIYoQpVFD3ZBiolHtazLB+20Xvbn/sp1b14WhYXW/dgrYPqRuw5jEG16sI9HoX44duKW+feJut2d6N1EmWTzQ5bzTzuGZSy/g0GTB3sPT9MTRpyVChMpAZZTkIViIDlIhRKc5e2NyaUJFeNWNW7tXDw2rGxs5vt3hCSdgdKPaTdskjb1EL/j++L4brr33Ft0zvcdEpqXWSXppnKk4Tq2TnHXqSl593h+wsDibuw7MUGGpkCbjBmqrBAfRQ/JCsEouITsyhTWxI3WQ8PIdH+ped7wkyBPd9TeyzYy+aaPf/O3bd9wxMf6sipmgtrb9NEkvTVLpYeo8QT9PMtHfh3WRl1/wZjlz6cV6z/4etZjGEFka8C0BsWh6QfKQCkiOnDvGhkJ6fdVLb/9bv/14SLBPJPxh1ruPyqXpnr2v/pv9h+MrevVkHaK6KtQIYB0khaRCRilcgSrcdNe3KAasrDz9PA5VsdkJrBBNS4Brwbt2eYgOCTbn7KXIHfPaJRe+9zvff5+7i2F1jI3kX7oChs/+YTFy25r6Qq578amLBq9ZtNiEgSXG2vkwWfX46b3j3L/3ILabiKZPL01R6SGiThHyNNPVOM87/3KecdYm7j/Qp6dCtEJwkP0R0KSyLYmjysjatS4UcrjWdPH97ym+y6haNh377PCEEDDr0//8/B8uO4l5O1avPmn5qaeVqRw0tlwk6geUmTQjN/7gf/ns527SQ9M9tIz00zRBDxHyNFF7TFfjnL/uMs48+/XsPtinJ0KyQnLa9IDZUmgJCR5SKaRCcyydi14Pqqahfe8sb2VYDSOSn1ACFJUtw8jIiOSvXxJeaTx/11noVicbYjJqpMhIB/yAMG+J4SkrPXfu3cPw+77G+MQ0WmT6aZpaDxN1hhAOwOI1nPfc32PZ0tPYfThSCUQrjQJm16wSHKSuEAsIRpMuKHwg/o/XA+c/8I6l0w1i0SekBzwY/L9fFN5fGPeRKLJkJtQxJDVZG76NCAhkVSYO1CxftpiVZwwytv12rLNH3EmsJxhY/gIWn/Ua7tu/B+sDJ5+6hOmkRFGilSP9YJaE2CogWiU5TDS5jkv8shnTOZieY/8TtjysH5jHG/yX14etXXHvOlTXYaqqY0xiUoQUIFYQKsh9qA6AdZZU9nnp61az/kWrqKdqOtYjVY/Fyy5g+TNfj7dd5g2cwh27J7jvgXtYuMQipZAcBCdES9McLUQvRKONW/RCdJiY0OT1dagKW0iPuxNsT3cyMiL5qvXhU4Vzb9tXV3Ud1aYoJtYQaiEFIQZIQZg5DItWCWcOCU95ujD/FLjo0tUYNRD6LFy8ilXnXI4zUBYdis4i5g8u5Sf3TXL/+G4GT7ZIAcnqEWucXEuKOUpIcmqyINlxKtcwDxFFf3asZh4H8MowfGl9+Bfv3BvH67pOKi4ipAQxtitATkJvUll4hrDyeYIIpArSFKxavYSuUTrFIGc9ZxPWeKwkfOEoOl1cdyHdxUu5e/cMe/Y9wIKTLaZsu//smiXCC8kq2YkmD2o1kDimH3AnCn7bRsy530yf9c69dn+/rjL4TDO+NAasgiRIppG+my+suABiXxED4gRVMEYoC88z1r2culxEqnoYZ7FWKRxE44k6n25puXfPJKFzkAWnL6I3lVsFaLND+Fl/IGRH1i5KMru4RCpUDfKzO4E7EfDXD2HlvjDqvH/1/n6osuBTBm21NdtujYLYJttLzgK/AGINvhQ0ZYyBvfdNsPK3hhhY/FT2TfUwYtH2AlbAOyisJ2IpO5b79kxzcjnJ/NMX0O/nIztDshCNkq2oOlQ9QtaPArDt4bueeyzgRzB5+drsF/fS58vSv+JgHaqY1WeFrE32haMEQKuCAMUCyBlSBpsVSUJOgd0/PYXBUxYwNVMBFhGaZQQxYA04D4U1JOmS5nn27O+zsOzRPa1DFSBZNFkle7JaVV1SlDoVP8Fr/dfa7KcTIkBRESSPnq1FJn3BW3vp/qqqs4pPuQGf2+wbQBAQbdhIkBKEPmiGnCDUMLAIfnybcssPBskmE5OQpH0CYNpXoSGhVUJ0QjSecr5j/2Rk/sGEXWrJ4mwuBJ2HzSUwFT/O09wfMazmIfl49AQoKltAvnamFhMufLE0/pIDVVVnERe1AacioAravFhpsk0LQgUm7hVireSsLFgg3HOn8rkr4fCMkr2QgSzNUnnQXbckGAPeQi4ge0OWgslKcX3QwbQ3i/Q1yU0E8zE2+q/MHsoYkRMjYAvICJI/7etPzhd/yYF+3czygIyQkqKgYhByo4AUFesaVShgPYzflTnwE8+KdYbv39Bn7BrDwRklF0LMTbNUWiUdKQMQaYpKaMvBQlEq6oxKIbnXcS7l+M28yr6RDe0JcFgNI2gjwxM4DI2idhOSrjyzf1nXl58/RF1Fwac2WwlIWRRRMa1srWkz5o5mDpfxdDAnjXPwpB73/uh0Knqos/QFKmmGHZWF2rbevvX7VYFmj8Sisb11CXEehBJCB6pScj3oXZT8wWqTfSejWrCR8FDr+5gUsKtVYgrm7T3QIJhsILaZms2wMU19Y4SUFQNoEiwQSJRSkIvD+s/f+rDef2hcL33+uyn8CnO47ku0hkhzzfSg6x5prNq01tkqa6sK0/r5wqiRGII9yW+2VwWZeaVsZlRtc0cnoIC28elnVuji6Vzfka09KUhK2SBZWvBytM5bjaoRFRXFOEElUZYd1XIyfem2TxYHpqbwxqI2ce55l2M7K8Ohqm9qaySYJvOhnfqkdgqUO83gI86uElIXYgdSp/2/FM3zSHGJL6o6frB3sX/nIx2Fj8sJbmlJioEFBOnmkMkBNDadPCfIsRlsqAqqQo5ZNDUNMKaMtZ1Uc9he+9/fKOrpTn95+Ywdi9zTrnJhwXW33vzFff3+Pm+7HZtFcxKICqlpJSRAzc8qDTmaOdP6DKNgUDFZnZ0MtV/oNhf/Ub+LTZIaJZygAj5yig5IDD9Sa5cFG7PaZlNVo2Cbm5y9I5GmDFQSvuxEilCM3f3lQwcPTf79GQvOvfKT48+5Y/b6axk+ed7SFa8/dc2rRkJnyeB0rEMsxCan7YGnOeXl9tyfy0YJudNmvwDtNH0hlaAdIZWqsWO06iDBunPDC2TXsVzgcSlAEB1F7Z88IFMx8h0XjeSalGtFozbZD+1pr/X8KUFMqoYiZbS48e5rr75j34/Wfav6w79owctGRi0Mm50yMv7tfW/50OGDu16QbbxTy8InySlLc6hJBrKFbEBt+/fsNmlBraBG0FYdSrtZpJxd11kT6ysAuP7YWI/rMLStffXJfyCEpBLF5EDWCDk0S8Ns9xJSkijZSlb1tzzw3b8e3fey372N9/x4iO1umGED6DY2JRjJKHLF2h3+6h9ceEv08cVq00/FlT4ZTVEaa5uNNH7fQGrfS+ao6croUd/QGi8REQKq1p4PwHrSCRAgaSNq3z4jO0PIf9aN3kkwLgeNJJIksiQykaRRo8++IFHtnbz/8it3P++9OqwGhs0YG+IIDxtQ6tad68LQkLqvfrF7Z/LxpdGl+7IvfbKkbIVklGjkiBrUCupmwbcGzDy0oFWyIllz91iToEd9HN6GpFHUbq6LD/djeouLZnx+KIsyFt7FwrlUuE4ufCcVhYZ0U11VGz64e8W/DqNORkTh509mAcbGJA4Nqdu+rXN7TXxJkrRbvfdRNCUDWbSVfwNerZCNNO+LgpEjbjMByUjOHs1wb2Nmjt0IH/VMcCNqtyHpA+hy59IbkuFFyepTsUQRc4dYc9XMxK7PjbCmnjVQj+b6Q0PqxsYkrnnj5Dn47rXZm6VBQshebC4ULYVcKlpALoRcKLkALYC2QcZSiE5jfXJRhJn0Zi50n2C7uiMO8USHog8FNrtTPPzUKPmxXH+WhLPfWp2XSvuNVNilQUJFoV4LyB0htzuDFs2YXEvIhTYPSTwhLC7Kuo63KO65XE/98yzxY54Kt4cjC+RZoKM0MtsEj+i+jouE9qnOGe+onq3z7Je0Y1eHHOpcquDFaKmSi4YILZrtMXtyKjSFhUUZTNqfU1rPhvKHP28LfBzH4ionCvjY9aaWbZJWvXvyKbXp/qPOs6/MHpLWqgVRC1RLQQuV5MWkAW/jIIScb85V701cPHDzI4H/lf9K7PgmMEcfaCz7q3BZKszbs8u/kxe4jnaa7CcHUROxI7tyYT6RJ+75KJtW9H6RDX5yEAAcmeS2W9kpH9Eza4nnxI6cllz2qWv20bG7ws7rb2Gk/eXYL8j8kzNG1T50rH0Msn7xd550CjhWWTwLYRfCeuB6YAsZeeThx1zMxVzMxVzMxVzMxVw8KP4PnlmuOYyKoWIAAAAASUVORK5CYII=">
 <link rel="shortcut icon" type="image/png" href="data:image/png;base64,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">
 
-<meta name="x-build" content="V19.66-20261027">
-<meta name="x-app-version" content="19.66">
+<meta name="x-build" content="V19.67-20261027">
+<meta name="x-app-version" content="19.67">
 
 <style data-module="style-03.css">
 :root{
@@ -4616,7 +4627,7 @@ body.sort-mode .card-link{padding-left:52px!important;padding-right:38px!importa
 .site-icon,.card-link,.nav-btn,.tool-btn,.btn{touch-action:manipulation}
 body.sort-mode .sort-handle{touch-action:none!important}
 .star{opacity:1!important}}
-/* V19.66 - one stable SVG for the sort action in desktop/mobile/tablet and sticky toolbar. */
+/* V19.67 - one stable SVG for the sort action in desktop/mobile/tablet and sticky toolbar. */
 #sortModeBtn .sort-glyph{
   display:inline-flex!important;align-items:center!important;justify-content:center!important;
   flex:0 0 16px!important;width:16px!important;height:16px!important;
@@ -8557,7 +8568,7 @@ html[data-theme="light"] body .login-error{color:#bb2b55!important;}
         <span class="console-divider"></span>
         <span class="console-item cache"><span class="k">CACHE</span><strong id="consoleCache">0 KB</strong></span>
         <span class="console-divider"></span>
-        <span class="console-item build"><span class="k">BUILD</span><strong>V19.66</strong></span>
+        <span class="console-item build"><span class="k">BUILD</span><strong>V19.67</strong></span>
         <span class="console-spacer"></span>
         <span class="console-activity">
           <span class="k">SYSTEM ACTIVITY</span>
@@ -8717,7 +8728,7 @@ html[data-theme="light"] body .login-error{color:#bb2b55!important;}
 
     <div id="fxD1LoadingV1946" class="fx-d1-loading-v1946" role="status">正在读取完整云端导航数据…</div>
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V19.66 版本</div>
+    <div class="footer">© 2026 私人导航工具箱 · V19.67 版本</div>
   </main>
 </div>
 
@@ -10265,8 +10276,8 @@ function themeSvgV1825(theme){
 function updateThemeButton(){
   const root=document.documentElement;
   const theme=root.dataset.theme||"dark";
-  // V19.66: keep Safari/Edge native color scheme in sync with the selected theme.
-  // V19.66 only changed data-theme; the dark inline scheme from first paint remained.
+  // V19.67: keep Safari/Edge native color scheme in sync with the selected theme.
+  // V19.67 only changed data-theme; the dark inline scheme from first paint remained.
   root.style.colorScheme=(theme==="light"||theme==="liquid")?"light":"dark";
   const map={
     dark:{name:"深色",color:"#09111f"},
@@ -11142,7 +11153,7 @@ async function uploadDataUrlIconV17(siteId,dataUrl){
   const res=await fetch(v17Query("upload-icon",{site:siteId}),{method:"POST",body:blob,headers:{"Content-Type":blob.type||"image/webp"},credentials:"include",cache:"no-store"});
   let data=null;try{data=await res.json()}catch{}if(!res.ok||data?.ok!==true){const error=data?.error||(res.status===401?"管理员登录已失效":res.status===404?"D1 中尚不存在该网站，请先完成保存":`KV 图标上传失败 (HTTP ${res.status})`);throw new Error(error)}return data;
 }
-// V19.66: D1 must contain a site before its KV icon can be uploaded.
+// V19.67: D1 must contain a site before its KV icon can be uploaded.
 async function ensureIconSiteCommittedV1966(){
   if(!AUTH_V161.authenticated)throw new Error("请先登录管理员账号");
   if(!V17.ready||V17.cachedOffline||!navigator.onLine)throw new Error("D1 尚未连接，图标上传已取消");
@@ -11913,7 +11924,7 @@ $("#restoreAllDeletedBtn").onclick=async()=>{
   if(!await uiConfirmV1821(`恢复全部 ${state.hiddenSites.size} 个已删除网站？`))return;
   state.hiddenSites.clear();save();buildNav();render();renderCustomList();renderDeletedList();buildMoveSiteOptions();toast("已全部恢复");
 };
-/* V19.66 · Real D1 recycle-bin purge (requires the server-side purge-sites endpoint).
+/* V19.67 · Real D1 recycle-bin purge (requires the server-side purge-sites endpoint).
    Never substitute a local-only removal for SQL DELETE, and never claim success
    until the D1 backend confirms the operation and bootstrap no longer returns it. */
 let purgeBusyV1964=false;
@@ -12761,7 +12772,7 @@ async function silentAuthCheckV178(){
 }
 async function initPublicAdminV178(){
   setCloudStatus("syncing","载入导航…","正在读取公开导航数据");
-  // V19.66: start the session check and D1 bootstrap together instead of
+  // V19.67: start the session check and D1 bootstrap together instead of
   // waiting for /api/state?mode=me before requesting /api/data?mode=bootstrap.
   // D1 bootstrap's access flag is authoritative if the two responses race.
   const authJob=silentAuthCheckV178();
@@ -13185,7 +13196,7 @@ updateAccessUIV178();
     categories.innerHTML="";
     moveBlockFromTitle("分类管理",categories,"分类移动");
     moveBlockFromTitle("分类移动",categories,"我的新增");
-    // 版本 V19.66：分类页不再出现重复标题及冗长说明。
+    // 版本 V19.67：分类页不再出现重复标题及冗长说明。
     // “分类 23”已显示在顶部标签，保留隐藏的原分类数接口，避免影响计数逻辑。
     const redundantCategoryHeading=categories.querySelector(':scope > .custom-title-row');
     if(redundantCategoryHeading){
@@ -16102,7 +16113,7 @@ html[data-theme="liquid"]{
   --accent:#5b9bff;--accent2:#a66be6;
   --line:rgba(242,248,255,.16);--line2:rgba(242,248,255,.12);
   --soft:rgba(246,251,255,.065);--soft2:rgba(246,251,255,.10);
-  /* V19.66: a restrained optical edge, not a uniform white outline. */
+  /* V19.67: a restrained optical edge, not a uniform white outline. */
   --lg-edge:linear-gradient(147deg,rgba(255,255,255,.245) 0%,rgba(255,255,255,.115) 14%,rgba(255,255,255,.045) 44%,rgba(255,255,255,.027) 74%,rgba(255,255,255,.085) 100%);
   --lg-sheen:radial-gradient(100% 110% at 5% -37%,rgba(255,255,255,.052) 0%,rgba(255,255,255,.014) 43%,transparent 78%);
   --lg-surface:linear-gradient(151deg,rgba(32,38,47,var(--lg-pane-alpha,.271)),rgba(27,34,43,var(--lg-pane-alpha,.271)) 57%,rgba(28,36,44,var(--lg-pane-alpha,.271)));
@@ -16427,7 +16438,7 @@ html[data-theme="liquid"] body #drawer .cat-mini.danger{
 html[data-theme="liquid"] body #drawer .cat-mini.danger:hover{
   background:rgba(153,61,72,.35)!important;border-color:rgba(255,169,179,.44)!important;
 }
-/* V19.66: theme-specific visibility uses the same specificity on every viewport. */
+/* V19.67: theme-specific visibility uses the same specificity on every viewport. */
 html:not([data-theme="liquid"]) body .tool-cluster #liquidBgBtn,
 html:not([data-theme="liquid"]) body .compact-actions #compactLiquidBgBtn{display:none!important;visibility:hidden!important;pointer-events:none!important}
 /* One hit-target size for all three toolbar icon buttons in every interaction state. */
@@ -16548,7 +16559,7 @@ body.sidebar-is-scrolling.scroll-spy-active #sidebar .sidebar-pinned .nav-btn[da
 
 
 
-/* V19.66 visual system: color roles only; no functionality/layout/data changes.
+/* V19.67 visual system: color roles only; no functionality/layout/data changes.
    Liquid uses its canonical material above; the remaining themes retain separate identities. */
 html[data-theme="dark"]{
   --fx-optical-line:rgba(185,205,238,.105);--fx-optical-top:rgba(255,255,255,.065);
@@ -16590,7 +16601,7 @@ html:not([data-theme="liquid"]) body :is(.card-url,.section-desc,.section-sub){
   html[data-theme="liquid"] .home-layout #hero{min-height:400px!important}
 }
 
-/* V19.66 Responsive glass: one stationary wallpaper plane, no body-attached scrolling wallpaper.
+/* V19.67 Responsive glass: one stationary wallpaper plane, no body-attached scrolling wallpaper.
    The blurred cover fills unused bands when a landscape picture is shown entirely on a portrait screen. */
 @media (max-width:1100px), (hover:none) and (pointer:coarse){
   html[data-theme="liquid"] body{
@@ -16730,7 +16741,7 @@ html:not([data-theme="liquid"]) body :is(.card-url,.section-desc,.section-sub){
   .fx-responsive-wallpaper::before,.fx-responsive-wallpaper::after{transition:none!important}
 }
 
-/* V19.66 — wallpaper gallery: fixed footprint, responsive columns and theme-linked delete confirmation.
+/* V19.67 — wallpaper gallery: fixed footprint, responsive columns and theme-linked delete confirmation.
    This entire section replaces the V19.59 implementation, not an override stack. */
 .fx-wallpaper-overlay[hidden],.fx-wp-confirm-layer[hidden]{display:none!important}
 .fx-wallpaper-overlay{
@@ -16845,6 +16856,104 @@ body.fx-wp-open{overflow:hidden}
 @media(max-width:355px){.fx-wp-grid{grid-template-columns:minmax(0,252px)}.fx-wp-card{max-width:252px}.fx-wp-image{aspect-ratio:16/9}}
 @media(prefers-reduced-motion:reduce){.fx-wp-card,.fx-wp-track i{transition:none!important}.fx-wp-card:hover{transform:none!important}}
 
+</style>
+<style id="fx-cross-browser-v1967">
+/* V19.67 | Mobile QQ / popular engines: functional visual fallback.
+   Supported engines retain their original effects; unsupported blur never makes text unreadable. */
+html[data-theme="light"]{color-scheme:light!important}
+html[data-theme="dark"],html[data-theme="neon"],html[data-theme="frosted"]{color-scheme:dark!important}
+html[data-theme="liquid"]{color-scheme:light!important}
+
+/* Mobile QQ browser may ignore or incompletely composite backdrop blur. Preserve
+   readable surfaces using theme-matched translucency; avoid an accidental black panel. */
+html.fx-glass-fallback .glass,
+html.fx-glass-fallback .glass-strong,
+html.fx-glass-fallback .sidebar,
+html.fx-glass-fallback .drawer,
+html.fx-glass-fallback .tool-cluster,
+html.fx-glass-fallback .compact-bar{
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+html.fx-glass-fallback[data-theme="dark"] body .glass,
+html.fx-glass-fallback[data-theme="dark"] body .glass-strong{background:rgba(12,22,40,.94)!important}
+html.fx-glass-fallback[data-theme="neon"] body .glass,
+html.fx-glass-fallback[data-theme="neon"] body .glass-strong{background:rgba(11,21,54,.92)!important}
+html.fx-glass-fallback[data-theme="frosted"] body .glass,
+html.fx-glass-fallback[data-theme="frosted"] body .glass-strong{background:rgba(43,44,47,.90)!important}
+html.fx-glass-fallback[data-theme="light"] body{background-color:#edf3ff!important;color:#172033!important}
+html.fx-glass-fallback[data-theme="light"] body .glass,
+html.fx-glass-fallback[data-theme="light"] body .glass-strong{background:rgba(250,252,255,.94)!important;color:#172033!important;border-color:rgba(30,46,77,.12)!important}
+html.fx-glass-fallback[data-theme="light"] body .sidebar{background:rgba(248,251,255,.97)!important}
+html.fx-glass-fallback[data-theme="light"] body .drawer{background:rgba(249,251,255,.98)!important}
+html.fx-glass-fallback[data-theme="light"] body .tool-cluster,
+html.fx-glass-fallback[data-theme="light"] body .compact-bar{background:rgba(247,249,253,.95)!important}
+html.fx-glass-fallback[data-theme="liquid"] body .glass,
+html.fx-glass-fallback[data-theme="liquid"] body .glass-strong{
+  background:linear-gradient(135deg,rgba(60,67,78,.73),rgba(40,48,59,.77))!important;
+  border-color:rgba(255,255,255,.27)!important;
+  color:#f8fcff!important;
+}
+/* Theme-specific functional fallbacks when backdrop-filter is wholly unsupported. */
+html.fx-glass-fallback[data-theme="liquid"] body .tool-cluster,
+html.fx-glass-fallback[data-theme="liquid"] body .compact-bar{background:rgba(46,54,66,.80)!important;border-color:rgba(255,255,255,.24)!important}
+html.fx-glass-fallback[data-theme="liquid"] body .sidebar{background:rgba(39,46,57,.86)!important}
+html.fx-glass-fallback[data-theme="liquid"] body .drawer{background:rgba(39,46,56,.96)!important}
+html.fx-qq-compat body{background-attachment:scroll!important;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+html.fx-qq-compat[data-theme="light"] body{background-color:#edf3ff!important;color:#172033!important}
+
+/* V19.67 | All five themes: same clean inner toolbar as Liquid Glass.
+   Outer pill stays; buttons have no permanent nested backgrounds or borders.
+   Strong explicit ID selectors override older per-theme important rules. */
+html[data-theme] body .tool-cluster .tool-btn,
+html[data-theme] body .tool-cluster #sortModeBtn,
+html[data-theme] body .tool-cluster #manageBtn,
+html[data-theme] body .tool-cluster #densityBtn,
+html[data-theme] body .tool-cluster #logoutBtn,
+html[data-theme] body .tool-cluster #themeBtn,
+html[data-theme] body .tool-cluster #liquidBgBtn,
+html[data-theme] body .compact-actions .compact-action,
+html[data-theme] body .compact-actions #compactSortBtn,
+html[data-theme] body .compact-actions #compactManageBtn,
+html[data-theme] body .compact-actions #compactDensityBtn,
+html[data-theme] body .compact-actions #compactThemeBtn,
+html[data-theme] body .compact-actions #compactLiquidBgBtn{
+  background:transparent!important;
+  background-image:none!important;
+  border:1px solid transparent!important;
+  box-shadow:none!important;
+  text-shadow:none!important;
+}
+/* No accidental pill/background from hover on touch phones. */
+@media (hover:none),(pointer:coarse){
+  html[data-theme] body .tool-cluster .tool-btn:hover,
+  html[data-theme] body .compact-actions .compact-action:hover,
+  html[data-theme] body .tool-cluster #themeBtn:hover,
+  html[data-theme] body .compact-actions #compactThemeBtn:hover{
+    background:transparent!important;border-color:transparent!important;
+    box-shadow:none!important;
+  }
+}
+/* Desktop pointer affordance is subtle and never uses double bordered plates. */
+@media (hover:hover) and (pointer:fine){
+  html[data-theme] body .tool-cluster .tool-btn:hover,
+  html[data-theme] body .compact-actions .compact-action:hover{
+    background:rgba(255,255,255,.08)!important;border-color:transparent!important;
+    box-shadow:none!important;
+  }
+  html[data-theme="light"] body .tool-cluster .tool-btn:hover,
+  html[data-theme="light"] body .compact-actions .compact-action:hover{
+    background:rgba(88,104,144,.08)!important;
+  }
+}
+/* Preserve keyboard navigation and sorting status without nested glass borders. */
+html[data-theme] body .tool-cluster .tool-btn:focus-visible,
+html[data-theme] body .compact-actions .compact-action:focus-visible{
+  outline:2px solid var(--accent,#7487ff)!important;outline-offset:-2px!important;
+}
+/* A few mobile engines apply native dark form control styling without an explicit scheme. */
+html[data-theme="light"] input,html[data-theme="light"] textarea,
+html[data-theme="light"] select{color-scheme:light}
 </style>
 </body>
 </html>
