@@ -1,4 +1,4 @@
-const API_VERSION="19.68";
+const API_VERSION="19.73";
 import {V17_CATEGORIES,V17_SITES} from "../_data/v17-seed.js";
 import {json,requireAuth,sameOrigin,verifySession,normalizeUsername} from "../_shared/auth.js";
 
@@ -34,20 +34,66 @@ async function seedIfNeeded(env){const row=await env.DB.prepare(`SELECT COUNT(*)
   // A previously initialized empty database is intentional: never resurrect purged seed sites.
   if(await getSetting(env,normalizeUsername(env.NAV_USERNAME||"admin"),"revision")!==null)return false;const catStatements=V17_CATEGORIES.map(c=>env.DB.prepare(`INSERT OR IGNORE INTO categories_v17(name,icon,sort_order,is_builtin) VALUES(?,?,?,1)`).bind(c.name,c.icon,c.sort));await env.DB.batch(catStatements);const siteStatements=V17_SITES.map(s=>{const n=normalizeUrl(s.url),d=domainOf(s.url);return env.DB.prepare(`INSERT OR IGNORE INTO sites_v17(id,name,url,normalized_url,domain,root_domain,full_title,category_name,sort_order,is_custom) VALUES(?,?,?,?,?,?,?,?,?,0)`).bind(s.id,s.name,s.url,n,d,rootDomain(d),s.fullTitle,s.category,s.sort)});for(let i=0;i<siteStatements.length;i+=70)await env.DB.batch(siteStatements.slice(i,i+70));return true}
 function dataUrlParts(v){const m=String(v||"").match(/^data:(image\/(?:png|jpeg|jpg|webp|gif|x-icon|vnd\.microsoft\.icon));base64,(.+)$/i);if(!m)return null;try{const raw=atob(m[2]),bytes=Uint8Array.from(raw,c=>c.charCodeAt(0));return {type:m[1].replace("image/jpg","image/jpeg"),bytes}}catch{return null}}
-async function migrateFromV16(env,owner){if(await getSetting(env,owner,"migrated_v16"))return "already";let source="seed-only";try{const old=await env.DB.prepare(`SELECT data FROM nav_state WHERE owner=? LIMIT 1`).bind(owner).first();if(old?.data){const d=JSON.parse(old.data);source="nav_state";
-    if(Array.isArray(d.customCategories)){for(let i=0;i<d.customCategories.length;i++){const c=d.customCategories[i];if(c?.name)await env.DB.prepare(`INSERT OR IGNORE INTO categories_v17(name,icon,sort_order,is_builtin) VALUES(?,?,?,0)`).bind(String(c.name),String(c.icon||"•"),100+i).run()}}
-    if(Array.isArray(d.custom)){for(const s of d.custom){const n=normalizeUrl(s?.url);if(!n)continue;const domain=domainOf(n),cat=String(d.categoryOverrides?.[s.id]||s.category||V17_CATEGORIES[0].name);try{await env.DB.prepare(`INSERT OR IGNORE INTO sites_v17(id,name,url,normalized_url,domain,root_domain,full_title,category_name,sort_order,is_custom,icon_url) VALUES(?,?,?,?,?,?,?,?,?,1,?)`).bind(String(s.id),String(s.name||domain),n,n,domain,rootDomain(domain),String(s.fullTitle||s.name||domain),cat,999,String(s.iconUrl||"")).run()}catch{}}}
-    if(d.siteEdits&&typeof d.siteEdits==="object"){for(const [id,e] of Object.entries(d.siteEdits)){const n=normalizeUrl(e?.url);if(!n)continue;const domain=domainOf(n);await env.DB.prepare(`UPDATE sites_v17 SET name=?,url=?,normalized_url=?,domain=?,root_domain=?,full_title=?,icon_url=?,updated_at=CURRENT_TIMESTAMP WHERE id=?`).bind(String(e?.name||domain),n,n,domain,rootDomain(domain),String(e?.name||domain),String(e?.iconUrl||""),id).run()}}
-    if(d.categoryOverrides&&typeof d.categoryOverrides==="object"){for(const [id,cat] of Object.entries(d.categoryOverrides))await env.DB.prepare(`UPDATE sites_v17 SET category_name=?,updated_at=CURRENT_TIMESTAMP WHERE id=?`).bind(String(cat),id).run()}
-    if(Array.isArray(d.favorites)){for(const id of d.favorites)await env.DB.prepare(`UPDATE sites_v17 SET is_favorite=1 WHERE id=?`).bind(String(id)).run()}
-    if(Array.isArray(d.hiddenSites)){for(const id of d.hiddenSites)await env.DB.prepare(`UPDATE sites_v17 SET is_deleted=1 WHERE id=?`).bind(String(id)).run()}
-    if(Array.isArray(d.categoryOrder)){for(let i=0;i<d.categoryOrder.length;i++)await env.DB.prepare(`UPDATE categories_v17 SET sort_order=? WHERE name=?`).bind(i,String(d.categoryOrder[i])).run()}
-    if(d.categoryIconOverrides&&typeof d.categoryIconOverrides==="object"){for(const [name,icon] of Object.entries(d.categoryIconOverrides))await env.DB.prepare(`UPDATE categories_v17 SET icon=? WHERE name=?`).bind(String(icon||"•"),String(name)).run()}
-    if(d.siteOrder&&typeof d.siteOrder==="object"){for(const [cat,ids] of Object.entries(d.siteOrder)){if(!Array.isArray(ids))continue;for(let i=0;i<ids.length;i++)await env.DB.prepare(`UPDATE sites_v17 SET sort_order=?,category_name=? WHERE id=?`).bind(i,String(cat),String(ids[i])).run()}}
-    const ui={recents:Array.isArray(d.recents)?d.recents:[],usageStats:d.usageStats&&typeof d.usageStats==="object"?d.usageStats:{},density:d.density||"comfortable",theme:d.theme||"dark"};await setSetting(env,owner,"ui",JSON.stringify(ui));
-    if(env.KV&&d.iconOverrides&&typeof d.iconOverrides==="object"){for(const [id,val] of Object.entries(d.iconOverrides)){const p=dataUrlParts(val);if(!p||p.bytes.byteLength>MAX_ICON_BYTES)continue;const key=`custom:${owner}:${id}:${crypto.randomUUID()}`;await env.KV.put(key,p.bytes,{metadata:{contentType:p.type,kind:"custom"}});await env.DB.prepare(`UPDATE sites_v17 SET icon_key=?,updated_at=CURRENT_TIMESTAMP WHERE id=?`).bind(key,id).run()}}
-  }}catch{}
-  await setSetting(env,owner,"migrated_v16","1");return source
+async function migrateFromV16(env,owner){
+  if(await getSetting(env,owner,"migrated_v16"))return "already";
+  let source="seed-only";
+  let old=null;
+  try{old=await env.DB.prepare(`SELECT data FROM nav_state WHERE owner=? LIMIT 1`).bind(owner).first()}
+  catch(err){if(!String(err?.message||err).toLowerCase().includes("no such table: nav_state"))throw err}
+  if(old?.data){
+    const d=JSON.parse(old.data);
+    if(!d||typeof d!=="object"||Array.isArray(d))throw new Error("V16 migration source is not a valid object.");
+    source="nav_state";
+    if(Array.isArray(d.customCategories)){
+      for(let i=0;i<d.customCategories.length;i++){
+        const c=d.customCategories[i];
+        if(c?.name)await env.DB.prepare(`INSERT OR IGNORE INTO categories_v17(name,icon,sort_order,is_builtin) VALUES(?,?,?,0)`).bind(String(c.name),String(c.icon||"•"),100+i).run();
+      }
+    }
+    if(Array.isArray(d.custom)){
+      for(const site of d.custom){
+        const n=normalizeUrl(site?.url);if(!n)continue;
+        const domain=domainOf(n),cat=String(d.categoryOverrides?.[site.id]||site.category||V17_CATEGORIES[0].name);
+        await env.DB.prepare(`INSERT OR IGNORE INTO sites_v17(id,name,url,normalized_url,domain,root_domain,full_title,category_name,sort_order,is_custom,icon_url) VALUES(?,?,?,?,?,?,?,?,?,1,?)`).bind(String(site.id),String(site.name||domain),n,n,domain,rootDomain(domain),String(site.fullTitle||site.name||domain),cat,999,String(site.iconUrl||"")).run();
+      }
+    }
+    if(d.siteEdits&&typeof d.siteEdits==="object"&&!Array.isArray(d.siteEdits)){
+      for(const [id,e] of Object.entries(d.siteEdits)){
+        const n=normalizeUrl(e?.url);if(!n)continue;
+        const domain=domainOf(n);
+        await env.DB.prepare(`UPDATE sites_v17 SET name=?,url=?,normalized_url=?,domain=?,root_domain=?,full_title=?,icon_url=?,updated_at=CURRENT_TIMESTAMP WHERE id=?`).bind(String(e?.name||domain),n,n,domain,rootDomain(domain),String(e?.name||domain),String(e?.iconUrl||""),id).run();
+      }
+    }
+    if(d.categoryOverrides&&typeof d.categoryOverrides==="object"&&!Array.isArray(d.categoryOverrides)){
+      for(const [id,cat] of Object.entries(d.categoryOverrides))await env.DB.prepare(`UPDATE sites_v17 SET category_name=?,updated_at=CURRENT_TIMESTAMP WHERE id=?`).bind(String(cat),id).run();
+    }
+    if(Array.isArray(d.favorites))for(const id of d.favorites)await env.DB.prepare(`UPDATE sites_v17 SET is_favorite=1 WHERE id=?`).bind(String(id)).run();
+    if(Array.isArray(d.hiddenSites))for(const id of d.hiddenSites)await env.DB.prepare(`UPDATE sites_v17 SET is_deleted=1 WHERE id=?`).bind(String(id)).run();
+    if(Array.isArray(d.categoryOrder))for(let i=0;i<d.categoryOrder.length;i++)await env.DB.prepare(`UPDATE categories_v17 SET sort_order=? WHERE name=?`).bind(i,String(d.categoryOrder[i])).run();
+    if(d.categoryIconOverrides&&typeof d.categoryIconOverrides==="object"&&!Array.isArray(d.categoryIconOverrides)){
+      for(const [name,icon] of Object.entries(d.categoryIconOverrides))await env.DB.prepare(`UPDATE categories_v17 SET icon=? WHERE name=?`).bind(String(icon||"•"),String(name)).run();
+    }
+    if(d.siteOrder&&typeof d.siteOrder==="object"&&!Array.isArray(d.siteOrder)){
+      for(const [cat,ids] of Object.entries(d.siteOrder)){
+        if(!Array.isArray(ids))continue;
+        for(let i=0;i<ids.length;i++)await env.DB.prepare(`UPDATE sites_v17 SET sort_order=?,category_name=? WHERE id=?`).bind(i,String(cat),String(ids[i])).run();
+      }
+    }
+    const ui={recents:Array.isArray(d.recents)?d.recents:[],usageStats:d.usageStats&&typeof d.usageStats==="object"&&!Array.isArray(d.usageStats)?d.usageStats:{},density:d.density||"comfortable",theme:d.theme||"dark"};
+    await setSetting(env,owner,"ui",JSON.stringify(ui));
+    if(env.KV&&d.iconOverrides&&typeof d.iconOverrides==="object"&&!Array.isArray(d.iconOverrides)){
+      for(const [id,val] of Object.entries(d.iconOverrides)){
+        const icon=dataUrlParts(val);if(!icon||icon.bytes.byteLength>MAX_ICON_BYTES)continue;
+        const key=`custom:${owner}:${id}:${crypto.randomUUID()}`;
+        await env.KV.put(key,icon.bytes,{metadata:{contentType:icon.type,kind:"custom"}});
+        await env.DB.prepare(`UPDATE sites_v17 SET icon_key=?,updated_at=CURRENT_TIMESTAMP WHERE id=?`).bind(key,id).run();
+      }
+    }
+  }
+  // Set the migration marker only after every source read and write completed.
+  // Any failure bubbles to bootstrap; the idempotent INSERT/UPDATE steps can retry.
+  await setSetting(env,owner,"migrated_v16","1");
+  return source;
 }
 async function buildBootstrap(env,owner,migrationSource,{publicView=false}={}){
   const cats=(await env.DB.prepare(`SELECT * FROM categories_v17 ORDER BY sort_order,name`).all()).results||[];
@@ -103,32 +149,73 @@ async function restoreBackup(env,owner,id){
   if(!row?.snapshot)return json({ok:false,error:"Backup not found."},404);
   let snap=null;try{snap=JSON.parse(row.snapshot)}catch{return json({ok:false,error:"Backup is corrupted."},500)}
   const current=await getRevision(env,owner);
-  return await syncSnapshot(env,owner,backupToSyncBody(snap,current));
+  return await syncSnapshot(env,owner,backupToSyncBody(snap,current),{allowSiteDeletes:true});
+}
+// V19.72: reject loopback, private, link-local, reserved IPv4 and all literal IPv6
+// for untrusted server-side fetches. URL.hostname includes brackets for IPv6.
+// Bounded JSON parser protects D1 sync and recovery endpoints against oversized bodies.
+async function readBoundedJsonV1972(request,maxBytes){
+  const length=request.headers.get("content-length");
+  if(length!==null&&Number(length)>maxBytes){const e=new Error("Request body exceeds safe size limit.");e.status=413;throw e}
+  if(!request.body)return {};
+  const reader=request.body.getReader(),parts=[];let count=0;
+  try{
+    while(true){const {value,done}=await reader.read();if(done)break;
+      count+=value.byteLength;
+      if(count>maxBytes){await reader.cancel().catch(()=>{});const e=new Error("Request body exceeds safe size limit.");e.status=413;throw e}
+      parts.push(value);
+    }
+    const bytes=new Uint8Array(count);let pos=0;
+    for(const part of parts){bytes.set(part,pos);pos+=part.byteLength}
+    try{return JSON.parse(new TextDecoder().decode(bytes))}
+    catch{const e=new Error("Invalid JSON body.");e.status=400;throw e}
+  }finally{reader.releaseLock()}
 }
 function privateHost(host){
-  const h=String(host||"").toLowerCase();
-  if(!h||h==="localhost"||h.endsWith(".localhost")||h.endsWith(".local")||h.endsWith(".internal")||h.endsWith(".lan"))return true;
-  if(h==="::1"||h==="0:0:0:0:0:0:0:1")return true;if(h.includes(":")&&(/^(?:fc|fd)/i.test(h)||/^fe[89ab]/i.test(h)))return true;
+  const h=String(host||"").trim().toLowerCase().replace(/\.$/,"");
+  if(!h||h==="localhost"||h.endsWith(".localhost")||h.endsWith(".local")||h.endsWith(".internal")||h.endsWith(".lan")||h.endsWith(".test")||h.endsWith(".invalid"))return true;
+  // A literal IPv6 destination can contain embedded IPv4 and local interfaces;
+  // conservative denial avoids normalization and mapped-address bypasses.
+  if(h.startsWith("[")||h.includes(":"))return true;
   const m=h.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
   if(m){
-    const a=Number(m[1]),b=Number(m[2]);
-    if(a===10||a===127||a===0||a>=224)return true;
+    const [a,b,c,d]=m.slice(1).map(Number);
+    if([a,b,c,d].some(x=>x>255))return true;
+    if(a===0||a===10||a===127||a>=224)return true;
+    if(a===100&&b>=64&&b<=127)return true;  // carrier NAT
     if(a===169&&b===254)return true;
     if(a===172&&b>=16&&b<=31)return true;
-    if(a===192&&b===168)return true;
+    if(a===192&&(b===168||b===0&&c===0||b===0&&c===2||b===88&&c===99))return true;
+    if(a===198&&(b===18||b===19||b===51&&c===100))return true;
+    if(a===203&&b===0&&c===113)return true;
+    if(a===192&&b===168||a===192&&b===0&&c===0)return true;
+    return false;
   }
+  // Non-canonical numeric hosts (URL parser normalizes most of them to dotted IPv4).
+  if(/^\d+(?:\.\d+)*$/.test(h))return true;
   return false;
+}
+function checkedRemoteUrl(input){
+  try{
+    const u=new URL(input);
+    if(!["https:","http:"].includes(u.protocol)||u.username||u.password||privateHost(u.hostname))return null;
+    // No direct access to arbitrary service ports from image/health probes.
+    if(u.port&&!(["443","80"].includes(u.port)))return null;
+    return u;
+  }catch{return null}
 }
 async function checkSiteHealth(site){
   let u=null;try{u=new URL(site.url)}catch{return {id:site.id,kind:"bad",label:"网址无效",status:0}}
-  if(!/^https?:$/.test(u.protocol)||privateHost(u.hostname))return {id:site.id,kind:"bad",label:"已阻止检测",status:0};
+  if(!checkedRemoteUrl(u.href))return {id:site.id,kind:"bad",label:"已阻止检测",status:0};
   const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),4500);
   try{
     const res=await fetch(u.href,{method:"HEAD",redirect:"manual",signal:ctl.signal,headers:{"User-Agent":"Mozilla/5.0"}});
     const status=Number(res.status)||0;
     if(status>=200&&status<300)return {id:site.id,kind:"ok",label:`正常 ${status}`,status};
     if(status>=300&&status<400)return {id:site.id,kind:"warn",label:`重定向 ${status}`,status,location:res.headers.get("location")||""};
-    if(status===401||status===403||status===405)return {id:site.id,kind:"warn",label:`可访问 ${status}`,status};
+    if(status===401)return {id:site.id,kind:"warn",label:"需要登录 401",status};
+    if(status===403)return {id:site.id,kind:"warn",label:"拒绝访问 403",status};
+    if(status===405)return {id:site.id,kind:"warn",label:"不支持 HEAD 405",status};
     return {id:site.id,kind:"bad",label:`异常 ${status||"?"}`,status};
   }catch{
     return {id:site.id,kind:"bad",label:"连接失败",status:0};
@@ -136,25 +223,27 @@ async function checkSiteHealth(site){
 }
 async function refreshIcons(env,owner,ids){
   if(!env.KV)return json({ok:false,error:"Missing KV binding: KV"},500);
-  const clean=[...new Set((Array.isArray(ids)?ids:[]).map(String))].slice(0,60);
-  let refreshed=0,skipped=0;
-  for(const id of clean){
-    const site=await env.DB.prepare(`SELECT * FROM sites_v17 WHERE id=? LIMIT 1`).bind(id).first();
-    if(!site){skipped++;continue}
-    if(site.icon_key&&String(site.icon_key).startsWith("custom:")){skipped++;continue}
-    const hostKey=faviconCacheKeyV186(site),legacyKey=legacyFaviconKeyV186(site);
-    if(hostKey)await env.KV.delete(hostKey);
-    if(legacyKey)await env.KV.delete(legacyKey);
-    await serveIcon(env,site);
-    await env.DB.prepare(`UPDATE sites_v17 SET updated_at=CURRENT_TIMESTAMP WHERE id=?`).bind(id).run();
-    refreshed++;
+  const clean=[...new Set((Array.isArray(ids)?ids:[]).map(String))].slice(0,12);
+  let refreshed=0,skipped=0,failed=0,next=0;
+  async function worker(){
+    while(next<clean.length){
+      const id=clean[next++];
+      try{
+        const site=await env.DB.prepare(`SELECT * FROM sites_v17 WHERE id=? LIMIT 1`).bind(id).first();
+        if(!site||site.icon_key&&String(site.icon_key).startsWith("custom:")){skipped++;continue}
+        const hostKey=faviconCacheKeyV186(site),legacyKey=legacyFaviconKeyV186(site);
+        if(hostKey)await env.KV.delete(hostKey);
+        if(legacyKey)await env.KV.delete(legacyKey);
+        await serveIcon(env,site);
+        await env.DB.prepare(`UPDATE sites_v17 SET updated_at=CURRENT_TIMESTAMP WHERE id=?`).bind(id).run();
+        refreshed++;
+      }catch{failed++}
+    }
   }
-  if(refreshed){
-    const rev=await getRevision(env,owner)+1;
-    await setSetting(env,owner,"revision",String(rev));
-    return json({ok:true,refreshed,skipped,revision:rev});
-  }
-  return json({ok:true,refreshed,skipped,revision:await getRevision(env,owner)});
+  await Promise.all(Array.from({length:Math.min(4,clean.length)},worker));
+  let revision=await getRevision(env,owner);
+  if(refreshed){revision++;await setSetting(env,owner,"revision",String(revision))}
+  return json({ok:true,refreshed,skipped,failed,truncated:Array.isArray(ids)&&ids.length>12,revision});
 }
 async function healthBatch(env,ids){
   const clean=[...new Set((Array.isArray(ids)?ids:[]).map(String))].slice(0,12);
@@ -164,9 +253,39 @@ async function healthBatch(env,ids){
   const results=await Promise.all(rows.map(checkSiteHealth));
   return json({ok:true,results});
 }
-function validateSnapshot(body){const cats=Array.isArray(body?.categories)?body.categories:[],sites=Array.isArray(body?.sites)?body.sites:[];const seen=new Map(),dups=[];for(const s of sites){const n=normalizeUrl(s?.url);if(!n)continue;if(seen.has(n))dups.push({url:n,a:seen.get(n),b:s.id});else seen.set(n,s.id)}return {cats,sites,dups}}
-function incomingCategory(c){const name=String(c?.name||"").trim();if(!name)return null;return {name,icon:String(c?.icon||"•"),sort_order:Number(c?.sortOrder)||0,is_builtin:c?.isBuiltin?1:0}}
-function incomingSite(s){const id=String(s?.id||"").trim(),n=normalizeUrl(s?.url);if(!id||!n)return null;const d=domainOf(n);return {id,name:String(s?.name||d),url:n,normalized_url:n,domain:d,root_domain:rootDomain(d),full_title:String(s?.fullTitle||s?.name||d),category_name:String(s?.category||V17_CATEGORIES[0].name),sort_order:Number(s?.sortOrder)||0,is_favorite:s?.isFavorite?1:0,is_deleted:s?.isDeleted?1:0,is_custom:s?.isCustom?1:0,icon_url:String(s?.iconUrl||"")}}
+function validateSnapshot(body){
+  const fail=error=>({cats:[],sites:[],dups:[],error});
+  if(!body||typeof body!=="object"||Array.isArray(body))return fail("Snapshot must be a JSON object.");
+  if(!Array.isArray(body.categories)||!Array.isArray(body.sites))return fail("Snapshot must include complete categories and sites arrays.");
+  if(body.categories.length<1||body.categories.length>200)return fail("Snapshot category count is invalid (expected 1–200).");
+  if(body.sites.length>5000)return fail("Snapshot contains too many sites (maximum 5000).");
+  if(!body.settings||typeof body.settings!=="object"||Array.isArray(body.settings))return fail("Snapshot must include a complete settings object.");
+  const cats=[],sites=[],categoryNames=new Set(),siteIds=new Set(),seenUrls=new Map(),dups=[];
+  for(let i=0;i<body.categories.length;i++){
+    const c=body.categories[i],name=String(c?.name||"").trim();
+    if(!c||typeof c!=="object"||!name||name.length>64)return fail(`Invalid category at position ${i+1}.`);
+    if(categoryNames.has(name))return fail(`Duplicate category name: ${name}`);
+    if(c.icon!==undefined&&String(c.icon).length>128)return fail(`Category icon is too long: ${name}`);
+    const sort=Number(c.sortOrder??c.sort_order??0);if(!Number.isFinite(sort)||Math.abs(sort)>1000000)return fail(`Invalid category sort order: ${name}`);
+    const builtin=c.isBuiltin??c.is_builtin;if(builtin!==undefined&&![true,false,0,1].includes(builtin))return fail(`Invalid built-in flag: ${name}`);
+    categoryNames.add(name);cats.push(c);
+  }
+  for(let i=0;i<body.sites.length;i++){
+    const site=body.sites[i],id=String(site?.id||"").trim(),url=normalizeUrl(site?.url),category=String(site?.category_name??site?.category??"").trim();
+    if(!site||typeof site!=="object"||!id||id.length>180)return fail(`Invalid site ID at position ${i+1}.`);
+    if(siteIds.has(id))return fail(`Duplicate site ID: ${id}`);
+    if(!url)return fail(`Invalid HTTP/HTTPS URL for site ${id}.`);
+    if(String(site?.name||"").length>240||String(site?.fullTitle??site?.full_title??"").length>500)return fail(`Site text is too long: ${id}`);
+    if(!category||!categoryNames.has(category))return fail(`Site ${id} references a missing category.`);
+    const sort=Number(site.sortOrder??site.sort_order??0);if(!Number.isFinite(sort)||Math.abs(sort)>1000000)return fail(`Invalid site sort order: ${id}`);
+    for(const [camel,snake] of [["isFavorite","is_favorite"],["isDeleted","is_deleted"],["isCustom","is_custom"]]){const flagValue=site[camel]??site[snake];if(flagValue!==undefined&&![true,false,0,1].includes(flagValue))return fail(`Invalid ${camel} flag for site ${id}.`)}
+    if(seenUrls.has(url))dups.push({url,a:seenUrls.get(url),b:id});else seenUrls.set(url,id);
+    siteIds.add(id);sites.push(site);
+  }
+  return {cats,sites,dups,error:""};
+}
+function incomingCategory(c){const name=String(c?.name||"").trim();if(!name)return null;return {name,icon:String(c?.icon||"•"),sort_order:Number(c?.sortOrder??c?.sort_order)||0,is_builtin:(c?.isBuiltin??c?.is_builtin)?1:0}}
+function incomingSite(s){const id=String(s?.id||"").trim(),n=normalizeUrl(s?.url);if(!id||!n)return null;const d=domainOf(n);return {id,name:String(s?.name||d),url:n,normalized_url:n,domain:d,root_domain:rootDomain(d),full_title:String(s?.fullTitle??s?.full_title??s?.name??d),category_name:String(s?.category_name??s?.category??V17_CATEGORIES[0].name),sort_order:Number(s?.sortOrder??s?.sort_order)||0,is_favorite:(s?.isFavorite??s?.is_favorite)?1:0,is_deleted:(s?.isDeleted??s?.is_deleted)?1:0,is_custom:(s?.isCustom??s?.is_custom)?1:0,icon_url:String(s?.iconUrl??s?.icon_url??"")}}
 function sameCategory(a,b){return !!a&&String(a.icon||"•")===b.icon&&Number(a.sort_order||0)===b.sort_order&&Number(a.is_builtin||0)===b.is_builtin}
 function sameSite(a,b){return !!a&&String(a.name||"")===b.name&&String(a.url||"")===b.url&&String(a.normalized_url||"")===b.normalized_url&&String(a.domain||"")===b.domain&&String(a.root_domain||"")===b.root_domain&&String(a.full_title||"")===b.full_title&&String(a.category_name||"")===b.category_name&&Number(a.sort_order||0)===b.sort_order&&Number(a.is_favorite||0)===b.is_favorite&&Number(a.is_deleted||0)===b.is_deleted&&Number(a.is_custom||0)===b.is_custom&&String(a.icon_url||"")===b.icon_url}
 // V19.68: an optimistic revision gate executes inside the SAME D1 batch as all writes.
@@ -199,22 +318,27 @@ async function planSnapshotDiff(env,owner,cats,sites,ui,options={}){
   const inCatNames=new Set(inCats.map(r=>r.name)),inSiteIds=new Set(inSites.map(r=>r.id));
   const categoryUpserts=inCats.filter(r=>!sameCategory(catMap.get(r.name),r));
   const authorizedBuiltinDeletes=new Set((Array.isArray(options?.deleteBuiltinCategories)?options.deleteBuiltinCategories:[]).map(String));
-  const categoryDeletes=dbCats.filter(r=>!inCatNames.has(String(r.name))&&(Number(r.is_builtin)===0||authorizedBuiltinDeletes.has(String(r.name))));
+  // A regular sync never physically deletes omitted sites. Keep a category if an
+  // omitted site would otherwise be left pointing at a category we remove.
+  const omittedSiteCategoryRefs=options.allowSiteDeletes===true?new Set():new Set(dbSites.filter(r=>!inSiteIds.has(String(r.id))).map(r=>String(r.category_name||"")));
+  const categoryDeletes=dbCats.filter(r=>!inCatNames.has(String(r.name))&&!omittedSiteCategoryRefs.has(String(r.name))&&(Number(r.is_builtin)===0||authorizedBuiltinDeletes.has(String(r.name))));
   const siteUpserts=inSites.filter(r=>!sameSite(siteMap.get(r.id),r));
-  const siteDeletes=dbSites.filter(r=>Number(r.is_custom)!==0&&!inSiteIds.has(String(r.id)));
+  const siteDeletes=options.allowSiteDeletes===true?dbSites.filter(r=>Number(r.is_custom)!==0&&!inSiteIds.has(String(r.id))):[];
   const uiJson=JSON.stringify(ui||{}),oldUi=await getSetting(env,owner,"ui");
   return {categoryUpserts,categoryDeletes,siteUpserts,siteDeletes,forbiddenIds,uiJson,settingsChanged:String(oldUi??"")!==uiJson,structuralChanged:categoryUpserts.length>0||categoryDeletes.length>0||siteUpserts.length>0||siteDeletes.length>0};
 }
-async function syncSnapshot(env,owner,body){
-  const {cats,sites,dups}=validateSnapshot(body);if(dups.length)return json({ok:false,error:"Duplicate URL detected.",duplicates:dups},409);
+async function syncSnapshot(env,owner,body,{allowSiteDeletes=false}={}){
+  const {cats,sites,dups,error:validationError}=validateSnapshot(body);if(validationError)return json({ok:false,error:validationError},400);if(dups.length)return json({ok:false,error:"Duplicate URL detected.",duplicates:dups},409);
   // Never remove categories when the incoming snapshot is empty or still references them.
   const names=new Set(cats.map(c=>String(c?.name||"").trim()).filter(Boolean));
   if(!names.size)return json({ok:false,error:"At least one category must remain."},400);
   if(sites.some(s=>!names.has(String(s?.category_name??s?.category??""))))
     return json({ok:false,error:"A site references a deleted category; migrate sites before deleting the category."},400);
-  const current=await getRevision(env,owner),base=Math.max(0,Number(body?.baseRevision)||0),force=body?.force===true;if(!force&&base!==current)return json({ok:false,error:"Revision conflict.",revision:current},409);
-  const ui=body?.settings&&typeof body.settings==="object"?body.settings:{};
-  const plan=await planSnapshotDiff(env,owner,cats,sites,ui,body);
+  const current=await getRevision(env,owner),base=Number(body?.baseRevision);if(!Number.isInteger(base)||base<0)return json({ok:false,error:"A valid baseRevision is required.",revision:current},400);if(base!==current)return json({ok:false,error:"Revision conflict. Refresh from D1 before saving.",revision:current},409);
+  const ui=body.settings;
+  const uiJson=JSON.stringify(ui);
+  if(new TextEncoder().encode(uiJson).byteLength>1800000)return json({ok:false,error:"Snapshot settings exceed the safe 1.8MB D1 row limit."},413);
+  const plan=await planSnapshotDiff(env,owner,cats,sites,ui,{...body,allowSiteDeletes});
   if(plan.forbiddenIds.length)return json({ok:false,error:"Permanently deleted site IDs cannot be restored by an old snapshot. Refresh from D1.",revision:current,purgedIds:plan.forbiddenIds},409);
   if(!plan.structuralChanged&&!plan.settingsChanged)return json({ok:true,revision:current,unchanged:true,writes:0});
   // A single D1 batch is one SQL transaction. No KV/backup side effects before commit.
@@ -370,7 +494,42 @@ async function maybeAutoMaintenance(context,env,owner){
 }
 function kvIconResponse(value,metadata={}){const type=metadata?.contentType||"image/png";return new Response(value,{headers:{"Content-Type":type,"Cache-Control":"public, max-age=86400, stale-while-revalidate=604800","X-Content-Type-Options":"nosniff"}})}
 function fallbackSvg(name){const ch=String(name||"?").trim().charAt(0).toUpperCase()||"?";return `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#7187ff"/><stop offset="1" stop-color="#a45cf6"/></linearGradient></defs><rect width="128" height="128" rx="28" fill="url(#g)"/><text x="64" y="80" text-anchor="middle" font-family="Arial,sans-serif" font-size="64" font-weight="700" fill="white">${ch.replace(/[<>&]/g,"")}</text></svg>`}
-async function fetchCandidate(url){const ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),3500);try{const r=await fetch(url,{redirect:"follow",signal:ctl.signal,headers:{"User-Agent":"Mozilla/5.0"}});if(!r.ok)return null;const ct=(r.headers.get("content-type")||"").split(";")[0].trim();if(!ct.startsWith("image/"))return null;const buf=await r.arrayBuffer();if(buf.byteLength<350||buf.byteLength>MAX_ICON_BYTES)return null;return {buf,type:ct}}catch{return null}finally{clearTimeout(t)}}
+async function fetchCandidate(url){
+  // Recheck every redirect target; never let fetch() auto-follow to a private host.
+  const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),3500);
+  try{
+    let current=checkedRemoteUrl(url);
+    if(!current)return null;
+    for(let hop=0;hop<=3;hop++){
+      const response=await fetch(current.href,{redirect:"manual",signal:ctl.signal,headers:{"User-Agent":"Mozilla/5.0","Accept":"image/png,image/jpeg,image/webp,image/gif,image/x-icon,*/*;q=0.1"}});
+      if(response.status>=300&&response.status<400){
+        const next=response.headers.get("location");
+        if(!next||hop===3){try{await response.body?.cancel()}catch{}return null}
+        const target=checkedRemoteUrl(new URL(next,current).href);
+        try{await response.body?.cancel()}catch{}
+        if(!target)return null;
+        current=target;continue;
+      }
+      if(!response.ok)return null;
+      const ct=(response.headers.get("content-type")||"").split(";")[0].trim().toLowerCase();
+      if(!["image/png","image/jpeg","image/webp","image/gif","image/x-icon","image/vnd.microsoft.icon"].includes(ct))return null;
+      const declared=Number(response.headers.get("content-length"));
+      if(Number.isFinite(declared)&&declared>MAX_ICON_BYTES)return null;
+      if(!response.body)return null;
+      const reader=response.body.getReader(),chunks=[];let count=0;
+      while(true){const {value,done}=await reader.read();if(done)break;
+        count+=value.byteLength;
+        if(count>MAX_ICON_BYTES){await reader.cancel().catch(()=>{});return null}
+        chunks.push(value);
+      }
+      if(count<100)return null;
+      const out=new Uint8Array(count);let offset=0;
+      for(const chunk of chunks){out.set(chunk,offset);offset+=chunk.byteLength}
+      return {buf:out.buffer,type:ct};
+    }
+    return null;
+  }catch{return null}finally{clearTimeout(timer)}
+}
 function faviconHost(site){return domainOf(site?.url)||String(site?.domain||"").toLowerCase().replace(/^www\./,"")}
 function faviconCacheKeyV186(site){const host=faviconHost(site);return host?`favicon:v2:${host}`:""}
 function legacyFaviconKeyV186(site){const root=site?.root_domain||rootDomain(site?.domain);return root?`favicon:${root}`:""}
@@ -401,7 +560,7 @@ async function serveIcon(env,site){
 
   const sources=[];
   if(site.icon_url&&/^https?:\/\//i.test(site.icon_url)){
-    try{const u=new URL(site.icon_url);if(!privateHost(u.hostname))sources.push(u.href)}catch{}
+    try{const u=new URL(site.icon_url);if(checkedRemoteUrl(u.href))sources.push(u.href)}catch{}
   }
   sources.push(
     `https://www.google.com/s2/favicons?sz=256&domain_url=${encodeURIComponent(site.url)}`,
@@ -466,6 +625,109 @@ async function buildDisasterBackupV1860(env,owner){
   };
 }
 
+const MAX_DISASTER_IMPORT_BYTES_V1971=20*1024*1024;
+function decodeDisasterIconV1971(item){
+  const allowed=new Set(["image/png","image/jpeg","image/webp","image/gif","image/x-icon","image/vnd.microsoft.icon"]);
+  const type=String(item?.contentType||"").toLowerCase();
+  if(!allowed.has(type))throw new Error(`Unsupported custom icon type: ${type||"unknown"}`);
+  const encoded=String(item?.dataBase64||"");
+  if(!encoded||encoded.length>Math.ceil(MAX_ICON_BYTES*4/3)+8||encoded.length%4!==0||!/^[A-Za-z0-9+/]*={0,2}$/.test(encoded))throw new Error("Custom icon base64 data is invalid.");
+  let binary;try{binary=atob(encoded)}catch{throw new Error("Custom icon base64 data cannot be decoded.")}
+  const bytes=Uint8Array.from(binary,ch=>ch.charCodeAt(0));
+  if(!bytes.length||bytes.length>MAX_ICON_BYTES)throw new Error("Each custom icon must be 1MB or smaller.");
+  if(Number(item?.byteLength)!==bytes.length)throw new Error("Custom icon byte length does not match its data.");
+  const b=bytes;
+  const png=b.length>=8&&b[0]===137&&b[1]===80&&b[2]===78&&b[3]===71&&b[4]===13&&b[5]===10&&b[6]===26&&b[7]===10;
+  const jpeg=b.length>=3&&b[0]===255&&b[1]===216&&b[2]===255;
+  const webp=b.length>=12&&String.fromCharCode(...b.slice(0,4))==="RIFF"&&String.fromCharCode(...b.slice(8,12))==="WEBP";
+  const gif=b.length>=6&&["GIF87a","GIF89a"].includes(String.fromCharCode(...b.slice(0,6)));
+  const ico=b.length>=4&&b[0]===0&&b[1]===0&&b[2]===1&&b[3]===0;
+  const valid=(type==="image/png"&&png)||(type==="image/jpeg"&&jpeg)||(type==="image/webp"&&webp)||(type==="image/gif"&&gif)||((type==="image/x-icon"||type==="image/vnd.microsoft.icon")&&ico);
+  if(!valid)throw new Error(`Custom icon signature does not match ${type}.`);
+  return {type,bytes};
+}
+function bulkCategoryInsertV1971(env,rows){
+  if(!rows.length)return [];
+  // One JSON binding avoids D1's 100 bound-parameter-per-query ceiling.
+  return [env.DB.prepare(`INSERT INTO categories_v17(name,icon,sort_order,is_builtin,updated_at)
+    SELECT json_extract(value,'$.name'),COALESCE(json_extract(value,'$.icon'),'•'),COALESCE(json_extract(value,'$.sort_order'),0),COALESCE(json_extract(value,'$.is_builtin'),0),CURRENT_TIMESTAMP
+    FROM json_each(?)`).bind(JSON.stringify(rows))];
+}
+function bulkSiteInsertV1971(env,rows){
+  if(!rows.length)return [];
+  // The full site array is passed as one JSON value; D1 applies its row limits,
+  // while the restore handler checks the encoded size before building the batch.
+  return [env.DB.prepare(`INSERT INTO sites_v17(id,name,url,normalized_url,domain,root_domain,full_title,category_name,sort_order,is_favorite,is_deleted,is_custom,icon_url,icon_key,visit_count,last_visited_at,created_at,updated_at)
+    SELECT json_extract(value,'$.id'),json_extract(value,'$.name'),json_extract(value,'$.url'),json_extract(value,'$.normalized_url'),json_extract(value,'$.domain'),json_extract(value,'$.root_domain'),json_extract(value,'$.full_title'),json_extract(value,'$.category_name'),COALESCE(json_extract(value,'$.sort_order'),0),COALESCE(json_extract(value,'$.is_favorite'),0),COALESCE(json_extract(value,'$.is_deleted'),0),COALESCE(json_extract(value,'$.is_custom'),0),COALESCE(json_extract(value,'$.icon_url'),''),json_extract(value,'$.icon_key'),COALESCE(json_extract(value,'$.visit_count'),0),json_extract(value,'$.last_visited_at'),COALESCE(json_extract(value,'$.created_at'),CURRENT_TIMESTAMP),CURRENT_TIMESTAMP
+    FROM json_each(?)`).bind(JSON.stringify(rows))];
+}
+async function restoreDisasterBackupV1971(env,owner,body){
+  if(!body||typeof body!=="object"||body.format!=="private-nav-disaster-backup")return json({ok:false,error:"This is not a supported full disaster backup."},400);
+  const d1=body.d1,kv=body.kv;
+  if(!d1||typeof d1!=="object"||!Array.isArray(d1.categories)||!Array.isArray(d1.sites)||!d1.settings||typeof d1.settings!=="object"||Array.isArray(d1.settings))return json({ok:false,error:"Full backup is missing required D1 data."},400);
+  if(!kv||typeof kv!=="object"||Array.isArray(kv)||!Array.isArray(kv.customIcons))return json({ok:false,error:"Full backup is missing required KV icon data."},400);
+  const rawIcons=kv.customIcons;
+  if(rawIcons.length>5000)return json({ok:false,error:"Too many custom icons in backup."},413);
+  const cats=d1.categories.map(c=>({name:c?.name,icon:c?.icon,sortOrder:c?.sort_order??c?.sortOrder,isBuiltin:Number(c?.is_builtin??c?.isBuiltin)!==0}));
+  const sites=d1.sites.map(site=>({id:site?.id,name:site?.name,url:site?.url,fullTitle:site?.full_title??site?.fullTitle,category:site?.category_name??site?.category,sortOrder:site?.sort_order??site?.sortOrder,isFavorite:Number(site?.is_favorite??site?.isFavorite)!==0,isDeleted:Number(site?.is_deleted??site?.isDeleted)!==0,isCustom:Number(site?.is_custom??site?.isCustom)!==0,iconUrl:site?.icon_url??site?.iconUrl}));
+  const validation=validateSnapshot({categories:cats,sites,settings:d1.settings});
+  if(validation.error)return json({ok:false,error:`Backup validation failed: ${validation.error}`},400);
+  if(validation.dups.length)return json({ok:false,error:"Backup contains duplicate URLs.",duplicates:validation.dups},409);
+  const siteIds=new Set(validation.sites.map(x=>String(x.id)));
+  const iconMap=new Map();let totalIconBytes=0;
+  for(const item of rawIcons){
+    const siteId=String(item?.siteId||"");if(!siteId||!siteIds.has(siteId))return json({ok:false,error:`Custom icon references an unknown site: ${siteId||"(empty)"}`},400);
+    if(iconMap.has(siteId))return json({ok:false,error:`Duplicate custom icon entry for site ${siteId}.`},400);
+    let decoded;try{decoded=decodeDisasterIconV1971(item)}catch(err){return json({ok:false,error:err.message||"Invalid custom icon."},400)}
+    totalIconBytes+=decoded.bytes.byteLength;if(totalIconBytes>MAX_DISASTER_EXPORT_BYTES)return json({ok:false,error:"Custom icon data exceeds the 12MB restore limit."},413);
+    iconMap.set(siteId,decoded);
+  }
+  const expectedCustomIcons=d1.sites.filter(site=>!!(site?.has_custom_icon||site?.hasCustomIcon)).length;
+  const missingIcons=Number(kv.missingCustomIcons),declaredBytes=Number(kv.totalBytes);
+  if(!Number.isInteger(missingIcons)||missingIcons<0||!Number.isInteger(declaredBytes)||declaredBytes<0)return json({ok:false,error:"Custom icon manifest totals are invalid."},400);
+  if(Number(kv.customIconCount)!==rawIcons.length||iconMap.size+missingIcons!==expectedCustomIcons||declaredBytes!==totalIconBytes)return json({ok:false,error:"Custom icon manifest is incomplete or inconsistent; refusing a partial restore."},400);
+  if(expectedCustomIcons&&!kv.enabled)return json({ok:false,error:"The backup reports custom icons but KV was not included; export a new complete backup."},400);
+  if(iconMap.size&&!env.KV)return json({ok:false,error:"This deployment has no KV binding; custom icons cannot be restored."},503);
+  const current=await getRevision(env,owner),base=Number(body.baseRevision);
+  if(!Number.isInteger(base)||base<0)return json({ok:false,error:"A current baseRevision is required for safe restore."},400);
+  if(base!==current)return json({ok:false,error:"Revision conflict. Refresh D1 before restoring this backup.",revision:current},409);
+  const allIds=[...siteIds];
+  const purgedRows=allIds.length?(await env.DB.prepare(`SELECT id FROM purged_sites_v1964 WHERE owner=? AND id IN (SELECT value FROM json_each(?))`).bind(owner,JSON.stringify(allIds)).all()).results||[]:[];
+  const purgedIds=purgedRows.map(r=>String(r.id));
+  if(purgedIds.length)return json({ok:false,error:"This backup contains permanently deleted site IDs and cannot revive them.",purgedIds},409);
+  const categoryRows=validation.cats.map(c=>incomingCategory(c)).filter(Boolean);
+  const siteRows=validation.sites.map(s=>{
+    const r=incomingSite(s);const source=d1.sites.find(x=>String(x?.id)===r.id)||{};
+    return {...r,icon_key:null,visit_count:Math.max(0,Number(source.visit_count)||0),last_visited_at:source.last_visited_at?String(source.last_visited_at):null,created_at:source.created_at?String(source.created_at):new Date().toISOString()};
+  });
+  const categoryJson=JSON.stringify(categoryRows),siteJson=JSON.stringify(siteRows),settingsJson=JSON.stringify(d1.settings);
+  const categoryJsonBytes=new TextEncoder().encode(categoryJson).byteLength;
+  const siteJsonBytes=new TextEncoder().encode(siteJson).byteLength;
+  const settingsJsonBytes=new TextEncoder().encode(settingsJson).byteLength;
+  if(categoryJsonBytes>1800000||siteJsonBytes>1800000||settingsJsonBytes>1800000)return json({ok:false,error:"D1 restore data exceeds the safe 1.8MB per-table payload limit."},413);
+  const backup=await buildBootstrap(env,owner,"pre-disaster-restore");
+  if(new TextEncoder().encode(JSON.stringify(backup)).byteLength>1800000)return json({ok:false,error:"Current D1 state is too large for an automatic pre-restore snapshot; export a full backup and reduce the data size before retrying."},413);
+  const oldRows=(await env.DB.prepare(`SELECT icon_key FROM sites_v17 WHERE icon_key IS NOT NULL AND icon_key LIKE 'custom:%'`).all()).results||[];
+  const oldKeys=oldRows.map(r=>String(r.icon_key||"")).filter(Boolean),newKeys=[],keyBySite=new Map();
+  try{
+    for(const [siteId,icon] of iconMap){const key=`custom:${owner}:${siteId}:${crypto.randomUUID()}`;await env.KV.put(key,icon.bytes,{metadata:{contentType:icon.type,kind:"custom"}});newKeys.push(key);keyBySite.set(siteId,key)}
+  }catch(err){if(env.KV)for(const key of newKeys)try{await env.KV.delete(key)}catch{}return json({ok:false,error:`KV icon restore failed before D1 changes: ${String(err?.message||err)}`},500)}
+  for(const row of siteRows)row.icon_key=keyBySite.get(row.id)||null;
+  if(new TextEncoder().encode(JSON.stringify(siteRows)).byteLength>1800000){if(env.KV)for(const key of newKeys)try{await env.KV.delete(key)}catch{}return json({ok:false,error:"Restored site rows exceed the safe 1.8MB D1 payload limit."},413)}
+  const nextRevision=current+1,stmts=[revisionGateV1968(env,owner,current),
+    env.DB.prepare(`INSERT INTO backups_v17(owner,revision,snapshot,created_at) VALUES(?,?,?,CURRENT_TIMESTAMP)`).bind(owner,current,JSON.stringify(backup)),
+    env.DB.prepare(`DELETE FROM backups_v17 WHERE owner=? AND id NOT IN (SELECT id FROM backups_v17 WHERE owner=? ORDER BY id DESC LIMIT ?)`).bind(owner,owner,BACKUP_KEEP),
+    env.DB.prepare(`DELETE FROM sites_v17`),env.DB.prepare(`DELETE FROM categories_v17`),
+    ...bulkCategoryInsertV1971(env,categoryRows),...bulkSiteInsertV1971(env,siteRows),
+    env.DB.prepare(`INSERT INTO settings_v17(owner,key,value,updated_at) VALUES(?,'ui',?,CURRENT_TIMESTAMP) ON CONFLICT(owner,key) DO UPDATE SET value=excluded.value,updated_at=CURRENT_TIMESTAMP`).bind(owner,settingsJson),
+    env.DB.prepare(`INSERT INTO settings_v17(owner,key,value,updated_at) VALUES(?,'revision',?,CURRENT_TIMESTAMP) ON CONFLICT(owner,key) DO UPDATE SET value=excluded.value,updated_at=CURRENT_TIMESTAMP`).bind(owner,String(nextRevision))
+  ];
+  try{await env.DB.batch(stmts)}catch(err){if(env.KV)for(const key of newKeys)try{await env.KV.delete(key)}catch{}if(String(err?.message||err).includes("sync_revision_guard_v1968"))return json({ok:false,error:"Revision conflict. Refresh D1 before restoring this backup.",revision:await getRevision(env,owner)},409);return json({ok:false,error:`D1 restore failed; transaction rolled back: ${String(err?.message||err)}`},500)}
+  let kvCleanupPending=0;
+  if(env.KV)for(const key of oldKeys)if(!newKeys.includes(key))try{await env.KV.delete(key)}catch{kvCleanupPending++}
+  return json({ok:true,revision:nextRevision,restored:{sites:siteRows.length,categories:categoryRows.length,customIcons:keyBySite.size,missingCustomIcons:Number(kv?.missingCustomIcons)||0},kvCleanupPending,preRestoreBackup:true});
+}
+
 export async function onRequest(context){const {request,env}=context;try{const url=new URL(request.url),mode=String(url.searchParams.get("mode")||"");
   if(mode==="healthz"&&request.method==="GET"){
     if(!env?.DB)return json({ok:false,db:false,kv:!!env?.KV,error:"Missing D1 binding: DB"},500);
@@ -486,8 +748,8 @@ export async function onRequest(context){const {request,env}=context;try{const u
 
   // Everything below mutates cloud state and therefore requires admin auth.
   const auth=await requireAuth(request,env);if(auth.error)return auth.error;
-  if(mode==="sync"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);return await syncSnapshot(env,auth.owner,await request.json())}
-  if(mode==="purge-sites"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);return await purgeDeletedSitesV1964(env,auth.owner,await request.json())}
+  if(mode==="sync"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);return await syncSnapshot(env,auth.owner,await readBoundedJsonV1972(request,2*1024*1024))}
+  if(mode==="purge-sites"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);return await purgeDeletedSitesV1964(env,auth.owner,await readBoundedJsonV1972(request,512*1024))}
   if(mode==="backups"&&request.method==="GET"){return await listBackups(env,auth.owner)}
   if(mode==="disaster-backup"&&request.method==="GET"){
     try{return json(await buildDisasterBackupV1860(env,auth.owner))}
@@ -496,10 +758,15 @@ export async function onRequest(context){const {request,env}=context;try{const u
   if(mode==="maintenance"&&request.method==="GET"){return json(await maintenanceReport(env,auth.owner,{clean:false}))}
   if(mode==="maintenance"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);return json(await maintenanceReport(env,auth.owner,{clean:true}))}
   if(mode==="backup-now"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);const rev=await getRevision(env,auth.owner);await backupSnapshot(env,auth.owner,rev);return json({ok:true,revision:rev})}
-  if(mode==="restore-backup"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);const body=await request.json();return await restoreBackup(env,auth.owner,Number(body?.id)||0)}
-  if(mode==="refresh-icons"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);const body=await request.json();return await refreshIcons(env,auth.owner,body?.ids)}
-  if(mode==="health"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);const body=await request.json();return await healthBatch(env,body?.ids)}
-  if(mode==="upload-icon"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);if(!env.KV)return json({ok:false,error:"Missing KV binding: KV"},500);const id=String(url.searchParams.get("site")||""),site=await env.DB.prepare(`SELECT id,icon_key FROM sites_v17 WHERE id=? LIMIT 1`).bind(id).first();if(!site)return json({ok:false,error:"Site not found."},404);const type=(request.headers.get("content-type")||"").split(";")[0].trim().toLowerCase(),allowed=new Set(["image/png","image/jpeg","image/webp","image/gif","image/x-icon","image/vnd.microsoft.icon"]);if(!allowed.has(type))return json({ok:false,error:"Only PNG/JPG/WebP/GIF/ICO are allowed."},415);const buf=await request.arrayBuffer();if(!buf.byteLength||buf.byteLength>MAX_ICON_BYTES)return json({ok:false,error:"Icon must be 1MB or smaller."},413);const key=`custom:${auth.owner}:${id}:${crypto.randomUUID()}`;await env.KV.put(key,buf,{metadata:{contentType:type,kind:"custom"}});await env.DB.prepare(`UPDATE sites_v17 SET icon_key=?,updated_at=? WHERE id=?`).bind(key,new Date().toISOString(),id).run();const rev=await getRevision(env,auth.owner)+1;await setSetting(env,auth.owner,"revision",String(rev));if(site.icon_key&&String(site.icon_key).startsWith("custom:")&&site.icon_key!==key)try{await env.KV.delete(site.icon_key)}catch{}return json({ok:true,revision:rev})}
-  if(mode==="reset-icon"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);const id=String(url.searchParams.get("site")||""),site=await env.DB.prepare(`SELECT icon_key FROM sites_v17 WHERE id=? LIMIT 1`).bind(id).first();if(!site)return json({ok:false,error:"Site not found."},404);if(env.KV&&site.icon_key&&String(site.icon_key).startsWith("custom:"))await env.KV.delete(site.icon_key);await env.DB.prepare(`UPDATE sites_v17 SET icon_key=NULL,updated_at=? WHERE id=?`).bind(new Date().toISOString(),id).run();const rev=await getRevision(env,auth.owner)+1;await setSetting(env,auth.owner,"revision",String(rev));return json({ok:true,revision:rev})}
+  if(mode==="restore-backup"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);const body=await readBoundedJsonV1972(request,512*1024);return await restoreBackup(env,auth.owner,Number(body?.id)||0)}
+  if(mode==="disaster-restore"&&request.method==="POST"){
+    if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);
+    const body=await readBoundedJsonV1972(request,MAX_DISASTER_IMPORT_BYTES_V1971);
+    return await restoreDisasterBackupV1971(env,auth.owner,body);
+  }
+  if(mode==="refresh-icons"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);const body=await readBoundedJsonV1972(request,512*1024);return await refreshIcons(env,auth.owner,body?.ids)}
+  if(mode==="health"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);const body=await readBoundedJsonV1972(request,512*1024);return await healthBatch(env,body?.ids)}
+  if(mode==="upload-icon"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);if(!env.KV)return json({ok:false,error:"Missing KV binding: KV"},500);const id=String(url.searchParams.get("site")||""),site=await env.DB.prepare(`SELECT id,icon_key FROM sites_v17 WHERE id=? LIMIT 1`).bind(id).first();if(!site)return json({ok:false,error:"Site not found."},404);const type=(request.headers.get("content-type")||"").split(";")[0].trim().toLowerCase(),allowed=new Set(["image/png","image/jpeg","image/webp","image/gif","image/x-icon","image/vnd.microsoft.icon"]);if(!allowed.has(type))return json({ok:false,error:"Only PNG/JPG/WebP/GIF/ICO are allowed."},415);const rawLength=request.headers.get("content-length");if(rawLength!==null&&Number(rawLength)>MAX_ICON_BYTES)return json({ok:false,error:"Icon must be 1MB or smaller."},413);let buf;try{const reader=request.body?.getReader();if(!reader)return json({ok:false,error:"Missing icon data."},400);let chunks=[],n=0;while(true){const {value,done}=await reader.read();if(done)break;n+=value.byteLength;if(n>MAX_ICON_BYTES){await reader.cancel().catch(()=>{});return json({ok:false,error:"Icon must be 1MB or smaller."},413)}chunks.push(value)}const data=new Uint8Array(n);let pos=0;for(const chunk of chunks){data.set(chunk,pos);pos+=chunk.byteLength}buf=data.buffer}finally{}if(!buf.byteLength)return json({ok:false,error:"Missing icon data."},400);const key=`custom:${auth.owner}:${id}:${crypto.randomUUID()}`;await env.KV.put(key,buf,{metadata:{contentType:type,kind:"custom"}});try{await env.DB.prepare(`UPDATE sites_v17 SET icon_key=?,updated_at=? WHERE id=?`).bind(key,new Date().toISOString(),id).run()}catch(error){try{await env.KV.delete(key)}catch{}throw error}const rev=await getRevision(env,auth.owner)+1;await setSetting(env,auth.owner,"revision",String(rev));if(site.icon_key&&String(site.icon_key).startsWith("custom:")&&site.icon_key!==key)try{await env.KV.delete(site.icon_key)}catch{}return json({ok:true,revision:rev})}
+  if(mode==="reset-icon"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);const id=String(url.searchParams.get("site")||""),site=await env.DB.prepare(`SELECT icon_key FROM sites_v17 WHERE id=? LIMIT 1`).bind(id).first();if(!site)return json({ok:false,error:"Site not found."},404);await env.DB.prepare(`UPDATE sites_v17 SET icon_key=NULL,updated_at=? WHERE id=?`).bind(new Date().toISOString(),id).run();if(env.KV&&site.icon_key&&String(site.icon_key).startsWith("custom:"))try{await env.KV.delete(site.icon_key)}catch{}const rev=await getRevision(env,auth.owner)+1;await setSetting(env,auth.owner,"revision",String(rev));return json({ok:true,revision:rev})}
   return json({ok:false,error:"Not found."},404)
-}catch(e){return json({ok:false,error:"V"+API_VERSION+" API error: "+String(e?.message||e)},500)}}
+}catch(e){return json({ok:false,error:"V"+API_VERSION+" API error: "+String(e?.message||e)},[400,413].includes(Number(e?.status))?Number(e.status):500)}}

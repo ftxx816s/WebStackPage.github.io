@@ -18,7 +18,7 @@
 </style>
 <script  id="app-meta-v1891"  data-module="script-01.js">
 
-window.FXNAV_APP=Object.freeze({version:"19.70",build:"V19.70",schemaVersion:3,channel:"stable"});
+window.FXNAV_APP=Object.freeze({version:"19.73",build:"V19.73",schemaVersion:3,channel:"stable"});
 
 </script>
 <script  id="theme-boot-v1867"  data-module="script-02.js">
@@ -47,7 +47,7 @@ window.FXNAV_APP=Object.freeze({version:"19.70",build:"V19.70",schemaVersion:3,c
     var supportsBackdrop=!!(window.CSS&&window.CSS.supports&&(
       window.CSS.supports("-webkit-backdrop-filter","blur(2px)")||
       window.CSS.supports("backdrop-filter","blur(2px)")));
-    if(isQQBrowser)root.classList.add("fx-qq-compat");
+    if(isQQBrowser){root.classList.add("fx-qq-compat");root.classList.add("fx-glass-fallback");}
     if(!supportsBackdrop)root.classList.add("fx-glass-fallback");
   }catch(e){root.classList.add("fx-glass-fallback");}
   root.classList.add("theme-booting");
@@ -3955,8 +3955,8 @@ html[data-theme="neon"] .tool-cluster{border-radius:14px}}
 <link rel="icon" type="image/png" sizes="64x64" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAPRElEQVR42u2aeYxdZ3nGf++3nHOvPR4vSYxjEhvHCZRgkgg7QS2QsSFAGsIabNSUpWWJWqhU1fQPQLTjQa0QrYpARah1KUsQLYxZGsoSkhRngJSI2pAFpw2BNGTzkrE99iz3nvMtb/84Z+yQmODECRA6r/Tpztx7dXSe533e93u+91yYi7mYi7mYi7mYi7mYi7n4tQlFZRg1wwwbReX/B+hhNduH1HEMwMPDakY3quU3kQxFpQF3NL79Ml187UUzK665SJePbtTugz/b+JDvnmjIrxi8ESQDfG+oWpPF/H4QXlhJflolOlBBqsXs72Fu7sEXgrtz9E+vfnq1caPabdskPakJ0GE1MiL5xgvGB3134fuD4a3euWJGYZLIjGYqhKCWaA21gSnSrdOEzSPf6F43PLTdjYxtiE9KAmbBf29d7ww33/9bUdhnj+cqRyH2FVOB9AR6CSpE+6JaGzS6suiTmJH8xx/6evEPw0PqRsYkPqkIGEbNFtBbX8jSOsYbvHerJ7SqosFXQD9DH+gBfYUK6AvMGKESTbWIUV/YvtRv2/qV8mNXrFW/daeEx3o/5pece1k/hBFE+yl8qlO41YdSVWUjPgoEhSAN6EqFShsSplXoqVKBrcnM5DpG6//pDa+pLt+6U8LatTv8k4KA7UPYDWMSv/P8/ub5zr90Ild19uIjEGjA19oQUWWlVqhnP1OoFIKIRMlSaUhB7Kdfs6l/2c6d68LaKx4bCfLLrvsbfrtaY735r0h20SHRIb2c6CvUYujlRv69DDMKPYFahBmUykK0kCxEq7m2RuhajSZe9tXPdL689oodfufWdeHXTgGKyrbbkCvY4bOzHx9Y6Dp+iVNZiNhBYeCkLt0FXSqU6ZyocpP5/oNKIYoQpVFD3ZBiolHtazLB+20Xvbn/sp1b14WhYXW/dgrYPqRuw5jEG16sI9HoX44duKW+feJut2d6N1EmWTzQ5bzTzuGZSy/g0GTB3sPT9MTRpyVChMpAZZTkIViIDlIhRKc5e2NyaUJFeNWNW7tXDw2rGxs5vt3hCSdgdKPaTdskjb1EL/j++L4brr33Ft0zvcdEpqXWSXppnKk4Tq2TnHXqSl593h+wsDibuw7MUGGpkCbjBmqrBAfRQ/JCsEouITsyhTWxI3WQ8PIdH+ped7wkyBPd9TeyzYy+aaPf/O3bd9wxMf6sipmgtrb9NEkvTVLpYeo8QT9PMtHfh3WRl1/wZjlz6cV6z/4etZjGEFka8C0BsWh6QfKQCkiOnDvGhkJ6fdVLb/9bv/14SLBPJPxh1ruPyqXpnr2v/pv9h+MrevVkHaK6KtQIYB0khaRCRilcgSrcdNe3KAasrDz9PA5VsdkJrBBNS4Brwbt2eYgOCTbn7KXIHfPaJRe+9zvff5+7i2F1jI3kX7oChs/+YTFy25r6Qq578amLBq9ZtNiEgSXG2vkwWfX46b3j3L/3ILabiKZPL01R6SGiThHyNNPVOM87/3KecdYm7j/Qp6dCtEJwkP0R0KSyLYmjysjatS4UcrjWdPH97ym+y6haNh377PCEEDDr0//8/B8uO4l5O1avPmn5qaeVqRw0tlwk6geUmTQjN/7gf/ns527SQ9M9tIz00zRBDxHyNFF7TFfjnL/uMs48+/XsPtinJ0KyQnLa9IDZUmgJCR5SKaRCcyydi14Pqqahfe8sb2VYDSOSn1ACFJUtw8jIiOSvXxJeaTx/11noVicbYjJqpMhIB/yAMG+J4SkrPXfu3cPw+77G+MQ0WmT6aZpaDxN1hhAOwOI1nPfc32PZ0tPYfThSCUQrjQJm16wSHKSuEAsIRpMuKHwg/o/XA+c/8I6l0w1i0SekBzwY/L9fFN5fGPeRKLJkJtQxJDVZG76NCAhkVSYO1CxftpiVZwwytv12rLNH3EmsJxhY/gIWn/Ua7tu/B+sDJ5+6hOmkRFGilSP9YJaE2CogWiU5TDS5jkv8shnTOZieY/8TtjysH5jHG/yX14etXXHvOlTXYaqqY0xiUoQUIFYQKsh9qA6AdZZU9nnp61az/kWrqKdqOtYjVY/Fyy5g+TNfj7dd5g2cwh27J7jvgXtYuMQipZAcBCdES9McLUQvRKONW/RCdJiY0OT1dagKW0iPuxNsT3cyMiL5qvXhU4Vzb9tXV3Ud1aYoJtYQaiEFIQZIQZg5DItWCWcOCU95ujD/FLjo0tUYNRD6LFy8ilXnXI4zUBYdis4i5g8u5Sf3TXL/+G4GT7ZIAcnqEWucXEuKOUpIcmqyINlxKtcwDxFFf3asZh4H8MowfGl9+Bfv3BvH67pOKi4ipAQxtitATkJvUll4hrDyeYIIpArSFKxavYSuUTrFIGc9ZxPWeKwkfOEoOl1cdyHdxUu5e/cMe/Y9wIKTLaZsu//smiXCC8kq2YkmD2o1kDimH3AnCn7bRsy530yf9c69dn+/rjL4TDO+NAasgiRIppG+my+suABiXxED4gRVMEYoC88z1r2culxEqnoYZ7FWKRxE44k6n25puXfPJKFzkAWnL6I3lVsFaLND+Fl/IGRH1i5KMru4RCpUDfKzO4E7EfDXD2HlvjDqvH/1/n6osuBTBm21NdtujYLYJttLzgK/AGINvhQ0ZYyBvfdNsPK3hhhY/FT2TfUwYtH2AlbAOyisJ2IpO5b79kxzcjnJ/NMX0O/nIztDshCNkq2oOlQ9QtaPArDt4bueeyzgRzB5+drsF/fS58vSv+JgHaqY1WeFrE32haMEQKuCAMUCyBlSBpsVSUJOgd0/PYXBUxYwNVMBFhGaZQQxYA04D4U1JOmS5nn27O+zsOzRPa1DFSBZNFkle7JaVV1SlDoVP8Fr/dfa7KcTIkBRESSPnq1FJn3BW3vp/qqqs4pPuQGf2+wbQBAQbdhIkBKEPmiGnCDUMLAIfnybcssPBskmE5OQpH0CYNpXoSGhVUJ0QjSecr5j/2Rk/sGEXWrJ4mwuBJ2HzSUwFT/O09wfMazmIfl49AQoKltAvnamFhMufLE0/pIDVVVnERe1AacioAravFhpsk0LQgUm7hVireSsLFgg3HOn8rkr4fCMkr2QgSzNUnnQXbckGAPeQi4ge0OWgslKcX3QwbQ3i/Q1yU0E8zE2+q/MHsoYkRMjYAvICJI/7etPzhd/yYF+3czygIyQkqKgYhByo4AUFesaVShgPYzflTnwE8+KdYbv39Bn7BrDwRklF0LMTbNUWiUdKQMQaYpKaMvBQlEq6oxKIbnXcS7l+M28yr6RDe0JcFgNI2gjwxM4DI2idhOSrjyzf1nXl58/RF1Fwac2WwlIWRRRMa1srWkz5o5mDpfxdDAnjXPwpB73/uh0Knqos/QFKmmGHZWF2rbevvX7VYFmj8Sisb11CXEehBJCB6pScj3oXZT8wWqTfSejWrCR8FDr+5gUsKtVYgrm7T3QIJhsILaZms2wMU19Y4SUFQNoEiwQSJRSkIvD+s/f+rDef2hcL33+uyn8CnO47ku0hkhzzfSg6x5prNq01tkqa6sK0/r5wqiRGII9yW+2VwWZeaVsZlRtc0cnoIC28elnVuji6Vzfka09KUhK2SBZWvBytM5bjaoRFRXFOEElUZYd1XIyfem2TxYHpqbwxqI2ce55l2M7K8Ohqm9qaySYJvOhnfqkdgqUO83gI86uElIXYgdSp/2/FM3zSHGJL6o6frB3sX/nIx2Fj8sJbmlJioEFBOnmkMkBNDadPCfIsRlsqAqqQo5ZNDUNMKaMtZ1Uc9he+9/fKOrpTn95+Ywdi9zTrnJhwXW33vzFff3+Pm+7HZtFcxKICqlpJSRAzc8qDTmaOdP6DKNgUDFZnZ0MtV/oNhf/Ub+LTZIaJZygAj5yig5IDD9Sa5cFG7PaZlNVo2Cbm5y9I5GmDFQSvuxEilCM3f3lQwcPTf79GQvOvfKT48+5Y/b6axk+ed7SFa8/dc2rRkJnyeB0rEMsxCan7YGnOeXl9tyfy0YJudNmvwDtNH0hlaAdIZWqsWO06iDBunPDC2TXsVzgcSlAEB1F7Z88IFMx8h0XjeSalGtFozbZD+1pr/X8KUFMqoYiZbS48e5rr75j34/Wfav6w79owctGRi0Mm50yMv7tfW/50OGDu16QbbxTy8InySlLc6hJBrKFbEBt+/fsNmlBraBG0FYdSrtZpJxd11kT6ysAuP7YWI/rMLStffXJfyCEpBLF5EDWCDk0S8Ns9xJSkijZSlb1tzzw3b8e3fey372N9/x4iO1umGED6DY2JRjJKHLF2h3+6h9ceEv08cVq00/FlT4ZTVEaa5uNNH7fQGrfS+ao6croUd/QGi8REQKq1p4PwHrSCRAgaSNq3z4jO0PIf9aN3kkwLgeNJJIksiQykaRRo8++IFHtnbz/8it3P++9OqwGhs0YG+IIDxtQ6tad68LQkLqvfrF7Z/LxpdGl+7IvfbKkbIVklGjkiBrUCupmwbcGzDy0oFWyIllz91iToEd9HN6GpFHUbq6LD/djeouLZnx+KIsyFt7FwrlUuE4ufCcVhYZ0U11VGz64e8W/DqNORkTh509mAcbGJA4Nqdu+rXN7TXxJkrRbvfdRNCUDWbSVfwNerZCNNO+LgpEjbjMByUjOHs1wb2Nmjt0IH/VMcCNqtyHpA+hy59IbkuFFyepTsUQRc4dYc9XMxK7PjbCmnjVQj+b6Q0PqxsYkrnnj5Dn47rXZm6VBQshebC4ULYVcKlpALoRcKLkALYC2QcZSiE5jfXJRhJn0Zi50n2C7uiMO8USHog8FNrtTPPzUKPmxXH+WhLPfWp2XSvuNVNilQUJFoV4LyB0htzuDFs2YXEvIhTYPSTwhLC7Kuo63KO65XE/98yzxY54Kt4cjC+RZoKM0MtsEj+i+jouE9qnOGe+onq3z7Je0Y1eHHOpcquDFaKmSi4YILZrtMXtyKjSFhUUZTNqfU1rPhvKHP28LfBzH4ionCvjY9aaWbZJWvXvyKbXp/qPOs6/MHpLWqgVRC1RLQQuV5MWkAW/jIIScb85V701cPHDzI4H/lf9K7PgmMEcfaCz7q3BZKszbs8u/kxe4jnaa7CcHUROxI7tyYT6RJ+75KJtW9H6RDX5yEAAcmeS2W9kpH9Eza4nnxI6cllz2qWv20bG7ws7rb2Gk/eXYL8j8kzNG1T50rH0Msn7xd550CjhWWTwLYRfCeuB6YAsZeeThx1zMxVzMxVzMxVzMxVw8KP4PnlmuOYyKoWIAAAAASUVORK5CYII=">
 <link rel="shortcut icon" type="image/png" href="data:image/png;base64,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">
 
-<meta name="x-build" content="V19.70-20261028">
-<meta name="x-app-version" content="19.70">
+<meta name="x-build" content="V19.73-20261030">
+<meta name="x-app-version" content="19.73">
 
 <style data-module="style-03.css">
 :root{
@@ -8568,7 +8568,7 @@ html[data-theme="light"] body .login-error{color:#bb2b55!important;}
         <span class="console-divider"></span>
         <span class="console-item cache"><span class="k">CACHE</span><strong id="consoleCache">0 KB</strong></span>
         <span class="console-divider"></span>
-        <span class="console-item build"><span class="k">BUILD</span><strong>V19.70</strong></span>
+        <span class="console-item build"><span class="k">BUILD</span><strong>V19.73</strong></span>
         <span class="console-spacer"></span>
         <span class="console-activity">
           <span class="k">SYSTEM ACTIVITY</span>
@@ -8728,7 +8728,7 @@ html[data-theme="light"] body .login-error{color:#bb2b55!important;}
 
     <div id="fxD1LoadingV1946" class="fx-d1-loading-v1946" role="status">正在读取完整云端导航数据…</div>
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V19.70 版本</div>
+    <div class="footer">© 2026 私人导航工具箱 · V19.73 版本</div>
   </main>
 </div>
 
@@ -8834,8 +8834,10 @@ html[data-theme="light"] body .login-error{color:#bb2b55!important;}
           <button class="btn" type="button" id="exportBookmarksBtn">导出浏览器书签</button>
           <button class="btn" type="button" id="importBookmarksBtn">导入浏览器书签</button>
           <button class="btn primary" type="button" id="disasterBackupBtn">完整备份导出</button>
+          <button class="btn" type="button" id="disasterRestoreBtn">恢复完整备份</button>
         </div>
         <input type="file" id="importFile" accept="application/json" hidden>
+        <input type="file" id="disasterRestoreFile" accept="application/json,.json" hidden>
         <input type="file" id="importBookmarksFile" accept=".html,.htm,text/html" hidden>
       </div>
     </form>
@@ -10928,7 +10930,7 @@ function updateCounts(){
 /* V13 categories */
 function renderCategoryManager(){
   const box=$("#categoryManagerList");if(!box)return;box.innerHTML="";const cats=allCategories();$("#categoryManageCount").textContent=cats.length+" 个分类";
-  cats.forEach((cat,index)=>{const row=document.createElement("div");row.className="category-manager-item";row.draggable=true;row.dataset.category=cat.name;const drag=document.createElement("span");drag.className="category-drag";drag.textContent="⋮⋮";drag.title="拖拽调整分类顺序";const icon=document.createElement("span");icon.className="category-manager-icon";renderCategoryIcon(icon,cat.icon);const copy=document.createElement("div");copy.className="category-manager-copy";const b=document.createElement("b");b.textContent=cat.name;const sm=document.createElement("small");sm.textContent=`${cat.builtin?"内置分类":"自定义分类"} · ${categoryCount(cat.name)} 个网站`;copy.append(b,sm);const actions=document.createElement("div");actions.className="category-manager-actions";const up=document.createElement("button");up.className="cat-mini";up.textContent="↑";up.disabled=index===0;up.onclick=()=>moveCategoryStep(cat.name,-1);const down=document.createElement("button");down.className="cat-mini";down.textContent="↓";down.disabled=index===cats.length-1;down.onclick=()=>moveCategoryStep(cat.name,1);const iconBtn=document.createElement("button");iconBtn.className="cat-mini";iconBtn.textContent="图标";iconBtn.onclick=()=>editCategoryIcon(cat);actions.append(up,down,iconBtn);
+  cats.forEach((cat,index)=>{const row=document.createElement("div");row.className="category-manager-item";row.draggable=true;row.dataset.category=cat.name;const drag=document.createElement("span");drag.className="category-drag";drag.textContent="⋮⋮";drag.title="拖拽调整分类顺序";const icon=document.createElement("span");icon.className="category-manager-icon";renderCategoryIcon(icon,cat.icon);const copy=document.createElement("div");copy.className="category-manager-copy";const b=document.createElement("b");b.textContent=cat.name;const sm=document.createElement("small");sm.textContent=`${cat.builtin?"内置分类":"自定义分类"} · ${categoryCount(cat.name)} 个网站`;copy.append(b,sm);const actions=document.createElement("div");actions.className="category-manager-actions";const up=document.createElement("button");up.type="button";up.className="cat-mini";up.textContent="↑";up.disabled=index===0;up.onclick=()=>moveCategoryStep(cat.name,-1);const down=document.createElement("button");down.type="button";down.className="cat-mini";down.textContent="↓";down.disabled=index===cats.length-1;down.onclick=()=>moveCategoryStep(cat.name,1);const iconBtn=document.createElement("button");iconBtn.type="button";iconBtn.className="cat-mini";iconBtn.textContent="图标";iconBtn.onclick=()=>editCategoryIcon(cat);actions.append(up,down,iconBtn);
     const del=document.createElement("button");
     del.type="button";del.className="cat-mini danger";del.textContent="删除";
     del.title="删除分类前将该分类的全部网站迁移到保留分类，不删除网站";
@@ -11130,7 +11132,8 @@ function saveLocalLiquidToStatsV1927(){
 
 const V17_API="/api/data";
 const V17_CACHE_KEY="fxnav_v17_bootstrap_cache";
-const V17={revision:0,ready:false,syncing:false,suppress:false,pushTimer:0,lastSnapshot:"",pullTimer:0,lastWriteRows:0,lastPullAt:0,pullInFlight:false,resumeInFlight:false};
+const V17_CONFLICT_KEY_V1971="fxnav_sync_conflict_v1971";
+const V17={revision:0,ready:false,syncing:false,suppress:false,pushTimer:0,lastSnapshot:"",pullTimer:0,lastWriteRows:0,lastPullAt:0,pullInFlight:false,resumeInFlight:false,kvAvailable:null,conflict:!!STORE.get(V17_CONFLICT_KEY_V1971)};
 window.V17=V17;
 
 function v17Query(mode,extra={}){
@@ -11175,7 +11178,7 @@ async function confirmIconFromD1V1966(siteId,shouldBeCustom){
 }
 function v17IconUrl(row){const stamp=row.icon_version||row.iconVersion||row.updated_at||row.updatedAt||Date.now();return `/api/data?mode=icon&site=${encodeURIComponent(row.id)}&v=${encodeURIComponent(stamp)}`}
 function applyBootstrapV17(payload,{cache=true}={}){
-  if(!payload?.ok)return false;V17.suppress=true;
+  if(!payload?.ok)return false;V17.kvAvailable=typeof payload.kv==="boolean"?payload.kv:null;V17.suppress=true;
   try{
     const cats=Array.isArray(payload.categories)?payload.categories:[];
     const rows=Array.isArray(payload.sites)?payload.sites:[];
@@ -11190,6 +11193,11 @@ function applyBootstrapV17(payload,{cache=true}={}){
     state.favorites=new Set(rows.filter(r=>Number(r.is_favorite)!==0).map(r=>r.id));
     state.hiddenSites=new Set(rows.filter(r=>Number(r.is_deleted)!==0).map(r=>r.id));
     state.recents=Array.isArray(settings.recents)?settings.recents:[];
+    // Admin theme is an account preference: read D1 before rendering. Guest themes remain device-local.
+    if(payload.access!=="guest"&&payload.authenticated!==false&&["dark","light","neon","liquid","frosted"].includes(settings.theme)){
+      STORE.set(KEYS.theme,settings.theme);
+      document.documentElement.dataset.theme=settings.theme;
+    }
     // Merge last-edit-wins glass profile; never clobber more recent local adjustments.
     const __cloudStats=(settings.usageStats&&typeof settings.usageStats==='object'&&!Array.isArray(settings.usageStats))?settings.usageStats:{};
     const __remoteUi=(normalizeLiquidPrefsV1927(__cloudStats[LIQUID_UI_SYNC_KEY])||migrateLiquidPrefsV1926(__cloudStats[LIQUID_UI_LEGACY_SYNC_KEY]));
@@ -11209,7 +11217,7 @@ function applyBootstrapV17(payload,{cache=true}={}){
       V17.lastSnapshot=''; // Local change newer than server: send after bootstrap exits suppression.
       setTimeout(()=>{if(V17.ready&&!V17.suppress)window.__fxCloudSchedulePush?.()},500);
     }
-    setCloudStatus("synced","D1 已同步",`Cloudflare D1 SQLite 数据库 · 数据版本 ${V17.revision} · KV 图标缓存正常`);return true;
+    setCloudStatus("synced","D1 已同步",`Cloudflare D1 SQLite 数据库 · 数据版本 ${V17.revision} · ${V17.kvAvailable?"KV 图标已连接":"KV 图标未连接"}`);return true;
   }finally{V17.suppress=false}
 }
 function makeV17Snapshot(){
@@ -11219,10 +11227,10 @@ function makeV17Snapshot(){
     const iconUrl=String(site.iconUrl||"");const sourceIconUrl=iconUrl.startsWith("/api/")?(site._sourceIconUrl||""):iconUrl;
     return {id:site.id,name:site.name,url:site.url,fullTitle:site.fullTitle||site.name,category:effectiveCategory(site),sortOrder:Number(rankByCat[site.id]||0),isFavorite:state.favorites.has(site.id),isDeleted:state.hiddenSites.has(site.id),isCustom:!isBuiltinSite(site.id),iconUrl:sourceIconUrl};
   });
-  return {baseRevision:V17.revision,deleteBuiltinCategories:[...pendingBuiltinCategoryDeletesV1932],categories:cats.map((c,i)=>({name:c.name,icon:c.icon||"•",sortOrder:i,isBuiltin:!!c.builtin})),sites:siteRows,settings:{recents:state.recents.slice(0,30),usageStats:typeof getUsageStatsV157==="function"?getUsageStatsV157():{}}};
+  return {baseRevision:V17.revision,deleteBuiltinCategories:[...pendingBuiltinCategoryDeletesV1932],categories:cats.map((c,i)=>({name:c.name,icon:c.icon||"•",sortOrder:i,isBuiltin:!!c.builtin})),sites:siteRows,settings:{recents:state.recents.slice(0,30),usageStats:typeof getUsageStatsV157==="function"?getUsageStatsV157():{},theme:document.documentElement.dataset.theme||"light"}};
 }
 async function pushV17({force=false}={}){
-  if(!V17.ready||V17.suppress)return false;
+  if(!V17.ready||V17.suppress||V17.conflict)return false;
   if(V17.syncing){
     clearTimeout(V17.pushTimer);
     V17.pushTimer=setTimeout(()=>pushV17({force}),900);
@@ -11239,13 +11247,16 @@ async function pushV17({force=false}={}){
     try{
       res=await v17Request("sync","POST",{...sentSnap,force});
     }catch(err){
-      if(err.status===409&&err.payload?.revision){
-        V17.revision=Number(err.payload.revision)||V17.revision;
-        sentSnap=makeV17Snapshot();
-        res=await v17Request("sync","POST",{...sentSnap,force:true});
-      }else{
-        throw err;
+      if(err.status===409){
+        const conflictRecord={createdAt:new Date().toISOString(),baseRevision:Number(snap.baseRevision)||0,serverRevision:Number(err.payload?.revision)||0,snapshot:snap};
+        STORE.set(V17_CONFLICT_KEY_V1971,JSON.stringify(conflictRecord));
+        V17.conflict=true;
+        clearTimeout(V17.pushTimer);V17.pushTimer=0;
+        setCloudStatus("conflict","D1 数据冲突","检测到其他设备已修改云端数据。本机未同步修改已保留，自动同步已暂停，避免旧数据覆盖新数据。请先导出配置，再选择从云端刷新。");
+        toast("检测到多设备数据冲突：已暂停自动覆盖，本机修改仍保留");
+        return false;
       }
+      throw err;
     }
     V17.revision=Number(res.revision)||V17.revision;
     V17.lastWriteRows=Math.max(0,Number(res.writes)||0);
@@ -11267,11 +11278,17 @@ async function pushV17({force=false}={}){
     V17.syncing=false;
   }
 }
-function scheduleDataSyncV17(){if(!V17.ready||V17.suppress)return;clearTimeout(V17.pushTimer);setCloudStatus("syncing","D1 保存中…","本地已保存 · 准备写入 Cloudflare D1 SQLite 数据库");V17.pushTimer=setTimeout(()=>pushV17(),1200)}
+function scheduleDataSyncV17(){if(!V17.ready||V17.suppress||V17.conflict)return;clearTimeout(V17.pushTimer);setCloudStatus("syncing","D1 保存中…","本地已保存 · 准备写入 Cloudflare D1 SQLite 数据库");V17.pushTimer=setTimeout(()=>pushV17(),1200)}
 window.__fxCloudSchedulePush=scheduleDataSyncV17;
-async function refreshV17FromServer({quiet=false}={}){
-  try{const payload=await v17Request("bootstrap");V17.cachedOffline=false;V17.noDataFailure=false;if(Number(payload.revision)!==V17.revision||!V17.ready)applyBootstrapV17(payload);else if(!quiet)setCloudStatus("synced","D1 已同步",`Cloudflare D1 SQLite 数据库 · 数据版本 ${V17.revision}`);return true}
-  catch(err){if(err.status===401)showLoginGateV161("请登录后读取 D1 数据");else if(!quiet)setCloudStatus("error","D1 未连接",err.message||"无法读取 D1");return false}
+async function refreshV17FromServer({quiet=false,acceptRemote=false}={}){
+  if(V17.conflict&&AUTH_V161.authenticated&&!acceptRemote){if(!quiet)setCloudStatus("conflict","存在未解决的数据冲突","请先导出本机配置；确认放弃本机未同步修改后，再从云端刷新。");return false}
+  try{
+    const payload=await v17Request("bootstrap");V17.cachedOffline=false;V17.noDataFailure=false;
+    if(acceptRemote||Number(payload.revision)!==V17.revision||!V17.ready){if(!applyBootstrapV17(payload))throw new Error("云端数据未能应用到当前页面");}
+    if(AUTH_V161.authenticated||acceptRemote){V17.conflict=false;STORE.remove(V17_CONFLICT_KEY_V1971);}
+    if(!quiet)setCloudStatus("synced","D1 已同步",`Cloudflare D1 SQLite 数据库 · 数据版本 ${V17.revision}`);
+    return true;
+  }catch(err){if(err.status===401)showLoginGateV161("请登录后读取 D1 数据");else if(!quiet)setCloudStatus("error","D1 未连接",err.message||"无法读取 D1");return false}
 }
 const V17_PULL_COOLDOWN=15000;
 async function requestV17Refresh({quiet=true,force=false}={}){
@@ -11284,7 +11301,7 @@ async function requestV17Refresh({quiet=true,force=false}={}){
   try{return await refreshV17FromServer({quiet})}finally{V17.pullInFlight=false}
 }
 async function reconcileV17OnResume({forcePull=false}={}){
-  if(!AUTH_V161.authenticated||!navigator.onLine||V17.resumeInFlight)return false;
+  if(!AUTH_V161.authenticated||!navigator.onLine||V17.resumeInFlight||V17.conflict)return false;
   V17.resumeInFlight=true;
   try{
     if(V17.ready&&!V17.suppress){
@@ -11298,9 +11315,32 @@ function handleV17WindowFocus(){reconcileV17OnResume()}
 function handleV17VisibilityChange(){if(document.visibilityState==="visible")reconcileV17OnResume()}
 function handleV17Online(){setTimeout(()=>reconcileV17OnResume({forcePull:true}),120)}
 function handleV17PageShow(e){if(e.persisted)reconcileV17OnResume({forcePull:true})}
+function restorePendingConflictSnapshotV1971(){
+  const record=parseStored(V17_CONFLICT_KEY_V1971,null),snap=record?.snapshot;
+  if(!snap||!Array.isArray(snap.categories)||!Array.isArray(snap.sites)||!snap.settings||typeof snap.settings!=="object")return false;
+  const payload={
+    ok:true,revision:Number(record.baseRevision)||0,access:"admin",authenticated:true,
+    categories:snap.categories.map(c=>({name:String(c.name||""),icon:String(c.icon||"•"),sort_order:Number(c.sortOrder)||0,is_builtin:c.isBuiltin?1:0})),
+    sites:snap.sites.map(site=>({id:String(site.id||""),name:String(site.name||""),url:String(site.url||""),full_title:String(site.fullTitle||site.name||""),category_name:String(site.category||""),sort_order:Number(site.sortOrder)||0,is_favorite:site.isFavorite?1:0,is_deleted:site.isDeleted?1:0,is_custom:site.isCustom?1:0,icon_url:String(site.iconUrl||""),has_custom_icon:false,icon_version:"local-conflict"})),
+    settings:snap.settings
+  };
+  if(!applyBootstrapV17(payload,{cache:false}))return false;
+  if(Array.isArray(snap.deleteBuiltinCategories)){pendingBuiltinCategoryDeletesV1932.clear();snap.deleteBuiltinCategories.forEach(name=>pendingBuiltinCategoryDeletesV1932.add(String(name)));}
+  V17.conflict=true;
+  V17.revision=Number(record.baseRevision)||0;
+  V17.lastSnapshot=JSON.stringify(makeV17Snapshot());
+  return true;
+}
+
 async function initDataDrivenV17(){
-  setCloudStatus("syncing","D1 连接中…","正在读取 Cloudflare D1 SQLite 数据库");
-  const ok=await refreshV17FromServer();V17.lastPullAt=Date.now();if(!ok){const cached=parseStored(V17_CACHE_KEY,null);if(cached?.ok&&Array.isArray(cached.sites)&&cached.sites.length){V17.cachedOffline=true;applyBootstrapV17(cached,{cache:false});setCloudStatus("offline","本地缓存","暂时使用最近一次 D1 缓存")}else{V17.noDataFailure=true;const message=document.getElementById("fxD1LoadingV1946");if(message)message.textContent="D1 暂时不可用，未使用不完整的本地分类。请检查网络后刷新。"}}
+  if(V17.conflict&&AUTH_V161.authenticated){
+    const restored=restorePendingConflictSnapshotV1971();
+    setCloudStatus("conflict","存在未解决的数据冲突",restored?"已恢复本机未同步快照；自动同步已暂停。请先导出配置，再选择从云端刷新。":"检测到冲突标记，但本机快照无法恢复；请先导出当前配置并检查数据。");
+    V17.lastPullAt=Date.now();
+  }else{
+    setCloudStatus("syncing","D1 连接中…","正在读取 Cloudflare D1 SQLite 数据库");
+    const ok=await refreshV17FromServer();V17.lastPullAt=Date.now();if(!ok){const cached=parseStored(V17_CACHE_KEY,null);if(cached?.ok&&Array.isArray(cached.sites)&&cached.sites.length){V17.cachedOffline=true;applyBootstrapV17(cached,{cache:false});setCloudStatus("offline","本地缓存","暂时使用最近一次 D1 缓存")}else{V17.noDataFailure=true;const message=document.getElementById("fxD1LoadingV1946");if(message)message.textContent="D1 暂时不可用，未使用不完整的本地分类。请检查网络后刷新。"}}
+  }
   clearInterval(V17.pullTimer);V17.pullTimer=0;
   window.removeEventListener("focus",handleV17WindowFocus);
   document.removeEventListener("visibilitychange",handleV17VisibilityChange);
@@ -11484,6 +11524,7 @@ function setCloudStatus(mode,text,title=""){
 
 /* V19.46 · Hydrate a COMPLETE D1 snapshot before first render. No cloud write; V17.ready stays false. */
 function primeD1CacheV1946(){
+  if(STORE.get(V17_CONFLICT_KEY_V1971))return false;
   const payload=parseStored(V17_CACHE_KEY,null);
   if(!payload?.ok||!Array.isArray(payload.categories)||!Array.isArray(payload.sites)||!payload.categories.length||!payload.sites.length)return false;
   // Full snapshot validation prevents an empty/partial response replacing the navigation.
@@ -11553,7 +11594,7 @@ document.addEventListener("keydown",e=>{
   if(e.key==="Escape"&&!document.activeElement.matches("#searchInput,#compactSearchInput")){closeDrawer();$("#sidebar").classList.remove("show")}
 });
 
-/* V18.34: theme and density are device-local UI preferences; never schedule D1 writes. */
+/* V19.73: admin theme preference syncs to D1; guests keep local theme. Density is device-local. */
 function toggleThemeV153(){
   const root=document.documentElement;
   const current=root.dataset.theme||"dark";
@@ -11566,6 +11607,8 @@ function toggleThemeV153(){
   root.classList.add("theme-switching");
   root.dataset.theme=next;
   STORE.set(KEYS.theme,next);
+  // Persist chosen theme for this account when online; no server writes for guests.
+  if(AUTH_V161.authenticated&&V17.ready&&!V17.conflict)window.__fxCloudSchedulePush?.();
   updateThemeButton();
   syncCompactControls();
 
@@ -11864,6 +11907,39 @@ async function exportDisasterBackupV1860(){
   }finally{btns.forEach(b=>b.disabled=false)}
 }
 
+async function restoreDisasterBackupFileV1971(file){
+  if(!file)return;
+  if(!AUTH_V161.authenticated)return requestAdminV178(()=>restoreDisasterBackupFileV1971(file),"恢复完整备份会替换云端 D1 数据并恢复 KV 自定义图标，请先登录管理员。");
+  if(!V17.ready||V17.cachedOffline||!navigator.onLine)throw new Error("D1 当前未连接或仅有离线缓存，禁止执行完整备份恢复");
+  if(V17.conflict)throw new Error("当前存在多设备同步冲突。请先导出本机配置并处理冲突，再执行完整备份恢复。");
+  if(file.size>20*1024*1024)throw new Error("完整备份文件超过 20MB，无法恢复");
+  const payload=JSON.parse(await file.text());
+  if(payload?.format!=="private-nav-disaster-backup"||!Array.isArray(payload?.d1?.sites)||!Array.isArray(payload?.d1?.categories)||!Array.isArray(payload?.kv?.customIcons))throw new Error("文件不是有效的私人导航完整灾难备份");
+  const sites=payload.d1.sites.length,categories=payload.d1.categories.length,icons=payload.kv.customIcons.length;
+  const currentSites=rawSites().length,currentCategories=allCategories().length;
+  const message=`完整灾难备份恢复预览\n\n备份时间：${payload.createdAt||"未知"}\n备份版本：${payload.appVersion||payload.version||"未知"}\n\n当前数据：${currentSites} 个网站 / ${currentCategories} 个分类\n备份数据：${sites} 个网站 / ${categories} 个分类 / ${icons} 个自定义图标\n\n恢复将完整替换 D1 网站与分类数据，并恢复备份中包含的 KV 自定义图标。永久删除过的网站不会被旧备份复活。${Number(payload.kv?.missingCustomIcons)||0?`\n备份中有 ${Number(payload.kv.missingCustomIcons)} 个自定义图标在导出时已缺失，恢复后这些网站将使用默认图标。`:""}\n\n确认后会先自动下载当前完整备份，再由服务端创建 D1 快照。此操作会覆盖当前云端导航数据，确定继续吗？`;
+  if(!await uiConfirmV1821(message))return;
+  const buttons=[document.getElementById("disasterRestoreBtn"),document.getElementById("managerDisasterRestore")].filter(Boolean);buttons.forEach(b=>{b.disabled=true;b.dataset.oldText=b.textContent;b.textContent="恢复中…"});
+  try{
+    const safetyBackup=await v17Request("disaster-backup");
+    if(safetyBackup?.format!=="private-nav-disaster-backup")throw new Error("无法生成恢复前完整备份，已取消恢复");
+    const currentIconCount=(safetyBackup.d1?.sites||[]).filter(site=>!!site.has_custom_icon).length;
+    if(Number(safetyBackup.kv?.missingCustomIcons)>0||(!safetyBackup.kv?.enabled&&currentIconCount>0))throw new Error("恢复前备份检测到 KV 自定义图标缺失或 KV 未连接。为避免无法回滚，已取消恢复。");
+    const now=new Date(),pad=n=>String(n).padStart(2,"0"),stamp=`${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+    downloadJsonV1860(safetyBackup,`private-nav-pre-restore-v${window.FXNAV_APP?.version||"19.73"}-${stamp}.json`);
+    const result=await v17Request("disaster-restore","POST",{...payload,baseRevision:V17.revision});
+    const refreshed=await refreshV17FromServer({quiet:true,acceptRemote:true});if(!refreshed)throw new Error("服务端已完成恢复，但当前页面未能刷新；请重新加载页面核对 D1 数据");
+    const theme=payload.client?.theme;if(["dark","light","liquid","neon","frosted"].includes(theme)){STORE.set(KEYS.theme,theme);document.documentElement.dataset.theme=theme;applyTheme()}
+    const density=payload.client?.density;if(density==="compact"||density==="comfortable"){STORE.set(V157_DENSITY_KEY,density);applyDensityV157()}
+    const missing=Number(result.restored?.missingCustomIcons)||0;
+    toast(`完整备份恢复完成 · ${Number(result.restored?.sites)||sites} 个网站 · ${Number(result.restored?.customIcons)||0} 个自定义图标${missing?` · ${missing} 个缺失图标使用默认图标`:""}`);
+  }finally{buttons.forEach(b=>{b.disabled=false;b.textContent=b.dataset.oldText||"恢复完整备份";delete b.dataset.oldText})}
+}
+const disasterRestoreInputV1971=document.getElementById("disasterRestoreFile");
+disasterRestoreInputV1971?.addEventListener("change",async e=>{const file=e.target.files?.[0];try{if(file)await restoreDisasterBackupFileV1971(file)}catch(err){toast(err?.message||"完整备份恢复失败")}finally{e.target.value=""}});
+document.getElementById("disasterRestoreBtn")?.addEventListener("click",()=>disasterRestoreInputV1971?.click());
+
+
 $("#importBookmarksBtn").onclick=()=>$("#importBookmarksFile").click();
 $("#importBookmarksFile").addEventListener("change",async e=>{
   const file=e.target.files?.[0];
@@ -11882,7 +11958,7 @@ $("#importFile").addEventListener("change",async e=>{
   const file=e.target.files?.[0];if(!file)return;
   try{
     if(file.size>4*1024*1024)throw new Error("备份文件过大，拒绝导入");
-    const d=JSON.parse(await file.text());if(!d||typeof d!=="object")throw new Error("配置格式无效");const schema=Number(d.schemaVersion||1);if(schema>(window.FXNAV_APP?.schemaVersion||3))throw new Error(`该配置的数据结构版本为 ${schema}，高于当前支持版本 ${(window.FXNAV_APP?.schemaVersion||3)}，请使用更新版本导入`);
+    const d=JSON.parse(await file.text());if(!d||typeof d!=="object")throw new Error("配置格式无效");if(d.format==="private-nav-disaster-backup"||("d1" in d&&"kv" in d))throw new Error("这是完整灾难备份文件，不能使用“导入配置”。请使用旁边的“恢复完整备份”功能。");const schema=Number(d.schemaVersion||1);if(schema>(window.FXNAV_APP?.schemaVersion||3))throw new Error(`该配置的数据结构版本为 ${schema}，高于当前支持版本 ${(window.FXNAV_APP?.schemaVersion||3)}，请使用更新版本导入`);
     const incoming={
       custom:Array.isArray(d.custom)?d.custom.length:0,
       categories:Array.isArray(d.customCategories)?d.customCategories.length:0,
@@ -12738,10 +12814,11 @@ function updateAccessUIV178(){
   }
   const compact=$("#compactManageBtn");if(compact){compact.textContent=admin?"＋":"⌁";compact.title=admin?"管理导航":"管理员登录后管理导航"}
   const logout=$("#logoutBtn");if(logout)logout.hidden=!admin;
-  if(V17.cachedOffline)setCloudStatus("offline","本地缓存","当前使用本机保存的完整云端快照，未完成实时同步");
+  if(admin&&V17.conflict)setCloudStatus("conflict","存在未解决的数据冲突","本机未同步修改已保留；自动同步已暂停。请先导出配置，再决定从云端刷新。");
+  else if(V17.cachedOffline)setCloudStatus("offline","本地缓存","当前使用本机保存的完整云端快照，未完成实时同步");
   else if(V17.noDataFailure)setCloudStatus("error","D1 不可用","没有完整缓存，未显示不完整的本地分类");
   else if(!V17.ready)setCloudStatus("syncing",__cachedReadyV1946?"检查云端更新…":"D1 连接中…",__cachedReadyV1946?"已显示完整缓存，正在核对 D1 数据":"正在加载 Cloudflare D1 数据");
-  else if(admin)setCloudStatus("synced","D1 已同步","管理员模式 · Cloudflare D1 SQLite 可读写 · KV 图标可上传");
+  else if(admin)setCloudStatus("synced","D1 已同步",V17.kvAvailable?"管理员模式 · Cloudflare D1 SQLite 可读写 · KV 图标可上传":"管理员模式 · Cloudflare D1 SQLite 可读写 · KV 图标未连接");
   else setCloudStatus("synced","访客只读","无需登录即可浏览；修改操作仅管理员可用");
 }
 function closeLoginGateV178(){
@@ -12772,16 +12849,18 @@ async function silentAuthCheckV178(){
 }
 async function initPublicAdminV178(){
   setCloudStatus("syncing","载入导航…","正在读取公开导航数据");
-  // V19.68: start the session check and D1 bootstrap together instead of
-  // waiting for /api/state?mode=me before requesting /api/data?mode=bootstrap.
-  // D1 bootstrap's access flag is authoritative if the two responses race.
+  // A saved conflict marker must be resolved only after the session check;
+  // otherwise an admin's local pending snapshot could be replaced by guest bootstrap.
+  if(V17.conflict){
+    await silentAuthCheckV178();
+    await initDataDrivenV17();
+    updateAccessUIV178();
+    return;
+  }
+  // Normal startup keeps auth and public bootstrap in parallel for speed.
   const authJob=silentAuthCheckV178();
   let cloudAuthenticated=null;
-  const dataJob=initDataDrivenV17().then(()=>{
-    if(V17.ready&&!V17.cachedOffline&&!V17.noDataFailure){
-      cloudAuthenticated=!!AUTH_V161.authenticated;
-    }
-  });
+  const dataJob=initDataDrivenV17().then(()=>{if(V17.ready&&!V17.cachedOffline&&!V17.noDataFailure)cloudAuthenticated=!!AUTH_V161.authenticated});
   await Promise.allSettled([authJob,dataJob]);
   if(cloudAuthenticated!==null)AUTH_V161.authenticated=cloudAuthenticated;
   updateAccessUIV178();
@@ -12825,6 +12904,7 @@ const __doLoginBeforeV178=doLoginV161;
 doLoginV161=async function(username,password){
   const ok=await __doLoginBeforeV178(username,password);
   if(ok){
+    if(V17.conflict)restorePendingConflictSnapshotV1971();
     updateAccessUIV178();
     const pending=ADMIN_PENDING_V178;ADMIN_PENDING_V178=null;
     if(pending)setTimeout(()=>pending(),60);
@@ -13259,6 +13339,7 @@ updateAccessUIV178();
               <button class="btn" type="button" id="managerExportBookmarks">导出浏览器书签</button>
               <button class="btn" type="button" id="managerImportBookmarks">导入浏览器书签</button>
               <button class="btn primary" type="button" id="managerDisasterBackup">完整备份导出</button>
+              <button class="btn" type="button" id="managerDisasterRestore">恢复完整备份</button>
                 </div>
           </div>
           <div class="manager-data-card">
@@ -13272,6 +13353,7 @@ updateAccessUIV178();
         </div>
         <div class="manager-data-card manager-backup-card">
           <b>D1 版本恢复</b>
+          <p class="manager-backup-note">D1 快照恢复网站、分类和设置；如需恢复 KV 自定义图标，请使用上方“恢复完整备份”。</p>
           <div class="manager-backup-toolbar">
             <button class="btn primary" type="button" id="managerBackupNow">立即创建快照</button>
             <button class="btn" type="button" id="managerReloadBackups">刷新版本列表</button>
@@ -13330,16 +13412,20 @@ updateAccessUIV178();
 
     document.getElementById("managerSyncNow")?.addEventListener("click",async()=>{
       const btn=document.getElementById("managerSyncNow");if(btn)btn.disabled=true;
-      try{await pushV17({force:true});toast("已请求立即同步")}finally{if(btn)btn.disabled=false;renderDataPanel()}
+      try{if(V17.conflict){toast("存在未解决的数据冲突，请先导出配置并从云端刷新");return}const ok=await pushV17({force:true});if(ok)toast("已完成同步")}finally{if(btn)btn.disabled=false;renderDataPanel()}
     });
     document.getElementById("managerRefreshCloud")?.addEventListener("click",async()=>{
       const btn=document.getElementById("managerRefreshCloud");if(btn)btn.disabled=true;
-      try{await refreshV17FromServer({quiet:false});toast("已从 D1 刷新")}finally{if(btn)btn.disabled=false;renderDataPanel()}
+      try{
+        if(V17.conflict&&!await uiConfirmV1821(`当前浏览器存在未同步修改。请先使用“导出配置”保存本机副本。\n\n继续后将以 D1 云端数据覆盖当前浏览器中的未同步修改；本机副本文件仍可通过“导入配置”恢复。是否继续？`))return;
+        const ok=await refreshV17FromServer({quiet:false,acceptRemote:V17.conflict});if(ok)toast("已从 D1 刷新");
+      }finally{if(btn)btn.disabled=false;renderDataPanel()}
     });
     document.getElementById("managerExport")?.addEventListener("click",()=>document.getElementById("exportBtn")?.click());
     document.getElementById("managerExportBookmarks")?.addEventListener("click",()=>document.getElementById("exportBookmarksBtn")?.click());
     document.getElementById("managerImportBookmarks")?.addEventListener("click",()=>document.getElementById("importBookmarksBtn")?.click());
     document.getElementById("managerDisasterBackup")?.addEventListener("click",()=>document.getElementById("disasterBackupBtn")?.click());
+    document.getElementById("managerDisasterRestore")?.addEventListener("click",()=>document.getElementById("disasterRestoreBtn")?.click());
     document.getElementById("managerImport")?.addEventListener("click",()=>document.getElementById("importBtn")?.click());
     document.getElementById("managerGoSites")?.addEventListener("click",()=>setTab("sites"));
     document.getElementById("managerUpdateUsage")?.addEventListener("click",()=>{updateStorageUsage();renderDataPanel()});
@@ -16984,6 +17070,60 @@ html[data-theme="frosted"] body .fx-dialog-backdrop.show {
     -webkit-backdrop-filter:none!important;
   }
 }
+</style>
+
+<style id="fx-final-ui-v1972">
+/* V19.72: category actions fit from 320px up, without hiding content. */
+#drawer .category-manager-list{max-width:100%;min-width:0}
+#drawer .category-manager-item{min-width:0;max-width:100%;grid-template-columns:25px 31px minmax(0,1fr) auto}
+#drawer .category-manager-copy{min-width:0;overflow:hidden}
+#drawer .category-manager-actions{min-width:0;max-width:100%;display:flex;flex-wrap:wrap;gap:5px}
+#drawer .category-manager-actions .cat-mini{min-width:0;flex:0 0 auto;white-space:nowrap}
+@media(max-width:720px){
+  #drawer .category-manager-item{grid-template-columns:25px 31px minmax(0,1fr)!important;column-gap:8px!important;row-gap:8px!important;padding:10px 8px!important}
+  #drawer .category-manager-actions{grid-column:3!important;grid-row:2!important;justify-content:flex-start!important;width:100%;overflow:visible}
+  #drawer .category-manager-actions .cat-mini{font-size:11px;padding:0 8px;min-height:32px}
+  #drawer .category-manager-copy b{overflow-wrap:anywhere}
+  #drawer .category-manager-copy small{white-space:normal;overflow-wrap:anywhere}
+}
+@media(max-width:360px){
+  #drawer .category-manager-item{grid-template-columns:19px 27px minmax(0,1fr)!important;column-gap:6px!important}
+  #drawer .category-manager-actions .cat-mini{padding:0 6px}
+}
+/* Safe opaque modal fallbacks for browsers where blur/compositing is unreliable. */
+html.fx-glass-fallback .login-card,
+html.fx-glass-fallback .site-editor,
+html.fx-glass-fallback .category-icon-editor,
+html.fx-glass-fallback .fx-icon-library,
+html.fx-glass-fallback .fx-wallpaper-dialog,
+html.fx-glass-fallback .fx-dialog,
+html.fx-glass-fallback .command-panel{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+html.fx-glass-fallback:is([data-theme="dark"],[data-theme="neon"],[data-theme="frosted"]) :is(.login-card,.site-editor,.category-icon-editor,.fx-icon-library,.fx-wallpaper-dialog,.fx-dialog,.command-panel){background-color:#191e29!important}
+html.fx-glass-fallback[data-theme="light"] :is(.login-card,.site-editor,.category-icon-editor,.fx-icon-library,.fx-wallpaper-dialog,.fx-dialog,.command-panel){background-color:#f8faff!important;color:#19253b!important}
+html.fx-glass-fallback[data-theme="liquid"] :is(.login-card,.site-editor,.category-icon-editor,.fx-icon-library,.fx-wallpaper-dialog,.fx-dialog,.command-panel){background-color:#354253!important;color:#fff!important}
+@supports not (color:color-mix(in srgb,red 50%,blue)){
+  html[data-theme] .glass{border-color:var(--line)!important}
+  html[data-theme] :is(.drawer,.site-editor,.fx-dialog){color:var(--text)!important}
+}
+/* Premium black-and-champagne-gold accents: dark only, all other four themes untouched. */
+html[data-theme="dark"]{
+  --accent:#d4ae69;--accent2:#aa8346;--accent-soft:rgba(212,174,105,.13);
+  --fx-optical-line:rgba(218,185,128,.16);--fx-optical-top:rgba(255,226,172,.07);
+  --login-accent:#e1c28d;--login-focus:rgba(214,179,113,.43);
+  --login-button:linear-gradient(120deg,#e1bf7e,#af884b);--login-button-shadow:0 10px 25px rgba(176,125,50,.18);
+  --login-edge:rgba(218,185,128,.30);
+}
+html[data-theme="dark"] body :is(.btn.primary,.manager-tab.active,.fx-dialog-btn.primary,.login-submit,.site-editor .btn.primary){border-color:rgba(215,176,105,.30)!important}
+html[data-theme="dark"] body :is(.btn.primary,.fx-dialog-btn.primary){background:linear-gradient(120deg,#ddbd81,#af884c)!important;color:#21180e!important;text-shadow:none!important}
+html[data-theme="dark"] body :is(.manager-tab.active,.nav-btn.active){color:#f0d5a3!important}
+html[data-theme="dark"] body :is(.manager-tab.active,.card.glass:hover,.category-manager-item:hover){border-color:rgba(213,178,112,.24)!important}
+html[data-theme="dark"] body :is(.fx-dialog,.site-editor,.category-icon-editor,.fx-icon-library,.login-card,.command-panel){border-color:rgba(216,181,117,.22)!important}
+html[data-theme="dark"] body :is(.fx-dialog-accent,.fx-dialog-icon){color:#e2be79!important}
+html[data-theme="dark"] body :is(#themeBtn,#compactThemeBtn){color:#dfbf84!important}
+html[data-theme="dark"] body :is(.calendar-ref-monthline b,.calendar-ref-progress-head,.calendar-ref-selected-icon){color:#d6b77d!important}
+html[data-theme="dark"] body .calendar-ref-progress-track i{background:linear-gradient(90deg,#9d7640,#e1c287)!important}
+html[data-theme="dark"] body .calendar-day.today{background:linear-gradient(145deg,#e3c68d,#a47841)!important;color:#241a10!important}
+@media(prefers-reduced-motion:reduce){.category-manager-item,.manager-tab{transition:none!important}}
 </style>
 </body>
 </html>
