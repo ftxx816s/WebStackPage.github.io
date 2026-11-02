@@ -18,7 +18,7 @@
 </style>
 <script  id="app-meta-v1891"  data-module="script-01.js">
 
-window.FXNAV_APP=Object.freeze({version:"19.85",build:"V19.86",schemaVersion:3,channel:"stable"});
+window.FXNAV_APP=Object.freeze({version:"19.87",build:"V19.87",schemaVersion:3,channel:"stable"});
 
 </script>
 <script  id="theme-boot-v1867"  data-module="script-02.js">
@@ -9505,7 +9505,17 @@ function createSiteIcon(site,className="site-icon"){
           wrap.classList.add("favicon-mode");
           wrap.dataset.iconQuality=site._customIcon?"custom":"cached-hd";
         };
-        img.onerror=()=>showVector();
+        let customRetry=0;
+        const customRetryDelays=[700,1400,2800,5600,11200,20000];
+        img.onerror=()=>{
+          if(site._customIcon&&customRetry<customRetryDelays.length&&img.isConnected){
+            const delay=customRetryDelays[customRetry++];
+            const separator=fixedIcon.includes("?")?"&":"?";
+            setTimeout(()=>{if(img.isConnected)img.src=fixedIcon+separator+"retry="+Date.now()},delay);
+            return;
+          }
+          showVector();
+        };
         wrap.classList.add("icon-upgrading");
         wrap.append(img);
         img.src=fixedIcon;
@@ -11584,7 +11594,7 @@ async function pushV17({force=false}={}){
   if(!V17.ready||V17.suppress||V17.conflict)return false;
   if(V17.syncing){
     clearTimeout(V17.pushTimer);
-    V17.pushTimer=setTimeout(()=>pushV17({force}),900);
+    V17.pushTimer=setTimeout(()=>pushV17({force}),350);
     return false;
   }
   const snap=makeV17Snapshot();
@@ -11655,7 +11665,7 @@ async function pushV17({force=false}={}){
       // New edits arriving during the request remain in the pending queue.
       if(JSON.stringify(makeV17Snapshot())!==V17.lastSnapshot){
         savePendingV1985(makeV17Snapshot());
-        clearTimeout(V17.pushTimer);V17.pushTimer=setTimeout(()=>pushV17(),900);
+        clearTimeout(V17.pushTimer);V17.pushTimer=setTimeout(()=>pushV17(),350);
       }
     }
     setCloudStatus("synced","D1 已同步",`Cloudflare D1 SQLite 数据库 · 数据版本 ${V17.revision} · 本次增量写入 ${V17.lastWriteRows} 行`);
@@ -11671,7 +11681,7 @@ async function pushV17({force=false}={}){
 }
 function scheduleDataSyncV17(){if(!V17.ready||V17.suppress||V17.conflict)return;
   savePendingV1985(makeV17Snapshot());
-  clearTimeout(V17.pushTimer);setCloudStatus("syncing","D1 保存中…","本地已保存 · 准备写入 Cloudflare D1 SQLite 数据库");V17.pushTimer=setTimeout(()=>pushV17(),1200)}
+  clearTimeout(V17.pushTimer);setCloudStatus("syncing","D1 保存中…","本地已保存 · 准备写入 Cloudflare D1 SQLite 数据库");V17.pushTimer=setTimeout(()=>pushV17(),350)}
 window.__fxCloudSchedulePush=scheduleDataSyncV17;
 async function refreshV17FromServer({quiet=false,acceptRemote=false}={}){
   if(V17.conflict&&AUTH_V161.authenticated&&!acceptRemote){
@@ -11694,8 +11704,8 @@ async function refreshV17FromServer({quiet=false,acceptRemote=false}={}){
     return true;
   }catch(err){if(err.status===401)showLoginGateV161("请登录后读取 D1 数据");else if(!quiet)setCloudStatus("error","D1 未连接",err.message||"无法读取 D1");return false}
 }
-const V17_PULL_COOLDOWN=15000;
-const V17_LIVE_POLL_MS_V1985=20000;
+const V17_PULL_COOLDOWN=4000;
+const V17_LIVE_POLL_MS_V1985=5000;
 async function requestV17Refresh({quiet=true,force=false}={}){
   if(!navigator.onLine||V17.conflict||V17.syncing)return false;
   if(!force&&document.visibilityState==="hidden")return false;
@@ -13872,7 +13882,7 @@ updateAccessUIV178();
           </section>
           <section class="manager-data-card mgr86-advanced-card mgr86-maintenance-card">
             <h4>D1 / KV 存储维护</h4>
-            <p id="managerMaintenanceInfo">系统定期自动维护；可按需检查历史快照和孤儿图标。</p>
+            <p id="managerMaintenanceInfo">D1 保存网站、分类、收藏和设置；KV 保存自定义图标与 favicon 缓存。普通网站增删改写入 D1，上传或刷新图标时才会产生 KV 写入。本机修改约 350ms 提交，其他设备前台约每 5 秒检查更新。</p>
             <div class="mgr86-advanced-actions">
               <button class="btn" type="button" id="managerMaintenanceScan">立即扫描</button>
               <button class="btn" type="button" id="managerMaintenanceClean">安全清理</button>
@@ -14384,8 +14394,13 @@ updateAccessUIV178();
       window.updateManagerMaintenanceTrendV1821?.(result);
       const d1=result?.d1||{},kv=result?.kv||{},policy=result?.policy||{};
       const last=result?.lastMaintenance?fmtBackupTimeV181(result.lastMaintenance):"尚未记录";
-      const kvText=kv.enabled?`KV 自定义图标 ${Number(kv.customKeys)||0} 个，孤儿 ${Number(kv.orphanCustomKeys)||0} 个`:`KV 未绑定`;
-      box.textContent=`D1：${Number(d1.sites)||0} 个网站 · ${Number(d1.categories)||0} 个分类 · ${Number(d1.backups)||0}/${Number(policy.backupKeep)||20} 个快照 · 完全重复网址 ${Number(d1.exactDuplicateUrls)||0}；${kvText}；favicon ${Number(policy.faviconTtlDays)||30} 天自动过期；上次维护：${last}。`;
+      const missing=kv.missingReferencedIcons===null||kv.missingReferencedIcons===undefined?null:Number(kv.missingReferencedIcons);
+      const pending=kv.pendingReferencedIcons===null||kv.pendingReferencedIcons===undefined?null:Number(kv.pendingReferencedIcons);
+      const kvText=kv.enabled
+        ?`KV 自定义图标 ${Number(kv.customKeys)||0} 个 · 孤儿 ${Number(kv.orphanCustomKeys)||0} 个 · D1 引用缺失 ${missing===null?"未完成核对":missing+" 个"} · 跨区同步中 ${pending===null?"未知":pending+" 个"}`
+        :`KV 未绑定`;
+      box.textContent=`D1：${Number(d1.sites)||0} 个网站 · ${Number(d1.categories)||0} 个分类 · ${Number(d1.backups)||0}/${Number(policy.backupKeep)||20} 个快照 · 完全重复网址 ${Number(d1.exactDuplicateUrls)||0} · 版本 ${Number(result.revision)||0}；${kvText}；favicon ${Number(policy.faviconTtlDays)||30} 天自动过期；上次维护：${last}。`;
+      if(missing>0)box.textContent+=` 缺失的自定义图标不会被清理，需重新上传：${(kv.missingIconSiteIds||[]).slice(0,8).join("、")}${(kv.missingIconSiteIds||[]).length>8?"…":""}。`;
       box.dataset.loaded="1";
       if(clean){
         toast(`安全清理完成：D1 旧快照 ${Number(result.deletedBackups)||0}，KV 孤儿图标 ${Number(kv.deletedOrphanIcons)||0}`);
@@ -16133,6 +16148,25 @@ html[data-theme="light"] .nav-btn.scroll-active .nav-count{
       await applyCloudWallpaper(state.active||'default',state.version||'');
     }catch(err){cloudOnline=false;await localWallpaperFallback();}
   }
+  // Wallpaper selection is stored in the dedicated WALLPAPER_DB. Poll its
+  // lightweight active pointer so another device's change appears without a
+  // manual reload. Image bytes remain immutable and are fetched by versioned URL.
+  let wallpaperPollBusy=false;
+  async function pollCloudWallpaper(){
+    if(wallpaperPollBusy||galleryBusy||!navigator.onLine||document.visibilityState==='hidden')return false;
+    wallpaperPollBusy=true;
+    try{
+      const remote=await wpRequest(`${WP_API}?mode=active`);
+      cloudOnline=true;
+      const id=remote.active||'default',version=remote.version||'';
+      if(id!==activeWallpaper||version!==wallpaperVersion){
+        const applied=await applyCloudWallpaper(id,version);
+        if(applied&&gallery()&&!gallery().hidden)await refreshGallery();
+      }
+      return true;
+    }catch{return false}
+    finally{wallpaperPollBusy=false}
+  }
   function wpTile(id,title,details,url,isDefault){
     const selected=id===activeWallpaper;
     const item=document.createElement('article');item.className='fx-wp-card';
@@ -16308,6 +16342,9 @@ html[data-theme="light"] .nav-btn.scroll-active .nav-count{
     /* Keep original background bytes: packaged 1920×1080 PNG stays untouched; custom files use IndexedDB. */
     try{localStorage.removeItem('fxnav_liquid_background_v1912')}catch{}
     const wallpaperRestore=applySavedBackground();
+    window.addEventListener('focus',()=>void pollCloudWallpaper(),{passive:true});
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')void pollCloudWallpaper()},{passive:true});
+    setInterval(()=>{void pollCloudWallpaper()},5000);
     if(root.dataset.theme==='liquid'){
       const readyImage=Promise.resolve(wallpaperRestore).then(()=>{
         const url=currentObjectUrl||(activeWallpaper==='default'?WP_DEFAULT:wallpaperUrl(activeWallpaper,wallpaperVersion));
