@@ -1,4 +1,4 @@
-// V19.58 — cloud wallpaper catalogue, stored losslessly in dedicated D1 binding WALLPAPER_DB.
+// V19.87 — transactional cloud wallpaper catalogue, stored losslessly in dedicated D1 binding WALLPAPER_DB.
 // Authentication reuses the site's existing signed HttpOnly fxnav_session cookie.
 import {json,requireAuth,sameOrigin} from '../_shared/auth.js';
 const MAX_FILE_BYTES=1_900_000; // under D1 2,000,000-byte BLOB/row limit
@@ -27,12 +27,24 @@ async function init(env){
 }
 async function current(db){
   const p=await db.prepare("SELECT value,updated_at FROM wallpaper_state WHERE name='active' LIMIT 1").first();
-  let id=String(p?.value||'default');
+  let id=String(p?.value||'default'),version=String(p?.updated_at||'1');
   if(id!=='default'){
     const hit=await db.prepare('SELECT id FROM wallpaper_items WHERE id=? LIMIT 1').bind(id).first();
-    if(!hit)id='default';
+    if(!hit){
+      const next=String(Date.now());
+      const repaired=await db.prepare(`UPDATE wallpaper_state SET value='default',
+        updated_at=CAST(MAX(CAST(updated_at AS INTEGER)+1,CAST(? AS INTEGER)) AS TEXT)
+        WHERE name='active' AND value=?`).bind(next,id).run();
+      if(Number(repaired?.meta?.changes)||0){
+        const latest=await db.prepare("SELECT value,updated_at FROM wallpaper_state WHERE name='active' LIMIT 1").first();
+        id=String(latest?.value||'default');version=String(latest?.updated_at||next);
+      }else{
+        const latest=await db.prepare("SELECT value,updated_at FROM wallpaper_state WHERE name='active' LIMIT 1").first();
+        id=String(latest?.value||'default');version=String(latest?.updated_at||'1');
+      }
+    }
   }
-  return {id,version:String(p?.updated_at||'1')};
+  return {id,version};
 }
 async function admin(request,env){
   if(!sameOrigin(request))return {error:json({ok:false,error:'请求来源不匹配。'},403)};
@@ -158,15 +170,18 @@ async function readLimited(request,max){
   return result;
 }
 async function setActive(db,id){
-  if(id!=='default'){
-    const exists=await db.prepare('SELECT id FROM wallpaper_items WHERE id=? LIMIT 1').bind(id).first();
-    if(!exists)return json({ok:false,error:'壁纸不存在或已删除。'},404);
-  }
-  // Counter increases monotonically; timestamps only have second-level precision and can cache stale images.
-  const rev=String(Date.now());
-  await db.prepare(`INSERT INTO wallpaper_state(name,value,updated_at) VALUES('active',?,?)
-     ON CONFLICT(name) DO UPDATE SET value=excluded.value,updated_at=excluded.updated_at`).bind(id,rev).run();
-  return json({ok:true,active:id,version:rev});
+  // The existence check and active-pointer write are one SQL statement. This
+  // prevents a concurrent delete from leaving wallpaper_state pointing at a
+  // row that no longer exists.
+  const stamp=String(Date.now());
+  const result=await db.prepare(`INSERT INTO wallpaper_state(name,value,updated_at)
+    SELECT 'active',?,? WHERE ?='default' OR EXISTS(SELECT 1 FROM wallpaper_items WHERE id=?)
+    ON CONFLICT(name) DO UPDATE SET value=excluded.value,
+      updated_at=CAST(MAX(CAST(wallpaper_state.updated_at AS INTEGER)+1,CAST(excluded.updated_at AS INTEGER)) AS TEXT)`)
+    .bind(id,stamp,id,id).run();
+  if(!Number(result?.meta?.changes))return json({ok:false,error:'壁纸不存在或已删除。'},404);
+  const state=await current(db);
+  return json({ok:true,active:state.id,version:state.version});
 }
 export async function onRequestGet({request,env}){
   if(!dbOf(env))return unavailable();
@@ -204,14 +219,18 @@ export async function onRequestPost({request,env}){
     let name='自定义壁纸';try{name=decodeURIComponent(request.headers.get('X-Wallpaper-Name')||name)}catch{}
     name=name.replace(/[\u0000-\u001f\u007f]/g,'').trim().slice(0,90)||'自定义壁纸';
     const hash=shaHex(await crypto.subtle.digest('SHA-256',bytes));
-    const same=await db.prepare('SELECT id FROM wallpaper_items WHERE sha256=? LIMIT 1').bind(hash).first();
-    if(same)return json({ok:false,error:'壁纸库已经有这张原图，无需重复上传。'},409);
     const id=crypto.randomUUID();
-    // Exactly one SQL INSERT enforces the 9-file cap atomically under concurrent requests.
+    // Count-cap and duplicate detection share one atomic INSERT statement, so
+    // two simultaneous uploads cannot exceed the limit or store the same hash.
     const inserted=await db.prepare(`INSERT INTO wallpaper_items(id,name,mime,size_bytes,data,sha256)
-      SELECT ?,?,?,?,?,? WHERE (SELECT COUNT(*) FROM wallpaper_items)<9`)
-      .bind(id,name,mime,bytes.length,bytes,hash).run();
-    if(!Number(inserted.meta?.changes))return json({ok:false,error:'壁纸库已满（10/10），请先删除一张自定义壁纸。'},409);
+      SELECT ?,?,?,?,?,? WHERE (SELECT COUNT(*) FROM wallpaper_items)<? 
+      AND NOT EXISTS(SELECT 1 FROM wallpaper_items WHERE sha256=?)`)
+      .bind(id,name,mime,bytes.length,bytes,hash,MAX_USER_FILES,hash).run();
+    if(!Number(inserted.meta?.changes)){
+      const same=await db.prepare('SELECT id FROM wallpaper_items WHERE sha256=? LIMIT 1').bind(hash).first();
+      if(same)return json({ok:false,error:'壁纸库已经有这张原图，无需重复上传。'},409);
+      return json({ok:false,error:'壁纸库已满（10/10），请先删除一张自定义壁纸。'},409);
+    }
     return json({ok:true,id,name,size:bytes.length,sha256:hash},201);
   }catch(err){return json({ok:false,error:String(err.message||err)},Number(err.status)||500)}
 }
@@ -224,10 +243,16 @@ export async function onRequestDelete({request,env}){
     await init(env);const db=dbOf(env);
     const item=await db.prepare('SELECT id FROM wallpaper_items WHERE id=? LIMIT 1').bind(id).first();
     if(!item)return json({ok:false,error:'壁纸不存在。'},404);
-    const state=await current(db);
-    if(state.id===id){await db.prepare(`INSERT INTO wallpaper_state(name,value,updated_at) VALUES('active','default',?)
-      ON CONFLICT(name) DO UPDATE SET value='default',updated_at=excluded.updated_at`).bind(String(Date.now())).run()}
-    await db.prepare('DELETE FROM wallpaper_items WHERE id=?').bind(id).run();
+    // Reset the active pointer and delete the image in one D1 transaction.
+    // If the DELETE fails, the pointer reset rolls back as well.
+    const stamp=String(Date.now());
+    const results=await db.batch([
+      db.prepare(`UPDATE wallpaper_state SET value='default',
+        updated_at=CAST(MAX(CAST(updated_at AS INTEGER)+1,CAST(? AS INTEGER)) AS TEXT)
+        WHERE name='active' AND value=?`).bind(stamp,id),
+      db.prepare('DELETE FROM wallpaper_items WHERE id=?').bind(id)
+    ]);
+    if(!Number(results?.[1]?.meta?.changes))return json({ok:false,error:'壁纸不存在或已被其他设备删除。'},404);
     const active=await current(db);
     return json({ok:true,active:active.id,version:active.version});
   }catch(err){return json({ok:false,error:String(err.message||err)},500)}
