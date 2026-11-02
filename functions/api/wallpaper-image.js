@@ -1,4 +1,4 @@
-// V19.87 — lossless byte-for-byte serving from a separate D1. Selected image is public
+// V19.58 — lossless byte-for-byte serving from a separate D1. Selected image is public
 // because the navigation home page itself is public; other library images require admin cookie.
 import {verifySession,json} from '../_shared/auth.js';
 export async function onRequestGet({request,env}){

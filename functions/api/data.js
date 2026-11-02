@@ -1,4 +1,4 @@
-const API_VERSION="19.87";
+const API_VERSION="19.73";
 import {V17_CATEGORIES,V17_SITES} from "../_data/v17-seed.js";
 import {json,requireAuth,sameOrigin,verifySession,normalizeUsername} from "../_shared/auth.js";
 
@@ -30,26 +30,6 @@ async function ensureSchema(env){
 async function getSetting(env,owner,key){const r=await env.DB.prepare(`SELECT value FROM settings_v17 WHERE owner=? AND key=?`).bind(owner,key).first();return r?.value??null}
 async function setSetting(env,owner,key,value){await env.DB.prepare(`INSERT INTO settings_v17(owner,key,value,updated_at) VALUES(?,?,?,CURRENT_TIMESTAMP) ON CONFLICT(owner,key) DO UPDATE SET value=excluded.value,updated_at=CURRENT_TIMESTAMP`).bind(owner,key,String(value)).run()}
 async function getRevision(env,owner){return Number(await getSetting(env,owner,"revision"))||0}
-// V19.87: every D1 mutation that changes client-visible data advances the
-// revision in the SAME transaction. Retry only revision races; never blind-write.
-async function commitRevisionMutationV1987(env,owner,build,{retries=3}={}){
-  let lastConflict=null;
-  for(let attempt=0;attempt<retries;attempt++){
-    const current=await getRevision(env,owner),next=current+1;
-    const built=await build(current,next);
-    if(built?.unchanged)return {revision:current,unchanged:true,...(built.result||{})};
-    const statements=[...(built?.statements||[]),
-      env.DB.prepare(`INSERT INTO settings_v17(owner,key,value,updated_at) VALUES(?,'revision',?,CURRENT_TIMESTAMP) ON CONFLICT(owner,key) DO UPDATE SET value=excluded.value,updated_at=CURRENT_TIMESTAMP`).bind(owner,String(next))];
-    try{
-      await commitAtomicV1968(env,owner,current,statements);
-      return {revision:next,...(built?.result||{})};
-    }catch(err){
-      if(err?.status===409&&attempt+1<retries){lastConflict=err;continue}
-      throw err;
-    }
-  }
-  throw lastConflict||new Error("D1 revision changed repeatedly; retry the operation.");
-}
 async function seedIfNeeded(env){const row=await env.DB.prepare(`SELECT COUNT(*) AS c FROM sites_v17`).first();if(Number(row?.c)||0)return false;
   // A previously initialized empty database is intentional: never resurrect purged seed sites.
   if(await getSetting(env,normalizeUsername(env.NAV_USERNAME||"admin"),"revision")!==null)return false;const catStatements=V17_CATEGORIES.map(c=>env.DB.prepare(`INSERT OR IGNORE INTO categories_v17(name,icon,sort_order,is_builtin) VALUES(?,?,?,1)`).bind(c.name,c.icon,c.sort));await env.DB.batch(catStatements);const siteStatements=V17_SITES.map(s=>{const n=normalizeUrl(s.url),d=domainOf(s.url);return env.DB.prepare(`INSERT OR IGNORE INTO sites_v17(id,name,url,normalized_url,domain,root_domain,full_title,category_name,sort_order,is_custom) VALUES(?,?,?,?,?,?,?,?,?,0)`).bind(s.id,s.name,s.url,n,d,rootDomain(d),s.fullTitle,s.category,s.sort)});for(let i=0;i<siteStatements.length;i+=70)await env.DB.batch(siteStatements.slice(i,i+70));return true}
@@ -111,16 +91,8 @@ async function migrateFromV16(env,owner){
     }
   }
   // Set the migration marker only after every source read and write completed.
-  // A real V16 import also advances the shared revision so every open device
-  // notices the imported D1 rows/settings instead of treating the old revision
-  // as unchanged. The import steps remain idempotent if a request is interrupted.
-  if(source==="nav_state"){
-    await commitRevisionMutationV1987(env,owner,async()=>({statements:[
-      env.DB.prepare(`INSERT INTO settings_v17(owner,key,value,updated_at) VALUES(?,'migrated_v16','1',CURRENT_TIMESTAMP) ON CONFLICT(owner,key) DO UPDATE SET value='1',updated_at=CURRENT_TIMESTAMP`).bind(owner)
-    ]}));
-  }else{
-    await setSetting(env,owner,"migrated_v16","1");
-  }
+  // Any failure bubbles to bootstrap; the idempotent INSERT/UPDATE steps can retry.
+  await setSetting(env,owner,"migrated_v16","1");
   return source;
 }
 async function buildBootstrap(env,owner,migrationSource,{publicView=false}={}){
@@ -253,7 +225,6 @@ async function refreshIcons(env,owner,ids){
   if(!env.KV)return json({ok:false,error:"Missing KV binding: KV"},500);
   const clean=[...new Set((Array.isArray(ids)?ids:[]).map(String))].slice(0,12);
   let refreshed=0,skipped=0,failed=0,next=0;
-  const refreshedIds=[];
   async function worker(){
     while(next<clean.length){
       const id=clean[next++];
@@ -264,20 +235,14 @@ async function refreshIcons(env,owner,ids){
         if(hostKey)await env.KV.delete(hostKey);
         if(legacyKey)await env.KV.delete(legacyKey);
         await serveIcon(env,site);
-        refreshedIds.push(id);
+        await env.DB.prepare(`UPDATE sites_v17 SET updated_at=CURRENT_TIMESTAMP WHERE id=?`).bind(id).run();
         refreshed++;
       }catch{failed++}
     }
   }
   await Promise.all(Array.from({length:Math.min(4,clean.length)},worker));
   let revision=await getRevision(env,owner);
-  if(refreshedIds.length){
-    const stamp=new Date().toISOString();
-    const committed=await commitRevisionMutationV1987(env,owner,async()=>({
-      statements:refreshedIds.map(id=>env.DB.prepare(`UPDATE sites_v17 SET updated_at=? WHERE id=? AND (icon_key IS NULL OR icon_key NOT LIKE 'custom:%')`).bind(stamp,id))
-    }));
-    revision=committed.revision;
-  }
+  if(refreshed){revision++;await setSetting(env,owner,"revision",String(revision))}
   return json({ok:true,refreshed,skipped,failed,truncated:Array.isArray(ids)&&ids.length>12,revision});
 }
 async function healthBatch(env,ids){
@@ -512,39 +477,17 @@ async function listKvPrefix(env,prefix,maxKeys=5000){
 async function maintenanceReport(env,owner,{clean=false,auto=false}={}){
   const stats=await env.DB.prepare(`SELECT (SELECT COUNT(*) FROM sites_v17) AS sites,(SELECT COUNT(*) FROM sites_v17 WHERE is_custom<>0) AS custom_sites,(SELECT COUNT(*) FROM sites_v17 WHERE is_deleted<>0) AS hidden_sites,(SELECT COUNT(*) FROM categories_v17) AS categories,(SELECT COUNT(*) FROM backups_v17 WHERE owner=?) AS backups`).bind(owner).first()||{};
   const duplicates=(await env.DB.prepare(`SELECT normalized_url,COUNT(*) AS c FROM sites_v17 GROUP BY normalized_url HAVING COUNT(*)>1 ORDER BY c DESC LIMIT 20`).all()).results||[];
-  const ownerPrefix=`custom:${owner}:`;
-  const refs=(await env.DB.prepare(`SELECT id,icon_key,updated_at FROM sites_v17 WHERE icon_key IS NOT NULL AND substr(icon_key,1,?)=?`).bind(ownerPrefix.length,ownerPrefix).all()).results||[];
-  const validCustomKeys=new Set(refs.map(r=>String(r.icon_key||"")).filter(k=>k.startsWith(ownerPrefix)));
-  const listed=await listKvPrefix(env,ownerPrefix);
-  const listedNames=new Set(listed.keys.map(k=>String(k.name||"")).filter(Boolean));
-  const orphanKeys=[...listedNames].filter(k=>!validCustomKeys.has(k));
-  const absentReferencedKeys=env.KV&&listed.complete?[...validCustomKeys].filter(k=>!listedNames.has(k)):[];
-  // KV namespace listing is eventually consistent. Treat a just-written
-  // pointer as propagation-pending for 90s instead of reporting a false loss.
-  const now=Date.now(),propagationGraceMs=90_000;
-  const refsByKey=new Map();
-  for(const row of refs){const key=String(row.icon_key||"");if(!refsByKey.has(key))refsByKey.set(key,[]);refsByKey.get(key).push(row)}
-  const pendingReferencedKeys=absentReferencedKeys.filter(key=>(refsByKey.get(key)||[]).some(row=>{
-    const updated=Date.parse(String(row.updated_at||""));
-    return Number.isFinite(updated)&&now-updated<propagationGraceMs;
-  }));
-  const pendingKeySet=new Set(pendingReferencedKeys);
-  const missingReferencedKeys=absentReferencedKeys.filter(key=>!pendingKeySet.has(key));
-  const missingKeySet=new Set(missingReferencedKeys);
-  const missingIconSiteIds=refs.filter(row=>missingKeySet.has(String(row.icon_key||""))).map(row=>String(row.id));
-  const pendingIconSiteIds=refs.filter(row=>pendingKeySet.has(String(row.icon_key||""))).map(row=>String(row.id));
+  const refs=(await env.DB.prepare(`SELECT id,icon_key FROM sites_v17 WHERE icon_key IS NOT NULL AND icon_key LIKE 'custom:%'`).all()).results||[];
+  const validCustomKeys=new Set(refs.map(r=>String(r.icon_key||"")).filter(Boolean));
+  const listed=await listKvPrefix(env,`custom:${owner}:`),orphanKeys=listed.keys.map(k=>String(k.name||"")).filter(k=>k&&!validCustomKeys.has(k));
   const backupCount=Number(stats.backups)||0,extraBackups=Math.max(0,backupCount-BACKUP_KEEP);
   let deletedBackups=0,deletedOrphanIcons=0;
   if(clean){
     if(extraBackups){const res=await env.DB.prepare(`DELETE FROM backups_v17 WHERE owner=? AND id NOT IN (SELECT id FROM backups_v17 WHERE owner=? ORDER BY id DESC LIMIT ?)`).bind(owner,owner,BACKUP_KEEP).run();deletedBackups=Number(res?.meta?.changes)||extraBackups}
-    if(env.KV&&orphanKeys.length){for(const key of orphanKeys.slice(0,KV_ORPHAN_DELETE_LIMIT)){try{await env.KV.delete(key);deletedOrphanIcons++}catch{}}}
+    if(env.KV&&orphanKeys.length){for(const key of orphanKeys.slice(0,KV_ORPHAN_DELETE_LIMIT)){await env.KV.delete(key);deletedOrphanIcons++}}
     await setSetting(env,owner,"maintenance_last",new Date().toISOString());
   }
-  const revision=await getRevision(env,owner);
-  return {ok:true,auto,cleaned:clean,revision,policy:{backupKeep:BACKUP_KEEP,customIconDeleteLimit:KV_ORPHAN_DELETE_LIMIT,faviconTtlDays:30,kvReadCacheTtlSeconds:60,kvPropagationGraceSeconds:90,autoMaintenanceDays:7},
-    d1:{sites:Number(stats.sites)||0,customSites:Number(stats.custom_sites)||0,hiddenSites:Number(stats.hidden_sites)||0,categories:Number(stats.categories)||0,backups:backupCount,extraBackups,exactDuplicateUrls:duplicates.length,duplicates:duplicates.map(r=>({url:r.normalized_url,count:Number(r.c)||0}))},
-    kv:{enabled:!!env.KV,customKeys:listed.keys.length,referencedCustomKeys:validCustomKeys.size,orphanCustomKeys:orphanKeys.length,missingReferencedIcons:env.KV&&listed.complete?missingReferencedKeys.length:null,pendingReferencedIcons:env.KV&&listed.complete?pendingReferencedKeys.length:null,missingIconSiteIds:env.KV&&listed.complete?missingIconSiteIds:[],pendingIconSiteIds:env.KV&&listed.complete?pendingIconSiteIds:[],listComplete:listed.complete,consistent:!!env.KV&&listed.complete&&orphanKeys.length===0&&missingReferencedKeys.length===0&&pendingReferencedKeys.length===0,deletedOrphanIcons},
-    deletedBackups,lastMaintenance:(clean?new Date().toISOString():await getSetting(env,owner,"maintenance_last"))||""};
+  return {ok:true,auto,cleaned:clean,policy:{backupKeep:BACKUP_KEEP,customIconDeleteLimit:KV_ORPHAN_DELETE_LIMIT,faviconTtlDays:30,autoMaintenanceDays:7},d1:{sites:Number(stats.sites)||0,customSites:Number(stats.custom_sites)||0,hiddenSites:Number(stats.hidden_sites)||0,categories:Number(stats.categories)||0,backups:backupCount,extraBackups,exactDuplicateUrls:duplicates.length,duplicates:duplicates.map(r=>({url:r.normalized_url,count:Number(r.c)||0}))},kv:{enabled:!!env.KV,customKeys:listed.keys.length,referencedCustomKeys:validCustomKeys.size,orphanCustomKeys:orphanKeys.length,listComplete:listed.complete,deletedOrphanIcons},deletedBackups,lastMaintenance:(clean?new Date().toISOString():await getSetting(env,owner,"maintenance_last"))||""};
 }
 async function maybeAutoMaintenance(context,env,owner){
   try{const last=Date.parse(await getSetting(env,owner,"maintenance_last")||"")||0;if(Date.now()-last<AUTO_MAINTENANCE_MS)return;const job=maintenanceReport(env,owner,{clean:true,auto:true}).catch(()=>{});if(typeof context?.waitUntil==="function")context.waitUntil(job);else await job}catch{}
@@ -590,21 +533,12 @@ async function fetchCandidate(url){
 function faviconHost(site){return domainOf(site?.url)||String(site?.domain||"").toLowerCase().replace(/^www\./,"")}
 function faviconCacheKeyV186(site){const host=faviconHost(site);return host?`favicon:v2:${host}`:""}
 function legacyFaviconKeyV186(site){const root=site?.root_domain||rootDomain(site?.domain);return root?`favicon:${root}`:""}
-async function getKvIcon(env,key){if(!env.KV)return null;const got=await env.KV.getWithMetadata(key,{type:"arrayBuffer",cacheTtl:60});if(!got?.value)return null;return {value:got.value,metadata:got.metadata||{}}}
+async function getKvIcon(env,key){if(!env.KV)return null;const got=await env.KV.getWithMetadata(key,{type:"arrayBuffer",cacheTtl:86400});if(!got?.value)return null;return {value:got.value,metadata:got.metadata||{}}}
 async function serveIcon(env,site){
   if(!env.KV)return new Response(fallbackSvg(site.name),{headers:{"Content-Type":"image/svg+xml; charset=utf-8","Cache-Control":"no-store"}});
   if(site.icon_key){
     const custom=await getKvIcon(env,site.icon_key);
     if(custom)return kvIconResponse(custom.value,custom.metadata);
-    if(String(site.icon_key).startsWith("custom:")){
-      // KV is eventually consistent across locations. A missing read must not
-      // be cached as a generic favicon under the custom icon's versioned URL.
-      return new Response("Custom icon is syncing or missing.",{status:503,headers:{
-        "Cache-Control":"no-store, max-age=0",
-        "Retry-After":"2",
-        "X-FXNAV-Icon-State":"custom-pending"
-      }});
-    }
   }
 
   const host=faviconHost(site),key=faviconCacheKeyV186(site);
@@ -832,74 +766,7 @@ export async function onRequest(context){const {request,env}=context;try{const u
   }
   if(mode==="refresh-icons"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);const body=await readBoundedJsonV1972(request,512*1024);return await refreshIcons(env,auth.owner,body?.ids)}
   if(mode==="health"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);const body=await readBoundedJsonV1972(request,512*1024);return await healthBatch(env,body?.ids)}
-  if(mode==="upload-icon"&&request.method==="POST"){
-    if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);
-    if(!env.KV)return json({ok:false,error:"Missing KV binding: KV"},500);
-    const id=String(url.searchParams.get("site")||"");
-    if(!id)return json({ok:false,error:"Site ID is required."},400);
-    const exists=await env.DB.prepare(`SELECT id FROM sites_v17 WHERE id=? LIMIT 1`).bind(id).first();
-    if(!exists)return json({ok:false,error:"Site not found."},404);
-    const type=(request.headers.get("content-type")||"").split(";")[0].trim().toLowerCase();
-    const allowed=new Set(["image/png","image/jpeg","image/webp","image/gif","image/x-icon","image/vnd.microsoft.icon"]);
-    if(!allowed.has(type))return json({ok:false,error:"Only PNG/JPG/WebP/GIF/ICO are allowed."},415);
-    const rawLength=request.headers.get("content-length");
-    if(rawLength!==null&&Number(rawLength)>MAX_ICON_BYTES)return json({ok:false,error:"Icon must be 1MB or smaller."},413);
-    const reader=request.body?.getReader();
-    if(!reader)return json({ok:false,error:"Missing icon data."},400);
-    const chunks=[];let n=0;
-    try{
-      while(true){
-        const {value,done}=await reader.read();if(done)break;
-        n+=value.byteLength;
-        if(n>MAX_ICON_BYTES){await reader.cancel().catch(()=>{});return json({ok:false,error:"Icon must be 1MB or smaller."},413)}
-        chunks.push(value);
-      }
-    }finally{try{reader.releaseLock()}catch{}}
-    if(!n)return json({ok:false,error:"Missing icon data."},400);
-    const bytes=new Uint8Array(n);let pos=0;
-    for(const chunk of chunks){bytes.set(chunk,pos);pos+=chunk.byteLength}
-    const key=`custom:${auth.owner}:${id}:${crypto.randomUUID()}`;
-    await env.KV.put(key,bytes.buffer,{metadata:{contentType:type,kind:"custom"}});
-    let committed;
-    try{
-      committed=await commitRevisionMutationV1987(env,auth.owner,async()=>{
-        const site=await env.DB.prepare(`SELECT id,icon_key FROM sites_v17 WHERE id=? LIMIT 1`).bind(id).first();
-        if(!site)throw Object.assign(new Error("Site not found."),{status:404});
-        return {statements:[
-          env.DB.prepare(`UPDATE sites_v17 SET icon_key=?,updated_at=? WHERE id=?`).bind(key,new Date().toISOString(),id)
-        ],result:{oldKey:String(site.icon_key||"")}};
-      });
-    }catch(error){
-      try{await env.KV.delete(key)}catch{}
-      throw error;
-    }
-    let kvCleanupPending=0;
-    const oldKey=String(committed.oldKey||"");
-    if(oldKey.startsWith(`custom:${auth.owner}:`)&&oldKey!==key){
-      try{await env.KV.delete(oldKey)}catch{kvCleanupPending++}
-    }
-    return json({ok:true,revision:committed.revision,kvCleanupPending});
-  }
-  if(mode==="reset-icon"&&request.method==="POST"){
-    if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);
-    const id=String(url.searchParams.get("site")||"");
-    if(!id)return json({ok:false,error:"Site ID is required."},400);
-    const committed=await commitRevisionMutationV1987(env,auth.owner,async()=>{
-      const site=await env.DB.prepare(`SELECT id,icon_key FROM sites_v17 WHERE id=? LIMIT 1`).bind(id).first();
-      if(!site)throw Object.assign(new Error("Site not found."),{status:404});
-      const oldKey=String(site.icon_key||"");
-      if(!oldKey)return {unchanged:true,result:{oldKey:""}};
-      return {statements:[
-        env.DB.prepare(`UPDATE sites_v17 SET icon_key=NULL,updated_at=? WHERE id=? AND icon_key=?`).bind(new Date().toISOString(),id,oldKey)
-      ],result:{oldKey}};
-    });
-    let kvCleanupPending=0;
-    const oldKey=String(committed.oldKey||"");
-    if(oldKey.startsWith(`custom:${auth.owner}:`)){
-      if(env.KV){try{await env.KV.delete(oldKey)}catch{kvCleanupPending++}}
-      else kvCleanupPending++;
-    }
-    return json({ok:true,revision:committed.revision,unchanged:!!committed.unchanged,kvCleanupPending});
-  }
+  if(mode==="upload-icon"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);if(!env.KV)return json({ok:false,error:"Missing KV binding: KV"},500);const id=String(url.searchParams.get("site")||""),site=await env.DB.prepare(`SELECT id,icon_key FROM sites_v17 WHERE id=? LIMIT 1`).bind(id).first();if(!site)return json({ok:false,error:"Site not found."},404);const type=(request.headers.get("content-type")||"").split(";")[0].trim().toLowerCase(),allowed=new Set(["image/png","image/jpeg","image/webp","image/gif","image/x-icon","image/vnd.microsoft.icon"]);if(!allowed.has(type))return json({ok:false,error:"Only PNG/JPG/WebP/GIF/ICO are allowed."},415);const rawLength=request.headers.get("content-length");if(rawLength!==null&&Number(rawLength)>MAX_ICON_BYTES)return json({ok:false,error:"Icon must be 1MB or smaller."},413);let buf;try{const reader=request.body?.getReader();if(!reader)return json({ok:false,error:"Missing icon data."},400);let chunks=[],n=0;while(true){const {value,done}=await reader.read();if(done)break;n+=value.byteLength;if(n>MAX_ICON_BYTES){await reader.cancel().catch(()=>{});return json({ok:false,error:"Icon must be 1MB or smaller."},413)}chunks.push(value)}const data=new Uint8Array(n);let pos=0;for(const chunk of chunks){data.set(chunk,pos);pos+=chunk.byteLength}buf=data.buffer}finally{}if(!buf.byteLength)return json({ok:false,error:"Missing icon data."},400);const key=`custom:${auth.owner}:${id}:${crypto.randomUUID()}`;await env.KV.put(key,buf,{metadata:{contentType:type,kind:"custom"}});try{await env.DB.prepare(`UPDATE sites_v17 SET icon_key=?,updated_at=? WHERE id=?`).bind(key,new Date().toISOString(),id).run()}catch(error){try{await env.KV.delete(key)}catch{}throw error}const rev=await getRevision(env,auth.owner)+1;await setSetting(env,auth.owner,"revision",String(rev));if(site.icon_key&&String(site.icon_key).startsWith("custom:")&&site.icon_key!==key)try{await env.KV.delete(site.icon_key)}catch{}return json({ok:true,revision:rev})}
+  if(mode==="reset-icon"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);const id=String(url.searchParams.get("site")||""),site=await env.DB.prepare(`SELECT icon_key FROM sites_v17 WHERE id=? LIMIT 1`).bind(id).first();if(!site)return json({ok:false,error:"Site not found."},404);await env.DB.prepare(`UPDATE sites_v17 SET icon_key=NULL,updated_at=? WHERE id=?`).bind(new Date().toISOString(),id).run();if(env.KV&&site.icon_key&&String(site.icon_key).startsWith("custom:"))try{await env.KV.delete(site.icon_key)}catch{}const rev=await getRevision(env,auth.owner)+1;await setSetting(env,auth.owner,"revision",String(rev));return json({ok:true,revision:rev})}
   return json({ok:false,error:"Not found."},404)
-}catch(e){const status=Number(e?.status);return json({ok:false,error:"V"+API_VERSION+" API error: "+String(e?.message||e)},[400,401,403,404,409,413,415,429,503].includes(status)?status:500)}}
+}catch(e){return json({ok:false,error:"V"+API_VERSION+" API error: "+String(e?.message||e)},[400,413].includes(Number(e?.status))?Number(e.status):500)}}
