@@ -1,4 +1,4 @@
-const API_VERSION="19.88";
+const API_VERSION="19.90";
 import {V17_CATEGORIES,V17_SITES} from "../_data/v17-seed.js";
 import {json,requireAuth,sameOrigin,verifySession,normalizeUsername} from "../_shared/auth.js";
 
@@ -365,13 +365,16 @@ function validateSnapshot(body){
     if(!category||!categoryNames.has(category))return fail(`Site ${id} references a missing category.`);
     const sort=Number(site.sortOrder??site.sort_order??0);if(!Number.isFinite(sort)||Math.abs(sort)>1000000)return fail(`Invalid site sort order: ${id}`);
     for(const [camel,snake] of [["isFavorite","is_favorite"],["isDeleted","is_deleted"],["isCustom","is_custom"]]){const flagValue=site[camel]??site[snake];if(flagValue!==undefined&&![true,false,0,1].includes(flagValue))return fail(`Invalid ${camel} flag for site ${id}.`)}
-    if(seenUrls.has(url))dups.push({url,a:seenUrls.get(url),b:id});else seenUrls.set(url,id);
+    const deletedFlag=site.isDeleted??site.is_deleted;
+    if(!(deletedFlag===true||deletedFlag===1)){
+      if(seenUrls.has(url))dups.push({url,a:seenUrls.get(url),b:id});else seenUrls.set(url,id);
+    }
     siteIds.add(id);sites.push(site);
   }
   return {cats,sites,dups,error:""};
 }
 function incomingCategory(c){const name=String(c?.name||"").trim();if(!name)return null;return {name,icon:String(c?.icon||"•"),sort_order:Number(c?.sortOrder??c?.sort_order)||0,is_builtin:(c?.isBuiltin??c?.is_builtin)?1:0}}
-function incomingSite(s){const id=String(s?.id||"").trim(),n=normalizeUrl(s?.url);if(!id||!n)return null;const d=domainOf(n);return {id,name:String(s?.name||d),url:n,normalized_url:n,domain:d,root_domain:rootDomain(d),full_title:String(s?.fullTitle??s?.full_title??s?.name??d),category_name:String(s?.category_name??s?.category??V17_CATEGORIES[0].name),sort_order:Number(s?.sortOrder??s?.sort_order)||0,is_favorite:(s?.isFavorite??s?.is_favorite)?1:0,is_deleted:(s?.isDeleted??s?.is_deleted)?1:0,is_custom:(s?.isCustom??s?.is_custom)?1:0,icon_url:String(s?.iconUrl??s?.icon_url??"")}}
+function incomingSite(s){const id=String(s?.id||"").trim(),n=normalizeUrl(s?.url);if(!id||!n)return null;const d=domainOf(n),deleted=(s?.isDeleted??s?.is_deleted)?1:0;return {id,name:String(s?.name||d),url:n,normalized_url:deleted?`deleted:${id}`:n,domain:d,root_domain:rootDomain(d),full_title:String(s?.fullTitle??s?.full_title??s?.name??d),category_name:String(s?.category_name??s?.category??V17_CATEGORIES[0].name),sort_order:Number(s?.sortOrder??s?.sort_order)||0,is_favorite:(s?.isFavorite??s?.is_favorite)?1:0,is_deleted:deleted,is_custom:(s?.isCustom??s?.is_custom)?1:0,icon_url:String(s?.iconUrl??s?.icon_url??"")}}
 function sameCategory(a,b){return !!a&&String(a.icon||"•")===b.icon&&Number(a.sort_order||0)===b.sort_order&&Number(a.is_builtin||0)===b.is_builtin}
 function sameSite(a,b){return !!a&&String(a.name||"")===b.name&&String(a.url||"")===b.url&&String(a.normalized_url||"")===b.normalized_url&&String(a.domain||"")===b.domain&&String(a.root_domain||"")===b.root_domain&&String(a.full_title||"")===b.full_title&&String(a.category_name||"")===b.category_name&&Number(a.sort_order||0)===b.sort_order&&Number(a.is_favorite||0)===b.is_favorite&&Number(a.is_deleted||0)===b.is_deleted&&Number(a.is_custom||0)===b.is_custom&&String(a.icon_url||"")===b.icon_url}
 // V19.68: an optimistic revision gate executes inside the SAME D1 batch as all writes.
@@ -435,6 +438,10 @@ async function syncSnapshot(env,owner,body,{allowSiteDeletes=false}={}){
     stmts.push(env.DB.prepare(`INSERT INTO backups_v17(owner,revision,snapshot,created_at) VALUES(?,?,?,CURRENT_TIMESTAMP)`).bind(owner,current,JSON.stringify(backup)));
     stmts.push(env.DB.prepare(`DELETE FROM backups_v17 WHERE owner=? AND id NOT IN (SELECT id FROM backups_v17 WHERE owner=? ORDER BY id DESC LIMIT ?)`).bind(owner,owner,BACKUP_KEEP));
   }
+  // Soft-deleted rows remain in D1 for recovery, but must not reserve their old URL.
+  // This additive update preserves the existing UNIQUE constraint while allowing an active site
+  // to reuse a URL held only by a recycle-bin record. Restore writes the canonical URL again.
+  stmts.push(env.DB.prepare(`UPDATE sites_v17 SET normalized_url='deleted:'||id WHERE is_deleted=1 AND normalized_url NOT LIKE 'deleted:%'`));
   for(const r of plan.siteDeletes)stmts.push(env.DB.prepare(`DELETE FROM sites_v17 WHERE id=?`).bind(r.id));
   for(const r of plan.categoryDeletes)stmts.push(env.DB.prepare(`DELETE FROM categories_v17 WHERE name=?`).bind(r.name));
   for(const c of plan.categoryUpserts){
@@ -508,13 +515,10 @@ async function purgeDeletedSitesV1964(env,owner,body){
     if(!snapshot||typeof snapshot!=="object"||!Array.isArray(snapshot.sites)){
       return json({ok:false,error:`Cannot safely purge: D1 backup ${row.id} is malformed.`},409);
     }
-    const before=snapshot.sites.length;
     snapshot.sites=snapshot.sites.filter(site=>!erased.has(String(site?.id)));
     snapshot.settings=removePurgedUiRefsV1964(snapshot.settings,erased);
-    if(snapshot.sites.length!==before||snapshot.settings?.recents?.length!==undefined){
-      const next=JSON.stringify(snapshot);
-      if(next!==row.snapshot)backupUpdates.push(env.DB.prepare(`UPDATE backups_v17 SET snapshot=? WHERE owner=? AND id=?`).bind(next,owner,row.id));
-    }
+    const next=JSON.stringify(snapshot);
+    if(next!==row.snapshot)backupUpdates.push(env.DB.prepare(`UPDATE backups_v17 SET snapshot=? WHERE owner=? AND id=?`).bind(next,owner,row.id));
   }
 
   const uiText=await getSetting(env,owner,"ui");
@@ -562,7 +566,7 @@ async function listKvPrefix(env,prefix,maxKeys=5000){
 }
 async function maintenanceReport(env,owner,{clean=false,auto=false}={}){
   const stats=await env.DB.prepare(`SELECT (SELECT COUNT(*) FROM sites_v17) AS sites,(SELECT COUNT(*) FROM sites_v17 WHERE is_custom<>0) AS custom_sites,(SELECT COUNT(*) FROM sites_v17 WHERE is_deleted<>0) AS hidden_sites,(SELECT COUNT(*) FROM categories_v17) AS categories,(SELECT COUNT(*) FROM backups_v17 WHERE owner=?) AS backups`).bind(owner).first()||{};
-  const duplicates=(await env.DB.prepare(`SELECT normalized_url,COUNT(*) AS c FROM sites_v17 GROUP BY normalized_url HAVING COUNT(*)>1 ORDER BY c DESC LIMIT 20`).all()).results||[];
+  const duplicates=(await env.DB.prepare(`SELECT normalized_url,COUNT(*) AS c FROM sites_v17 WHERE is_deleted=0 GROUP BY normalized_url HAVING COUNT(*)>1 ORDER BY c DESC LIMIT 20`).all()).results||[];
   const ownerPrefix=`custom:${owner}:`;
   const refs=(await env.DB.prepare(`SELECT id,icon_key,updated_at FROM sites_v17 WHERE icon_key IS NOT NULL AND substr(icon_key,1,?)=?`).bind(ownerPrefix.length,ownerPrefix).all()).results||[];
   const validCustomKeys=new Set(refs.map(r=>String(r.icon_key||"")).filter(k=>k.startsWith(ownerPrefix)));

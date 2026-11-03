@@ -1,5 +1,5 @@
 // Cloudflare Pages Function: /api/state
-// V19.88 Private Login. Legacy nav_state read/write endpoints are retired; /api/data is the only navigation data API.
+// V19.89 Private Login. Legacy nav_state read/write endpoints are retired; /api/data is the only navigation data API.
 //
 // Required Pages bindings / variables:
 //   DB              -> D1 database binding

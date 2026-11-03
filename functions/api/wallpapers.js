@@ -1,4 +1,4 @@
-// V19.88 — transactional cloud wallpaper catalogue, stored losslessly in dedicated D1 binding WALLPAPER_DB.
+// V19.89 — transactional cloud wallpaper catalogue, stored losslessly in dedicated D1 binding WALLPAPER_DB.
 // Authentication reuses the site's existing signed HttpOnly fxnav_session cookie.
 import {json,requireAuth,sameOrigin} from '../_shared/auth.js';
 const MAX_FILE_BYTES=1_900_000; // under D1 2,000,000-byte BLOB/row limit
