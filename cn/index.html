@@ -8919,28 +8919,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
 @media(max-width:760px){#drawer.drawer{width:100vw!important;inset:0 0 0 0!important}}
 </style>
 
-<style id="v1990-admin-dark-theme-audit">
-/* V19.90: apply the dark theme's champagne accent consistently across every manager tab. */
-html[data-theme="dark"] body #drawer :is(.manager-tab.active,.manager-tab.active:hover){
-  color:#f4dfb6!important;background:linear-gradient(120deg,rgba(214,177,111,.20),rgba(170,131,70,.15))!important;
-  border-color:rgba(218,185,128,.32)!important;box-shadow:inset 0 1px 0 rgba(255,238,202,.10)!important;
-}
-html[data-theme="dark"] body #drawer .manager-tab.active .manager-tab-badge{
-  color:#f7e5c0!important;background:rgba(218,185,128,.18)!important;
-}
-html[data-theme="dark"] body #drawer :is(.manager-quick:hover,.manager-site-row:hover,.category-manager-item:hover,.deleted-item:hover,.duplicate-group:hover){
-  border-color:rgba(218,185,128,.28)!important;
-}
-html[data-theme="dark"] body #drawer :is(.btn.primary,.manager-panel .btn.primary,.cat-mini.primary,.manager-batch-bar .btn.primary){
-  background:linear-gradient(120deg,#e1bf7e,#af884b)!important;border-color:rgba(218,185,128,.38)!important;color:#241b10!important;text-shadow:none!important;
-}
-html[data-theme="dark"] body #drawer :is(button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible){
-  outline-color:rgba(225,191,126,.78)!important;box-shadow:0 0 0 3px rgba(214,179,113,.16)!important;
-}
-html[data-theme="dark"] body #drawer :is(.manager-tab,.manager-site-row,.category-manager-item,.deleted-item,.duplicate-group){
-  accent-color:#d4ae69;
-}
-</style>
+
 </head>
 <body><div class="ambient-scene" aria-hidden="true"><i class="glass-capsule"></i><i class="glass-capsule"></i><i class="glass-capsule"></i><i class="glass-capsule"></i></div>
 <div class="fx-responsive-wallpaper" aria-hidden="true"></div>
@@ -17709,24 +17688,26 @@ html.fx-glass-fallback[data-theme="liquid"] :is(.login-card,.site-editor,.catego
   html[data-theme] .glass{border-color:var(--line)!important}
   html[data-theme] :is(.drawer,.site-editor,.fx-dialog){color:var(--text)!important}
 }
-/* Premium black-and-champagne-gold accents: dark only, all other four themes untouched. */
+/* V19.90: dark theme uses its established indigo/violet accent tokens; no fixed gold UI accents. */
 html[data-theme="dark"]{
-  --accent:#d4ae69;--accent2:#aa8346;--accent-soft:rgba(212,174,105,.13);
-  --fx-optical-line:rgba(218,185,128,.16);--fx-optical-top:rgba(255,226,172,.07);
-  --login-accent:#e1c28d;--login-focus:rgba(214,179,113,.43);
-  --login-button:linear-gradient(120deg,#e1bf7e,#af884b);--login-button-shadow:0 10px 25px rgba(176,125,50,.18);
-  --login-edge:rgba(218,185,128,.30);
+  --accent:#7487ff;--accent2:#a45cf6;--accent-soft:rgba(116,135,255,.15);
+  --fx-optical-line:rgba(116,135,255,.16);--fx-optical-top:rgba(164,92,246,.07);
+  --login-accent:#a2b3ff;--login-focus:rgba(138,155,255,.46);
+  --login-button:linear-gradient(105deg,#6784fc,#a263ec);--login-button-shadow:0 11px 28px rgba(81,83,208,.22);
+  --login-edge:rgba(137,168,231,.23);
+  --mgr-hover:rgba(116,135,255,.075);--mgr-line:rgba(116,135,255,.15);
+  --mgr-line-strong:rgba(116,135,255,.28);--mgr-tab-active:#eef2ff;
+  --mgr-tab-bg:linear-gradient(135deg,rgba(116,135,255,.20),rgba(164,92,246,.13));
 }
-html[data-theme="dark"] body :is(.btn.primary,.manager-tab.active,.fx-dialog-btn.primary,.login-submit,.site-editor .btn.primary){border-color:rgba(215,176,105,.30)!important}
-html[data-theme="dark"] body :is(.btn.primary,.fx-dialog-btn.primary){background:linear-gradient(120deg,#ddbd81,#af884c)!important;color:#21180e!important;text-shadow:none!important}
-html[data-theme="dark"] body :is(.manager-tab.active,.nav-btn.active){color:#f0d5a3!important}
-html[data-theme="dark"] body :is(.manager-tab.active,.card.glass:hover,.category-manager-item:hover){border-color:rgba(213,178,112,.24)!important}
-html[data-theme="dark"] body :is(.fx-dialog,.site-editor,.category-icon-editor,.fx-icon-library,.login-card,.command-panel){border-color:rgba(216,181,117,.22)!important}
-html[data-theme="dark"] body :is(.fx-dialog-accent,.fx-dialog-icon){color:#e2be79!important}
-html[data-theme="dark"] body :is(#themeBtn,#compactThemeBtn){color:#dfbf84!important}
-html[data-theme="dark"] body :is(.calendar-ref-monthline b,.calendar-ref-progress-head,.calendar-ref-selected-icon){color:#d6b77d!important}
-html[data-theme="dark"] body .calendar-ref-progress-track i{background:linear-gradient(90deg,#9d7640,#e1c287)!important}
-html[data-theme="dark"] body .calendar-day.today{background:linear-gradient(145deg,#e3c68d,#a47841)!important;color:#241a10!important}
+html[data-theme="neon"]{
+  --mgr-hover:rgba(69,221,255,.09);--mgr-line:rgba(82,151,255,.18);
+  --mgr-line-strong:rgba(118,185,255,.30);--mgr-tab-active:#f7f9ff;
+  --mgr-tab-bg:linear-gradient(135deg,rgba(69,221,255,.20),rgba(181,92,255,.16));
+}
+html[data-theme="liquid"]{
+  --mgr-tab-active:#ffffff;
+  --mgr-tab-bg:linear-gradient(110deg,rgba(70,154,238,.48),rgba(146,91,228,.47));
+}
 @media(prefers-reduced-motion:reduce){.category-manager-item,.manager-tab{transition:none!important}}
 </style>
 <style id="v1975-site-doctor-css">
@@ -17868,5 +17849,130 @@ html[data-theme="frosted"] body #hero .liquid-search-btn{
   }
 }
 </style>
+
+<style id="v1990-complete-theme-follow-through">
+/* V19.90 completion pass: shared accent tokens for every theme and every manager sub-page.
+   No authentication, CRUD, D1/KV, or data-flow behavior is changed. */
+html[data-theme] body :is(.btn.primary,.fx-dialog-btn.primary,.site-editor .btn.primary,#drawer .btn.primary,.cat-mini.primary){
+  color:#fff!important;
+  background:linear-gradient(120deg,var(--accent),var(--accent2))!important;
+  border-color:color-mix(in srgb,var(--accent) 42%,transparent)!important;
+  box-shadow:0 8px 20px color-mix(in srgb,var(--accent) 18%,transparent),inset 0 1px 0 rgba(255,255,255,.22)!important;
+  text-shadow:none!important;
+}
+html[data-theme] body .login-submit{
+  color:#fff!important;
+  background:var(--login-button)!important;
+  border-color:color-mix(in srgb,var(--login-accent,var(--accent)) 32%,transparent)!important;
+  box-shadow:var(--login-button-shadow)!important;
+}
+html[data-theme="frosted"] body :is(.btn.primary,.fx-dialog-btn.primary,.site-editor .btn.primary,#drawer .btn.primary,.cat-mini.primary){
+  color:#1a1a1c!important;background:linear-gradient(105deg,#f1f1ef,#d8d8d6)!important;
+  border-color:rgba(255,255,255,.70)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.90),0 8px 18px rgba(0,0,0,.15)!important;
+}
+html[data-theme="frosted"] body .login-submit{color:#212326!important}
+
+/* Login label/logo, form focus and eye control inherit the active theme's accent. */
+html[data-theme] body .login-eyebrow{color:var(--login-accent,var(--accent))!important}
+html[data-theme] body .login-brand svg{filter:drop-shadow(0 8px 16px color-mix(in srgb,var(--accent) 28%,transparent))!important}
+html[data-theme] body .login-form input:focus{border-color:var(--login-focus,var(--accent))!important}
+
+/* Category chooser / site context menu: current category and icon use theme colors. */
+html[data-theme] body .category-context .context-item.current{
+  color:var(--text)!important;background:var(--accent-soft)!important;
+  border-color:color-mix(in srgb,var(--accent) 42%,transparent)!important;
+}
+html[data-theme] body .category-context .context-item.current .context-cat-icon{
+  color:#fff!important;background:linear-gradient(135deg,var(--accent),var(--accent2))!important;
+}
+html[data-theme] body .category-context .context-check{color:var(--accent)!important}
+html[data-theme] body .category-context .context-item:hover{
+  background:color-mix(in srgb,var(--accent) 10%,transparent)!important;
+  border-color:color-mix(in srgb,var(--accent) 24%,transparent)!important;
+}
+html[data-theme] body .context-tool.edit-site{
+  color:var(--text)!important;background:var(--accent-soft)!important;
+  border-color:color-mix(in srgb,var(--accent) 28%,transparent)!important;
+}
+html[data-theme] body .context-tool.edit-site:hover{
+  background:color-mix(in srgb,var(--accent) 17%,transparent)!important;
+  border-color:color-mix(in srgb,var(--accent) 42%,transparent)!important;
+}
+html[data-theme] body #drawer :is(.mini-btn,.cat-mini):hover:not(.danger){
+  color:var(--mgr-text,var(--text))!important;
+  background:color-mix(in srgb,var(--accent) 12%,var(--mgr-surface-soft,transparent))!important;
+  border-color:color-mix(in srgb,var(--accent) 30%,var(--mgr-line,var(--line)))!important;
+}
+html[data-theme] body .command-item.active,
+html[data-theme] body .command-item:hover{
+  background:color-mix(in srgb,var(--accent) 12%,transparent)!important;
+  border-color:color-mix(in srgb,var(--accent) 25%,transparent)!important;
+}
+
+/* Site editor: Save button, focus ring and selected controls follow the same theme. */
+html[data-theme] body .site-editor :is(input,select,textarea):focus{
+  border-color:color-mix(in srgb,var(--accent) 58%,transparent)!important;
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 15%,transparent)!important;
+}
+html[data-theme] body .site-editor .btn.primary{background:linear-gradient(120deg,var(--accent),var(--accent2))!important;color:#fff!important}
+html[data-theme="frosted"] body .site-editor .btn.primary{background:linear-gradient(105deg,#f1f1ef,#d8d8d6)!important;color:#1a1a1c!important}
+
+/* Admin navigation tabs and controls: all modules (overview, sites, categories,
+   duplicate detection, recycle bin, site check, data) share the active theme tokens. */
+html[data-theme] body #drawer .manager-tab.active{
+  color:var(--mgr-tab-active,var(--mgr-text,var(--text)))!important;
+  background:var(--mgr-tab-bg)!important;
+  border-color:var(--mgr-line-strong,var(--line2))!important;
+}
+html[data-theme] body #drawer .manager-tab.active .manager-tab-badge{
+  color:var(--mgr-tab-active,var(--mgr-text,var(--text)))!important;
+  background:color-mix(in srgb,var(--accent) 16%,var(--mgr-surface-soft,transparent))!important;
+  border-color:color-mix(in srgb,var(--accent) 25%,var(--mgr-line,transparent))!important;
+}
+html[data-theme] body #drawer :is(.site-doctor-filters .mini-btn.active,.manager-filter.active,.manager-subtab.active,.manager-batch-bar .btn.active){
+  color:var(--mgr-tab-active,var(--mgr-text,var(--text)))!important;
+  background:var(--mgr-tab-bg)!important;
+  border-color:var(--mgr-line-strong,var(--line2))!important;
+}
+html[data-theme] body #drawer :is(.manager-site-row:hover,.manager-quick:hover,.category-manager-item:hover,.deleted-item:hover,.duplicate-group:hover){
+  border-color:color-mix(in srgb,var(--accent) 34%,var(--mgr-line,var(--line)))!important;
+}
+html[data-theme] body #drawer :is(.field input,.field select,.field textarea,.manager-site-toolbar input,.manager-site-toolbar select):focus,
+html[data-theme] body #drawer :is(button,input,select,textarea):focus-visible{
+  outline-color:var(--accent)!important;
+  border-color:color-mix(in srgb,var(--accent) 48%,var(--mgr-line,var(--line)))!important;
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 14%,transparent)!important;
+}
+html[data-theme] body #drawer .site-doctor-toolbar .btn.vpn{
+  color:var(--mgr-text,var(--text))!important;
+  border-color:color-mix(in srgb,var(--accent) 42%,var(--mgr-line,var(--line)))!important;
+  background:color-mix(in srgb,var(--accent) 13%,var(--mgr-control,transparent))!important;
+}
+html[data-theme] body #drawer .manager-panel :is(.btn.primary,.fx-dialog-btn.primary){
+  color:#fff!important;background:linear-gradient(120deg,var(--accent),var(--accent2))!important;
+}
+html[data-theme="frosted"] body #drawer .manager-panel :is(.btn.primary,.fx-dialog-btn.primary){
+  color:#1a1a1c!important;background:linear-gradient(105deg,#f1f1ef,#d8d8d6)!important;
+}
+
+/* Other selected controls/popovers follow theme; semantic success/warning/error colors remain semantic. */
+html[data-theme] body .fx-icon-library-tabs button.active,
+html[data-theme] body .fx-icon-library-cell.selected{
+  background:linear-gradient(120deg,color-mix(in srgb,var(--accent) 62%,transparent),color-mix(in srgb,var(--accent2) 58%,transparent))!important;
+  border-color:color-mix(in srgb,var(--accent) 54%,white)!important;
+}
+html[data-theme="frosted"] body .fx-icon-library-tabs button.active,
+html[data-theme="frosted"] body .fx-icon-library-cell.selected{
+  color:#1a1a1c!important;background:linear-gradient(105deg,#f1f1ef,#d8d8d6)!important;
+  border-color:rgba(255,255,255,.72)!important;
+}
+html[data-theme] body :is(.fx-dialog,.site-editor,.category-icon-editor,.fx-icon-library,.login-card,.command-panel){
+  border-color:color-mix(in srgb,var(--accent) 22%,var(--line))!important;
+}
+html[data-theme] body :is(.fx-dialog-accent,.fx-dialog-icon){color:var(--accent)!important}
+html[data-theme] body :is(#themeBtn,#compactThemeBtn){color:var(--accent)!important}
+</style>
+
 </body>
 </html>
