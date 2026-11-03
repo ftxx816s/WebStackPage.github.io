@@ -1,5 +1,5 @@
 // Cloudflare Pages Function: /api/state
-// V18.60 Private Login. Legacy nav_state read/write endpoints are retired; /api/data is the only navigation data API.
+// V19.88 Private Login. Legacy nav_state read/write endpoints are retired; /api/data is the only navigation data API.
 //
 // Required Pages bindings / variables:
 //   DB              -> D1 database binding
@@ -13,8 +13,6 @@
 //   POST /api/state?mode=logout
 //   GET/PUT /api/state  -> 410 Gone (legacy cloud-state endpoint retired)
 
-const MAX_JSON_BYTES = 4_500_000;
-const BACKUP_KEEP = 20;
 const SESSION_COOKIE = "fxnav_session";
 const SESSION_MAX_AGE = 60 * 60 * 24 * 30; // 30 days
 const LOGIN_WINDOW_SECONDS = 15 * 60;
@@ -41,32 +39,9 @@ function configured(env) {
 }
 
 async function ensureSchema(env) {
-  await env.DB.prepare(`
-    CREATE TABLE IF NOT EXISTS nav_state (
-      owner TEXT PRIMARY KEY,
-      revision INTEGER NOT NULL DEFAULT 1,
-      data TEXT NOT NULL,
-      updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      client_id TEXT
-    )
-  `).run();
-
-  await env.DB.prepare(`
-    CREATE TABLE IF NOT EXISTS nav_backup (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      owner TEXT NOT NULL,
-      revision INTEGER NOT NULL,
-      data TEXT NOT NULL,
-      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      client_id TEXT
-    )
-  `).run();
-
-  await env.DB.prepare(`
-    CREATE INDEX IF NOT EXISTS idx_nav_backup_owner_id
-    ON nav_backup(owner, id DESC)
-  `).run();
-
+  // Only the active login rate-limit table is managed here.
+  // Legacy nav_state/nav_backup tables are intentionally left untouched:
+  // /api/data can still read an existing nav_state during one-time V16 migration.
   await env.DB.prepare(`
     CREATE TABLE IF NOT EXISTS auth_rate (
       rate_key TEXT PRIMARY KEY,
@@ -332,148 +307,6 @@ async function handleLogout(request) {
     200,
     { "Set-Cookie": clearSessionCookie() }
   );
-}
-
-async function handleStateGet(request, env) {
-  const auth = await requireAuth(request, env);
-  if (auth.error) return auth.error;
-
-  const row = await env.DB.prepare(`
-    SELECT revision, data, updated_at
-    FROM nav_state
-    WHERE owner = ?
-    LIMIT 1
-  `).bind(auth.owner).first();
-
-  if (!row) {
-    return json({
-      ok: true,
-      exists: false,
-      revision: 0,
-      data: null,
-      updatedAt: null
-    });
-  }
-
-  let data = null;
-  try {
-    data = JSON.parse(row.data);
-  } catch {
-    return json({ ok: false, error: "Stored cloud state is invalid JSON." }, 500);
-  }
-
-  return json({
-    ok: true,
-    exists: true,
-    revision: Number(row.revision) || 0,
-    data,
-    updatedAt: row.updated_at
-  });
-}
-
-async function handleStatePut(request, env) {
-  if (!sameOriginMutation(request)) {
-    return json({ ok: false, error: "Invalid request origin." }, 403);
-  }
-
-  const auth = await requireAuth(request, env);
-  if (auth.error) return auth.error;
-
-  let body;
-  try {
-    const raw = await request.text();
-    if (new TextEncoder().encode(raw).byteLength > MAX_JSON_BYTES) {
-      return json({ ok: false, error: "Navigation state is too large." }, 413);
-    }
-    body = JSON.parse(raw);
-  } catch {
-    return json({ ok: false, error: "Invalid JSON body." }, 400);
-  }
-
-  const data = body?.data;
-  const baseRevision = Math.max(0, Number(body?.baseRevision) || 0);
-  const force = body?.force === true;
-  const clientId = String(body?.clientId || "").slice(0, 128);
-
-  if (!data || typeof data !== "object" || Array.isArray(data)) {
-    return json({ ok: false, error: "Missing or invalid data object." }, 400);
-  }
-
-  const dataText = JSON.stringify(data);
-  if (new TextEncoder().encode(dataText).byteLength > MAX_JSON_BYTES) {
-    return json({ ok: false, error: "Navigation state is too large." }, 413);
-  }
-
-  const current = await env.DB.prepare(`
-    SELECT revision, data, updated_at
-    FROM nav_state
-    WHERE owner = ?
-    LIMIT 1
-  `).bind(auth.owner).first();
-
-  if (!current) {
-    const revision = 1;
-    await env.DB.prepare(`
-      INSERT INTO nav_state(owner, revision, data, updated_at, client_id)
-      VALUES(?, ?, ?, CURRENT_TIMESTAMP, ?)
-    `).bind(auth.owner, revision, dataText, clientId).run();
-
-    const row = await env.DB.prepare(`
-      SELECT updated_at FROM nav_state WHERE owner = ?
-    `).bind(auth.owner).first();
-
-    return json({
-      ok: true,
-      created: true,
-      revision,
-      updatedAt: row?.updated_at || null
-    });
-  }
-
-  const currentRevision = Number(current.revision) || 0;
-
-  if (!force && baseRevision !== currentRevision) {
-    return json({
-      ok: false,
-      error: "Revision conflict.",
-      revision: currentRevision,
-      updatedAt: current.updated_at
-    }, 409);
-  }
-
-  await env.DB.prepare(`
-    INSERT INTO nav_backup(owner, revision, data, created_at, client_id)
-    VALUES(?, ?, ?, CURRENT_TIMESTAMP, ?)
-  `).bind(auth.owner, currentRevision, current.data, clientId).run();
-
-  const nextRevision = currentRevision + 1;
-
-  await env.DB.prepare(`
-    UPDATE nav_state
-    SET revision = ?, data = ?, updated_at = CURRENT_TIMESTAMP, client_id = ?
-    WHERE owner = ?
-  `).bind(nextRevision, dataText, clientId, auth.owner).run();
-
-  await env.DB.prepare(`
-    DELETE FROM nav_backup
-    WHERE owner = ?
-      AND id NOT IN (
-        SELECT id FROM nav_backup
-        WHERE owner = ?
-        ORDER BY id DESC
-        LIMIT ?
-      )
-  `).bind(auth.owner, auth.owner, BACKUP_KEEP).run();
-
-  const row = await env.DB.prepare(`
-    SELECT updated_at FROM nav_state WHERE owner = ?
-  `).bind(auth.owner).first();
-
-  return json({
-    ok: true,
-    revision: nextRevision,
-    updatedAt: row?.updated_at || null
-  });
 }
 
 async function route(context) {

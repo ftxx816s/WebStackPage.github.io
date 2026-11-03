@@ -1,4 +1,4 @@
-const API_VERSION="19.87";
+const API_VERSION="19.88";
 import {V17_CATEGORIES,V17_SITES} from "../_data/v17-seed.js";
 import {json,requireAuth,sameOrigin,verifySession,normalizeUsername} from "../_shared/auth.js";
 
@@ -13,7 +13,13 @@ async function ensureSchema(env){
   if(!__schemaReadyPromiseV186){
     __schemaReadyPromiseV186=(async()=>{
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS categories_v17(name TEXT PRIMARY KEY,icon TEXT NOT NULL DEFAULT '•',sort_order INTEGER NOT NULL DEFAULT 0,is_builtin INTEGER NOT NULL DEFAULT 0,updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`).run();
-  await env.DB.prepare(`CREATE TABLE IF NOT EXISTS sites_v17(id TEXT PRIMARY KEY,name TEXT NOT NULL,url TEXT NOT NULL,normalized_url TEXT NOT NULL UNIQUE,domain TEXT NOT NULL,root_domain TEXT NOT NULL,full_title TEXT,category_name TEXT NOT NULL,sort_order INTEGER NOT NULL DEFAULT 0,is_favorite INTEGER NOT NULL DEFAULT 0,is_deleted INTEGER NOT NULL DEFAULT 0,is_custom INTEGER NOT NULL DEFAULT 0,icon_url TEXT,icon_key TEXT,visit_count INTEGER NOT NULL DEFAULT 0,last_visited_at TEXT,updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`).run();
+  await env.DB.prepare(`CREATE TABLE IF NOT EXISTS sites_v17(id TEXT PRIMARY KEY,name TEXT NOT NULL,url TEXT NOT NULL,normalized_url TEXT NOT NULL UNIQUE,domain TEXT NOT NULL,root_domain TEXT NOT NULL,full_title TEXT,category_name TEXT NOT NULL,sort_order INTEGER NOT NULL DEFAULT 0,is_favorite INTEGER NOT NULL DEFAULT 0,is_deleted INTEGER NOT NULL DEFAULT 0,is_custom INTEGER NOT NULL DEFAULT 0,icon_url TEXT,icon_key TEXT,icon_cache_version TEXT,visit_count INTEGER NOT NULL DEFAULT 0,last_visited_at TEXT,updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`).run();
+  // Additive-only migration for existing D1 databases; never rebuild or clear user tables.
+  const siteColumns=(await env.DB.prepare(`PRAGMA table_info(sites_v17)`).all()).results||[];
+  if(!siteColumns.some(column=>String(column.name)==="icon_cache_version")){
+    try{await env.DB.prepare(`ALTER TABLE sites_v17 ADD COLUMN icon_cache_version TEXT`).run()}
+    catch(error){if(!/duplicate column name/i.test(String(error?.message||error)))throw error}
+  }
   await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_sites_v17_category_sort ON sites_v17(category_name,sort_order)`).run();
   await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_sites_v17_root_domain ON sites_v17(root_domain)`).run();
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS settings_v17(owner TEXT NOT NULL,key TEXT NOT NULL,value TEXT NOT NULL,updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,PRIMARY KEY(owner,key))`).run();
@@ -27,9 +33,9 @@ async function ensureSchema(env){
   }
   return __schemaReadyPromiseV186;
 }
-async function getSetting(env,owner,key){const r=await env.DB.prepare(`SELECT value FROM settings_v17 WHERE owner=? AND key=?`).bind(owner,key).first();return r?.value??null}
+async function getSetting(env,owner,key,db=env.DB){const r=await db.prepare(`SELECT value FROM settings_v17 WHERE owner=? AND key=?`).bind(owner,key).first();return r?.value??null}
 async function setSetting(env,owner,key,value){await env.DB.prepare(`INSERT INTO settings_v17(owner,key,value,updated_at) VALUES(?,?,?,CURRENT_TIMESTAMP) ON CONFLICT(owner,key) DO UPDATE SET value=excluded.value,updated_at=CURRENT_TIMESTAMP`).bind(owner,key,String(value)).run()}
-async function getRevision(env,owner){return Number(await getSetting(env,owner,"revision"))||0}
+async function getRevision(env,owner,db=env.DB){return Number(await getSetting(env,owner,"revision",db))||0}
 // V19.87: every D1 mutation that changes client-visible data advances the
 // revision in the SAME transaction. Retry only revision races; never blind-write.
 async function commitRevisionMutationV1987(env,owner,build,{retries=3}={}){
@@ -105,7 +111,7 @@ async function migrateFromV16(env,owner){
       for(const [id,val] of Object.entries(d.iconOverrides)){
         const icon=dataUrlParts(val);if(!icon||icon.bytes.byteLength>MAX_ICON_BYTES)continue;
         const key=`custom:${owner}:${id}:${crypto.randomUUID()}`;
-        await env.KV.put(key,icon.bytes,{metadata:{contentType:icon.type,kind:"custom"}});
+        await env.KV.put(key,icon.bytes,{metadata:{contentType:icon.type,kind:"custom",createdAt:Date.now()}});
         await env.DB.prepare(`UPDATE sites_v17 SET icon_key=?,updated_at=CURRENT_TIMESTAMP WHERE id=?`).bind(key,id).run();
       }
     }
@@ -124,19 +130,37 @@ async function migrateFromV16(env,owner){
   return source;
 }
 async function buildBootstrap(env,owner,migrationSource,{publicView=false}={}){
-  const cats=(await env.DB.prepare(`SELECT * FROM categories_v17 ORDER BY sort_order,name`).all()).results||[];
+  // Start at the primary, then keep all reads in one sequentially-consistent
+  // D1 session. Revision-before/after detects writes interleaved with snapshot
+  // construction, so a device never accepts a mixed-revision bootstrap.
+  const db=typeof env.DB.withSession==="function"?env.DB.withSession("first-primary"):env.DB;
   const sql=publicView
-    ? `SELECT id,name,url,normalized_url,domain,root_domain,full_title,category_name,sort_order,0 AS is_favorite,0 AS is_deleted,is_custom,icon_url,CASE WHEN icon_key IS NOT NULL THEN 1 ELSE 0 END AS has_custom_icon,CASE WHEN icon_key IS NOT NULL THEN substr(icon_key,-36) ELSE updated_at END AS icon_version,visit_count,last_visited_at,updated_at,created_at FROM sites_v17 WHERE is_deleted=0 ORDER BY category_name,sort_order,name`
-    : `SELECT id,name,url,normalized_url,domain,root_domain,full_title,category_name,sort_order,is_favorite,is_deleted,is_custom,icon_url,CASE WHEN icon_key IS NOT NULL THEN 1 ELSE 0 END AS has_custom_icon,CASE WHEN icon_key IS NOT NULL THEN substr(icon_key,-36) ELSE updated_at END AS icon_version,visit_count,last_visited_at,updated_at,created_at FROM sites_v17 ORDER BY category_name,sort_order,name`;
-  const sites=(await env.DB.prepare(sql).all()).results||[];
-  let settings={};
-  try{
-    const ui=JSON.parse(await getSetting(env,owner,"ui")||"{}")||{};
-    settings=publicView?{categoryTitles:(ui.categoryTitles&&typeof ui.categoryTitles==="object"&&!Array.isArray(ui.categoryTitles))?ui.categoryTitles:{}}:ui;
-  }catch{settings={}}
-  return {ok:true,revision:await getRevision(env,owner),migrationSource,categories:cats,sites,settings,iconStore:"kv",kv:!!env.KV,access:publicView?"guest":"admin",authenticated:!publicView};
+    ? `SELECT id,name,url,normalized_url,domain,root_domain,full_title,category_name,sort_order,0 AS is_favorite,0 AS is_deleted,is_custom,icon_url,CASE WHEN icon_key IS NOT NULL THEN 1 ELSE 0 END AS has_custom_icon,CASE WHEN icon_key IS NOT NULL THEN substr(icon_key,-36) ELSE COALESCE(NULLIF(icon_cache_version,''),updated_at) END AS icon_version,visit_count,last_visited_at,updated_at,created_at FROM sites_v17 WHERE is_deleted=0 ORDER BY category_name,sort_order,name`
+    : `SELECT id,name,url,normalized_url,domain,root_domain,full_title,category_name,sort_order,is_favorite,is_deleted,is_custom,icon_url,CASE WHEN icon_key IS NOT NULL THEN 1 ELSE 0 END AS has_custom_icon,CASE WHEN icon_key IS NOT NULL THEN substr(icon_key,-36) ELSE COALESCE(NULLIF(icon_cache_version,''),updated_at) END AS icon_version,visit_count,last_visited_at,updated_at,created_at FROM sites_v17 ORDER BY category_name,sort_order,name`;
+  for(let attempt=0;attempt<3;attempt++){
+    const revisionBefore=await getRevision(env,owner,db);
+    const cats=(await db.prepare(`SELECT * FROM categories_v17 ORDER BY sort_order,name`).all()).results||[];
+    const sites=(await db.prepare(sql).all()).results||[];
+    let settings={};
+    try{
+      const ui=JSON.parse(await getSetting(env,owner,"ui",db)||"{}")||{};
+      settings=publicView?{categoryTitles:(ui.categoryTitles&&typeof ui.categoryTitles==="object"&&!Array.isArray(ui.categoryTitles))?ui.categoryTitles:{}}:ui;
+    }catch{settings={}}
+    const revisionAfter=await getRevision(env,owner,db);
+    if(revisionBefore===revisionAfter){
+      return {ok:true,revision:revisionAfter,migrationSource,categories:cats,sites,settings,iconStore:"kv",kv:!!env.KV,access:publicView?"guest":"admin",authenticated:!publicView};
+    }
+  }
+  const error=new Error("D1 data changed repeatedly while building the latest snapshot. Please retry the read.");
+  error.status=503;error.code="D1_SNAPSHOT_BUSY";throw error;
 }
-async function backupSnapshot(env,owner,revision){const snap=await buildBootstrap(env,owner,"backup");await env.DB.prepare(`INSERT INTO backups_v17(owner,revision,snapshot,created_at) VALUES(?,?,?,CURRENT_TIMESTAMP)`).bind(owner,revision,JSON.stringify(snap)).run();await env.DB.prepare(`DELETE FROM backups_v17 WHERE owner=? AND id NOT IN (SELECT id FROM backups_v17 WHERE owner=? ORDER BY id DESC LIMIT ?)`).bind(owner,owner,BACKUP_KEEP).run()}
+async function backupSnapshot(env,owner){
+  const snap=await buildBootstrap(env,owner,"backup");
+  const revision=Number(snap.revision)||0;
+  await env.DB.prepare(`INSERT INTO backups_v17(owner,revision,snapshot,created_at) VALUES(?,?,?,CURRENT_TIMESTAMP)`).bind(owner,revision,JSON.stringify(snap)).run();
+  await env.DB.prepare(`DELETE FROM backups_v17 WHERE owner=? AND id NOT IN (SELECT id FROM backups_v17 WHERE owner=? ORDER BY id DESC LIMIT ?)`).bind(owner,owner,BACKUP_KEEP).run();
+  return revision;
+}
 
 async function listBackups(env,owner){
   const rows=(await env.DB.prepare(`SELECT id,revision,snapshot,created_at FROM backups_v17 WHERE owner=? ORDER BY id DESC LIMIT ?`).bind(owner,BACKUP_KEEP).all()).results||[];
@@ -253,32 +277,59 @@ async function refreshIcons(env,owner,ids){
   if(!env.KV)return json({ok:false,error:"Missing KV binding: KV"},500);
   const clean=[...new Set((Array.isArray(ids)?ids:[]).map(String))].slice(0,12);
   let refreshed=0,skipped=0,failed=0,next=0;
-  const refreshedIds=[];
+  const refreshedRecords=[];
   async function worker(){
     while(next<clean.length){
       const id=clean[next++];
       try{
         const site=await env.DB.prepare(`SELECT * FROM sites_v17 WHERE id=? LIMIT 1`).bind(id).first();
         if(!site||site.icon_key&&String(site.icon_key).startsWith("custom:")){skipped++;continue}
-        const hostKey=faviconCacheKeyV186(site),legacyKey=legacyFaviconKeyV186(site);
-        if(hostKey)await env.KV.delete(hostKey);
-        if(legacyKey)await env.KV.delete(legacyKey);
-        await serveIcon(env,site);
-        refreshedIds.push(id);
+        const oldKey=faviconCacheKeyV186(site),legacyKey=legacyFaviconKeyV186(site);
+        // A unique versioned key prevents an old KV edge cache entry from being
+        // served under the newly refreshed browser URL.
+        const version=crypto.randomUUID();
+        const freshSite={...site,icon_cache_version:version};
+        await serveIcon(env,freshSite,{bypassCache:true});
+        refreshedRecords.push({id,version,newKey:faviconCacheKeyV186(freshSite),oldKey,legacyKey});
         refreshed++;
       }catch{failed++}
     }
   }
   await Promise.all(Array.from({length:Math.min(4,clean.length)},worker));
-  let revision=await getRevision(env,owner);
-  if(refreshedIds.length){
-    const stamp=new Date().toISOString();
-    const committed=await commitRevisionMutationV1987(env,owner,async()=>({
-      statements:refreshedIds.map(id=>env.DB.prepare(`UPDATE sites_v17 SET updated_at=? WHERE id=? AND (icon_key IS NULL OR icon_key NOT LIKE 'custom:%')`).bind(stamp,id))
-    }));
-    revision=committed.revision;
+  let revision=await getRevision(env,owner),kvCleanupPending=0;
+  if(refreshedRecords.length){
+    try{
+      const committed=await commitRevisionMutationV1987(env,owner,async()=>{
+        const ids=refreshedRecords.map(item=>item.id),marks=ids.map(()=>"?").join(",");
+        const rows=(await env.DB.prepare(`SELECT id,icon_key FROM sites_v17 WHERE id IN (${marks})`).bind(...ids).all()).results||[];
+        const byId=new Map(rows.map(row=>[String(row.id),row]));
+        const eligible=refreshedRecords.filter(item=>{
+          const row=byId.get(item.id);
+          return !!row&&!(String(row.icon_key||"").startsWith("custom:"));
+        });
+        if(!eligible.length)return {unchanged:true,result:{committedIds:[]}};
+        const stamp=new Date().toISOString();
+        return {statements:eligible.map(item=>env.DB.prepare(`UPDATE sites_v17 SET icon_cache_version=?,updated_at=? WHERE id=? AND (icon_key IS NULL OR icon_key NOT LIKE 'custom:%')`).bind(item.version,stamp,item.id)),
+          result:{committedIds:eligible.map(item=>item.id)}};
+      });
+      revision=committed.revision;
+      const committedIds=new Set(committed.committedIds||[]);
+      refreshed=committedIds.size;
+      for(const item of refreshedRecords){
+        if(!committedIds.has(item.id)){
+          if(item.newKey)try{await env.KV.delete(item.newKey)}catch{kvCleanupPending++}
+          continue;
+        }
+        for(const key of [item.oldKey,item.legacyKey]){
+          if(key&&key!==item.newKey)try{await env.KV.delete(key)}catch{kvCleanupPending++}
+        }
+      }
+    }catch(error){
+      for(const item of refreshedRecords)if(item.newKey)try{await env.KV.delete(item.newKey)}catch{kvCleanupPending++}
+      throw error;
+    }
   }
-  return json({ok:true,refreshed,skipped,failed,truncated:Array.isArray(ids)&&ids.length>12,revision});
+  return json({ok:true,refreshed,skipped,failed,truncated:Array.isArray(ids)&&ids.length>12,revision,kvCleanupPending});
 }
 async function healthBatch(env,ids){
   const clean=[...new Set((Array.isArray(ids)?ids:[]).map(String))].slice(0,12);
@@ -517,11 +568,18 @@ async function maintenanceReport(env,owner,{clean=false,auto=false}={}){
   const validCustomKeys=new Set(refs.map(r=>String(r.icon_key||"")).filter(k=>k.startsWith(ownerPrefix)));
   const listed=await listKvPrefix(env,ownerPrefix);
   const listedNames=new Set(listed.keys.map(k=>String(k.name||"")).filter(Boolean));
-  const orphanKeys=[...listedNames].filter(k=>!validCustomKeys.has(k));
+  const now=Date.now(),orphanGraceMs=120_000;
+  const orphanEntries=listed.keys.filter(item=>!validCustomKeys.has(String(item.name||"")));
+  const pendingOrphanKeys=orphanEntries.filter(item=>{
+    const created=Number(item?.metadata?.createdAt)||0;
+    return created>0&&now-created<orphanGraceMs;
+  }).map(item=>String(item.name));
+  const pendingOrphanSet=new Set(pendingOrphanKeys);
+  const orphanKeys=orphanEntries.map(item=>String(item.name||"")).filter(k=>k&&!pendingOrphanSet.has(k));
   const absentReferencedKeys=env.KV&&listed.complete?[...validCustomKeys].filter(k=>!listedNames.has(k)):[];
   // KV namespace listing is eventually consistent. Treat a just-written
   // pointer as propagation-pending for 90s instead of reporting a false loss.
-  const now=Date.now(),propagationGraceMs=90_000;
+  const propagationGraceMs=90_000;
   const refsByKey=new Map();
   for(const row of refs){const key=String(row.icon_key||"");if(!refsByKey.has(key))refsByKey.set(key,[]);refsByKey.get(key).push(row)}
   const pendingReferencedKeys=absentReferencedKeys.filter(key=>(refsByKey.get(key)||[]).some(row=>{
@@ -541,9 +599,9 @@ async function maintenanceReport(env,owner,{clean=false,auto=false}={}){
     await setSetting(env,owner,"maintenance_last",new Date().toISOString());
   }
   const revision=await getRevision(env,owner);
-  return {ok:true,auto,cleaned:clean,revision,policy:{backupKeep:BACKUP_KEEP,customIconDeleteLimit:KV_ORPHAN_DELETE_LIMIT,faviconTtlDays:30,kvReadCacheTtlSeconds:60,kvPropagationGraceSeconds:90,autoMaintenanceDays:7},
+  return {ok:true,auto,cleaned:clean,revision,policy:{backupKeep:BACKUP_KEEP,customIconDeleteLimit:KV_ORPHAN_DELETE_LIMIT,faviconTtlDays:30,kvReadCacheTtlSeconds:30,kvPropagationGraceSeconds:90,autoMaintenanceDays:7},
     d1:{sites:Number(stats.sites)||0,customSites:Number(stats.custom_sites)||0,hiddenSites:Number(stats.hidden_sites)||0,categories:Number(stats.categories)||0,backups:backupCount,extraBackups,exactDuplicateUrls:duplicates.length,duplicates:duplicates.map(r=>({url:r.normalized_url,count:Number(r.c)||0}))},
-    kv:{enabled:!!env.KV,customKeys:listed.keys.length,referencedCustomKeys:validCustomKeys.size,orphanCustomKeys:orphanKeys.length,missingReferencedIcons:env.KV&&listed.complete?missingReferencedKeys.length:null,pendingReferencedIcons:env.KV&&listed.complete?pendingReferencedKeys.length:null,missingIconSiteIds:env.KV&&listed.complete?missingIconSiteIds:[],pendingIconSiteIds:env.KV&&listed.complete?pendingIconSiteIds:[],listComplete:listed.complete,consistent:!!env.KV&&listed.complete&&orphanKeys.length===0&&missingReferencedKeys.length===0&&pendingReferencedKeys.length===0,deletedOrphanIcons},
+    kv:{enabled:!!env.KV,customKeys:listed.keys.length,referencedCustomKeys:validCustomKeys.size,orphanCustomKeys:orphanKeys.length,pendingOrphanCustomIcons:pendingOrphanKeys.length,missingReferencedIcons:env.KV&&listed.complete?missingReferencedKeys.length:null,pendingReferencedIcons:env.KV&&listed.complete?pendingReferencedKeys.length:null,missingIconSiteIds:env.KV&&listed.complete?missingIconSiteIds:[],pendingIconSiteIds:env.KV&&listed.complete?pendingIconSiteIds:[],listComplete:listed.complete,consistent:!!env.KV&&listed.complete&&orphanKeys.length===0&&missingReferencedKeys.length===0&&pendingReferencedKeys.length===0,deletedOrphanIcons},
     deletedBackups,lastMaintenance:(clean?new Date().toISOString():await getSetting(env,owner,"maintenance_last"))||""};
 }
 async function maybeAutoMaintenance(context,env,owner){
@@ -588,10 +646,13 @@ async function fetchCandidate(url){
   }catch{return null}finally{clearTimeout(timer)}
 }
 function faviconHost(site){return domainOf(site?.url)||String(site?.domain||"").toLowerCase().replace(/^www\./,"")}
-function faviconCacheKeyV186(site){const host=faviconHost(site);return host?`favicon:v2:${host}`:""}
+function faviconCacheKeyV186(site){
+  const host=faviconHost(site),version=String(site?.icon_cache_version||"").trim();
+  return host?(version?`favicon:v3:${host}:${version}`:`favicon:v2:${host}`):"";
+}
 function legacyFaviconKeyV186(site){const root=site?.root_domain||rootDomain(site?.domain);return root?`favicon:${root}`:""}
-async function getKvIcon(env,key){if(!env.KV)return null;const got=await env.KV.getWithMetadata(key,{type:"arrayBuffer",cacheTtl:60});if(!got?.value)return null;return {value:got.value,metadata:got.metadata||{}}}
-async function serveIcon(env,site){
+async function getKvIcon(env,key){if(!env.KV)return null;const got=await env.KV.getWithMetadata(key,{type:"arrayBuffer",cacheTtl:30});if(!got?.value)return null;return {value:got.value,metadata:got.metadata||{}}}
+async function serveIcon(env,site,{bypassCache=false}={}){
   if(!env.KV)return new Response(fallbackSvg(site.name),{headers:{"Content-Type":"image/svg+xml; charset=utf-8","Cache-Control":"no-store"}});
   if(site.icon_key){
     const custom=await getKvIcon(env,site.icon_key);
@@ -608,7 +669,7 @@ async function serveIcon(env,site){
   }
 
   const host=faviconHost(site),key=faviconCacheKeyV186(site);
-  if(key){
+  if(key&&!bypassCache){
     const cached=await getKvIcon(env,key);
     if(cached)return kvIconResponse(cached.value,cached.metadata);
   }
@@ -616,7 +677,7 @@ async function serveIcon(env,site){
   /* Backward compatibility only when hostname itself is the root domain.
      Subdomains such as mail.google.com must not inherit google.com favicon cache. */
   const root=site.root_domain||rootDomain(site.domain);
-  if(host&&root&&host===root){
+  if(!bypassCache&&host&&root&&host===root){
     const legacyKey=legacyFaviconKeyV186(site),legacy=legacyKey?await getKvIcon(env,legacyKey):null;
     if(legacy){
       if(key)await env.KV.put(key,legacy.value,{expirationTtl:60*60*24*30,metadata:{...(legacy.metadata||{}),domain:host,migrated:"v18.6"}});
@@ -675,6 +736,11 @@ async function buildDisasterBackupV1860(env,owner){
         dataBase64:arrayBufferToBase64V1860(got.value)
       });
     }
+  }
+  const finalRevision=await getRevision(env,owner);
+  if(finalRevision!==Number(snap.revision||0)){
+    const error=new Error("D1 changed while the disaster backup was being assembled. Please create the backup again.");
+    error.status=409;throw error;
   }
   return {
     ok:true,
@@ -776,7 +842,7 @@ async function restoreDisasterBackupV1971(env,owner,body){
   const oldRows=(await env.DB.prepare(`SELECT icon_key FROM sites_v17 WHERE icon_key IS NOT NULL AND icon_key LIKE 'custom:%'`).all()).results||[];
   const oldKeys=oldRows.map(r=>String(r.icon_key||"")).filter(Boolean),newKeys=[],keyBySite=new Map();
   try{
-    for(const [siteId,icon] of iconMap){const key=`custom:${owner}:${siteId}:${crypto.randomUUID()}`;await env.KV.put(key,icon.bytes,{metadata:{contentType:icon.type,kind:"custom"}});newKeys.push(key);keyBySite.set(siteId,key)}
+    for(const [siteId,icon] of iconMap){const key=`custom:${owner}:${siteId}:${crypto.randomUUID()}`;await env.KV.put(key,icon.bytes,{metadata:{contentType:icon.type,kind:"custom",createdAt:Date.now()}});newKeys.push(key);keyBySite.set(siteId,key)}
   }catch(err){if(env.KV)for(const key of newKeys)try{await env.KV.delete(key)}catch{}return json({ok:false,error:`KV icon restore failed before D1 changes: ${String(err?.message||err)}`},500)}
   for(const row of siteRows)row.icon_key=keyBySite.get(row.id)||null;
   if(new TextEncoder().encode(JSON.stringify(siteRows)).byteLength>1800000){if(env.KV)for(const key of newKeys)try{await env.KV.delete(key)}catch{}return json({ok:false,error:"Restored site rows exceed the safe 1.8MB D1 payload limit."},413)}
@@ -823,7 +889,7 @@ export async function onRequest(context){const {request,env}=context;try{const u
   }
   if(mode==="maintenance"&&request.method==="GET"){return json(await maintenanceReport(env,auth.owner,{clean:false}))}
   if(mode==="maintenance"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);return json(await maintenanceReport(env,auth.owner,{clean:true}))}
-  if(mode==="backup-now"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);const rev=await getRevision(env,auth.owner);await backupSnapshot(env,auth.owner,rev);return json({ok:true,revision:rev})}
+  if(mode==="backup-now"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);const rev=await backupSnapshot(env,auth.owner);return json({ok:true,revision:rev})}
   if(mode==="restore-backup"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);const body=await readBoundedJsonV1972(request,512*1024);return await restoreBackup(env,auth.owner,Number(body?.id)||0)}
   if(mode==="disaster-restore"&&request.method==="POST"){
     if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);
@@ -859,7 +925,7 @@ export async function onRequest(context){const {request,env}=context;try{const u
     const bytes=new Uint8Array(n);let pos=0;
     for(const chunk of chunks){bytes.set(chunk,pos);pos+=chunk.byteLength}
     const key=`custom:${auth.owner}:${id}:${crypto.randomUUID()}`;
-    await env.KV.put(key,bytes.buffer,{metadata:{contentType:type,kind:"custom"}});
+    await env.KV.put(key,bytes.buffer,{metadata:{contentType:type,kind:"custom",createdAt:Date.now()}});
     let committed;
     try{
       committed=await commitRevisionMutationV1987(env,auth.owner,async()=>{
