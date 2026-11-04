@@ -18029,6 +18029,109 @@ html[data-theme="light"] body.guest-mode #compactCloudStatus.compact-cloud-statu
   color:#347bdf!important;
 }
 </style>
+<style id="v1990-admin-focus-layout-polish">
+/* V19.90 admin UI follow-up: consistent neutral focus treatment and compact action layout.
+   Visual-only changes. All control IDs, handlers, permissions and D1/KV flows stay unchanged. */
+html[data-theme] body :is(#drawer,.site-editor,.category-icon-editor,.fx-icon-library)
+  :is(input,select,textarea):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="button"]):not([type="submit"]):is(:focus,:focus-visible){
+  outline:none!important;
+  outline-offset:0!important;
+  border-color:color-mix(in srgb,var(--text,#fff) 20%,transparent)!important;
+  box-shadow:none!important;
+  -webkit-box-shadow:none!important;
+}
+/* The site-filter field has theme-specific legacy rules; explicitly normalize it too. */
+html[data-theme] body #drawer #managerSiteSearch:is(:focus,:focus-visible){
+  outline:none!important;
+  outline-offset:0!important;
+  border-color:color-mix(in srgb,var(--text,#fff) 20%,transparent)!important;
+  box-shadow:none!important;
+  -webkit-box-shadow:none!important;
+}
+/* Keep keyboard focus visible without the old saturated blue ring on admin actions/tabs. */
+html[data-theme] body #drawer :is(button,a,[role="button"],summary):focus-visible{
+  outline:1px solid color-mix(in srgb,var(--text,#fff) 22%,transparent)!important;
+  outline-offset:2px!important;
+  box-shadow:none!important;
+}
+/* Six backup actions: three balanced columns, two rows. Pair actions remain grouped by row. */
+#drawer .admin-transfer-panel .transfer-action-grid{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:8px!important;
+  margin-top:10px!important;
+}
+#drawer .admin-transfer-panel .transfer-action-grid>.btn{
+  width:100%!important;
+  min-width:0!important;
+  min-height:38px!important;
+  padding:7px 9px!important;
+  font-size:11px!important;
+  line-height:1.25!important;
+  white-space:normal!important;
+}
+#drawer .admin-transfer-panel .transfer-action-grid>.btn:nth-child(1){grid-column:1;grid-row:1}
+#drawer .admin-transfer-panel .transfer-action-grid>.btn:nth-child(2){grid-column:2;grid-row:1}
+#drawer .admin-transfer-panel .transfer-action-grid>.btn:nth-child(5){grid-column:3;grid-row:1}
+#drawer .admin-transfer-panel .transfer-action-grid>.btn:nth-child(3){grid-column:1;grid-row:2}
+#drawer .admin-transfer-panel .transfer-action-grid>.btn:nth-child(4){grid-column:2;grid-row:2}
+#drawer .admin-transfer-panel .transfer-action-grid>.btn:nth-child(6){grid-column:3;grid-row:2}
+#drawer .admin-transfer-panel .transfer-action-grid>.btn.primary{
+  grid-column:3!important;
+  grid-row:1!important;
+  min-height:38px!important;
+}
+/* Overview stretches its activity area to use the drawer height instead of leaving a dead zone. */
+@media (min-width:761px) and (min-height:720px){
+  #drawer .manager-panel[data-panel="overview"].active{
+    display:flex!important;
+    flex-direction:column!important;
+    min-height:calc(100dvh - 190px)!important;
+  }
+  #drawer .manager-overview-dashboard{
+    flex:1 1 auto!important;
+    min-height:0!important;
+    grid-template-rows:auto minmax(230px,1fr)!important;
+    row-gap:15px!important;
+    align-content:stretch!important;
+  }
+  #drawer .manager-live-card.wide{
+    min-height:0!important;
+    display:flex!important;
+    flex-direction:column!important;
+  }
+  #drawer .manager-live-card.wide .manager-activity-wrap{
+    flex:1 1 auto!important;
+    min-height:190px!important;
+    align-items:stretch!important;
+  }
+  #drawer .manager-live-card.wide .manager-activity-chart{
+    min-height:190px!important;
+    display:flex!important;
+    flex-direction:column!important;
+  }
+  #drawer .manager-live-card.wide .manager-activity-chart svg{
+    flex:1 1 auto!important;
+    height:auto!important;
+    min-height:112px!important;
+  }
+  #drawer .manager-live-card.wide .manager-activity-list{
+    min-height:170px!important;
+    align-content:space-between!important;
+  }
+}
+@media (max-width:1000px) and (min-width:761px){
+  #drawer .admin-transfer-panel .transfer-action-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  #drawer .admin-transfer-panel .transfer-action-grid>.btn:nth-child(n){grid-column:auto!important;grid-row:auto!important}
+}
+@media (max-width:760px){
+  #drawer .admin-transfer-panel .transfer-action-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  #drawer .admin-transfer-panel .transfer-action-grid>.btn:nth-child(n){grid-column:auto!important;grid-row:auto!important}
+  #drawer .admin-transfer-panel .transfer-action-grid>.btn{min-height:38px!important;font-size:11px!important}
+}
+@media (max-width:390px){
+  #drawer .admin-transfer-panel .transfer-action-grid{grid-template-columns:1fr!important}
+}
+</style>
 
 </body>
 </html>
