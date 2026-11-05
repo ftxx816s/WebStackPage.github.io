@@ -8920,6 +8920,15 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
 </style>
 
 
+
+<style id="site-doctor-v1980-style">
+.site-doctor-v1980 .site-doctor-summary{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+.site-doctor-v1980 .site-doctor-stat.verify{--doctor-color:#f4b85f}
+.site-doctor-v1980 .site-doctor-state.verify{--state:#f4b85f}
+.site-doctor-v1980 .site-doctor-stat.dead{--doctor-color:#ff6577}
+@media(max-width:1000px){.site-doctor-v1980 .site-doctor-summary{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
+@media(max-width:640px){.site-doctor-v1980 .site-doctor-summary{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+</style>
 </head>
 <body><div class="ambient-scene" aria-hidden="true"><i class="glass-capsule"></i><i class="glass-capsule"></i><i class="glass-capsule"></i><i class="glass-capsule"></i></div>
 <div class="fx-responsive-wallpaper" aria-hidden="true"></div>
@@ -15802,254 +15811,279 @@ updateAccessUIV178();
 </script>
 
 
-<script id="v1977-site-doctor-js">
-/* V19.77 | Website-only, browser-side two-pass link health check.
-   Browser requests follow the current browser proxy/TUN routing: the user switches the route.
-   Cross-origin no-cors requests only establish that a response was obtained, not its status.
-   Never auto-delete links or label network failures as dead websites. */
+<script id="v1981-local-route-site-doctor-js">
+/* V19.90 Repair 05 | Local-route site availability check.
+   All probes run in the current browser, inheriting its actual v2rayN/TUN split-routing.
+   CORS-readable responses expose HTTP status. Opaque no-cors responses are marked
+   as reachable-but-unverified, never silently treated as healthy or dead.
+   No automatic deletion; user must confirm moving a site to Recycle Bin. */
 (()=>{
   'use strict';
-  const KEY='fxnav_site_doctor_v1977';
+  const KEY='fxnav_site_doctor_v1981_local';
+  const LEGACY_KEYS=['fxnav_site_doctor_v1980','fxnav_site_doctor_v1977','fxnav_site_doctor_v1976','fxnav_site_doctor_v1975','fxnav_site_doctor_v188'];
+  const ROUTE='本机浏览器 · v2rayN 分流';
+  const TIMEOUT_MS=6500;
+  const MAX_LOCAL_RETRIES=2;
+  const CONCURRENCY=4;
   let results={},lastRun=0,scanning=false,stopRequested=false,filter='action',renderTimer=0;
+  const activeControllers=new Set();
   const $=id=>document.getElementById(id);
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const sitesNow=()=>{try{return typeof allSites==='function'?allSites():[]}catch{return[]}};
   const iconOf=s=>{try{if(typeof getSiteIcon==='function')return getSiteIcon(s)||''}catch{}return s?.icon||s?.iconUrl||''};
   const toastMsg=s=>{if(typeof toast==='function')toast(s);else console.info(s)};
   const fmt=t=>t?new Date(t).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}):'未检测';
-  const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
   const idOf=s=>String(s?.id??'');
   const known=s=>{const r=results[idOf(s)];return r?.url===s?.url?r:null};
   const isManual=r=>r?.manual===true;
+  const validUrl=s=>{try{const u=new URL(String(s?.url||''));return /^https?:$/.test(u.protocol)&&!!u.hostname}catch{return false}};
+  const actionable=new Set(['path','missing','unreachable','restricted','server_error','browser_response','manualdead']);
 
+  function save(){try{localStorage.setItem(KEY,JSON.stringify({results,lastRun}));document.dispatchEvent(new CustomEvent('fxnav:doctor-update'))}catch{}}
   function load(){
     try{
       const data=JSON.parse(localStorage.getItem(KEY)||'null');
-      results=data?.results&&typeof data.results==='object'&&!Array.isArray(data.results)?data.results:{};
-      lastRun=Number(data?.lastRun)||0;
-      if(data)return;
-      // Older automatically inferred statuses are deliberately NOT imported.
-      // Preserve only user-confirmed usable/dead links, and only when URLs match.
-      const saved=[
-        {key:'fxnav_site_doctor_v1976',wrapped:true},
-        {key:'fxnav_site_doctor_v1975'},
-        {key:'fxnav_site_doctor_v188'}
-      ];
-      for(const spec of saved){
-        let value;try{value=JSON.parse(localStorage.getItem(spec.key)||'null')}catch{continue}
-        const rows=spec.wrapped?value?.results:value;
-        if(!rows||typeof rows!=='object')continue;
+      if(data&&data.results&&typeof data.results==='object'&&!Array.isArray(data.results)){
+        results=data.results;lastRun=Number(data.lastRun)||0;return;
+      }
+      results={};lastRun=0;
+      // Preserve only explicit human decisions from earlier versions. Discard all
+      // old Cloudflare-edge/direct/VPN automatic results because they used another route.
+      for(const key of LEGACY_KEYS){
+        let value;try{value=JSON.parse(localStorage.getItem(key)||'null')}catch{continue}
+        const rows=value?.results&&typeof value.results==='object'?value.results:value;
+        if(!rows||typeof rows!=='object'||Array.isArray(rows))continue;
         for(const [id,r] of Object.entries(rows)){
           if(results[id]||!r?.manual||!r?.url)continue;
-          if(['direct','ok','vpn','vpnok'].includes(r.code))results[id]={id,url:r.url,name:r.name||'',code:'direct',manual:true,reason:'此前已人工确认可用',checkedAt:r.checkedAt||Date.now()};
-          if(r.code==='dead')results[id]={id,url:r.url,name:r.name||'',code:'manualdead',manual:true,reason:'此前已人工确认失效',checkedAt:r.checkedAt||Date.now()};
+          if(['direct','ok','vpn','vpnok','manualok'].includes(r.code))results[id]={id,url:r.url,name:r.name||'',code:'manualok',manual:true,reason:'此前由管理员人工确认可用',checkedAt:r.checkedAt||Date.now()};
+          else if(['manualdead','dead'].includes(r.code))results[id]={id,url:r.url,name:r.name||'',code:'manualdead',manual:true,reason:'此前由管理员人工确认失效',checkedAt:r.checkedAt||Date.now()};
         }
       }
       save();
     }catch{results={};lastRun=0}
   }
-  function save(){try{localStorage.setItem(KEY,JSON.stringify({results,lastRun}));document.dispatchEvent(new CustomEvent('fxnav:doctor-update'))}catch{}}
   function counts(){
-    const c={direct:0,pending:0,vpn:0,review:0,suspect:0,path:0,unknown:0,checking:0,manualdead:0,total:0};
-    for(const s of sitesNow()){c.total++;const code=known(s)?.code||'unknown';if(Object.prototype.hasOwnProperty.call(c,code))c[code]++;else c.unknown++}
+    const c={ok:0,path:0,missing:0,unreachable:0,restricted:0,server_error:0,browser_response:0,unknown:0,checking:0,manualdead:0,total:0};
+    for(const s of sitesNow()){
+      c.total++;const code=known(s)?.code||'unknown';
+      if(code==='manualok'||code==='ok')c.ok++;
+      else if(Object.prototype.hasOwnProperty.call(c,code))c[code]++;
+      else c.unknown++;
+    }
     return c;
   }
   function updateBadge(){
     const b=document.querySelector('.manager-tab[data-tab="health"] .manager-tab-badge');if(!b)return;
-    const c=counts(),action=c.suspect+c.path+c.manualdead;
-    b.textContent=String(action);
-    b.title=`待核实的明确失效线索 ${action} · VPN 待测 ${c.pending} · 两轮未确认 ${c.review}（不判死）`;
+    const c=counts(),n=c.path+c.missing+c.unreachable+c.restricted+c.server_error+c.browser_response+c.manualdead;
+    b.textContent=String(n);b.title=`待人工核实 ${n} · 正常响应 ${c.ok} · 未检测 ${c.unknown}`;
   }
-  async function confirmRoute(text){
-    if(typeof uiConfirmV1821==='function')return !!(await uiConfirmV1821(text));
-    return window.confirm(text);
-  }
+  async function confirmAction(text){if(typeof uiConfirmV1821==='function')return !!(await uiConfirmV1821(text));return window.confirm(text)}
+
   function ensureUI(){
     const tabs=$('managerTabs'),body=document.querySelector('#drawer .drawer-body');if(!tabs||!body)return false;
     let tab=tabs.querySelector('[data-tab="health"]');
     if(!tab){tab=document.createElement('button');tab.className='manager-tab';tab.type='button';tab.dataset.tab='health';tab.innerHTML='网站体检 <span class="manager-tab-badge">0</span>';tabs.insertBefore(tab,tabs.querySelector('[data-tab="data"]')||null)}
     let p=body.querySelector('.manager-panel[data-panel="health"]');
     if(!p){p=document.createElement('section');p.className='manager-panel';p.dataset.panel='health';body.insertBefore(p,body.querySelector('.manager-panel[data-panel="data"]')||null)}
-    if(!p.dataset.v1977){
-      p.dataset.v1977='1';
-      p.innerHTML=`<div class="site-doctor site-doctor-simple site-doctor-v1977">
-        <div class="manager-panel-title"><div><h3>网站体检</h3><p>直接在网页里检测，不需要下载工具。第一轮失败的自动进入第二轮。</p></div></div>
+    if(!p.dataset.v1981){
+      p.dataset.v1981='1';
+      p.innerHTML=`<div class="site-doctor site-doctor-simple site-doctor-v1980">
+        <div class="manager-panel-title"><div><h3>网站体检</h3><p>按你电脑当前网络逐个检测，不要求关闭或开启 VPN。国内网站沿用直连规则，国外网站沿用代理规则。</p></div></div>
         <section class="site-doctor-hero"><div class="site-doctor-hero-top">
-          <div class="site-doctor-title"><span class="site-doctor-mark">◎</span><div><h3>两轮网站筛查</h3>
-            <p>① 关闭代理 / VPN，扫描全部网站。② 开启代理 / VPN，仅复查第一轮失败项。网页不能替你切换 v2rayN，也无法读取所有跨域网站的 HTTP 状态码。</p></div></div>
+          <div class="site-doctor-title"><span class="site-doctor-mark">◎</span><div><h3>本机分流可访问性检测</h3>
+            <p>检测请求直接由当前 Chrome / Edge 发出，自动沿用 v2rayN 系统代理或 TUN 分流。不会改动代理规则，也不会调用 Cloudflare 云端代替你的网络。</p></div></div>
           <div class="site-doctor-last"><span>LAST CHECK</span><b id="doctorLastRun">尚未检测</b></div>
         </div></section>
         <div class="site-doctor-toolbar">
-          <button class="btn primary" type="button" id="doctorScanAll">① 关闭 VPN · 检测全部</button>
-          <button class="btn vpn" type="button" id="doctorVpnVerify">② 开启 VPN · 复测失败项</button>
+          <button class="btn primary" type="button" id="doctorScanAll">检测全部网站</button>
+          <button class="btn vpn" type="button" id="doctorRetryIssues">复检异常网站</button>
           <button class="btn" type="button" id="doctorStop" hidden>停止</button>
           <div class="site-doctor-progress"><i id="doctorProgressBar"></i></div>
-          <span class="site-doctor-progress-text" id="doctorProgressText">关闭 VPN 后点第一轮；自动筛出第二轮待测的网站</span>
+          <span class="site-doctor-progress-text" id="doctorProgressText">自动使用当前网络分流：国内直连 · 国外代理</span>
         </div>
         <div class="site-doctor-summary">
-          <div class="site-doctor-stat direct"><span>第一轮有响应</span><b id="doctorDirect">0</b><small>不保证网页内容正常</small></div>
-          <div class="site-doctor-stat pending"><span>VPN 待测</span><b id="doctorPending">0</b><small>第一轮未成功</small></div>
-          <div class="site-doctor-stat vpnok"><span>第二轮有响应</span><b id="doctorVpnOk">0</b><small>不等于必须使用 VPN</small></div>
-          <div class="site-doctor-stat dead"><span>待核实</span><b id="doctorReview">0</b><small>明确失效线索</small></div>
-          <div class="site-doctor-stat"><span>未检测</span><b id="doctorUnknown">0</b><small>包括两轮无法判断</small></div>
+          <div class="site-doctor-stat direct"><span>正常响应</span><b id="doctorOk">0</b><small>已读取到正常 HTTP 状态</small></div>
+          <div class="site-doctor-stat verify"><span>页面异常</span><b id="doctorPath">0</b><small>收藏页异常，首页可能正常</small></div>
+          <div class="site-doctor-stat dead"><span>连续连接失败</span><b id="doctorBad">0</b><small>当前分流下未能连通</small></div>
+          <div class="site-doctor-stat verify"><span>待人工核实</span><b id="doctorRestricted">0</b><small>受限、跨域或服务器异常</small></div>
+          <div class="site-doctor-stat pending"><span>未检测</span><b id="doctorUnknown">0</b><small>尚无本机检测结果</small></div>
         </div>
         <div class="site-doctor-subbar"><div class="site-doctor-filters" id="doctorFilters">
-          <button class="mini-btn active" type="button" data-doctor-filter="action">只看待处理</button>
-          <button class="mini-btn" type="button" data-doctor-filter="pending">VPN 待测</button>
-          <button class="mini-btn" type="button" data-doctor-filter="vpn">第二轮有响应</button>
-          <button class="mini-btn" type="button" data-doctor-filter="review">两轮未能确认</button>
+          <button class="mini-btn active" type="button" data-doctor-filter="action">只看异常</button>
+          <button class="mini-btn" type="button" data-doctor-filter="path">页面异常</button>
+          <button class="mini-btn" type="button" data-doctor-filter="bad">连接失败</button>
+          <button class="mini-btn" type="button" data-doctor-filter="restricted">待人工核实</button>
           <button class="mini-btn" type="button" data-doctor-filter="all">查看全部</button>
         </div></div>
         <div class="site-doctor-list" id="doctorList"></div>
-        <div class="site-doctor-note"><i>!</i><div><b>判定限制：</b>检测请求走当前浏览器的网络出口。浏览器跨域请求不能保证读取 404/410 等真实状态码；网络失败、403/520 或防爬限制都不会自动判为死链。“待核实”仅表示明确线索，删除前须确认。不会自动删除网站。</div></div>
+        <div class="site-doctor-note"><i>!</i><div><b>判定说明：</b>检测请求由本机浏览器发出，因此会跟随 v2rayN 当前 DIRECT / PROXY 规则。网站允许跨域读取时显示真实 HTTP 状态；不允许跨域读取时，只能确认“收到响应”，会列为待人工核实，不会误判为正常或失效。连续连接失败也只是疑似不可达，可能由分流、DNS、TLS、超时或网站故障造成。点击“打开网站”可人工确认。不会自动删除。</div></div>
       </div>`;
-      $('doctorScanAll')?.addEventListener('click',scanDirect);
-      $('doctorVpnVerify')?.addEventListener('click',scanVpn);
-      $('doctorStop')?.addEventListener('click',()=>{stopRequested=true});
+      $('doctorScanAll')?.addEventListener('click',()=>scanAll(false));
+      $('doctorRetryIssues')?.addEventListener('click',()=>scanAll(true));
+      $('doctorStop')?.addEventListener('click',()=>{stopRequested=true;for(const controller of activeControllers)try{controller.abort()}catch{}});
       $('doctorFilters')?.addEventListener('click',e=>{
         const b=e.target.closest('[data-doctor-filter]');if(!b)return;
-        filter=b.dataset.doctorFilter;
-        p.querySelectorAll('[data-doctor-filter]').forEach(x=>x.classList.toggle('active',x===b));render();
+        filter=b.dataset.doctorFilter;p.querySelectorAll('[data-doctor-filter]').forEach(x=>x.classList.toggle('active',x===b));render();
       });
       $('doctorList')?.addEventListener('click',handleAction);
     }
     updateBadge();return true;
   }
-  const meta=code=>({direct:['direct','有响应'],pending:['pending','VPN 待测'],vpn:['vpnok','有响应'],suspect:['dead','疑似失效'],path:['pending','收藏路径可能失效'],review:['pending','无法判断'],manualdead:['dead','人工确认失效'],checking:['checking','检测中'],unknown:['pending','未检测']}[code]||['pending','未检测']);
+  const meta=code=>({
+    ok:['direct','正常响应'],manualok:['direct','人工确认可用'],path:['verify','页面异常'],missing:['dead','HTTP 404 / 410'],
+    unreachable:['dead','当前网络连接失败'],restricted:['verify','访问受限'],server_error:['verify','服务器异常'],
+    browser_response:['verify','收到响应·状态未知'],manualdead:['dead','人工确认失效'],
+    checking:['checking','检测中'],unknown:['pending','未检测']
+  }[code]||['pending','未检测']);
   function render(){
     if(!ensureUI())return;
-    const c=counts();
-    for(const [id,v] of [['doctorDirect',c.direct],['doctorPending',c.pending],['doctorVpnOk',c.vpn],['doctorReview',c.suspect+c.path+c.manualdead],['doctorUnknown',c.unknown]])if($(id))$(id).textContent=v;
+    const c=counts(),bad=c.missing+c.unreachable+c.manualdead;
+    for(const [id,v] of [['doctorOk',c.ok],['doctorPath',c.path],['doctorBad',bad],['doctorRestricted',c.restricted+c.server_error+c.browser_response],['doctorUnknown',c.unknown]])if($(id))$(id).textContent=v;
     if($('doctorLastRun'))$('doctorLastRun').textContent=lastRun?`${fmt(lastRun)} · ${c.total-c.unknown} 个有结果`:'尚未检测';
-    if($('doctorVpnVerify'))$('doctorVpnVerify').disabled=scanning||c.pending===0;
-    const order={suspect:0,path:1,manualdead:1,pending:2,checking:3,review:4,vpn:5,direct:6,unknown:7};
+    if($('doctorRetryIssues'))$('doctorRetryIssues').disabled=scanning||!(c.path+c.missing+c.unreachable+c.restricted+c.server_error+c.browser_response);
+    const order={missing:0,unreachable:1,manualdead:2,server_error:3,path:4,restricted:5,browser_response:6,checking:7,unknown:8,ok:9,manualok:10};
     const all=sitesNow().map(s=>({s,r:known(s)||{code:'unknown',url:s.url}}));
-    all.sort((a,b)=>(order[a.r.code]??9)-(order[b.r.code]??9)||String(a.s.name||'').localeCompare(String(b.s.name||''),'zh-CN'));
-    const shown=all.filter(({r})=>filter==='all'||(filter==='action'&&['suspect','path','manualdead','pending'].includes(r.code))||(filter==='review'&&r.code==='review')||r.code===filter);
+    all.sort((a,b)=>(order[a.r.code]??8)-(order[b.r.code]??8)||String(a.s.name||'').localeCompare(String(b.s.name||''),'zh-CN'));
+    const shown=all.filter(({r})=>{
+      if(filter==='all')return true;
+      if(filter==='action')return actionable.has(r.code);
+      if(filter==='path')return r.code==='path'||r.code==='missing';
+      if(filter==='bad')return ['unreachable','manualdead'].includes(r.code);
+      if(filter==='restricted')return ['restricted','server_error','browser_response'].includes(r.code);
+      return r.code===filter;
+    });
     const list=$('doctorList');if(!list)return;
-    if(!shown.length){list.innerHTML=`<div class="site-doctor-empty">${filter==='action'?'当前没有明确的待清理线索；无法判断的记录不会当作死链。':'当前分类没有记录。'}</div>`;updateBadge();return}
+    if(!shown.length){list.innerHTML=`<div class="site-doctor-empty">${filter==='action'?'当前没有待处理的网站。先执行一次全量检测；正常响应的网站不会出现在此列表。':'当前分类没有记录。'}</div>`;updateBadge();return}
     list.innerHTML=shown.map(({s,r})=>{
-      const [cls,title]=meta(r.code),icon=iconOf(s),id=idOf(s);
-      const small=esc(r.reason||'等待检测');
+      const [cls,title]=meta(r.code),icon=iconOf(s),id=idOf(s),details=[];
+      if(r.status)details.push(`HTTP ${r.status}`);if(r.ms)details.push(`${r.ms} ms`);if(r.finalUrl&&r.finalUrl!==s.url)details.push(`跳转至 ${r.finalUrl}`);
+      const small=esc(r.reason||'等待检测'),extra=esc([r.route||ROUTE,...details,fmt(r.checkedAt)].join(' · '));
       let actions=`<button class="mini-btn" type="button" data-doctor-act="recheck">复检</button><button class="mini-btn" type="button" data-doctor-act="open">打开网站</button>`;
-      if(['review','suspect','path','manualdead','pending'].includes(r.code))actions+=`<button class="mini-btn restore" type="button" data-doctor-act="keep">实际可用</button>`;
-      if(['suspect','path'].includes(r.code))actions+=`<button class="mini-btn danger" type="button" data-doctor-act="confirmdead">确认失效</button>`;
-      if(r.code==='manualdead')actions+=`<button class="mini-btn danger" type="button" data-doctor-act="delete">移入回收站</button>`;
-      return `<div class="site-doctor-row ${r.code==='checking'?'is-checking':''}" data-doctor-id="${esc(id)}"><div class="site-doctor-site"><span class="site-doctor-icon">${icon?`<img src="${esc(icon)}" alt="">`:'◆'}</span><span class="site-doctor-copy"><b>${esc(s.name)}</b><small>${esc(s.url)}</small></span></div><div class="site-doctor-state ${cls}"><i></i><span>${esc(title)}</span></div><div class="site-doctor-evidence"><b>${small}</b><small>${esc(r.route||'')}${r.route?' · ':''}${fmt(r.checkedAt)}</small></div><div class="site-doctor-actions">${actions}</div></div>`;
+      if(!['ok','manualok','manualdead','checking','unknown'].includes(r.code))actions+=`<button class="mini-btn restore" type="button" data-doctor-act="keep">标记可用</button>`;
+      if(actionable.has(r.code))actions+=`<button class="mini-btn danger" type="button" data-doctor-act="delete">移入回收站</button>`;
+      return `<div class="site-doctor-row ${r.code==='checking'?'is-checking':''}" data-doctor-id="${esc(id)}"><div class="site-doctor-site"><span class="site-doctor-icon">${icon?`<img src="${esc(icon)}" alt="">`:'◆'}</span><span class="site-doctor-copy"><b>${esc(s.name)}</b><small>${esc(s.url)}</small></span></div><div class="site-doctor-state ${cls}"><i></i><span>${esc(title)}</span></div><div class="site-doctor-evidence"><b>${small}</b><small>${extra}</small></div><div class="site-doctor-actions">${actions}</div></div>`;
     }).join('');updateBadge();
   }
   function scheduleRender(force=false){if(force){clearTimeout(renderTimer);renderTimer=0;render();return}if(renderTimer)return;renderTimer=setTimeout(()=>{renderTimer=0;render()},140)}
-  function setBusy(value){scanning=value;for(const id of ['doctorScanAll','doctorVpnVerify'])if($(id))$(id).disabled=value;
-    if($('doctorStop'))$('doctorStop').hidden=!value}
-  function setProgress(done,total,label){const pct=total?Math.round(done/total*100):0;
-    if($('doctorProgressBar'))$('doctorProgressBar').style.width=pct+'%';
-    if($('doctorProgressText'))$('doctorProgressText').textContent=`${label} ${done}/${total} · ${pct}%`}
-
-  // 'cors' can reveal the actual status only when the other site explicitly grants CORS.
-  // 'no-cors' being resolved means ONLY that the browser received an opaque response.
-  async function request(url,mode,timeout){
-    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeout),t=Date.now();
+  function setBusy(value){scanning=value;for(const id of ['doctorScanAll','doctorRetryIssues'])if($(id))$(id).disabled=value;if($('doctorStop'))$('doctorStop').hidden=!value}
+  function setProgress(done,total,label){const pct=total?Math.round(done/total*100):0;if($('doctorProgressBar'))$('doctorProgressBar').style.width=pct+'%';if($('doctorProgressText'))$('doctorProgressText').textContent=`${label} ${done}/${total} · ${pct}%`}
+  function urlOf(site){try{const u=new URL(String(site?.url||''));return /^https?:$/.test(u.protocol)?u:null}catch{return null}}
+  async function request(url,mode,timeout=TIMEOUT_MS){
+    const controller=new AbortController();activeControllers.add(controller);const timer=setTimeout(()=>controller.abort(),timeout);
     try{
-      const r=await fetch(url,{method:'GET',mode,cache:'no-store',redirect:'follow',credentials:'omit',referrerPolicy:'no-referrer',signal:controller.signal});
-      return {kind:mode==='cors'?'http':'opaque',status:mode==='cors'?r.status:0,ms:Date.now()-t};
-    }catch(error){return {kind:'error',reason:error?.name==='AbortError'?'超时':'浏览器网络请求未成功',ms:Date.now()-t}}
-    finally{clearTimeout(timer)}
+      const response=await fetch(url,{method:'GET',mode,cache:'no-store',redirect:'follow',credentials:'omit',referrerPolicy:'no-referrer',signal:controller.signal});
+      const out={response,timedOut:false};
+      try{await response.body?.cancel()}catch{}
+      return out;
+    }catch(error){return {error,timedOut:controller.signal.aborted}}
+    finally{clearTimeout(timer);activeControllers.delete(controller)}
   }
-  function urlOf(site){try{const u=new URL(site.url);return /^https?:$/.test(u.protocol)?u:null}catch{return null}}
-  async function probe(site,second){
-    const u=urlOf(site);if(!u)return {code:'review',reason:'网址格式有误，无法探测'};
-    // HTTPS sites can be probed; insecure http: sites often get blocked as mixed content.
-    // We never silently rewrite http:// to https:// and pretend both are equivalent.
-    const timeout=second?8000:6500;
-    async function check(url){
-      const cors=await request(url,'cors',Math.min(timeout,2400));
-      if(cors.kind==='http')return {ok:![404,410].includes(cors.status),missing:[404,410].includes(cors.status),code:cors.status,
-        reason:[404,410].includes(cors.status)?`HTTP ${cors.status}（跨域允许读取）`:`HTTP ${cors.status} · 服务器有响应`,ms:cors.ms};
-      const opaque=await request(url,'no-cors',timeout);
-      if(opaque.kind==='opaque')return {ok:true,missing:false,code:0,reason:'浏览器收到响应（状态码不可读）',ms:opaque.ms};
-      return {ok:false,missing:false,code:0,reason:opaque.reason||cors.reason||'浏览器未收到响应',ms:opaque.ms};
-    }
-    const page=await check(u.href);
-    if(page.ok)return {code:'ok',reason:page.reason,ms:page.ms,status:page.code};
-    const home=u.origin+'/';
-    if(u.href!==home){
-      const root=await check(home);
-      if(page.missing&&root.ok)return {code:'path',reason:`收藏页面 ${page.reason}，但首页有响应`,status:page.code};
-      if(root.ok)return {code:'uncertain',reason:'原链接未成功，网站首页有响应',status:page.code};
-      if(page.missing&&root.missing)return {code:'missing',reason:`链接与首页返回 HTTP ${page.code}/${root.code}`,status:page.code};
-      return {code:'uncertain',reason:'浏览器未能读取有效响应，不能判定网站关闭'};
-    }
-    if(page.missing)return {code:'missing',reason:page.reason,status:page.code};
-    return {code:'uncertain',reason:page.reason||'浏览器未能确认',status:0};
+  function classifyHttp(response,site,started){
+    const status=Number(response.status)||0,finalUrl=response.url||site.url,base={id:idOf(site),name:site.name,url:site.url,status,finalUrl,ms:Date.now()-started,checkedAt:Date.now(),route:ROUTE};
+    if(status>=200&&status<400)return {...base,code:'ok',reason:`HTTP ${status} · 当前分流下收到正常响应`};
+    if(status===404||status===410)return {...base,code:'missing',reason:`当前收藏网址返回 HTTP ${status}`};
+    if(status===401||status===403||status===407||status===429||(status>=400&&status<500))return {...base,code:'restricted',reason:`HTTP ${status} · 服务器有响应，但访问受限或请求被拒绝`};
+    if(status>=500)return {...base,code:'server_error',reason:`HTTP ${status} · 网站服务器暂时异常`};
+    return {...base,code:'restricted',reason:status?`HTTP ${status} · 需要人工核实`:'未取得有效 HTTP 状态'};
   }
-  async function pool(items,worker,label){
+  async function checkHomeAfterMissing(site,target,exact,started){
+    const home=new URL('/',target.origin),probe=await request(home.href,'cors');
+    if(stopRequested)return null;
+    if(probe.response){
+      const status=Number(probe.response.status)||0,finalUrl=probe.response.url||home.href;
+      if(status>=200&&status<400)return {...exact,code:'path',reason:`收藏页面返回 HTTP ${exact.status}，但网站首页可以正常访问`,finalUrl,ms:Date.now()-started,checkedAt:Date.now()};
+      if(status===404||status===410)return {...exact,code:'missing',reason:`收藏页面与网站首页均返回 HTTP ${exact.status} / ${status}`,finalUrl,ms:Date.now()-started,checkedAt:Date.now()};
+      return {...exact,code:'path',reason:`收藏页面返回 HTTP ${exact.status}；首页返回 HTTP ${status}，需要人工核实`,finalUrl,ms:Date.now()-started,checkedAt:Date.now()};
+    }
+    const opaque=await request(home.href,'no-cors');
+    if(stopRequested)return null;
+    if(opaque.response)return {...exact,code:'path',reason:`收藏页面返回 HTTP ${exact.status}；首页已收到响应，但跨域限制无法读取状态码`,finalUrl:home.href,ms:Date.now()-started,checkedAt:Date.now()};
+    return {...exact,code:'path',reason:`收藏页面返回 HTTP ${exact.status}；首页未能验证，不能据此判定整个网站失效`,ms:Date.now()-started,checkedAt:Date.now()};
+  }
+  async function probeSite(site){
+    const target=urlOf(site),started=Date.now();
+    if(!target)return {id:idOf(site),name:site.name,url:site.url,code:'restricted',reason:'网址格式无效或不是 HTTP / HTTPS',route:ROUTE,checkedAt:Date.now()};
+    if(navigator.onLine===false)return {id:idOf(site),name:site.name,url:site.url,code:'unreachable',reason:'浏览器报告当前处于离线状态',route:ROUTE,checkedAt:Date.now()};
+    // An HTTPS dashboard cannot script-fetch an HTTP target (active mixed content).
+    // Try the same host over HTTPS first; if that is unavailable, do not falsely mark
+    // the HTTP-only site dead because the browser security layer blocked the probe.
+    if(location.protocol==='https:'&&target.protocol==='http:'){
+      const secure=new URL(target.href);secure.protocol='https:';if(secure.port==='80')secure.port='';
+      const secureProbe=await request(secure.href,'cors');
+      if(stopRequested)return null;
+      if(secureProbe.response){
+        let secureResult=classifyHttp(secureProbe.response,site,started);
+        secureResult.finalUrl=secureProbe.response.url||secure.href;
+        secureResult.reason=`原网址为 HTTP；已改用 HTTPS 地址探测。${secureResult.reason}`;
+        if(secureResult.code==='missing'&&(secure.pathname!=='/'||secure.search))secureResult=await checkHomeAfterMissing(site,secure,secureResult,started);
+        return secureResult;
+      }
+      const secureOpaque=await request(secure.href,'no-cors');
+      if(stopRequested)return null;
+      if(secureOpaque.response)return {id:idOf(site),name:site.name,url:site.url,code:'browser_response',reason:'HTTPS 地址已收到响应，但跨域限制无法读取状态码',finalUrl:secure.href,route:ROUTE,ms:Date.now()-started,checkedAt:Date.now()};
+      return {id:idOf(site),name:site.name,url:site.url,code:'restricted',reason:'这是 HTTP 网址；当前导航页面为 HTTPS，浏览器混合内容安全策略阻止自动探测，且 HTTPS 版本未能确认。请点击“打开网站”人工核实',route:ROUTE,ms:Date.now()-started,checkedAt:Date.now()};
+    }
+    // First try CORS mode: when the target permits it, read the actual HTTP status.
+    const readable=await request(target.href,'cors');
+    if(stopRequested)return null;
+    if(readable.response){
+      let result=classifyHttp(readable.response,site,started);
+      if(result.code==='missing'&&(target.pathname!=='/'||target.search))result=await checkHomeAfterMissing(site,target,result,started);
+      return result;
+    }
+    // CORS may hide an otherwise successful cross-origin response. no-cors still
+    // travels through the same local proxy/TUN route; opaque means response received,
+    // but HTTP status is unknowable, so it is not counted as healthy or dead.
+    for(let attempt=0;attempt<MAX_LOCAL_RETRIES;attempt++){
+      if(attempt)await new Promise(resolve=>setTimeout(resolve,450));
+      const opaque=await request(target.href,'no-cors');
+      if(stopRequested)return null;
+      if(opaque.response){
+        if(opaque.response.type==='opaque'||opaque.response.status===0)return {id:idOf(site),name:site.name,url:site.url,code:'browser_response',reason:'当前浏览器网络已收到网站响应，但跨域限制无法读取 HTTP 状态码；请点击“打开网站”核实',route:ROUTE,ms:Date.now()-started,checkedAt:Date.now()};
+        return classifyHttp(opaque.response,site,started);
+      }
+    }
+    return {id:idOf(site),name:site.name,url:site.url,code:'unreachable',reason:'当前浏览器按现有 v2rayN 分流连续两次未能建立连接；可能是网站故障、分流规则、DNS、TLS 或临时网络问题，请打开网站复核',route:ROUTE,ms:Date.now()-started,checkedAt:Date.now()};
+  }
+  async function runLocalChecks(items,label){
     let cursor=0,done=0;
-    const jobs=Array.from({length:Math.min(7,items.length)},async()=>{
+    const workers=Array.from({length:Math.min(CONCURRENCY,items.length)},async()=>{
       while(cursor<items.length&&!stopRequested){
-        const site=items[cursor++];
-        try{await worker(site)}catch(e){
-          results[idOf(site)]={id:idOf(site),name:site.name,url:site.url,code:'review',reason:'检测异常，不能判死：'+String(e?.message||e).slice(0,130),checkedAt:Date.now()};
-        }
-        done++;setProgress(done,items.length,label);scheduleRender();if(done%8===0)save();
+        const site=items[cursor++],id=idOf(site);
+        if(isManual(known(site))){done++;setProgress(done,items.length,label);continue;}
+        results[id]={id,name:site.name,url:site.url,code:'checking',reason:'正在通过本机当前分流检测',route:ROUTE,checkedAt:Date.now()};scheduleRender();
+        const result=await probeSite(site);
+        if(stopRequested)break;
+        if(result)results[id]=result;
+        done++;setProgress(done,items.length,label);
+        if(done%3===0||done===items.length){save();scheduleRender()}
       }
     });
-    await Promise.all(jobs);return done;
+    await Promise.all(workers);save();return done;
   }
-  async function scanDirect(){
+  async function scanAll(issuesOnly){
     if(scanning)return;
-    if(!await confirmRoute('第一轮在网页内检测。请先关闭 v2rayN 的代理/TUN，确认当前浏览器已经使用国内直连网络，再开始？'))return;
-    const items=sitesNow().filter(s=>/^https?:\/\//i.test(String(s.url||'')));
-    if(!items.length){toastMsg('没有可检测的网站');return}
-    // Discard obsolete or automatic results; keep only explicit manual decisions for unchanged URLs.
-    const locked={};for(const s of items){const r=known(s);if(isManual(r))locked[idOf(s)]=r}
-    results=locked;stopRequested=false;filter='action';setBusy(true);scheduleRender(true);
+    const all=sitesNow().filter(validUrl);
+    const items=all.filter(site=>{
+      if(!issuesOnly)return true;
+      const r=known(site);if(isManual(r))return false;
+      return actionable.has(r?.code||'');
+    });
+    if(!items.length){toastMsg(issuesOnly?'当前没有需要复检的异常网站':'没有可检测的 HTTP / HTTPS 网站');return}
+    stopRequested=false;filter='action';setBusy(true);scheduleRender(true);
     document.querySelectorAll('#doctorFilters [data-doctor-filter]').forEach(x=>x.classList.toggle('active',x.dataset.doctorFilter==='action'));
-    setProgress(0,items.length,'第一轮直连');
-    const done=await pool(items,async site=>{
-      if(isManual(known(site)))return;
-      const id=idOf(site);
-      results[id]={id,name:site.name,url:site.url,code:'checking',reason:'浏览器检测中',checkedAt:Date.now()};scheduleRender();
-      const p=await probe(site,false);
-      // Inconclusive or missing responses must be retested via a different route.
-      const code=p.code==='ok'?'direct':p.code==='path'?'path':'pending';
-      results[id]={id,name:site.name,url:site.url,code,reason:p.reason,ms:p.ms||0,status:p.status||0,route:'第一轮·当前浏览器网络',checkedAt:Date.now(),first:p.code};
-      scheduleRender();
-    },'第一轮直连');
+    setProgress(0,items.length,issuesOnly?'本机复检异常':'本机分流检测');
+    const done=await runLocalChecks(items,issuesOnly?'本机复检异常':'本机分流检测');
     lastRun=Date.now();save();setBusy(false);scheduleRender(true);
-    setProgress(done,items.length,stopRequested?'第一轮已停止':'第一轮完成');
-    toastMsg(`第一轮完成，自动生成 ${counts().pending} 个第二轮待测链接`);
-  }
-  async function scanVpn(){
-    if(scanning)return;
-    const items=sitesNow().filter(s=>known(s)?.code==='pending');
-    if(!items.length){toastMsg('没有第二轮待测链接');return}
-    if(!await confirmRoute('第二轮仍在网页里进行。请先在 v2rayN 开启代理/VPN，确认浏览器已走代理出口后，自动复测第一轮失败的所有链接？'))return;
-    stopRequested=false;setBusy(true);setProgress(0,items.length,'第二轮 VPN');
-    const done=await pool(items,async site=>{
-      const id=idOf(site),prev=known(site)||{};
-      results[id]={...prev,code:'checking',reason:'VPN 第二轮检测中',checkedAt:Date.now()};scheduleRender();
-      let p=await probe(site,true);
-      let repeatedMissing=false;
-      if(!['ok','path'].includes(p.code)&&!stopRequested){await sleep(400);const again=await probe(site,true);
-        repeatedMissing=p.code==='missing'&&again.code==='missing';
-        if(again.code==='ok'||again.code==='path')p=again;
-        else if(!repeatedMissing)p=again;
-      }
-      // An explicit 404/410 must repeat in BOTH routes, twice in the second round.
-      const code=p.code==='ok'?'vpn':p.code==='path'?'path':(repeatedMissing&&prev.first==='missing'?'suspect':'review');
-      results[id]={...prev,id,name:site.name,url:site.url,code,reason:code==='suspect'?'两轮均明确返回 404/410，仍需人工确认':p.reason,
-        ms:p.ms||0,status:p.status||0,route:'第二轮·当前浏览器网络',checkedAt:Date.now(),manual:false};
-      scheduleRender();
-    },'第二轮 VPN');
-    lastRun=Date.now();save();setBusy(false);scheduleRender(true);
-    setProgress(done,items.length,stopRequested?'第二轮已停止':'第二轮完成');
-    toastMsg(`第二轮完成：网页有响应 ${counts().vpn}，明确失效线索 ${counts().suspect+counts().path}，无法判断 ${counts().review}`);
+    setProgress(done,items.length,stopRequested?'已停止':done===items.length?'检测完成':'检测已结束');
+    const c=counts();
+    toastMsg(`检测完成：正常响应 ${c.ok} 个，页面异常 ${c.path+c.missing} 个，当前网络连接失败 ${c.unreachable} 个，待人工核实 ${c.restricted+c.server_error+c.browser_response} 个。不会自动删除。`);
   }
   async function recheck(site){
     if(scanning)return;
-    const id=idOf(site),prev=known(site)||{},p=await probe(site,true);
-    const code=p.code==='ok'?'direct':p.code==='path'?'path':p.code==='missing'?'review':'review';
-    results[id]={...prev,id,url:site.url,name:site.name,code,reason:p.reason,checkedAt:Date.now(),route:'手动单站网页复检',manual:false};save();scheduleRender(true);
+    results[idOf(site)]={id:idOf(site),name:site.name,url:site.url,code:'checking',reason:'正在通过本机当前分流复检',route:ROUTE,checkedAt:Date.now()};scheduleRender();
+    const result=await probeSite(site);if(result)results[idOf(site)]=result;
+    save();scheduleRender(true);
   }
   async function handleAction(e){
     const btn=e.target.closest('[data-doctor-act]');if(!btn)return;
@@ -16058,19 +16092,14 @@ updateAccessUIV178();
     if(act==='open'){window.open(site.url,'_blank','noopener,noreferrer');return}
     if(act==='recheck'){await recheck(site);return}
     if(act==='keep'){
-      results[id]={...prev,id,url:site.url,name:site.name,code:'direct',manual:true,reason:'管理员确认实际可用',checkedAt:Date.now(),route:'人工确认'};
-      save();scheduleRender(true);toastMsg('已记录为实际可用');return;
-    }
-    if(act==='confirmdead'){
-      if(!await confirmRoute(`确认你已实际打开「${site.name}」并确定该站无法使用？此操作仅做标记，不会直接删除。`))return;
-      results[id]={...prev,id,url:site.url,name:site.name,code:'manualdead',manual:true,reason:'管理员人工确认失效',checkedAt:Date.now(),route:'人工确认'};
-      save();scheduleRender(true);return;
+      results[id]={...prev,id,url:site.url,name:site.name,code:'manualok',manual:true,reason:'管理员人工确认网站可以打开',checkedAt:Date.now(),route:'人工确认'};
+      save();scheduleRender(true);toastMsg('已标记为可访问');return;
     }
     if(act==='delete'){
-      if(!await confirmRoute(`将「${site.name}」移入回收站？`))return;
+      if(!await confirmAction(`确认将「${site.name}」移入回收站？这不会永久删除，之后仍可恢复。`))return;
       if(typeof deleteContextSite!=='function'){toastMsg('回收站功能不可调用');return}
       await deleteContextSite(site);
-      if(!sitesNow().some(s=>idOf(s)===id))delete results[id];save();scheduleRender(true);
+      if(!sitesNow().some(s=>idOf(s)===id))delete results[id];save();scheduleRender(true);toastMsg('已移入回收站');
     }
   }
   load();
@@ -16079,7 +16108,6 @@ updateAccessUIV178();
   document.addEventListener('click',e=>{const tab=e.target.closest?.('.manager-tab'),quick=e.target.closest?.('[data-go="health"]');if(tab?.dataset.tab==='health'||quick)setTimeout(()=>{ensureUI();render()},0)},{passive:true});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{ensureUI();render()},{once:true});else{ensureUI();render()}
 })();
-
 </script>
 
 
