@@ -13908,11 +13908,20 @@ updateAccessUIV178();
       state.categoryTitleOverrides={};
     }
     if(AUTH_V161?.authenticated){
-      const ignored=payload?.settings?.duplicateIgnoreKeys;
-      state.duplicateIgnoreKeys=new Set(Array.isArray(ignored)?ignored:[]);
-      saveDuplicateIgnoreLocal();
+      // Ignore choices are a local UI preference first. A stale/older D1 snapshot
+      // must not erase groups the user already dismissed on this device.
+      const localIgnoreRaw=STORE.get(DUP_IGNORE_KEY);
+      if(localIgnoreRaw!==null){
+        const localIgnored=parseStored(DUP_IGNORE_KEY,[]);
+        state.duplicateIgnoreKeys=new Set(Array.isArray(localIgnored)?localIgnored:[]);
+      }else{
+        const remoteIgnored=payload?.settings?.duplicateIgnoreKeys;
+        state.duplicateIgnoreKeys=new Set(Array.isArray(remoteIgnored)?remoteIgnored:[]);
+        saveDuplicateIgnoreLocal();
+      }
     }
     refreshCategoryDisplayV18();
+    updateDuplicateMetricV18();
     return ok;
   };
 
@@ -14309,6 +14318,7 @@ updateAccessUIV178();
     rebuildManagerCategorySelects();
     setTab(STORE.get(MGR_TAB_KEY)||"overview");
     updateManagerBadges();
+    updateDuplicateMetricV18();
   }
 
   function rebuildManagerCategorySelects(){
@@ -14510,6 +14520,26 @@ updateAccessUIV178();
         return rank[a.tier]-rank[b.tier]||b.sites.length-a.sites.length||a.root.localeCompare(b.root);
       });
   }
+  function updateDuplicateMetricV18(){
+    const metric=document.querySelector("#managerMetrics .metric-card.dup strong");
+    if(metric)metric.textContent=String(duplicateGroupsV18().length);
+    if(metric)metric.title="未忽略的疑似重复分组；同域名的不同页面或子服务不一定是重复网站";
+  }
+  window.__fxnavUpdateDuplicateMetricV18=updateDuplicateMetricV18;
+
+  // The legacy overview renderer counts every same-domain cluster, including
+  // groups the user has ignored. Correct its displayed number after data updates.
+  if(typeof updateCounts==="function"&&!updateCounts.__v1990DuplicateMetric){
+    const baseUpdateCounts=updateCounts;
+    const wrappedUpdateCounts=function(...args){
+      const result=baseUpdateCounts.apply(this,args);
+      updateDuplicateMetricV18();
+      return result;
+    };
+    wrappedUpdateCounts.__v1990DuplicateMetric=true;
+    updateCounts=wrappedUpdateCounts;
+  }
+
   function keepScoreV18(site){
     let n=0;
     if(isBuiltinSite(site.id))n+=80;
@@ -14598,6 +14628,7 @@ updateAccessUIV178();
       wrap.append(head,body);box.append(wrap);
     });
     updateManagerBadges();
+    updateDuplicateMetricV18();
   }
   function ignoreDuplicateGroupV181(group){
     state.duplicateIgnoreKeys.add(group.key);
@@ -18080,43 +18111,45 @@ html[data-theme] body #drawer :is(button,a,[role="button"],summary):focus-visibl
   grid-row:1!important;
   min-height:38px!important;
 }
-/* Overview stretches its activity area to use the drawer height instead of leaving a dead zone. */
+/* Overview: keep the drawer tall, but keep dashboard content at its natural size. */
 @media (min-width:761px) and (min-height:720px){
   #drawer .manager-panel[data-panel="overview"].active{
-    display:flex!important;
-    flex-direction:column!important;
+    display:block!important;
     min-height:calc(100dvh - 190px)!important;
   }
   #drawer .manager-overview-dashboard{
-    flex:1 1 auto!important;
+    display:grid!important;
+    flex:none!important;
     min-height:0!important;
-    grid-template-rows:auto minmax(230px,1fr)!important;
+    grid-template-rows:auto auto!important;
     row-gap:15px!important;
-    align-content:stretch!important;
+    align-content:start!important;
   }
   #drawer .manager-live-card.wide{
     min-height:0!important;
-    display:flex!important;
-    flex-direction:column!important;
+    display:block!important;
   }
   #drawer .manager-live-card.wide .manager-activity-wrap{
-    flex:1 1 auto!important;
-    min-height:190px!important;
-    align-items:stretch!important;
+    flex:none!important;
+    min-height:0!important;
+    align-items:start!important;
   }
   #drawer .manager-live-card.wide .manager-activity-chart{
-    min-height:190px!important;
-    display:flex!important;
-    flex-direction:column!important;
+    min-height:0!important;
+    height:auto!important;
+    display:block!important;
   }
   #drawer .manager-live-card.wide .manager-activity-chart svg{
-    flex:1 1 auto!important;
+    display:block!important;
+    width:100%!important;
     height:auto!important;
-    min-height:112px!important;
+    aspect-ratio:3.6 / 1!important;
+    flex:none!important;
+    min-height:0!important;
   }
   #drawer .manager-live-card.wide .manager-activity-list{
-    min-height:170px!important;
-    align-content:space-between!important;
+    min-height:0!important;
+    align-content:start!important;
   }
 }
 @media (max-width:1000px) and (min-width:761px){
@@ -18131,6 +18164,37 @@ html[data-theme] body #drawer :is(button,a,[role="button"],summary):focus-visibl
 @media (max-width:390px){
   #drawer .admin-transfer-panel .transfer-action-grid{grid-template-columns:1fr!important}
 }
+</style>
+
+
+<style id="v1990-admin-repair-focus-consistency">
+/* V19.90 repair: neutral focus treatment for every admin form control. */
+html[data-theme] body :is(#drawer,.site-editor,.category-icon-editor,.fx-icon-library)
+  :is(input,select,textarea):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="button"]):not([type="submit"]):is(:focus,:focus-visible){
+  outline:none!important;
+  outline-offset:0!important;
+  border-color:color-mix(in srgb,var(--text,#fff) 22%,transparent)!important;
+  box-shadow:none!important;
+  -webkit-box-shadow:none!important;
+}
+html[data-theme] body :is(#drawer,.site-editor,.category-icon-editor,.fx-icon-library)
+  :is(input[type="checkbox"],input[type="radio"]){
+  accent-color:var(--accent,#7487ff)!important;
+}
+html[data-theme] body :is(#drawer,.site-editor,.category-icon-editor,.fx-icon-library)
+  :is(input[type="checkbox"],input[type="radio"],input[type="range"]):focus-visible{
+  outline:1px solid color-mix(in srgb,var(--text,#fff) 26%,transparent)!important;
+  outline-offset:3px!important;
+  box-shadow:none!important;
+  -webkit-box-shadow:none!important;
+}
+html[data-theme] body :is(#drawer,.site-editor,.category-icon-editor,.fx-icon-library)
+  :is(button,a,[role="button"],summary):focus-visible{
+  outline:1px solid color-mix(in srgb,var(--text,#fff) 24%,transparent)!important;
+  outline-offset:2px!important;
+  box-shadow:none!important;
+}
+#drawer .manager-check{accent-color:var(--accent,#7487ff)!important}
 </style>
 
 </body>
