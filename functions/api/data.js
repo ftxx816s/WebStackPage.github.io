@@ -23,6 +23,10 @@ async function ensureSchema(env){
   await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_sites_v17_category_sort ON sites_v17(category_name,sort_order)`).run();
   await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_sites_v17_root_domain ON sites_v17(root_domain)`).run();
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS settings_v17(owner TEXT NOT NULL,key TEXT NOT NULL,value TEXT NOT NULL,updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,PRIMARY KEY(owner,key))`).run();
+  // V19.90 Repair 08: shared admin activity is append-only metadata in its own table.
+  // This is additive; it does not alter navigation rows, settings_v17, or the D1 revision.
+  await env.DB.prepare(`CREATE TABLE IF NOT EXISTS manager_activity_v1(owner TEXT NOT NULL,event_id TEXT NOT NULL,event_time INTEGER NOT NULL,event_type TEXT NOT NULL,message TEXT NOT NULL,PRIMARY KEY(owner,event_id))`).run();
+  await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_manager_activity_v1_time ON manager_activity_v1(owner,event_time DESC)`).run();
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS backups_v17(id INTEGER PRIMARY KEY AUTOINCREMENT,owner TEXT NOT NULL,revision INTEGER NOT NULL,snapshot TEXT NOT NULL,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`).run();
   // Permanent deletion markers prevent older devices and restored snapshots from reviving purged IDs.
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS purged_sites_v1964(owner TEXT NOT NULL,id TEXT NOT NULL,deleted_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,PRIMARY KEY(owner,id))`).run();
@@ -864,6 +868,29 @@ async function restoreDisasterBackupV1971(env,owner,body){
   return json({ok:true,revision:nextRevision,restored:{sites:siteRows.length,categories:categoryRows.length,customIcons:keyBySite.size,missingCustomIcons:Number(kv?.missingCustomIcons)||0},kvCleanupPending,preRestoreBackup:true});
 }
 
+async function readManagerActivityV1990(env,owner){
+  const since=Date.now()-7*24*60*60*1000;
+  const rows=(await env.DB.prepare(`SELECT event_id,event_time,event_type,message FROM manager_activity_v1 WHERE owner=? AND event_time>=? ORDER BY event_time DESC,event_id DESC LIMIT 80`).bind(owner,since).all()).results||[];
+  return rows.map(r=>({id:String(r.event_id),t:Number(r.event_time)||0,type:String(r.event_type||"site"),text:String(r.message||"")}));
+}
+async function appendManagerActivityV1990(env,owner,body){
+  const incoming=Array.isArray(body?.events)?body.events.slice(0,30):[];
+  const now=Date.now(),minTime=now-30*24*60*60*1000,maxTime=now+5*60*1000;
+  const allowed=new Set(["site","data","category","warn"]),statements=[];
+  for(const item of incoming){
+    const id=String(item?.id||"").slice(0,100),t=Number(item?.t),type=String(item?.type||"site"),message=String(item?.text||"").replace(/[\u0000-\u001f\u007f]/g," ").trim().slice(0,180);
+    if(!/^[a-zA-Z0-9_-]{8,100}$/.test(id)||!Number.isSafeInteger(t)||t<minTime||t>maxTime||!allowed.has(type)||!message)continue;
+    statements.push(env.DB.prepare(`INSERT OR IGNORE INTO manager_activity_v1(owner,event_id,event_time,event_type,message) VALUES(?,?,?,?,?)`).bind(owner,id,t,type,message));
+  }
+  if(statements.length)await env.DB.batch(statements);
+  // Keep a bounded 30-day history; the dashboard reads the latest seven days only.
+  await env.DB.batch([
+    env.DB.prepare(`DELETE FROM manager_activity_v1 WHERE owner=? AND event_time<?`).bind(owner,now-30*24*60*60*1000),
+    env.DB.prepare(`DELETE FROM manager_activity_v1 WHERE owner=? AND event_id NOT IN (SELECT event_id FROM manager_activity_v1 WHERE owner=? ORDER BY event_time DESC,event_id DESC LIMIT 200)`).bind(owner,owner)
+  ]);
+  return {ok:true,rows:await readManagerActivityV1990(env,owner),accepted:statements.length};
+}
+
 export async function onRequest(context){const {request,env}=context;try{const url=new URL(request.url),mode=String(url.searchParams.get("mode")||"");
   if(mode==="healthz"&&request.method==="GET"){
     if(!env?.DB)return json({ok:false,db:false,kv:!!env?.KV,error:"Missing D1 binding: DB"},500);
@@ -884,6 +911,11 @@ export async function onRequest(context){const {request,env}=context;try{const u
 
   // Everything below mutates cloud state and therefore requires admin auth.
   const auth=await requireAuth(request,env);if(auth.error)return auth.error;
+  if(mode==="activity"&&request.method==="GET"){return json({ok:true,rows:await readManagerActivityV1990(env,auth.owner)})}
+  if(mode==="activity"&&request.method==="POST"){
+    if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);
+    return json(await appendManagerActivityV1990(env,auth.owner,await readBoundedJsonV1972(request,32*1024)));
+  }
   if(mode==="sync"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);return await syncSnapshot(env,auth.owner,await readBoundedJsonV1972(request,2*1024*1024))}
   if(mode==="purge-sites"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);return await purgeDeletedSitesV1964(env,auth.owner,await readBoundedJsonV1972(request,512*1024))}
   if(mode==="backups"&&request.method==="GET"){return await listBackups(env,auth.owner)}

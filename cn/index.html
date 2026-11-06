@@ -15737,8 +15737,49 @@ updateAccessUIV178();
   const shouldLog=msg=>[
     /已添加到导航/,/网站信息已更新/,/已删除「/,/已恢复「/,/网站已移入回收站/,/已批量/,/已新增分类/,/分类图标已更新/,/已重命名为/,/分类已删除/,/分类标题已/,/排序已保存/,/排序已完成/,/排序已恢复/,/已请求立即同步/,/已从 D1 刷新/,/D1 快照已创建/,/历史版本已恢复/,/安全清理完成/,/图标刷新完成/,/状态检测完成/,/已处理 .*重复项/,/已保留「/,/图标已上传到 KV/,/已恢复自动高清图标/,/配置已导入/
   ].some(r=>r.test(msg));
-  function activities(){const a=getJSON(ACT_KEY,[]);return Array.isArray(a)?a:[]}
-  function addActivity(msg){msg=String(msg||'').trim();if(!msg||!shouldLog(msg))return;let rows=activities();const last=rows.at(-1);if(last&&last.text===msg&&Date.now()-last.t<1500)return;rows.push({t:Date.now(),type:activityType(msg),text:msg});rows=rows.slice(-MAX_ACT);setJSON(ACT_KEY,rows);if(/D1 快照已创建/.test(msg))localStorage.setItem(BACKUP_KEY,String(Date.now()));render();}
+  const ACT_PENDING_KEY='fxnav_manager_activity_pending_v1';
+  const newActivityId=()=>{try{return crypto.randomUUID()}catch{return 'act_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,12)}};
+  function normalizeActivityRows(rows){return (Array.isArray(rows)?rows:[]).filter(r=>r&&typeof r==='object'&&Number.isFinite(Number(r.t))&&String(r.text||'').trim()).map(r=>({id:String(r.id||newActivityId()),t:Number(r.t),type:['site','data','category','warn'].includes(r.type)?r.type:'site',text:String(r.text||'').trim().slice(0,180)})).slice(-MAX_ACT)}
+  function mergeActivityRows(...groups){const map=new Map();for(const group of groups)for(const row of normalizeActivityRows(group)){const old=map.get(row.id);if(!old||row.t>=old.t)map.set(row.id,row)}return [...map.values()].sort((a,b)=>a.t-b.t).slice(-MAX_ACT)}
+  function pendingActivityRows(){return normalizeActivityRows(getJSON(ACT_PENDING_KEY,[]))}
+  function savePendingActivityRows(rows){setJSON(ACT_PENDING_KEY,mergeActivityRows(rows))}
+  function queueActivityRows(rows){savePendingActivityRows([...pendingActivityRows(),...normalizeActivityRows(rows)])}
+  function activities(){const raw=getJSON(ACT_KEY,[]),rows=normalizeActivityRows(raw);if(JSON.stringify(raw)!==JSON.stringify(rows)){setJSON(ACT_KEY,rows);queueActivityRows(rows)}return rows}
+  let activitySyncBusy=false,activitySyncTimer=0,lastActivitySyncAt=0;
+  function scheduleActivitySync(force=false){
+    if(!AUTH_V161?.authenticated||!V17?.ready||!navigator.onLine)return;
+    if(activitySyncBusy)return;
+    if(!force&&Date.now()-lastActivitySyncAt<60000&&!pendingActivityRows().length)return;
+    clearTimeout(activitySyncTimer);activitySyncTimer=setTimeout(()=>syncActivityAcrossDevices(),250);
+  }
+  async function syncActivityAcrossDevices(){
+    if(activitySyncBusy||!AUTH_V161?.authenticated||!V17?.ready||!navigator.onLine)return;
+    activitySyncBusy=true;
+    try{
+      const remote=await v17Request('activity');
+      const cloud=normalizeActivityRows(remote?.rows||[]),local=activities(),cloudIds=new Set(cloud.map(r=>r.id));
+      setJSON(ACT_KEY,mergeActivityRows(local,cloud));
+      queueActivityRows(local.filter(r=>!cloudIds.has(r.id)));
+      const pending=pendingActivityRows();
+      if(pending.length){
+        const sending=pending.slice(0,30),sentIds=new Set(sending.map(r=>r.id));
+        const saved=await v17Request('activity','POST',{events:sending});
+        savePendingActivityRows(pendingActivityRows().filter(r=>!sentIds.has(r.id)));
+        setJSON(ACT_KEY,mergeActivityRows(activities(),saved?.rows||cloud));
+      }
+      lastActivitySyncAt=Date.now();
+      render();
+      if(pendingActivityRows().length)setTimeout(()=>scheduleActivitySync(true),1200);
+    }catch(err){
+      // Activity history is secondary metadata. Keep its local queue intact and retry
+      // when the page returns online/foreground; never alter navigation sync status.
+      lastActivitySyncAt=Date.now();
+    }finally{
+      activitySyncBusy=false;
+      if(pendingActivityRows().length)setTimeout(()=>scheduleActivitySync(true),1200);
+    }
+  }
+  function addActivity(msg){msg=String(msg||'').trim();if(!msg||!shouldLog(msg))return;let rows=activities();const last=rows.at(-1);if(last&&last.text===msg&&Date.now()-last.t<1500)return;const row={id:newActivityId(),t:Date.now(),type:activityType(msg),text:msg};rows=mergeActivityRows(rows,[row]);setJSON(ACT_KEY,rows);queueActivityRows([row]);if(/D1 快照已创建/.test(msg))localStorage.setItem(BACKUP_KEY,String(Date.now()));render();scheduleActivitySync(true)}
   function localIconCount(){try{return rawSites().filter(s=>s?._customIcon||s?.has_custom_icon).length}catch{return 0}}
   function duplicateState(){const badge=document.querySelector('.manager-tab[data-tab="duplicates"] .manager-tab-badge');const scanned=badge&&badge.textContent.trim()!=='·';let n=0;if(scanned){const m=badge.textContent.match(/\d+/);n=m?Number(m[0]):document.querySelectorAll('#duplicateList .duplicate-group').length}return {scanned:!!scanned,count:n}}
   function maintenance(){const x=getJSON(MAINT_KEY,null);return x&&typeof x==='object'?x:null}
@@ -15774,7 +15815,7 @@ updateAccessUIV178();
         </div>
       </section>
       <section class="manager-live-card wide">
-        <div class="manager-live-head"><b>近 7 天活动</b><small>仅记录本机管理操作</small></div>
+        <div class="manager-live-head"><b>近 7 天活动</b><small>${AUTH_V161?.authenticated?"多设备共享 · 管理员操作":"本机记录 · 管理员登录后同步"}</small></div>
         <div class="manager-activity-wrap">
           <div class="manager-activity-chart"><div class="manager-activity-summary"><strong>${weekTotal}</strong><span>7 天管理操作</span></div>${chart(days)}<div class="manager-day-labels">${days.map(d=>`<span>${d.label}</span>`).join('')}</div></div>
           <div class="manager-activity-list">${recent.length?recent.map(r=>`<div class="manager-activity-item"><i class="manager-activity-type ${esc(r.type)}"></i><div class="manager-activity-copy" title="${esc(r.text)}">${esc(r.text)}</div><time class="manager-activity-time">${fmtTime(r.t)}</time></div>`).join(''):'<div class="manager-activity-empty">暂无管理操作记录。<br>之后新增、编辑、同步、清理、快照等成功操作会自动记录在这里。</div>'}</div>
@@ -15784,6 +15825,7 @@ updateAccessUIV178();
       if(typeof window.setManagerTabV18==='function')window.setManagerTabV18('data');
       setTimeout(()=>document.getElementById('managerMaintenanceScan')?.click(),60);
     });
+    scheduleActivitySync(false);
   }
   window.renderManagerOverviewV1831=render;
   // Cache maintenance results only when the existing maintenance flow actually runs.
@@ -15799,14 +15841,16 @@ updateAccessUIV178();
   // Track real D1 sync completion by observing the existing status setter, not by polling.
   if(typeof window.setCloudStatus==='function'){
     const oldStatus=window.setCloudStatus;
-    window.setCloudStatus=function(stateName,label,detail){const out=oldStatus.apply(this,arguments);if(stateName==='synced'&&/数据版本/.test(String(detail||''))){localStorage.setItem(SYNC_KEY,String(Date.now()));render()}return out};
+    window.setCloudStatus=function(stateName,label,detail){const out=oldStatus.apply(this,arguments);if(stateName==='synced'&&/数据版本/.test(String(detail||''))){localStorage.setItem(SYNC_KEY,String(Date.now()));render();scheduleActivitySync(false)}return out};
   }
   document.addEventListener('click',e=>{
     const tab=e.target.closest?.('.manager-tab');if(tab?.dataset.tab==='overview')setTimeout(render,0);
     if(e.target.closest?.('#manageBtn,#compactManageBtn,#mobileManageBtn'))setTimeout(render,80);
   },{passive:true});
-  window.addEventListener('online',render,{passive:true});window.addEventListener('offline',render,{passive:true});
-  setTimeout(render,120);
+  window.addEventListener('online',()=>{render();scheduleActivitySync(true)},{passive:true});window.addEventListener('offline',render,{passive:true});
+  window.addEventListener('focus',()=>scheduleActivitySync(true),{passive:true});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)scheduleActivitySync(true)},{passive:true});
+  setTimeout(()=>{render();scheduleActivitySync(true)},120);
 })();
 
 </script>
@@ -18418,6 +18462,39 @@ html[data-theme] body :is(#drawer,.site-editor,.category-icon-editor,.fx-icon-li
     font-size:9px!important;
     line-height:1.3!important;
   }
+}
+</style>
+
+
+<style id="v1990-repair08-mobile-category-single-row">
+/* Mobile category manager: one compact row per category; controls stay beside the title. */
+@media (max-width:650px){
+  #drawer .category-manager-item{
+    grid-template-columns:18px 28px minmax(38px,1fr) max-content!important;
+    gap:5px!important;
+    min-height:44px!important;
+    padding:6px 7px!important;
+    align-items:center!important;
+  }
+  #drawer .category-drag{width:18px!important;height:28px!important;font-size:12px!important}
+  #drawer .category-manager-icon{width:28px!important;height:28px!important;border-radius:9px!important}
+  #drawer .category-manager-copy{display:flex!important;align-items:center!important;gap:4px!important;min-width:0!important;overflow:hidden!important}
+  #drawer .category-manager-copy b{min-width:0!important;max-width:100%!important;font-size:10px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+  #drawer .category-manager-copy small{display:inline-block!important;flex:0 1 auto!important;min-width:0!important;max-width:66px!important;margin:0!important;font-size:8px!important;line-height:1.1!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+  #drawer .category-manager-actions{grid-column:4!important;grid-row:1!important;display:flex!important;flex-wrap:nowrap!important;align-items:center!important;justify-content:flex-end!important;gap:3px!important;min-width:0!important}
+  #drawer .category-manager-actions .cat-mini{display:grid!important;place-items:center!important;flex:0 0 auto!important;width:24px!important;min-width:24px!important;height:27px!important;padding:0!important;font-size:9px!important;line-height:1!important;white-space:nowrap!important}
+  #drawer .category-manager-actions .manager-category-title-btn{width:28px!important;min-width:28px!important}
+  #drawer .category-manager-actions .cat-mini:nth-child(4){width:28px!important;min-width:28px!important}
+  #drawer .category-manager-actions .cat-mini:nth-child(5){width:28px!important;min-width:28px!important}
+}
+@media (max-width:380px){
+  #drawer .category-manager-item{grid-template-columns:17px 26px minmax(32px,1fr) max-content!important;gap:4px!important;padding-left:6px!important;padding-right:6px!important}
+  #drawer .category-manager-icon{width:26px!important;height:26px!important}
+  #drawer .category-manager-copy small{display:none!important}
+  #drawer .category-manager-actions{gap:2px!important}
+  #drawer .category-manager-actions .cat-mini{width:22px!important;min-width:22px!important;height:25px!important}
+  #drawer .category-manager-actions .manager-category-title-btn{width:25px!important;min-width:25px!important}
+  #drawer .category-manager-actions .cat-mini:nth-child(4),#drawer .category-manager-actions .cat-mini:nth-child(5){width:25px!important;min-width:25px!important}
 }
 </style>
 
