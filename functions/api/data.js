@@ -255,27 +255,10 @@ function checkedRemoteUrl(input){
   try{
     const u=new URL(input);
     if(!["https:","http:"].includes(u.protocol)||u.username||u.password||privateHost(u.hostname))return null;
-    // No direct access to arbitrary service ports from image/health probes.
+    // No direct access to arbitrary service ports from image probes.
     if(u.port&&!(["443","80"].includes(u.port)))return null;
     return u;
   }catch{return null}
-}
-async function checkSiteHealth(site){
-  let u=null;try{u=new URL(site.url)}catch{return {id:site.id,kind:"bad",label:"网址无效",status:0}}
-  if(!checkedRemoteUrl(u.href))return {id:site.id,kind:"bad",label:"已阻止检测",status:0};
-  const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),4500);
-  try{
-    const res=await fetch(u.href,{method:"HEAD",redirect:"manual",signal:ctl.signal,headers:{"User-Agent":"Mozilla/5.0"}});
-    const status=Number(res.status)||0;
-    if(status>=200&&status<300)return {id:site.id,kind:"ok",label:`正常 ${status}`,status};
-    if(status>=300&&status<400)return {id:site.id,kind:"warn",label:`重定向 ${status}`,status,location:res.headers.get("location")||""};
-    if(status===401)return {id:site.id,kind:"warn",label:"需要登录 401",status};
-    if(status===403)return {id:site.id,kind:"warn",label:"拒绝访问 403",status};
-    if(status===405)return {id:site.id,kind:"warn",label:"不支持 HEAD 405",status};
-    return {id:site.id,kind:"bad",label:`异常 ${status||"?"}`,status};
-  }catch{
-    return {id:site.id,kind:"bad",label:"连接失败",status:0};
-  }finally{clearTimeout(timer)}
 }
 async function refreshIcons(env,owner,ids){
   if(!env.KV)return json({ok:false,error:"Missing KV binding: KV"},500);
@@ -334,14 +317,6 @@ async function refreshIcons(env,owner,ids){
     }
   }
   return json({ok:true,refreshed,skipped,failed,truncated:Array.isArray(ids)&&ids.length>12,revision,kvCleanupPending});
-}
-async function healthBatch(env,ids){
-  const clean=[...new Set((Array.isArray(ids)?ids:[]).map(String))].slice(0,12);
-  if(!clean.length)return json({ok:true,results:[]});
-  const marks=clean.map(()=>"?").join(",");
-  const rows=(await env.DB.prepare(`SELECT id,url FROM sites_v17 WHERE id IN (${marks})`).bind(...clean).all()).results||[];
-  const results=await Promise.all(rows.map(checkSiteHealth));
-  return json({ok:true,results});
 }
 function validateSnapshot(body){
   const fail=error=>({cats:[],sites:[],dups:[],error});
@@ -933,7 +908,6 @@ export async function onRequest(context){const {request,env}=context;try{const u
     return await restoreDisasterBackupV1971(env,auth.owner,body);
   }
   if(mode==="refresh-icons"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);const body=await readBoundedJsonV1972(request,512*1024);return await refreshIcons(env,auth.owner,body?.ids)}
-  if(mode==="health"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);const body=await readBoundedJsonV1972(request,512*1024);return await healthBatch(env,body?.ids)}
   if(mode==="upload-icon"&&request.method==="POST"){
     if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);
     if(!env.KV)return json({ok:false,error:"Missing KV binding: KV"},500);
