@@ -18,7 +18,7 @@
 </style>
 <script  id="app-meta-v1891"  data-module="script-01.js">
 
-window.FXNAV_APP=Object.freeze({version:"19.90",build:"V19.90",schemaVersion:3,channel:"stable"});
+window.FXNAV_APP=Object.freeze({version:"19.91",build:"V19.91",schemaVersion:3,channel:"stable"});
 
 </script>
 <script  id="theme-boot-v1867"  data-module="script-02.js">
@@ -3946,8 +3946,8 @@ html[data-theme="neon"] .tool-cluster{border-radius:14px;}}
 <link rel="icon" type="image/png" sizes="64x64" href="/assets/runtime/favicon-985ed977.png">
 <link rel="shortcut icon" type="image/png" href="/assets/runtime/favicon-985ed977.png">
 
-<meta name="x-build" content="V19.90-20261103">
-<meta name="x-app-version" content="19.90">
+<meta name="x-build" content="V19.91-20261107">
+<meta name="x-app-version" content="19.91">
 
 <style data-module="style-03.css">
 :root{
@@ -8801,7 +8801,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
         <span class="console-divider"></span>
         <span class="console-item cache"><span class="k">CACHE</span><strong id="consoleCache">0 KB</strong></span>
         <span class="console-divider"></span>
-        <span class="console-item build"><span class="k">BUILD</span><strong>V19.90</strong></span>
+        <span class="console-item build"><span class="k">BUILD</span><strong>V19.91</strong></span>
         <span class="console-spacer"></span>
         <span class="console-activity">
           <span class="k">SYSTEM ACTIVITY</span>
@@ -8961,7 +8961,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
 
     <div id="fxD1LoadingV1946" class="fx-d1-loading-v1946" role="status">正在读取完整云端导航数据…</div>
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V19.90 版本</div>
+    <div class="footer">© 2026 私人导航工具箱 · V19.91 版本</div>
   </main>
 </div>
 
@@ -13958,7 +13958,11 @@ updateAccessUIV178();
       if(b)b.textContent=val;
     }
     const d=document.querySelector('.manager-tab[data-tab="duplicates"] .manager-tab-badge');
-    if(d)d.textContent=duplicateScanned?document.querySelectorAll("#duplicateList .duplicate-group").length:"·";
+    const duplicateCount=typeof duplicateGroupsV18==="function"?duplicateGroupsV18().length:document.querySelectorAll("#duplicateList .duplicate-group").length;
+    if(d){d.textContent=String(duplicateCount);d.title="当前未忽略的疑似重复分组；无需先点击扫描即可统计";}
+    const metric=document.querySelector("#managerMetrics .metric-card.dup strong");if(metric)metric.textContent=String(duplicateCount);
+    const panelCount=document.getElementById("duplicateCount");if(panelCount)panelCount.textContent=`${duplicateCount} 组`;
+    window.__fxnavDuplicateStatsV18=()=>({scanned:true,count:duplicateGroupsV18().length,ignored:state.duplicateIgnoreKeys.size});
   }
 
   function makePanel(id){
@@ -14027,6 +14031,8 @@ updateAccessUIV178();
         <select id="managerBatchCategory"></select>
         <button class="btn" type="button" id="managerBatchMove">批量移动</button>
         <button class="btn" type="button" id="managerBatchRefreshIcons">刷新图标</button>
+        <button class="btn" type="button" id="managerBatchFavorite">加入收藏</button>
+        <button class="btn" type="button" id="managerBatchExport">导出选中</button>
         <button class="btn danger-text" type="button" id="managerBatchDelete">批量删除</button>
       </div>
     `;
@@ -14075,13 +14081,24 @@ updateAccessUIV178();
         <span class="mgr86-state-chip"><i aria-hidden="true"></i>云端优先</span>
       </header>
 
-      <section class="manager-data-card mgr86-cloud-card" aria-label="云端同步状态">
+      <section class="manager-data-card mgr86-cloud-card mgr91-sync-card" aria-label="云端同步中心">
         <div class="mgr86-cloud-symbol" aria-hidden="true">☁</div>
         <div class="mgr86-cloud-copy">
-          <h4>云端同步</h4>
+          <h4>云端同步中心</h4>
           <p id="managerD1Info">正在读取当前数据状态…</p>
+          <div class="mgr91-sync-stats" aria-live="polite">
+            <div class="mgr91-sync-stat"><span>连接状态</span><b id="mgr91SyncState">等待验证</b></div>
+            <div class="mgr91-sync-stat"><span>D1 版本</span><b id="mgr91SyncRevision">—</b></div>
+            <div class="mgr91-sync-stat"><span>本机待同步</span><b id="mgr91SyncPending">检查中</b></div>
+            <div class="mgr91-sync-stat"><span>最近成功</span><b id="mgr91SyncLast">尚无记录</b></div>
+          </div>
+          <p class="mgr91-sync-detail" id="mgr91SyncDetail">状态以实际 D1 请求结果为准；本地缓存不等于云端已连接。</p>
         </div>
-        <button class="btn mgr86-outline-action" type="button" id="managerGoSites">管理网站图标</button>
+        <div class="mgr91-sync-actions">
+          <button class="btn" type="button" id="mgr91SyncCheck">检查连接</button>
+          <button class="btn primary" type="button" id="mgr91SyncPush">立即同步</button>
+          <button class="btn mgr86-outline-action" type="button" id="managerGoSites">管理网站图标</button>
+        </div>
       </section>
 
       <div class="mgr86-main-actions">
@@ -14200,7 +14217,18 @@ updateAccessUIV178();
     document.getElementById("managerLoadMore")?.addEventListener("click",()=>{managerPageSize+=PAGE_SIZE;renderManagerSites()});
     document.getElementById("managerBatchMove")?.addEventListener("click",batchMoveV18);
     document.getElementById("managerBatchRefreshIcons")?.addEventListener("click",batchRefreshIconsV181);
+    document.getElementById("managerBatchFavorite")?.addEventListener("click",batchToggleFavoriteV1991);
+    document.getElementById("managerBatchExport")?.addEventListener("click",exportSelectedSitesV1991);
     document.getElementById("managerBatchDelete")?.addEventListener("click",batchDeleteV18);
+
+    document.getElementById("mgr91SyncCheck")?.addEventListener("click",async()=>{
+      const btn=document.getElementById("mgr91SyncCheck");if(btn){btn.disabled=true;btn.textContent="检查中…"}
+      renderSyncCenterV1991();
+      try{await recoverV17OnResumeV206({forcePull:true,forceAuth:true})}
+      catch(err){setCloudStatus("error","D1 检查失败",err?.message||"检查失败")}
+      finally{if(btn){btn.disabled=false;btn.textContent="检查连接"}renderSyncCenterV1991()}
+    });
+    document.getElementById("mgr91SyncPush")?.addEventListener("click",()=>document.getElementById("managerSyncNow")?.click());
 
     document.getElementById("managerSyncNow")?.addEventListener("click",async()=>{
       const btn=document.getElementById("managerSyncNow");if(btn)btn.disabled=true;
@@ -14232,6 +14260,17 @@ updateAccessUIV178();
     setTab(STORE.get(MGR_TAB_KEY)||"overview");
     updateManagerBadges();
     updateDuplicateMetricV18();
+    renderDuplicatesV18();
+    renderSyncCenterV1991();
+    const cloudStatusNode=document.getElementById("cloudStatus");
+    if(cloudStatusNode&&!cloudStatusNode.dataset.mgr91Observer){
+      cloudStatusNode.dataset.mgr91Observer="1";
+      const syncObserver=new MutationObserver(()=>renderSyncCenterV1991());
+      syncObserver.observe(cloudStatusNode,{attributes:true,childList:true,subtree:true});
+      window.addEventListener("online",renderSyncCenterV1991,{passive:true});
+      window.addEventListener("offline",renderSyncCenterV1991,{passive:true});
+      document.addEventListener("visibilitychange",()=>{if(!document.hidden)renderSyncCenterV1991()},{passive:true});
+    }
   }
 
   function rebuildManagerCategorySelects(){
@@ -14329,6 +14368,25 @@ updateAccessUIV178();
     const n=managerSelection.size;
     bar?.classList.toggle("show",n>0);
     if(count)count.textContent=`已选 ${n} 项`;
+    const favBtn=document.getElementById("managerBatchFavorite");
+    if(favBtn&&n){const allFav=[...managerSelection].every(id=>state.favorites.has(id));favBtn.textContent=allFav?"取消收藏":"加入收藏";}
+  }
+  function batchToggleFavoriteV1991(){
+    const ids=[...managerSelection];if(!ids.length)return;
+    const allFav=ids.every(id=>state.favorites.has(id));
+    ids.forEach(id=>allFav?state.favorites.delete(id):state.favorites.add(id));
+    if(!save())return;
+    window.__fxCloudSchedulePush?.();
+    managerSelection.clear();buildNav();render();renderManagerSites();updateCounts();
+    toast(allFav?`已取消收藏 ${ids.length} 个网站`:`已收藏 ${ids.length} 个网站`);
+  }
+  function exportSelectedSitesV1991(){
+    const ids=[...managerSelection];if(!ids.length)return;
+    const selected=rawSites().filter(site=>ids.includes(site.id)&&!state.hiddenSites.has(site.id));
+    const payload={format:"private-nav-selected-sites",formatVersion:1,exportedAt:new Date().toISOString(),appVersion:window.FXNAV_APP?.version||"19.91",sites:selected.map(site=>({id:site.id,name:site.name,url:site.url,domain:site.domain||safeDomain(site.url),category:displayCategory(effectiveCategory(site)),favorite:state.favorites.has(site.id),builtin:isBuiltinSite(site.id),iconUrl:site._sourceIconUrl||site.iconUrl||"",hasCustomIcon:!!site._customIcon}))};
+    const stamp=new Date().toISOString().slice(0,10).replaceAll("-","");
+    downloadJsonV1860(payload,`private-nav-selected-sites-${stamp}.json`);
+    toast(`已导出 ${selected.length} 个网站信息；KV 图标文件不包含在此清单中`);
   }
   async function batchMoveV18(){
     const ids=[...managerSelection];
@@ -14400,9 +14458,14 @@ updateAccessUIV178();
       });
   }
   function updateDuplicateMetricV18(){
+    const count=duplicateGroupsV18().length;
     const metric=document.querySelector("#managerMetrics .metric-card.dup strong");
-    if(metric)metric.textContent=String(duplicateGroupsV18().length);
-    if(metric)metric.title="未忽略的疑似重复分组；同域名的不同页面或子服务不一定是重复网站";
+    if(metric){metric.textContent=String(count);metric.title="当前未忽略的疑似重复分组；同域名的不同页面或子服务不一定是重复网站";}
+    const tabBadge=document.querySelector('.manager-tab[data-tab="duplicates"] .manager-tab-badge');
+    if(tabBadge){tabBadge.textContent=String(count);tabBadge.title="当前未忽略的疑似重复分组";}
+    const panelCount=document.getElementById("duplicateCount");if(panelCount)panelCount.textContent=`${count} 组`;
+    window.__fxnavDuplicateStatsV18=()=>({scanned:true,count:duplicateGroupsV18().length,ignored:state.duplicateIgnoreKeys.size});
+    return count;
   }
   window.__fxnavUpdateDuplicateMetricV18=updateDuplicateMetricV18;
 
@@ -14665,6 +14728,40 @@ updateAccessUIV178();
     }finally{if(scanBtn)scanBtn.disabled=false;if(cleanBtn)cleanBtn.disabled=false}
   }
 
+  function fmtSyncTimeV1991(value){
+    const n=Number(value)||0;if(!n)return "尚无记录";
+    const d=new Date(n);if(!Number.isFinite(d.getTime()))return "尚无记录";
+    const now=new Date();
+    return d.toDateString()===now.toDateString()?d.toLocaleTimeString("zh-CN",{hour:"2-digit",minute:"2-digit",hour12:false}):d.toLocaleDateString("zh-CN",{month:"2-digit",day:"2-digit"})+" "+d.toLocaleTimeString("zh-CN",{hour:"2-digit",minute:"2-digit",hour12:false});
+  }
+  function renderSyncCenterV1991(){
+    const stateEl=document.getElementById("mgr91SyncState");if(!stateEl)return;
+    const revisionEl=document.getElementById("mgr91SyncRevision"),pendingEl=document.getElementById("mgr91SyncPending"),lastEl=document.getElementById("mgr91SyncLast"),detailEl=document.getElementById("mgr91SyncDetail"),infoEl=document.getElementById("managerD1Info");
+    const admin=!!AUTH_V161?.authenticated,online=navigator.onLine,ready=!!V17?.ready,conflict=!!V17?.conflict,syncing=!!V17?.syncing;
+    const pendingRecord=parseStored(V17_PENDING_KEY_V1985,null),conflictRecord=parseStored(V17_CONFLICT_KEY_V1971,null);
+    const protectFailed=!!V17?.pendingPersistFailed;
+    let dirty=false;try{dirty=admin&&ready&&JSON.stringify(makeV17Snapshot())!==V17.lastSnapshot}catch{}
+    const hasPending=!!pendingRecord||!!conflictRecord||conflict||dirty||protectFailed;
+    let label="等待验证",detail="尚未取得本次 D1 请求的成功结果。";
+    if(!online){label="当前离线";detail="浏览器报告网络离线；本机数据保留，联网后自动重试。"}
+    else if(protectFailed){label="本机保护失败";detail="浏览器未能保存待同步快照；已暂停云端写入。请先导出配置并检查本机存储空间。"}
+    else if(conflict||conflictRecord){label="存在同步冲突";detail=String(conflictRecord?.error||"本机待同步快照已保留；自动覆盖已暂停。请先导出配置并核对。")}
+    else if(pendingRecord&&!admin){label="待管理员登录";detail="检测到本机待同步快照；请重新登录管理员后安全恢复，不会以访客数据覆盖云端。"}
+    else if(!admin){label="访客只读";detail="当前浏览器未处于管理员会话；访客数据不会写入 D1。"}
+    else if(syncing){label="正在同步";detail="正在向 Cloudflare D1 提交或核对数据。"}
+    else if(hasPending){label="有待同步修改";detail="检测到本机修改或待写入快照；不会用旧云端数据覆盖本机内容。"}
+    else if(V17?.lastStatus==="synced"&&V17?.lastSuccessAt&&Date.now()-V17.lastSuccessAt<60000){label="连接已验证";detail="最近一次 D1 请求已成功；连接状态会随下一次请求更新。"}
+    else if(V17?.lastSuccessAt){label="最近连接成功";detail="上次请求成功，但当前连接尚未重新验证。点击“检查连接”执行实时验证。"}
+    else if(V17?.lastError){label="连接待检查";detail=String(V17.lastError)}
+    stateEl.textContent=label;stateEl.dataset.state=conflict||conflictRecord?"conflict":!online?"offline":hasPending?"pending":admin&&V17?.lastStatus==="synced"?"ok":"idle";
+    if(revisionEl)revisionEl.textContent=ready?`rev ${Number(V17.revision)||0}`:"未初始化";
+    if(pendingEl)pendingEl.textContent=hasPending?(conflict||conflictRecord?"冲突待处理":"有待上传"):(admin?"无":"访客本机");
+    if(lastEl)lastEl.textContent=fmtSyncTimeV1991(V17?.lastSuccessAt||Number(localStorage.getItem("fxnav_manager_last_sync_v1831")||0));
+    if(detailEl)detailEl.textContent=detail+(V17?.lastError?` · 最近错误：${String(V17.lastError).slice(0,120)}`:"")+(V17?.networkFailures?` · 连续失败 ${V17.networkFailures} 次` : "")+(V17?.nextRetryAt>Date.now()?` · 下次重试约 ${Math.max(1,Math.ceil((V17.nextRetryAt-Date.now())/1000))} 秒后`:"");
+    if(infoEl)infoEl.textContent=`当前：${admin?"管理员模式":"访客模式"} · D1 revision ${Number(V17?.revision)||0} · 最近写入 ${Number(V17?.lastWriteRows)||0} 行 · ${online?"网络在线":"当前离线"}`;
+  }
+  window.__fxnavRenderSyncCenterV1991=renderSyncCenterV1991;
+
   function renderDataPanel(){
     window.renderManagerTrendsV1821?.();
     const d1=document.getElementById("managerD1Info");
@@ -14674,6 +14771,7 @@ updateAccessUIV178();
       const bytes=typeof storageBytes==="function"?storageBytes():0;
       local.textContent=`本机 localStorage 约 ${(bytes/1024).toFixed(0)} KB；云端正式数据仍以 D1 为准。`;
     }
+    renderSyncCenterV1991();
     loadBackupsV181(false);
     loadMaintenanceV1819(false,false);
   }
@@ -15573,7 +15671,7 @@ updateAccessUIV178();
   }
   function addActivity(msg){msg=String(msg||'').trim();if(!msg||!shouldLog(msg))return;let rows=activities();const last=rows.at(-1);if(last&&last.text===msg&&Date.now()-last.t<1500)return;const row={id:newActivityId(),t:Date.now(),type:activityType(msg),text:msg};rows=mergeActivityRows(rows,[row]);setJSON(ACT_KEY,rows);queueActivityRows([row]);if(/D1 快照已创建/.test(msg))localStorage.setItem(BACKUP_KEY,String(Date.now()));render();scheduleActivitySync(true)}
   function localIconCount(){try{return rawSites().filter(s=>s?._customIcon||s?.has_custom_icon).length}catch{return 0}}
-  function duplicateState(){const badge=document.querySelector('.manager-tab[data-tab="duplicates"] .manager-tab-badge');const scanned=badge&&badge.textContent.trim()!=='·';let n=0;if(scanned){const m=badge.textContent.match(/\d+/);n=m?Number(m[0]):document.querySelectorAll('#duplicateList .duplicate-group').length}return {scanned:!!scanned,count:n}}
+  function duplicateState(){const live=window.__fxnavDuplicateStatsV18?.();if(live&&Number.isFinite(Number(live.count)))return {scanned:true,count:Math.max(0,Number(live.count)||0)};const badge=document.querySelector('.manager-tab[data-tab="duplicates"] .manager-tab-badge');const scanned=badge&&badge.textContent.trim()!=='·';let n=0;if(scanned){const m=badge.textContent.match(/\d+/);n=m?Number(m[0]):document.querySelectorAll('#duplicateList .duplicate-group').length}return {scanned:!!scanned,count:n}}
   function maintenance(){const x=getJSON(MAINT_KEY,null);return x&&typeof x==='object'?x:null}
   function sevenDays(rows){const out=[];const now=new Date();for(let i=6;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth(),now.getDate()-i);out.push({key:dateKey(d),label:`${d.getMonth()+1}/${d.getDate()}`,count:0})}const map=new Map(out.map(x=>[x.key,x]));rows.forEach(r=>{const x=map.get(dateKey(r.t));if(x)x.count++});return out}
   function chart(days){const vals=days.map(x=>x.count),w=360,h=100,pX=9,pY=12,max=Math.max(1,...vals);const pts=vals.map((v,i)=>{const x=pX+i*(w-pX*2)/6,y=h-pY-(v/max)*(h-pY*2);return [x,y]});const poly=pts.map(p=>p.map(x=>x.toFixed(1)).join(',')).join(' ');const area=`M ${pts[0][0].toFixed(1)} ${h-pY} L ${pts.map(p=>p.map(x=>x.toFixed(1)).join(' ')).join(' L ')} L ${pts.at(-1)[0].toFixed(1)} ${h-pY} Z`;return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><defs><linearGradient id="managerActivityGradV1831" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#44d4ff"/><stop offset=".52" stop-color="#6f82ff"/><stop offset="1" stop-color="#c762dc"/></linearGradient><linearGradient id="managerActivityAreaV1831" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7587ff" stop-opacity=".18"/><stop offset="1" stop-color="#7587ff" stop-opacity="0"/></linearGradient></defs><path class="manager-activity-gridline" d="M9 28H351M9 55H351M9 82H351"/><path class="manager-activity-area" d="${area}"/><polyline class="manager-activity-line" points="${poly}"/>${pts.map(p=>`<circle class="manager-activity-point" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="2.5"/>`).join('')}</svg>`}
@@ -18015,6 +18113,34 @@ html[data-theme="liquid"] body #drawer .manager-live-card.wide .manager-activity
     border-top:1px solid color-mix(in srgb,var(--mgr-line,var(--line)) 68%,transparent)!important;
     padding-top:10px!important;
   }
+}
+
+/* V19.91 Upgrade 01: actionable sync center and compact bulk actions. */
+#drawer .mgr91-sync-card{grid-template-columns:41px minmax(0,1fr) auto;align-items:start;}
+#drawer .mgr91-sync-card .mgr86-cloud-copy{min-width:0;}
+#drawer .mgr91-sync-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px 14px;margin-top:11px;padding-top:10px;border-top:1px solid rgba(148,163,184,.16);}
+#drawer .mgr91-sync-stat{display:grid;gap:4px;min-width:0;}
+#drawer .mgr91-sync-stat span{font-size:10px;color:var(--mgr-muted,var(--muted));}
+#drawer .mgr91-sync-stat b{font-size:12px;color:var(--mgr-text,var(--text));overflow-wrap:anywhere;}
+#drawer .mgr91-sync-stat b[data-state="ok"]{color:#48c99a;}
+#drawer .mgr91-sync-stat b[data-state="offline"],#drawer .mgr91-sync-stat b[data-state="conflict"],#drawer .mgr91-sync-stat b[data-state="pending"]{color:#f0b454;}
+#drawer .mgr91-sync-detail{grid-column:1/-1;margin:8px 0 0!important;font-size:10.5px;line-height:1.55;overflow-wrap:anywhere;}
+#drawer .mgr91-sync-actions{display:flex;flex-direction:column;gap:6px;align-self:center;min-width:112px;}
+#drawer .mgr91-sync-actions .btn{white-space:nowrap;}
+#drawer .manager-batch-bar{grid-template-columns:auto minmax(130px,1fr) repeat(5,auto)!important;}
+#drawer .manager-batch-bar>*{min-width:0;}
+@media(max-width:760px){
+  #drawer .mgr91-sync-card{grid-template-columns:36px minmax(0,1fr);gap:10px;}
+  #drawer .mgr91-sync-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 12px;}
+  #drawer .mgr91-sync-actions{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));min-width:0;}
+  #drawer .mgr91-sync-actions #managerGoSites{grid-column:1/-1;width:100%;}
+  #drawer .manager-batch-bar{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+  #drawer .manager-batch-count{grid-column:1/-1;}
+}
+@media(max-width:380px){
+  #drawer .mgr91-sync-stats{gap:8px;}
+  #drawer .mgr91-sync-stat b{font-size:11px;}
+  #drawer .manager-batch-bar .btn{font-size:11px;}
 }
 </style>
 </body>
