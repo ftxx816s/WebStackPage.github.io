@@ -18,7 +18,7 @@
 </style>
 <script  id="app-meta-v1891"  data-module="script-01.js">
 
-window.FXNAV_APP=Object.freeze({version:"19.96",build:"V19.96",schemaVersion:3,channel:"stable"});
+window.FXNAV_APP=Object.freeze({version:"19.97",build:"V19.97",schemaVersion:3,channel:"stable"});
 
 </script>
 <script  id="theme-boot-v1867"  data-module="script-02.js">
@@ -3946,8 +3946,8 @@ html[data-theme="neon"] .tool-cluster{border-radius:14px;}}
 <link rel="icon" type="image/png" sizes="64x64" href="/assets/runtime/favicon-985ed977.png">
 <link rel="shortcut icon" type="image/png" href="/assets/runtime/favicon-985ed977.png">
 
-<meta name="x-build" content="V19.96-20261107">
-<meta name="x-app-version" content="19.96">
+<meta name="x-build" content="V19.97-20261107">
+<meta name="x-app-version" content="19.97">
 
 <style data-module="style-03.css">
 :root{
@@ -8762,6 +8762,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
 
 
 <link rel="stylesheet" href="/assets/runtime/manager-monitor-v1996.css?v=1996">
+<link rel="stylesheet" href="/assets/runtime/manager-layout-v1997.css?v=1997">
 </head>
 <body><div class="ambient-scene" aria-hidden="true"><i class="glass-capsule"></i><i class="glass-capsule"></i><i class="glass-capsule"></i><i class="glass-capsule"></i></div>
 <div class="fx-responsive-wallpaper" aria-hidden="true"></div>
@@ -8804,7 +8805,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
         <span class="console-divider"></span>
         <span class="console-item cache"><span class="k">CACHE</span><strong id="consoleCache">0 KB</strong></span>
         <span class="console-divider"></span>
-        <span class="console-item build"><span class="k">BUILD</span><strong>V19.96</strong></span>
+        <span class="console-item build"><span class="k">BUILD</span><strong>V19.97</strong></span>
         <span class="console-spacer"></span>
         <span class="console-activity">
           <span class="k">SYSTEM ACTIVITY</span>
@@ -8964,7 +8965,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
 
     <div id="fxD1LoadingV1946" class="fx-d1-loading-v1946" role="status">正在读取完整云端导航数据…</div>
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V19.96 版本</div>
+    <div class="footer">© 2026 私人导航工具箱 · V19.97 版本</div>
   </main>
 </div>
 
@@ -11290,13 +11291,45 @@ function updateCounts(){
 
 /* V13 categories */
 function renderCategoryManager(){
-  const box=$("#categoryManagerList");if(!box)return;box.innerHTML="";const cats=allCategories();$("#categoryManageCount").textContent=cats.length+" 个分类";
-  cats.forEach((cat,index)=>{const row=document.createElement("div");row.className="category-manager-item";row.draggable=true;row.dataset.category=cat.name;const drag=document.createElement("span");drag.className="category-drag";drag.textContent="⋮⋮";drag.title="拖拽调整分类顺序";const icon=document.createElement("span");icon.className="category-manager-icon";renderCategoryIcon(icon,cat.icon);const copy=document.createElement("div");copy.className="category-manager-copy";const b=document.createElement("b");b.textContent=cat.name;const sm=document.createElement("small");sm.textContent=`${cat.builtin?"内置分类":"自定义分类"} · ${categoryCount(cat.name)} 个网站`;copy.append(b,sm);const actions=document.createElement("div");actions.className="category-manager-actions";const up=document.createElement("button");up.type="button";up.className="cat-mini";up.textContent="↑";up.disabled=index===0;up.onclick=()=>moveCategoryStep(cat.name,-1);const down=document.createElement("button");down.type="button";down.className="cat-mini";down.textContent="↓";down.disabled=index===cats.length-1;down.onclick=()=>moveCategoryStep(cat.name,1);const iconBtn=document.createElement("button");iconBtn.type="button";iconBtn.className="cat-mini";iconBtn.textContent="图标";iconBtn.onclick=()=>editCategoryIcon(cat);actions.append(up,down,iconBtn);
-    const del=document.createElement("button");
-    del.type="button";del.className="cat-mini danger";del.textContent="删除";
-    del.title="删除分类前将该分类的全部网站迁移到保留分类，不删除网站";
-    del.onclick=()=>deleteCategorySafelyV1932(cat.name);
-    actions.append(del);row.append(drag,icon,copy,actions);bindCategoryDrag(row);box.append(row)});
+  const box=$("#categoryManagerList");if(!box)return;
+  box.innerHTML="";
+  const q=String($("#managerCategorySearch")?.value||"").trim().toLowerCase();
+  const cats=allCategories().filter(cat=>!q||String(cat.name).toLowerCase().includes(q));
+  const count=$("#categoryManageCount");if(count)count.textContent=allCategories().length+" 个分类";
+  const total=$("#managerCategoryTotal");if(total)total.textContent=`${cats.length} / ${allCategories().length} 个分类`;
+  cats.forEach((cat,index)=>{
+    const row=document.createElement("div");row.className="category-manager-item";row.draggable=true;row.dataset.category=cat.name;
+    const drag=document.createElement("span");drag.className="category-drag";drag.textContent="⠿";drag.title="拖动调整分类顺序";drag.setAttribute("aria-label","拖动排序");
+    const icon=document.createElement("span");icon.className="category-manager-icon";renderCategoryIcon(icon,cat.icon);
+    const copy=document.createElement("div");copy.className="category-manager-copy";
+    const b=document.createElement("b");b.textContent=cat.name;
+    const sm=document.createElement("small");sm.textContent=`${categoryCount(cat.name)} 个网站`;
+    copy.append(b,sm);
+    const actions=document.createElement("details");actions.className="category-manager-actions manager-more-menu";
+    const more=document.createElement("summary");more.className="manager-more-trigger";more.textContent="···";more.setAttribute("aria-label","更多分类操作");
+    const menu=document.createElement("div");menu.className="manager-more-pop";
+    const iconBtn=document.createElement("button");iconBtn.type="button";iconBtn.textContent="修改图标";iconBtn.onclick=()=>{actions.open=false;editCategoryIcon(cat)};
+    menu.append(iconBtn);
+    if(!cat.builtin){
+      const rename=document.createElement("button");rename.type="button";rename.textContent="修改名称";rename.onclick=()=>{
+        actions.open=false;
+        const next=prompt("输入新的分类名称",cat.name)?.trim().slice(0,24);
+        if(!next||next===cat.name)return;
+        if(categoryByName(next)){alert("该分类名称已存在");return}
+        const old=cat.name;const item=state.customCategories.find(x=>x.name===old);
+        if(!item)return;
+        item.name=next;
+        state.categoryOrder=state.categoryOrder.map(x=>x===old?next:x);
+        Object.keys(state.categoryOverrides||{}).forEach(id=>{if(state.categoryOverrides[id]===old)state.categoryOverrides[id]=next});
+        Object.keys(state.categoryTitleOverrides||{}).forEach(id=>{if(state.categoryTitleOverrides[id]===old)delete state.categoryTitleOverrides[id]});
+        if(!save())return;refreshCategoryUI();toast(`分类已改名为「${next}」`);
+      };
+      menu.append(rename);
+    }
+    const del=document.createElement("button");del.type="button";del.className="danger";del.textContent="删除分类";del.title="先迁移该分类下的网站，不会删除网站";del.onclick=()=>{actions.open=false;deleteCategorySafelyV1932(cat.name)};
+    menu.append(del);actions.append(more,menu);
+    row.append(drag,icon,copy,actions);bindCategoryDrag(row);box.append(row);
+  });
 }
 function addCustomCategory(){const name=$("#newCategoryName").value.trim().slice(0,24),iconResult=normalizeCategoryIconInput($("#newCategoryGlyph").value);if(!name)return alert("请输入分类名称");if(categoryByName(name))return alert("这个分类已经存在");if(!iconResult.ok)return alert(iconResult.error);const icon=iconResult.value;state.customCategories.push({name,icon});state.categoryOrder.push(name);if(!save()){state.customCategories=state.customCategories.filter(c=>c.name!==name);state.categoryOrder=state.categoryOrder.filter(n=>n!==name);return}$("#newCategoryName").value="";$("#newCategoryGlyph").value="";updateNewCategoryGlyphPreview();refreshCategoryUI();toast(`已新增分类「${name}」`)}
 function editCategoryIcon(cat){openCategoryIconEditor(cat)}
@@ -13845,8 +13878,9 @@ updateAccessUIV178();
   const MGR_TAB_KEY="fxnav_manager_tab_v18";
   const CAT_TITLE_KEY="fxnav_category_title_overrides_v18";
   const DUP_IGNORE_KEY="fxnav_duplicate_ignore_v181";
-  const PAGE_SIZE=48;
+  const PAGE_SIZE=20;
   let managerPageSize=PAGE_SIZE;
+  let managerSiteSort="category";
   let managerSelection=new Set();
   let managerReady=false;
   let duplicateScanned=false;
@@ -14004,7 +14038,8 @@ updateAccessUIV178();
           renderManagerSites();
           toast(clean&&clean!==key?`分类标题已改为「${clean}」`:"分类标题已恢复默认");
         };
-        actions.prepend(btn);
+        const menu=actions.querySelector(".manager-more-pop");
+        (menu||actions).append(btn);
       }
     });
     patchCategoryLabels();
@@ -14115,8 +14150,10 @@ updateAccessUIV178();
     // Sites
     sites.innerHTML=`
       <div class="manager-site-toolbar">
-        <input id="managerSiteSearch" placeholder="搜索名称、域名或分类">
+        <input id="managerSiteSearch" placeholder="搜索网站名称、域名或分类">
         <select id="managerCategoryFilter"><option value="">全部分类</option></select>
+        <select id="managerSiteSort" aria-label="网站排序"><option value="category">分类顺序</option><option value="name">名称 A–Z</option><option value="name-desc">名称 Z–A</option></select>
+        <select id="managerPageSize" aria-label="每页显示数量"><option value="20">每页 20 条</option><option value="50">每页 50 条</option><option value="100">每页 100 条</option></select>
         <button class="btn primary" type="button" id="managerToggleAdd">＋ 新增网站</button>
       </div>
       <div class="manager-add-wrap" id="managerAddWrap"></div>
@@ -14136,8 +14173,12 @@ updateAccessUIV178();
     const addForm=document.getElementById("addForm");
     if(addForm)addWrap.append(addForm);
 
-    // Categories: move existing blocks.
-    categories.innerHTML="";
+    // Categories: compact directory toolbar above the existing data-backed list.
+    categories.innerHTML=`<div class="manager-category-toolbar">
+      <input id="managerCategorySearch" type="search" placeholder="搜索分类名称">
+      <span class="manager-category-total" id="managerCategoryTotal">分类目录</span>
+      <button class="btn primary" type="button" id="managerCategoryAdd">＋ 新增分类</button>
+    </div>`;
     moveBlockFromTitle("分类管理",categories,"分类移动");
     moveBlockFromTitle("分类移动",categories,"我的新增");
     // 版本 V19.68：分类页不再出现重复标题及冗长说明。
@@ -14308,9 +14349,13 @@ updateAccessUIV178();
       wrap?.classList.toggle("show");
       if(wrap?.classList.contains("show"))document.getElementById("newName")?.focus();
     });
-    document.getElementById("managerSiteSearch")?.addEventListener("input",()=>{managerPageSize=PAGE_SIZE;renderManagerSites()});
-    document.getElementById("managerCategoryFilter")?.addEventListener("change",()=>{managerPageSize=PAGE_SIZE;renderManagerSites()});
-    document.getElementById("managerLoadMore")?.addEventListener("click",()=>{managerPageSize+=PAGE_SIZE;renderManagerSites()});
+    document.getElementById("managerSiteSearch")?.addEventListener("input",()=>{managerPageSize=Number(document.getElementById("managerPageSize")?.value)||PAGE_SIZE;renderManagerSites()});
+    document.getElementById("managerCategoryFilter")?.addEventListener("change",()=>{managerPageSize=Number(document.getElementById("managerPageSize")?.value)||PAGE_SIZE;renderManagerSites()});
+    document.getElementById("managerSiteSort")?.addEventListener("change",e=>{managerSiteSort=e.target.value;managerPageSize=Number(document.getElementById("managerPageSize")?.value)||PAGE_SIZE;renderManagerSites()});
+    document.getElementById("managerPageSize")?.addEventListener("change",e=>{managerPageSize=Number(e.target.value)||20;renderManagerSites()});
+    document.getElementById("managerLoadMore")?.addEventListener("click",()=>{managerPageSize+=Number(document.getElementById("managerPageSize")?.value)||PAGE_SIZE;renderManagerSites()});
+    document.getElementById("managerCategorySearch")?.addEventListener("input",renderCategoryManager);
+    document.getElementById("managerCategoryAdd")?.addEventListener("click",()=>{document.getElementById("newCategoryName")?.focus();document.getElementById("newCategoryName")?.scrollIntoView({block:"nearest",behavior:"smooth"})});
     document.getElementById("managerBatchMove")?.addEventListener("click",batchMoveV18);
     document.getElementById("managerBatchRefreshIcons")?.addEventListener("click",batchRefreshIconsV181);
     document.getElementById("managerBatchFavorite")?.addEventListener("click",batchToggleFavoriteV1991);
@@ -14405,6 +14450,8 @@ updateAccessUIV178();
         return hay.includes(q);
       })
       .sort((a,b)=>{
+        if(managerSiteSort==="name")return String(a.name).localeCompare(String(b.name),"zh-Hans-CN");
+        if(managerSiteSort==="name-desc")return String(b.name).localeCompare(String(a.name),"zh-Hans-CN");
         const ca=rank.get(effectiveCategory(a))??Number.MAX_SAFE_INTEGER;
         const cb=rank.get(effectiveCategory(b))??Number.MAX_SAFE_INTEGER;
         return ca-cb||String(a.name).localeCompare(String(b.name),"zh-Hans-CN");
@@ -14433,10 +14480,12 @@ updateAccessUIV178();
       sm.textContent=`${displayCategory(effectiveCategory(site))} · ${site.domain||safeDomain(site.url)}`;
       copy.append(b,sm);
       const kind=document.createElement("span");kind.className="manager-site-kind";kind.textContent=isBuiltinSite(site.id)?"内置":"自建";
-      const actions=document.createElement("div");actions.className="manager-site-actions";
-      const edit=document.createElement("button");edit.type="button";edit.className="mini-btn";edit.textContent="编辑";edit.onclick=()=>openSiteEditor(site);
-      const del=document.createElement("button");del.type="button";del.className="mini-btn danger";del.textContent="删除";del.onclick=()=>deleteOneV18(site);
-      actions.append(edit,del);
+      const actions=document.createElement("details");actions.className="manager-site-actions manager-more-menu";
+      const more=document.createElement("summary");more.className="manager-more-trigger";more.textContent="···";more.setAttribute("aria-label","更多网站操作");
+      const menu=document.createElement("div");menu.className="manager-more-pop";
+      const edit=document.createElement("button");edit.type="button";edit.textContent="编辑网站";edit.onclick=()=>{actions.open=false;openSiteEditor(site)};
+      const del=document.createElement("button");del.type="button";del.className="danger";del.textContent="移入回收站";del.onclick=()=>{actions.open=false;deleteOneV18(site)};
+      menu.append(edit,del);actions.append(more,menu);
       row.append(check,icon,copy,kind,actions);
       frag.append(row);
     });
@@ -14479,7 +14528,7 @@ updateAccessUIV178();
   function exportSelectedSitesV1991(){
     const ids=[...managerSelection];if(!ids.length)return;
     const selected=rawSites().filter(site=>ids.includes(site.id)&&!state.hiddenSites.has(site.id));
-    const payload={format:"private-nav-selected-sites",formatVersion:1,exportedAt:new Date().toISOString(),appVersion:window.FXNAV_APP?.version||"19.96",sites:selected.map(site=>({id:site.id,name:site.name,url:site.url,domain:site.domain||safeDomain(site.url),category:displayCategory(effectiveCategory(site)),favorite:state.favorites.has(site.id),builtin:isBuiltinSite(site.id),iconUrl:site._sourceIconUrl||site.iconUrl||"",hasCustomIcon:!!site._customIcon}))};
+    const payload={format:"private-nav-selected-sites",formatVersion:1,exportedAt:new Date().toISOString(),appVersion:window.FXNAV_APP?.version||"19.97",sites:selected.map(site=>({id:site.id,name:site.name,url:site.url,domain:site.domain||safeDomain(site.url),category:displayCategory(effectiveCategory(site)),favorite:state.favorites.has(site.id),builtin:isBuiltinSite(site.id),iconUrl:site._sourceIconUrl||site.iconUrl||"",hasCustomIcon:!!site._customIcon}))};
     const stamp=new Date().toISOString().slice(0,10).replaceAll("-","");
     downloadJsonV1860(payload,`private-nav-selected-sites-${stamp}.json`);
     toast(`已导出 ${selected.length} 个网站信息；KV 图标文件不包含在此清单中`);
@@ -15798,6 +15847,14 @@ updateAccessUIV178();
           <div class="manager-health-row"><span>KV 孤儿图标</span><b class="${orphan===null?'idle':orphan?'warn':'ok'}">${orphan===null?'未扫描':orphan+' 个'}</b></div>
           <div class="manager-health-row"><span>超额旧快照</span><b class="${overBackups===null?'idle':overBackups?'warn':'ok'}">${overBackups===null?'未扫描':overBackups+' 个'}</b></div>
           <div class="manager-health-row"><span>回收站</span><b class="${hidden?'idle':'ok'}">${hidden} 个</b></div>
+        </div>
+      </section>
+      <section class="manager-monitor-strip" aria-label="实时监控">
+        <div class="manager-monitor-strip-head"><b><i class="manager-monitor-live-dot"></i>实时监控</b><small>本机采样 · 不额外请求 D1</small></div>
+        <div class="manager-monitor-grid">
+          <div class="manager-monitor-cell" data-series="d1" data-state="idle"><div class="manager-monitor-meta"><span class="manager-monitor-name"><i></i>D1 响应</span><strong class="manager-monitor-value" data-value="d1">等待请求</strong></div><svg class="manager-monitor-spark" viewBox="0 0 160 25" preserveAspectRatio="none"><path class="manager-monitor-gridline" d="M0 7.5H160M0 17.5H160"/><polyline class="manager-monitor-line" points="0,12.5 160,12.5"/><circle class="manager-monitor-endpoint" cx="160" cy="12.5" r="2"/></svg><span class="manager-monitor-sub" data-sub="d1">记录已有 D1 请求</span></div>
+          <div class="manager-monitor-cell" data-series="sync" data-state="idle"><div class="manager-monitor-meta"><span class="manager-monitor-name"><i></i>同步状态</span><strong class="manager-monitor-value" data-value="sync">等待验证</strong></div><svg class="manager-monitor-spark" viewBox="0 0 160 25" preserveAspectRatio="none"><path class="manager-monitor-gridline" d="M0 7.5H160M0 17.5H160"/><polyline class="manager-monitor-line" points="0,12.5 160,12.5"/><circle class="manager-monitor-endpoint" cx="160" cy="12.5" r="2"/></svg><span class="manager-monitor-sub" data-sub="sync">读取现有同步状态</span></div>
+          <div class="manager-monitor-cell" data-series="lag" data-state="idle"><div class="manager-monitor-meta"><span class="manager-monitor-name"><i></i>页面响应</span><strong class="manager-monitor-value" data-value="lag">采样中</strong></div><svg class="manager-monitor-spark" viewBox="0 0 160 25" preserveAspectRatio="none"><path class="manager-monitor-gridline" d="M0 7.5H160M0 17.5H160"/><polyline class="manager-monitor-line" points="0,12.5 160,12.5"/><circle class="manager-monitor-endpoint" cx="160" cy="12.5" r="2"/></svg><span class="manager-monitor-sub" data-sub="lag">页面主线程调度延迟</span></div>
         </div>
       </section>
       <section class="manager-live-card wide">
@@ -18286,6 +18343,6 @@ html[data-theme="liquid"] body .calendar-ref-v1838 #clockDateText{
 <!-- V19.92 Upgrade 01: unified smart search, category intent aliases, typo tolerance and safe direct URL opening. -->
 <!-- V19.94 Liquid Glass date typography: exact title gradient and stronger text contrast. -->
 
-<script src="/assets/runtime/manager-monitor-v1996.js?v=1996" defer></script>
+<script src="/assets/runtime/manager-monitor-v1996.js?v=1997" defer></script>
 </body>
 </html>
