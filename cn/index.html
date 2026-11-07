@@ -4,10 +4,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>私人导航工具箱</title>
+<title>私人导航工具箱 · V19.98</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: blob: https: http:; connect-src 'self' https:; font-src 'self' data:; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: blob: https: http:; connect-src 'self' https:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
 <meta name="theme-color" content="#07101d">
 <style id="recycle-purge-style-v1964">
 /* V19.68 · Permanent-delete actions scoped to the recycle bin only. */
@@ -18,7 +18,7 @@
 </style>
 <script  id="app-meta-v1891"  data-module="script-01.js">
 
-window.FXNAV_APP=Object.freeze({version:"19.97",build:"V19.97",schemaVersion:3,channel:"stable"});
+window.FXNAV_APP=Object.freeze({version:"19.98",build:"V19.98",schemaVersion:3,channel:"stable"});
 
 </script>
 <script  id="theme-boot-v1867"  data-module="script-02.js">
@@ -3946,8 +3946,8 @@ html[data-theme="neon"] .tool-cluster{border-radius:14px;}}
 <link rel="icon" type="image/png" sizes="64x64" href="/assets/runtime/favicon-985ed977.png">
 <link rel="shortcut icon" type="image/png" href="/assets/runtime/favicon-985ed977.png">
 
-<meta name="x-build" content="V19.97-20261107">
-<meta name="x-app-version" content="19.97">
+<meta name="x-build" content="V19.98-20261107">
+<meta name="x-app-version" content="19.98">
 
 <style data-module="style-03.css">
 :root{
@@ -8761,8 +8761,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
 
 
 
-<link rel="stylesheet" href="/assets/runtime/manager-monitor-v1996.css?v=1996">
-<link rel="stylesheet" href="/assets/runtime/manager-layout-v1997.css?v=1997">
+<link rel="stylesheet" href="/assets/runtime/manager-ui-v1998.css?v=1998">
 </head>
 <body><div class="ambient-scene" aria-hidden="true"><i class="glass-capsule"></i><i class="glass-capsule"></i><i class="glass-capsule"></i><i class="glass-capsule"></i></div>
 <div class="fx-responsive-wallpaper" aria-hidden="true"></div>
@@ -8805,11 +8804,11 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
         <span class="console-divider"></span>
         <span class="console-item cache"><span class="k">CACHE</span><strong id="consoleCache">0 KB</strong></span>
         <span class="console-divider"></span>
-        <span class="console-item build"><span class="k">BUILD</span><strong>V19.97</strong></span>
+        <span class="console-item build"><span class="k">BUILD</span><strong>V19.98</strong></span>
         <span class="console-spacer"></span>
         <span class="console-activity">
           <span class="k">SYSTEM ACTIVITY</span>
-          <span class="console-wave" id="consoleWave" aria-label="基于本机管理操作的系统活动波形">
+          <span class="console-wave" id="consoleWave" aria-label="基于 D1 云端管理活动的系统活动波形">
             <svg viewBox="0 0 360 28" preserveAspectRatio="none" aria-hidden="true">
               <defs>
                 <linearGradient id="consoleWaveStrokeV1878" x1="0" y1="0" x2="1" y2="0">
@@ -8965,7 +8964,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
 
     <div id="fxD1LoadingV1946" class="fx-d1-loading-v1946" role="status">正在读取完整云端导航数据…</div>
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V19.97 版本</div>
+    <div class="footer">© 2026 私人导航工具箱 · V19.98 版本</div>
   </main>
 </div>
 
@@ -11305,14 +11304,11 @@ function renderCategoryManager(){
     const b=document.createElement("b");b.textContent=cat.name;
     const sm=document.createElement("small");sm.textContent=`${categoryCount(cat.name)} 个网站`;
     copy.append(b,sm);
-    const actions=document.createElement("details");actions.className="category-manager-actions manager-more-menu";
-    const more=document.createElement("summary");more.className="manager-more-trigger";more.textContent="···";more.setAttribute("aria-label","更多分类操作");
-    const menu=document.createElement("div");menu.className="manager-more-pop";
-    const iconBtn=document.createElement("button");iconBtn.type="button";iconBtn.textContent="修改图标";iconBtn.onclick=()=>{actions.open=false;editCategoryIcon(cat)};
-    menu.append(iconBtn);
+    const actions=document.createElement("div");actions.className="category-manager-actions";
+    const iconBtn=document.createElement("button");iconBtn.type="button";iconBtn.className="cat-mini";iconBtn.textContent="图标";iconBtn.title="修改分类图标";iconBtn.onclick=()=>editCategoryIcon(cat);
+    actions.append(iconBtn);
     if(!cat.builtin){
-      const rename=document.createElement("button");rename.type="button";rename.textContent="修改名称";rename.onclick=()=>{
-        actions.open=false;
+      const rename=document.createElement("button");rename.type="button";rename.className="cat-mini";rename.textContent="改名";rename.onclick=()=>{
         const next=prompt("输入新的分类名称",cat.name)?.trim().slice(0,24);
         if(!next||next===cat.name)return;
         if(categoryByName(next)){alert("该分类名称已存在");return}
@@ -11324,14 +11320,14 @@ function renderCategoryManager(){
         Object.keys(state.categoryTitleOverrides||{}).forEach(id=>{if(state.categoryTitleOverrides[id]===old)delete state.categoryTitleOverrides[id]});
         if(!save())return;refreshCategoryUI();toast(`分类已改名为「${next}」`);
       };
-      menu.append(rename);
+      actions.append(rename);
     }
-    const del=document.createElement("button");del.type="button";del.className="danger";del.textContent="删除分类";del.title="先迁移该分类下的网站，不会删除网站";del.onclick=()=>{actions.open=false;deleteCategorySafelyV1932(cat.name)};
-    menu.append(del);actions.append(more,menu);
+    const del=document.createElement("button");del.type="button";del.className="cat-mini danger";del.textContent="删除";del.title="先迁移该分类下的网站，不会删除网站";del.onclick=()=>deleteCategorySafelyV1932(cat.name);
+    actions.append(del);
     row.append(drag,icon,copy,actions);bindCategoryDrag(row);box.append(row);
   });
 }
-function addCustomCategory(){const name=$("#newCategoryName").value.trim().slice(0,24),iconResult=normalizeCategoryIconInput($("#newCategoryGlyph").value);if(!name)return alert("请输入分类名称");if(categoryByName(name))return alert("这个分类已经存在");if(!iconResult.ok)return alert(iconResult.error);const icon=iconResult.value;state.customCategories.push({name,icon});state.categoryOrder.push(name);if(!save()){state.customCategories=state.customCategories.filter(c=>c.name!==name);state.categoryOrder=state.categoryOrder.filter(n=>n!==name);return}$("#newCategoryName").value="";$("#newCategoryGlyph").value="";updateNewCategoryGlyphPreview();refreshCategoryUI();toast(`已新增分类「${name}」`)}
+function addCustomCategory(){const name=$("#newCategoryName").value.trim().slice(0,24),iconResult=normalizeCategoryIconInput($("#newCategoryGlyph").value);if(!name)return alert("请输入分类名称");if(categoryByName(name))return alert("这个分类已经存在");if(!iconResult.ok)return alert(iconResult.error);const icon=iconResult.value;state.customCategories.push({name,icon});state.categoryOrder.push(name);if(!save()){state.customCategories=state.customCategories.filter(c=>c.name!==name);state.categoryOrder=state.categoryOrder.filter(n=>n!==name);return}$("#newCategoryName").value="";$("#newCategoryGlyph").value="";updateNewCategoryGlyphPreview();const panel=$("#managerCategoryCreatePanel"),trigger=$("#managerCategoryAdd");if(panel)panel.hidden=true;if(trigger){trigger.setAttribute("aria-expanded","false");trigger.textContent="＋ 新增分类"}refreshCategoryUI();toast(`已新增分类「${name}」`)}
 function editCategoryIcon(cat){openCategoryIconEditor(cat)}
 function openCategoryIconEditor(cat){
   if(!cat)return;
@@ -12762,7 +12758,7 @@ async function exportDisasterBackupV1860(){
     toast("正在生成完整备份…");
     const payload=await v17Request("disaster-backup");
     payload.schemaVersion=window.FXNAV_APP?.schemaVersion||3;
-    payload.appVersion=window.FXNAV_APP?.version||"19.21";
+    payload.appVersion=window.FXNAV_APP?.version||"19.98";
     payload.client={
       theme:document.documentElement.dataset.theme||"dark",
       density:STORE.get(V157_DENSITY_KEY)||"comfortable",
@@ -12771,7 +12767,7 @@ async function exportDisasterBackupV1860(){
     };
     const d=new Date(),pad=n=>String(n).padStart(2,"0");
     const stamp=`${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}`;
-    downloadJsonV1860(payload,`private-nav-backup-v${window.FXNAV_APP?.version||"19.21"}-${stamp}.json`);
+    downloadJsonV1860(payload,`private-nav-backup-v${window.FXNAV_APP?.version||"19.98"}-${stamp}.json`);
     const sites=Array.isArray(payload?.d1?.sites)?payload.d1.sites.length:0;
     const cats=Array.isArray(payload?.d1?.categories)?payload.d1.categories.length:0;
     const icons=Number(payload?.kv?.customIconCount)||0;
@@ -12801,7 +12797,7 @@ async function restoreDisasterBackupFileV1971(file){
     const currentIconCount=(safetyBackup.d1?.sites||[]).filter(site=>!!site.has_custom_icon).length;
     if(Number(safetyBackup.kv?.missingCustomIcons)>0||(!safetyBackup.kv?.enabled&&currentIconCount>0))throw new Error("恢复前备份检测到 KV 自定义图标缺失或 KV 未连接。为避免无法回滚，已取消恢复。");
     const now=new Date(),pad=n=>String(n).padStart(2,"0"),stamp=`${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
-    downloadJsonV1860(safetyBackup,`private-nav-pre-restore-v${window.FXNAV_APP?.version||"19.75"}-${stamp}.json`);
+    downloadJsonV1860(safetyBackup,`private-nav-pre-restore-v${window.FXNAV_APP?.version||"19.98"}-${stamp}.json`);
     const result=await v17Request("disaster-restore","POST",{...payload,baseRevision:V17.revision});
     const refreshed=await refreshV17FromServer({quiet:true,acceptRemote:true});if(!refreshed)throw new Error("服务端已完成恢复，但当前页面未能刷新；请重新加载页面核对 D1 数据");
     const theme=payload.client?.theme;if(["dark","light","liquid","neon","frosted"].includes(theme)){STORE.set(KEYS.theme,theme);document.documentElement.dataset.theme=theme;applyTheme()}
@@ -12825,8 +12821,8 @@ $("#disasterBackupBtn").onclick=exportDisasterBackupV1860;
 $("#exportBookmarksBtn").onclick=exportBrowserBookmarksV1852;
 
 $("#exportBtn").onclick=()=>{
-  const payload={schemaVersion:window.FXNAV_APP?.schemaVersion||3,appVersion:window.FXNAV_APP?.version||"19.21",version:window.FXNAV_APP?.version||"19.21",favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides,iconOverrides:state.iconOverrides,hiddenSites:[...state.hiddenSites],siteEdits:state.siteEdits,customCategories:state.customCategories,categoryOrder:state.categoryOrder,categoryIconOverrides:state.categoryIconOverrides,siteOrder:state.siteOrder,categoryTitleOverrides:{...(state.categoryTitleOverrides||{})},duplicateIgnoreKeys:[...(state.duplicateIgnoreKeys||new Set())],usageStats:getUsageStatsV157(),density:STORE.get(V157_DENSITY_KEY)||"comfortable",theme:document.documentElement.dataset.theme||"dark",cloudRevision:V17.revision};
-  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);const ds=new Date().toISOString().slice(0,10).replaceAll("-","");a.download=`private-nav-v${window.FXNAV_APP?.version||"19.21"}-${ds}.json`;a.click();URL.revokeObjectURL(a.href);
+  const payload={schemaVersion:window.FXNAV_APP?.schemaVersion||3,appVersion:window.FXNAV_APP?.version||"19.98",version:window.FXNAV_APP?.version||"19.98",favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides,iconOverrides:state.iconOverrides,hiddenSites:[...state.hiddenSites],siteEdits:state.siteEdits,customCategories:state.customCategories,categoryOrder:state.categoryOrder,categoryIconOverrides:state.categoryIconOverrides,siteOrder:state.siteOrder,categoryTitleOverrides:{...(state.categoryTitleOverrides||{})},duplicateIgnoreKeys:[...(state.duplicateIgnoreKeys||new Set())],usageStats:getUsageStatsV157(),density:STORE.get(V157_DENSITY_KEY)||"comfortable",theme:document.documentElement.dataset.theme||"dark",cloudRevision:V17.revision};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);const ds=new Date().toISOString().slice(0,10).replaceAll("-","");a.download=`private-nav-v${window.FXNAV_APP?.version||"19.98"}-${ds}.json`;a.click();URL.revokeObjectURL(a.href);
 };
 $("#importBtn").onclick=()=>$("#importFile").click();
 $("#importFile").addEventListener("change",async e=>{
@@ -14038,8 +14034,8 @@ updateAccessUIV178();
           renderManagerSites();
           toast(clean&&clean!==key?`分类标题已改为「${clean}」`:"分类标题已恢复默认");
         };
-        const menu=actions.querySelector(".manager-more-pop");
-        (menu||actions).append(btn);
+        const firstAction=actions.children[1]||null;
+        actions.insertBefore(btn,firstAction);
       }
     });
     patchCategoryLabels();
@@ -14173,13 +14169,34 @@ updateAccessUIV178();
     const addForm=document.getElementById("addForm");
     if(addForm)addWrap.append(addForm);
 
-    // Categories: compact directory toolbar above the existing data-backed list.
+    // V19.98: one liquid toolbar; the create form opens only when requested.
     categories.innerHTML=`<div class="manager-category-toolbar">
-      <input id="managerCategorySearch" type="search" placeholder="搜索分类名称">
-      <span class="manager-category-total" id="managerCategoryTotal">分类目录</span>
-      <button class="btn primary" type="button" id="managerCategoryAdd">＋ 新增分类</button>
+      <input id="managerCategorySearch" type="search" placeholder="搜索分类名称" aria-label="搜索分类名称">
+      <span class="manager-category-total" id="managerCategoryTotal" aria-live="polite">23 / 23 个分类</span>
+      <button class="btn primary" type="button" id="managerCategoryAdd" aria-expanded="false" aria-controls="managerCategoryCreatePanel">＋ 新增分类</button>
     </div>`;
     moveBlockFromTitle("分类管理",categories,"分类移动");
+    const categoryFields=categories.querySelector(':scope > .form-grid');
+    const categoryActions=categories.querySelector(':scope > .admin-actions');
+    if(categoryFields&&categoryActions){
+      const createPanel=document.createElement('section');
+      createPanel.className='manager-category-create';
+      createPanel.id='managerCategoryCreatePanel';
+      createPanel.hidden=true;
+      createPanel.setAttribute('aria-label','新增分类');
+      const createActions=document.createElement('div');createActions.className='admin-actions';
+      const createButton=categoryActions.querySelector('#addCategoryBtn');
+      const chooseIcon=categoryActions.querySelector('#openNewCategoryIconLibraryBtn');
+      if(createButton){createButton.textContent='创建分类';createActions.append(createButton)}
+      if(chooseIcon)createActions.append(chooseIcon);
+      createPanel.append(categoryFields,createActions);
+      const tools=document.createElement('div');tools.className='manager-category-tools';
+      ['applyRecommendedCategoryIconsBtn','resetCategoryOrderBtn','resetSiteOrderBtn'].forEach(id=>{const button=categoryActions.querySelector('#'+id);if(button)tools.append(button)});
+      categoryActions.remove();
+      const list=categories.querySelector('#categoryManagerList');
+      categories.insertBefore(createPanel,list||null);
+      if(list)list.after(tools);else categories.append(tools);
+    }
     moveBlockFromTitle("分类移动",categories,"我的新增");
     // 版本 V19.68：分类页不再出现重复标题及冗长说明。
     // “分类 23”已显示在顶部标签，保留隐藏的原分类数接口，避免影响计数逻辑。
@@ -14355,7 +14372,16 @@ updateAccessUIV178();
     document.getElementById("managerPageSize")?.addEventListener("change",e=>{managerPageSize=Number(e.target.value)||20;renderManagerSites()});
     document.getElementById("managerLoadMore")?.addEventListener("click",()=>{managerPageSize+=Number(document.getElementById("managerPageSize")?.value)||PAGE_SIZE;renderManagerSites()});
     document.getElementById("managerCategorySearch")?.addEventListener("input",renderCategoryManager);
-    document.getElementById("managerCategoryAdd")?.addEventListener("click",()=>{document.getElementById("newCategoryName")?.focus();document.getElementById("newCategoryName")?.scrollIntoView({block:"nearest",behavior:"smooth"})});
+    document.getElementById("managerCategoryAdd")?.addEventListener("click",()=>{
+      const panel=document.getElementById("managerCategoryCreatePanel");
+      const button=document.getElementById("managerCategoryAdd");
+      if(!panel||!button)return;
+      const open=panel.hidden;
+      panel.hidden=!open;
+      button.setAttribute("aria-expanded",String(open));
+      button.textContent=open?"收起新增":"＋ 新增分类";
+      if(open){document.getElementById("newCategoryName")?.focus();panel.scrollIntoView({block:"nearest",behavior:"smooth"})}
+    });
     document.getElementById("managerBatchMove")?.addEventListener("click",batchMoveV18);
     document.getElementById("managerBatchRefreshIcons")?.addEventListener("click",batchRefreshIconsV181);
     document.getElementById("managerBatchFavorite")?.addEventListener("click",batchToggleFavoriteV1991);
@@ -14480,12 +14506,10 @@ updateAccessUIV178();
       sm.textContent=`${displayCategory(effectiveCategory(site))} · ${site.domain||safeDomain(site.url)}`;
       copy.append(b,sm);
       const kind=document.createElement("span");kind.className="manager-site-kind";kind.textContent=isBuiltinSite(site.id)?"内置":"自建";
-      const actions=document.createElement("details");actions.className="manager-site-actions manager-more-menu";
-      const more=document.createElement("summary");more.className="manager-more-trigger";more.textContent="···";more.setAttribute("aria-label","更多网站操作");
-      const menu=document.createElement("div");menu.className="manager-more-pop";
-      const edit=document.createElement("button");edit.type="button";edit.textContent="编辑网站";edit.onclick=()=>{actions.open=false;openSiteEditor(site)};
-      const del=document.createElement("button");del.type="button";del.className="danger";del.textContent="移入回收站";del.onclick=()=>{actions.open=false;deleteOneV18(site)};
-      menu.append(edit,del);actions.append(more,menu);
+      const actions=document.createElement("div");actions.className="manager-site-actions";
+      const edit=document.createElement("button");edit.type="button";edit.className="mini-btn manager-site-edit";edit.textContent="编辑";edit.setAttribute("aria-label",`编辑网站：${site.name}`);edit.onclick=()=>openSiteEditor(site);
+      const del=document.createElement("button");del.type="button";del.className="mini-btn manager-site-recycle";del.textContent="回收";del.setAttribute("aria-label",`移入回收站：${site.name}`);del.onclick=()=>deleteOneV18(site);
+      actions.append(edit,del);
       row.append(check,icon,copy,kind,actions);
       frag.append(row);
     });
@@ -14528,7 +14552,7 @@ updateAccessUIV178();
   function exportSelectedSitesV1991(){
     const ids=[...managerSelection];if(!ids.length)return;
     const selected=rawSites().filter(site=>ids.includes(site.id)&&!state.hiddenSites.has(site.id));
-    const payload={format:"private-nav-selected-sites",formatVersion:1,exportedAt:new Date().toISOString(),appVersion:window.FXNAV_APP?.version||"19.97",sites:selected.map(site=>({id:site.id,name:site.name,url:site.url,domain:site.domain||safeDomain(site.url),category:displayCategory(effectiveCategory(site)),favorite:state.favorites.has(site.id),builtin:isBuiltinSite(site.id),iconUrl:site._sourceIconUrl||site.iconUrl||"",hasCustomIcon:!!site._customIcon}))};
+    const payload={format:"private-nav-selected-sites",formatVersion:1,exportedAt:new Date().toISOString(),appVersion:window.FXNAV_APP?.version||"19.98",sites:selected.map(site=>({id:site.id,name:site.name,url:site.url,domain:site.domain||safeDomain(site.url),category:displayCategory(effectiveCategory(site)),favorite:state.favorites.has(site.id),builtin:isBuiltinSite(site.id),iconUrl:site._sourceIconUrl||site.iconUrl||"",hasCustomIcon:!!site._customIcon}))};
     const stamp=new Date().toISOString().slice(0,10).replaceAll("-","");
     downloadJsonV1860(payload,`private-nav-selected-sites-${stamp}.json`);
     toast(`已导出 ${selected.length} 个网站信息；KV 图标文件不包含在此清单中`);
@@ -15781,6 +15805,8 @@ updateAccessUIV178();
   function queueActivityRows(rows){savePendingActivityRows([...pendingActivityRows(),...normalizeActivityRows(rows)])}
   function activities(){const raw=getJSON(ACT_KEY,[]),rows=normalizeActivityRows(raw);if(JSON.stringify(raw)!==JSON.stringify(rows)){setJSON(ACT_KEY,rows);queueActivityRows(rows)}return rows}
   let activitySyncBusy=false,activitySyncTimer=0,lastActivitySyncAt=0;
+  let cloudActivityRows=[],cloudActivityLoaded=false,cloudActivityError="";
+  const dashboardActivityRows=()=>AUTH_V161?.authenticated&&cloudActivityLoaded?cloudActivityRows:[];
   function scheduleActivitySync(force=false){
     if(!AUTH_V161?.authenticated||!V17?.ready||!navigator.onLine)return;
     if(activitySyncBusy)return;
@@ -15792,26 +15818,47 @@ updateAccessUIV178();
     activitySyncBusy=true;
     try{
       const remote=await v17Request('activity');
-      const cloud=normalizeActivityRows(remote?.rows||[]),local=activities(),cloudIds=new Set(cloud.map(r=>r.id));
-      setJSON(ACT_KEY,mergeActivityRows(local,cloud));
-      queueActivityRows(local.filter(r=>!cloudIds.has(r.id)));
+      let cloud=normalizeActivityRows(remote?.rows||[]);
+      // As soon as the authenticated D1 read succeeds, the dashboard has an authoritative source.
+      cloudActivityRows=mergeActivityRows(cloud);
+      cloudActivityLoaded=true;
+      cloudActivityError="";
+      window.__fxnavManagerActivityCloud=cloudActivityRows.slice();
+      window.__fxnavManagerActivityCloudReady=true;
+      window.dispatchEvent(new Event('fxnav:activity-cloud-updated'));
+      // Migrate any older per-browser history once, but never render it as cloud data.
+      const cloudIds=new Set(cloud.map(r=>r.id));
+      const legacy=activities().filter(r=>!cloudIds.has(r.id));
+      if(legacy.length)queueActivityRows(legacy);
       const pending=pendingActivityRows();
       if(pending.length){
-        const sending=pending.slice(0,30),sentIds=new Set(sending.map(r=>r.id));
+        const sending=pending.slice(0,30);
         const saved=await v17Request('activity','POST',{events:sending});
+        const savedRows=normalizeActivityRows(saved?.rows||[]);
+        const sentIds=new Set(sending.map(r=>r.id));
         savePendingActivityRows(pendingActivityRows().filter(r=>!sentIds.has(r.id)));
-        setJSON(ACT_KEY,mergeActivityRows(activities(),saved?.rows||cloud));
+        cloud=savedRows.length?savedRows:cloud;
       }
+      cloudActivityRows=mergeActivityRows(cloud);
+      cloudActivityLoaded=true;
+      cloudActivityError="";
+      window.__fxnavManagerActivityCloud=cloudActivityRows.slice();
+      window.__fxnavManagerActivityCloudReady=true;
+      window.dispatchEvent(new Event('fxnav:activity-cloud-updated'));
+      setJSON(ACT_KEY,cloudActivityRows);
       lastActivitySyncAt=Date.now();
       render();
       if(pendingActivityRows().length)setTimeout(()=>scheduleActivitySync(true),1200);
     }catch(err){
-      // Activity history is secondary metadata. Keep its local queue intact and retry
-      // when the page returns online/foreground; never alter navigation sync status.
+      // Do not substitute browser-local history for D1. Keep queued writes protected.
+      cloudActivityError=String(err?.message||"D1 云端活动读取失败");
+      if(cloudActivityLoaded){window.__fxnavManagerActivityCloud=cloudActivityRows.slice();window.__fxnavManagerActivityCloudReady=true;window.dispatchEvent(new Event('fxnav:activity-cloud-updated'))}
       lastActivitySyncAt=Date.now();
+      render();
+      if(!cloudActivityLoaded)setTimeout(()=>scheduleActivitySync(true),15000);
     }finally{
       activitySyncBusy=false;
-      if(pendingActivityRows().length)setTimeout(()=>scheduleActivitySync(true),1200);
+      if(pendingActivityRows().length&&!cloudActivityError)setTimeout(()=>scheduleActivitySync(true),1200);
     }
   }
   function addActivity(msg){msg=String(msg||'').trim();if(!msg||!shouldLog(msg))return;let rows=activities();const last=rows.at(-1);if(last&&last.text===msg&&Date.now()-last.t<1500)return;const row={id:newActivityId(),t:Date.now(),type:activityType(msg),text:msg};rows=mergeActivityRows(rows,[row]);setJSON(ACT_KEY,rows);queueActivityRows([row]);if(/D1 快照已创建/.test(msg))localStorage.setItem(BACKUP_KEY,String(Date.now()));render();scheduleActivitySync(true)}
@@ -15827,7 +15874,9 @@ updateAccessUIV178();
     const orphan=maint?.kv?.enabled?Math.max(0,Number(maint?.kv?.orphanCustomKeys)||0):null;
     const backups=maint?.d1?Math.max(0,Number(maint.d1.backups)||0):null,keep=Math.max(1,Number(maint?.policy?.backupKeep)||20),overBackups=backups===null?null:Math.max(0,backups-keep);
     const issues=(dup.scanned?dup.count:0)+(orphan||0)+(overBackups||0);const fullyChecked=dup.scanned&&!!maint;const healthText=issues>0?`${issues} 项待处理`:fullyChecked?'良好':'待检查';const healthClass=issues>0?'warn':fullyChecked?'ok':'idle';
-    const syncAt=Number(localStorage.getItem(SYNC_KEY)||0),backupAt=Number(localStorage.getItem(BACKUP_KEY)||0),rows=activities(),days=sevenDays(rows),weekTotal=days.reduce((a,b)=>a+b.count,0),recent=rows.slice(-6).reverse();
+    const syncAt=Number(localStorage.getItem(SYNC_KEY)||0),backupAt=Number(localStorage.getItem(BACKUP_KEY)||0),rows=dashboardActivityRows(),days=sevenDays(rows),weekTotal=days.reduce((a,b)=>a+b.count,0),recent=rows.slice(-6).reverse();
+    const activityCaption=!AUTH_V161?.authenticated?"管理员登录后查看 D1 云端记录":!cloudActivityLoaded?(cloudActivityError?"D1 读取失败 · 未使用本机数据":"正在读取 D1 云端记录"):cloudActivityError?"D1 最近成功读取 · 待同步操作已保留":!online?"最近一次 D1 云端记录 · 当前离线":"D1 云端记录 · 多设备共享";
+    const activityEmpty=!AUTH_V161?.authenticated?"请先登录管理员账号，查看 D1 云端活动记录。":!cloudActivityLoaded?(cloudActivityError?"D1 云端活动读取失败。恢复网络或重新登录后会自动重试；本机缓存不会冒充云端记录。":"正在读取 D1 云端活动记录…"):"D1 云端近 7 天暂无管理操作记录。";
     const lastOk=Number(V17?.lastSuccessAt)||0;
     const d1Fresh=online&&!!lastOk&&Date.now()-lastOk<20000&&!V17?.cachedOffline&&!V17?.syncing&&!V17?.pushTimer&&!V17?.conflict&&V17?.lastStatus==="synced";
     const d1State=!online?['当前离线','warn']:d1Fresh?['D1 已连接','ok']:V17?.lastStatus==="syncing"?['正在验证 D1','warn']:['D1 待验证','warn'];
@@ -15849,19 +15898,11 @@ updateAccessUIV178();
           <div class="manager-health-row"><span>回收站</span><b class="${hidden?'idle':'ok'}">${hidden} 个</b></div>
         </div>
       </section>
-      <section class="manager-monitor-strip" aria-label="实时监控">
-        <div class="manager-monitor-strip-head"><b><i class="manager-monitor-live-dot"></i>实时监控</b><small>本机采样 · 不额外请求 D1</small></div>
-        <div class="manager-monitor-grid">
-          <div class="manager-monitor-cell" data-series="d1" data-state="idle"><div class="manager-monitor-meta"><span class="manager-monitor-name"><i></i>D1 响应</span><strong class="manager-monitor-value" data-value="d1">等待请求</strong></div><svg class="manager-monitor-spark" viewBox="0 0 160 25" preserveAspectRatio="none"><path class="manager-monitor-gridline" d="M0 7.5H160M0 17.5H160"/><polyline class="manager-monitor-line" points="0,12.5 160,12.5"/><circle class="manager-monitor-endpoint" cx="160" cy="12.5" r="2"/></svg><span class="manager-monitor-sub" data-sub="d1">记录已有 D1 请求</span></div>
-          <div class="manager-monitor-cell" data-series="sync" data-state="idle"><div class="manager-monitor-meta"><span class="manager-monitor-name"><i></i>同步状态</span><strong class="manager-monitor-value" data-value="sync">等待验证</strong></div><svg class="manager-monitor-spark" viewBox="0 0 160 25" preserveAspectRatio="none"><path class="manager-monitor-gridline" d="M0 7.5H160M0 17.5H160"/><polyline class="manager-monitor-line" points="0,12.5 160,12.5"/><circle class="manager-monitor-endpoint" cx="160" cy="12.5" r="2"/></svg><span class="manager-monitor-sub" data-sub="sync">读取现有同步状态</span></div>
-          <div class="manager-monitor-cell" data-series="lag" data-state="idle"><div class="manager-monitor-meta"><span class="manager-monitor-name"><i></i>页面响应</span><strong class="manager-monitor-value" data-value="lag">采样中</strong></div><svg class="manager-monitor-spark" viewBox="0 0 160 25" preserveAspectRatio="none"><path class="manager-monitor-gridline" d="M0 7.5H160M0 17.5H160"/><polyline class="manager-monitor-line" points="0,12.5 160,12.5"/><circle class="manager-monitor-endpoint" cx="160" cy="12.5" r="2"/></svg><span class="manager-monitor-sub" data-sub="lag">页面主线程调度延迟</span></div>
-        </div>
-      </section>
       <section class="manager-live-card wide">
-        <div class="manager-live-head"><b>近 7 天活动</b><small>${AUTH_V161?.authenticated?"多设备共享 · 管理员操作":"本机记录 · 管理员登录后同步"}</small></div>
+        <div class="manager-live-head"><b>近 7 天活动</b><small>${esc(activityCaption)}</small></div>
         <div class="manager-activity-wrap">
           <div class="manager-activity-chart"><div class="manager-activity-summary"><strong>${weekTotal}</strong><span>7 天管理操作</span></div>${chart(days)}<div class="manager-day-labels">${days.map(d=>`<span>${d.label}</span>`).join('')}</div></div>
-          <div class="manager-activity-list">${recent.length?recent.map(r=>`<div class="manager-activity-item"><i class="manager-activity-type ${esc(r.type)}"></i><div class="manager-activity-copy" title="${esc(r.text)}">${esc(r.text)}</div><time class="manager-activity-time">${fmtTime(r.t)}</time></div>`).join(''):'<div class="manager-activity-empty">暂无管理操作记录。<br>之后新增、编辑、同步、清理、快照等成功操作会自动记录在这里。</div>'}</div>
+          <div class="manager-activity-list">${recent.length?recent.map(r=>`<div class="manager-activity-item"><i class="manager-activity-type ${esc(r.type)}"></i><div class="manager-activity-copy" title="${esc(r.text)}">${esc(r.text)}</div><time class="manager-activity-time">${fmtTime(r.t)}</time></div>`).join(''):`<div class="manager-activity-empty">${esc(activityEmpty)}</div>`}</div>
         </div>
       </section>`;
     document.getElementById('managerOverviewHealthScan')?.addEventListener('click',()=>{
@@ -15907,10 +15948,9 @@ updateAccessUIV178();
 (()=>{
   const $=id=>document.getElementById(id);
   const SYNC_KEY='fxnav_manager_last_sync_v1831';
-  const ACT_KEY='fxnav_manager_activity_v1831';
   const fmtTime=t=>{if(!t)return '--:--';try{return new Date(Number(t)).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',hour12:false})}catch{return '--:--'}};
   const cacheKB=()=>{try{let total=0;for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i)||'';const v=localStorage.getItem(k)||'';total+=(k.length+v.length)*2}return Math.max(0,Math.round(total/1024))}catch{return 0}};
-  const activityCounts=()=>{try{const rows=JSON.parse(localStorage.getItem(ACT_KEY)||'[]');const now=Date.now(),bucket=4*60*60*1000,vals=[0,0,0,0,0,0];if(Array.isArray(rows))rows.forEach(r=>{const d=now-Number(r?.t||0);if(d>=0&&d<24*60*60*1000){const idx=5-Math.floor(d/bucket);if(idx>=0&&idx<6)vals[idx]++}});return vals}catch{return [0,0,0,0,0,0]}};
+  const activityCounts=()=>{try{const rows=window.__fxnavManagerActivityCloudReady&&Array.isArray(window.__fxnavManagerActivityCloud)?window.__fxnavManagerActivityCloud:[];const now=Date.now(),bucket=4*60*60*1000,vals=[0,0,0,0,0,0];rows.forEach(r=>{const d=now-Number(r?.t||0);if(d>=0&&d<24*60*60*1000){const idx=5-Math.floor(d/bucket);if(idx>=0&&idx<6)vals[idx]++}});return vals}catch{return [0,0,0,0,0,0]}};
   const buildWaveLoop=()=>{
     const vals=activityCounts(),max=Math.max(1,...vals),mid=15,w=180,h=28;
     const norm=vals.map(v=>v/max);
@@ -15954,7 +15994,7 @@ updateAccessUIV178();
     if($('consolePulse')){$('consolePulse').style.background=healthy?'var(--good)':'#ffb86b';$('consolePulse').style.boxShadow=healthy?'0 0 0 3px rgba(85,214,166,.10)':'0 0 0 3px rgba(255,184,107,.10)'}
     drawWave();
   };
-  const bind=()=>{render();const cloud=$('cloudStatusText');if(cloud)new MutationObserver(render).observe(cloud,{childList:true,subtree:true,characterData:true});window.addEventListener('online',render,{passive:true});window.addEventListener('offline',render,{passive:true});setInterval(render,30000)};
+  const bind=()=>{render();const cloud=$('cloudStatusText');if(cloud)new MutationObserver(render).observe(cloud,{childList:true,subtree:true,characterData:true});window.addEventListener('online',render,{passive:true});window.addEventListener('offline',render,{passive:true});window.addEventListener('fxnav:activity-cloud-updated',render,{passive:true});setInterval(render,30000)};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
 })();
 
@@ -18343,6 +18383,6 @@ html[data-theme="liquid"] body .calendar-ref-v1838 #clockDateText{
 <!-- V19.92 Upgrade 01: unified smart search, category intent aliases, typo tolerance and safe direct URL opening. -->
 <!-- V19.94 Liquid Glass date typography: exact title gradient and stronger text contrast. -->
 
-<script src="/assets/runtime/manager-monitor-v1996.js?v=1997" defer></script>
+<script src="/assets/runtime/manager-ui-v1998.js?v=1998" defer></script>
 </body>
 </html>

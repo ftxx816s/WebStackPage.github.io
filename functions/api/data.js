@@ -1,4 +1,4 @@
-const API_VERSION="19.90";
+const API_VERSION="19.98";
 import {V17_CATEGORIES,V17_SITES} from "../_data/v17-seed.js";
 import {json,requireAuth,sameOrigin,verifySession,normalizeUsername} from "../_shared/auth.js";
 
@@ -844,7 +844,7 @@ async function restoreDisasterBackupV1971(env,owner,body){
 }
 
 async function readManagerActivityV1990(env,owner){
-  const since=Date.now()-7*24*60*60*1000;
+  const since=Date.now()-8*24*60*60*1000; // Covers seven local calendar dates across time zones.
   const rows=(await env.DB.prepare(`SELECT event_id,event_time,event_type,message FROM manager_activity_v1 WHERE owner=? AND event_time>=? ORDER BY event_time DESC,event_id DESC LIMIT 80`).bind(owner,since).all()).results||[];
   return rows.map(r=>({id:String(r.event_id),t:Number(r.event_time)||0,type:String(r.event_type||"site"),text:String(r.message||"")}));
 }
@@ -858,7 +858,7 @@ async function appendManagerActivityV1990(env,owner,body){
     statements.push(env.DB.prepare(`INSERT OR IGNORE INTO manager_activity_v1(owner,event_id,event_time,event_type,message) VALUES(?,?,?,?,?)`).bind(owner,id,t,type,message));
   }
   if(statements.length)await env.DB.batch(statements);
-  // Keep a bounded 30-day history; the dashboard reads the latest seven days only.
+  // Keep a bounded 30-day history; the dashboard reads seven local calendar dates from this window.
   await env.DB.batch([
     env.DB.prepare(`DELETE FROM manager_activity_v1 WHERE owner=? AND event_time<?`).bind(owner,now-30*24*60*60*1000),
     env.DB.prepare(`DELETE FROM manager_activity_v1 WHERE owner=? AND event_id NOT IN (SELECT event_id FROM manager_activity_v1 WHERE owner=? ORDER BY event_time DESC,event_id DESC LIMIT 200)`).bind(owner,owner)
