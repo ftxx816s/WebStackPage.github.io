@@ -16676,7 +16676,7 @@ html[data-theme="liquid"] body #drawer.drawer{background:var(--lg-sheen) padding
 html[data-theme="liquid"] body #drawer .drawer-head{background:rgba(22,28,37,.34)!important;border-bottom:1px solid rgba(255,255,255,.18)!important;border-radius:20px 0 0 0!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.09)!important;}
 html[data-theme="liquid"] body #drawer :is(.drawer-title h2,.manager-panel-title h3,.manager-overview-hero h2,.manager-quick b,.metric-card strong,.metric-card b,.manager-live-card b,.manager-data-card b,.manager-backup-card b,.manager-activity-wrap b,.manager-site-copy b,.manager-trend-card b,.manager-version-strip b,.manager-dup-intro b,.manager-transfer-card b,.admin-title,.field label){color:#f9fcff!important;text-shadow:none!important;font-weight:600!important;}
 html[data-theme="liquid"] body #drawer :is(.drawer-title p,.manager-panel-title p,.manager-quick small,.manager-live-card p,.manager-data-card p,.manager-site-copy small,.manager-trend-card small,.manager-version-strip,.metric-card small,.manager-activity-wrap small,.manager-tab-badge,.manager-site-kind,.admin-note,.admin-note span){color:#c9d5e1!important;opacity:1!important;}
-html[data-theme="liquid"] body #drawer :is(.admin-note,.admin-surface,#addForm,#movePreview,#customList,#deletedList,.category-manager-list,.duplicate-panel,.move-preview,.manager-overview-hero,.manager-data-card,.manager-trend-card,.manager-dup-intro,.duplicate-group,.manager-site-toolbar,.manager-batch-bar,.manager-transfer-card,.manager-backup-card,.manager-live-card,.manager-version-strip,.manager-activity-wrap,.manager-quick,.manager-site-row,.manager-backup-row,.metric-card,.dup-item,.custom-item,.category-manager-item,.deleted-item,.manager-activity-chart){background:rgba(192,207,224,.075)!important;color:#f6f9ff!important;border:1px solid rgba(255,255,255,.20)!important;border-radius:14px!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.065)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
+html[data-theme="liquid"] body #drawer :is(.admin-note,.admin-surface,#addForm,#movePreview,#customList,#deletedList,.category-manager-list,.duplicate-panel,.move-preview,.manager-overview-hero,.manager-data-card,.manager-trend-card,.manager-dup-intro,.duplicate-group,.manager-site-toolbar,.manager-batch-bar,.manager-transfer-card,.manager-backup-card,.manager-live-card,.manager-version-strip,.manager-quick,.manager-site-row,.manager-backup-row,.metric-card,.dup-item,.custom-item,.category-manager-item,.deleted-item){background:rgba(192,207,224,.075)!important;color:#f6f9ff!important;border:1px solid rgba(255,255,255,.20)!important;border-radius:14px!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.065)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
 html[data-theme="liquid"] body #drawer .manager-tab{background:rgba(255,255,255,.08)!important;color:#e7f0f7!important;border:1px solid rgba(255,255,255,.20)!important;border-radius:11px!important;}
 html[data-theme="liquid"] body #drawer .manager-tab.active{background:linear-gradient(110deg,rgba(70,154,238,.48),rgba(146,91,228,.47))!important;color:#fff!important;border-color:rgba(255,255,255,.33)!important;}
 html[data-theme="liquid"] body #drawer :is(.manager-tab-badge,.manager-site-kind,.field input,.field select,.field textarea,.manager-site-toolbar input,.manager-site-toolbar select,.mini-btn,.cat-mini,.btn:not(.primary):not(.danger)){color:#eff7fc!important;background:rgba(206,222,237,.085)!important;border:1px solid rgba(255,255,255,.18)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.045)!important;font-weight:500!important;}
@@ -16775,7 +16775,7 @@ html[data-theme="liquid"] body :is(.ui-prompt-card,.ui-prompt,.v1821-prompt,.v18
   backdrop-filter:blur(var(--lg-blur-strong,17px)) saturate(125%)!important;
   -webkit-backdrop-filter:blur(var(--lg-blur-strong,17px)) saturate(125%)!important;
 }
-html[data-theme="liquid"] body :is(.category-manager-item,.custom-item,.deleted-item,.manager-site-row,.manager-quick,.manager-data-card,.manager-live-card,.manager-trend-card,.manager-activity-wrap,.manager-overview-hero){
+html[data-theme="liquid"] body :is(.category-manager-item,.custom-item,.deleted-item,.manager-site-row,.manager-quick,.manager-data-card,.manager-live-card,.manager-trend-card,.manager-overview-hero){
   background:rgba(42,50,62,var(--lg-card-alpha,.282))!important;
   border:1px solid rgba(248,252,255,.25)!important;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.11),0 4px 12px rgba(0,0,0,.06)!important;
@@ -17943,5 +17943,79 @@ html[data-theme] body :is(#drawer,.site-editor,.category-icon-editor,.fx-icon-li
   try{keys.forEach(key=>{localStorage.removeItem(key);sessionStorage.removeItem(key)})}catch{}
 })();
 </script>
+
+<style id="v1990-repair10-single-surface-activity">
+/* Repair 10: a single visual surface around seven-day activity.
+   The wide outer card owns the only frame; its layout wrapper, plot and log do not. */
+#drawer .manager-live-card.wide > .manager-activity-wrap,
+html[data-theme="liquid"] body #drawer .manager-live-card.wide > .manager-activity-wrap {
+  padding:0!important;
+  margin:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:none!important;
+  box-shadow:none!important;
+  outline:0!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  overflow:visible!important;
+}
+#drawer .manager-live-card.wide .manager-activity-chart,
+html[data-theme="light"] body #drawer .manager-live-card.wide .manager-activity-chart,
+html[data-theme="neon"] body #drawer .manager-live-card.wide .manager-activity-chart,
+html[data-theme="liquid"] body #drawer .manager-live-card.wide .manager-activity-chart {
+  min-width:0!important;
+  min-height:0!important;
+  height:auto!important;
+  padding:0!important;
+  margin:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:none!important;
+  box-shadow:none!important;
+  outline:0!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  overflow:visible!important;
+}
+#drawer .manager-live-card.wide .manager-activity-list {
+  min-width:0!important;
+  height:auto!important;
+  padding:0!important;
+  margin:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:none!important;
+  box-shadow:none!important;
+  align-content:start!important;
+  border-left:1px solid color-mix(in srgb,var(--mgr-line,var(--line)) 68%,transparent)!important;
+  padding-left:13px!important;
+}
+#drawer .manager-live-card.wide .manager-activity-wrap {
+  gap:13px!important;
+  align-items:start!important;
+  min-height:0!important;
+  height:auto!important;
+}
+#drawer .manager-live-card.wide .manager-activity-chart svg {
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  aspect-ratio:3.6 / 1!important;
+  object-fit:contain!important;
+}
+@media (max-width:1024px) {
+  #drawer .manager-live-card.wide .manager-activity-wrap {
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:11px!important;
+  }
+  #drawer .manager-live-card.wide .manager-activity-list {
+    border-left:0!important;
+    padding-left:0!important;
+    border-top:1px solid color-mix(in srgb,var(--mgr-line,var(--line)) 68%,transparent)!important;
+    padding-top:10px!important;
+  }
+}
+</style>
 </body>
 </html>
