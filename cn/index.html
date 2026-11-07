@@ -18,7 +18,7 @@
 </style>
 <script  id="app-meta-v1891"  data-module="script-01.js">
 
-window.FXNAV_APP=Object.freeze({version:"19.93",build:"V19.93",schemaVersion:3,channel:"stable"});
+window.FXNAV_APP=Object.freeze({version:"19.94",build:"V19.94",schemaVersion:3,channel:"stable"});
 
 </script>
 <script  id="theme-boot-v1867"  data-module="script-02.js">
@@ -3946,8 +3946,8 @@ html[data-theme="neon"] .tool-cluster{border-radius:14px;}}
 <link rel="icon" type="image/png" sizes="64x64" href="/assets/runtime/favicon-985ed977.png">
 <link rel="shortcut icon" type="image/png" href="/assets/runtime/favicon-985ed977.png">
 
-<meta name="x-build" content="V19.93-20261107">
-<meta name="x-app-version" content="19.92">
+<meta name="x-build" content="V19.94-20261107">
+<meta name="x-app-version" content="19.94">
 
 <style data-module="style-03.css">
 :root{
@@ -8801,7 +8801,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
         <span class="console-divider"></span>
         <span class="console-item cache"><span class="k">CACHE</span><strong id="consoleCache">0 KB</strong></span>
         <span class="console-divider"></span>
-        <span class="console-item build"><span class="k">BUILD</span><strong>V19.93</strong></span>
+        <span class="console-item build"><span class="k">BUILD</span><strong>V19.94</strong></span>
         <span class="console-spacer"></span>
         <span class="console-activity">
           <span class="k">SYSTEM ACTIVITY</span>
@@ -8961,7 +8961,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
 
     <div id="fxD1LoadingV1946" class="fx-d1-loading-v1946" role="status">正在读取完整云端导航数据…</div>
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V19.93 版本</div>
+    <div class="footer">© 2026 私人导航工具箱 · V19.94 版本</div>
   </main>
 </div>
 
@@ -14476,7 +14476,7 @@ updateAccessUIV178();
   function exportSelectedSitesV1991(){
     const ids=[...managerSelection];if(!ids.length)return;
     const selected=rawSites().filter(site=>ids.includes(site.id)&&!state.hiddenSites.has(site.id));
-    const payload={format:"private-nav-selected-sites",formatVersion:1,exportedAt:new Date().toISOString(),appVersion:window.FXNAV_APP?.version||"19.92",sites:selected.map(site=>({id:site.id,name:site.name,url:site.url,domain:site.domain||safeDomain(site.url),category:displayCategory(effectiveCategory(site)),favorite:state.favorites.has(site.id),builtin:isBuiltinSite(site.id),iconUrl:site._sourceIconUrl||site.iconUrl||"",hasCustomIcon:!!site._customIcon}))};
+    const payload={format:"private-nav-selected-sites",formatVersion:1,exportedAt:new Date().toISOString(),appVersion:window.FXNAV_APP?.version||"19.94",sites:selected.map(site=>({id:site.id,name:site.name,url:site.url,domain:site.domain||safeDomain(site.url),category:displayCategory(effectiveCategory(site)),favorite:state.favorites.has(site.id),builtin:isBuiltinSite(site.id),iconUrl:site._sourceIconUrl||site.iconUrl||"",hasCustomIcon:!!site._customIcon}))};
     const stamp=new Date().toISOString().slice(0,10).replaceAll("-","");
     downloadJsonV1860(payload,`private-nav-selected-sites-${stamp}.json`);
     toast(`已导出 ${selected.length} 个网站信息；KV 图标文件不包含在此清单中`);
@@ -18237,20 +18237,50 @@ html[data-theme="liquid"] body #drawer .manager-live-card.wide .manager-activity
 }
 </style>
 
-<style id="v1993-liquid-weekday-accent">
-/* V19.93: match the Liquid Glass weekday label to the existing blue-violet title accent.
-   Scope is intentionally limited to the Liquid Glass theme and current weekday label. */
+<style id="v1994-liquid-date-typography">
+/* V19.94: Liquid Glass date typography only. Wallpaper, glass surfaces and layout remain unchanged. */
+/* Match the exact title gradient; constrain the gradient to the text width so all three colors appear. */
 html[data-theme="liquid"] body .calendar-ref-v1838 #currentWeekdayText{
-  background:linear-gradient(95deg,#32baff 0%,#8076ff 53%,#d97aef 100%)!important;
+  display:inline-block!important;
+  width:max-content!important;
+  max-width:100%!important;
+  padding:0!important;
+  background-image:linear-gradient(95deg,#32baff 0%,#8076ff 53%,#d97aef 100%)!important;
+  background-color:transparent!important;
+  background-repeat:no-repeat!important;
+  background-size:100% 100%!important;
   background-clip:text!important;
   -webkit-background-clip:text!important;
   color:transparent!important;
   -webkit-text-fill-color:transparent!important;
+  -webkit-text-stroke:0!important;
   text-shadow:none!important;
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.32))!important;
+}
+/* Keep the small date metadata legible over different wallpapers without adding a new background. */
+html[data-theme="liquid"] body .calendar-ref-v1838 #currentYearText{
+  color:rgba(244,248,255,.88)!important;
+  text-shadow:0 1px 3px rgba(0,0,0,.48)!important;
+}
+html[data-theme="liquid"] body .calendar-ref-v1838 #clockHourMinute{
+  color:#fff!important;
+  text-shadow:0 1px 4px rgba(0,0,0,.42)!important;
+}
+html[data-theme="liquid"] body .calendar-ref-v1838 #clockSecond{
+  color:rgba(236,244,255,.82)!important;
+  text-shadow:0 1px 3px rgba(0,0,0,.45)!important;
+}
+html[data-theme="liquid"] body .calendar-ref-v1838 #clockDateText{
+  color:rgba(242,247,255,.90)!important;
+  opacity:1!important;
+  font-size:10px!important;
+  font-weight:700!important;
+  letter-spacing:.01em!important;
+  text-shadow:0 1px 3px rgba(0,0,0,.58)!important;
 }
 </style>
 
 <!-- V19.92 Upgrade 01: unified smart search, category intent aliases, typo tolerance and safe direct URL opening. -->
-<!-- V19.93 Theme Accent: color only the current weekday label in Liquid Glass. -->
+<!-- V19.94 Liquid Glass date typography: exact title gradient and stronger text contrast. -->
 </body>
 </html>
