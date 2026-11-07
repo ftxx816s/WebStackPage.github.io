@@ -18,7 +18,7 @@
 </style>
 <script  id="app-meta-v1891"  data-module="script-01.js">
 
-window.FXNAV_APP=Object.freeze({version:"19.91",build:"V19.91",schemaVersion:3,channel:"stable"});
+window.FXNAV_APP=Object.freeze({version:"19.92",build:"V19.92",schemaVersion:3,channel:"stable"});
 
 </script>
 <script  id="theme-boot-v1867"  data-module="script-02.js">
@@ -3946,8 +3946,8 @@ html[data-theme="neon"] .tool-cluster{border-radius:14px;}}
 <link rel="icon" type="image/png" sizes="64x64" href="/assets/runtime/favicon-985ed977.png">
 <link rel="shortcut icon" type="image/png" href="/assets/runtime/favicon-985ed977.png">
 
-<meta name="x-build" content="V19.91-20261107">
-<meta name="x-app-version" content="19.91">
+<meta name="x-build" content="V19.92-20261107">
+<meta name="x-app-version" content="19.92">
 
 <style data-module="style-03.css">
 :root{
@@ -8801,7 +8801,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
         <span class="console-divider"></span>
         <span class="console-item cache"><span class="k">CACHE</span><strong id="consoleCache">0 KB</strong></span>
         <span class="console-divider"></span>
-        <span class="console-item build"><span class="k">BUILD</span><strong>V19.91</strong></span>
+        <span class="console-item build"><span class="k">BUILD</span><strong>V19.92</strong></span>
         <span class="console-spacer"></span>
         <span class="console-activity">
           <span class="k">SYSTEM ACTIVITY</span>
@@ -8866,7 +8866,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
             <div class="search-panel glass-strong">
               <div class="search-row">
                 <span class="search-symbol">⌕</span>
-                <input id="searchInput" class="search-input" autocomplete="off" spellcheck="false" placeholder="站内搜索：网站名称、域名、关键词…">
+                <input id="searchInput" class="search-input" autocomplete="off" spellcheck="false" placeholder="搜索网站、域名、分类或关键词…">
                 <button type="button" class="clear-search" id="clearSearch" aria-label="清空搜索">×</button>
                 <button class="liquid-search-btn" id="liquidSearchBtn" type="button" aria-label="搜索网站" title="搜索网站"><svg class="liquid-search-svg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="M15.5 15.5 20 20"></path></svg></button>
               </div>
@@ -8961,7 +8961,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
 
     <div id="fxD1LoadingV1946" class="fx-d1-loading-v1946" role="status">正在读取完整云端导航数据…</div>
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V19.91 版本</div>
+    <div class="footer">© 2026 私人导航工具箱 · V19.92 版本</div>
   </main>
 </div>
 
@@ -9783,16 +9783,122 @@ function createCard(site){
   card.append(link,star);
   return card;
 }
+/* V19.92 Smart Search: shared matching for page search and quick launcher. */
+const FX_SEARCH_CATEGORY_ALIASES_V192={
+  "常用·搜索":"搜索 搜索引擎 search engine 浏览器 导航",
+  "AI 助手·聚合":"ai 人工智能 ai助手 ai对话 大模型 聊天 对话 助手 chatbot llm",
+  "AI 图像·视频":"生图 ai生图 绘图 ai绘图 文生图 图片生成 ai图片 图像生成 ai图像 视频生成 ai视频 ai绘画",
+  "设计·灵感":"设计 灵感 创意 平面设计 海报 排版 logo ui",
+  "素材·字体·PPT":"素材 字体 字库 ppt 模板 ppt模板 矢量 图片素材 商用字体",
+  "图片·文档工具":"抠图 图片抠图 去背景 图片去背景 图片处理 图片转换 pdf 文档 压缩 图片放大",
+  "工具·导航":"工具 导航 网站导航 实用工具",
+  "开发·技术":"代码 编程 开发 github 程序员 api 域名",
+  "软件·系统":"软件 下载 windows 系统 应用",
+  "网络·测速·IP":"测速 网速 ip 网络 延迟 丢包 网络检测",
+  "VPN·代理":"vpn 代理 节点 proxy 线路 机场",
+  "影音·直播":"视频 音乐 影视 直播 电影 电视剧 影音",
+  "游戏·资源":"游戏 游戏资源 game",
+  "学习·知识":"学习 教育 教程 知识 课程",
+  "政务·法律":"政务 法律 政府 公告 法院",
+  "电商·购物":"电商 购物 网购 商城 买东西",
+  "账号·订阅":"账号 订阅 充值 会员 支付",
+  "生活·出行":"生活 出行 地图 天气 快递 交通",
+  "社交·社区":"社交 社区 聊天 论坛 社群",
+  "文件·下载·传输":"网盘 下载 上传 文件 传输 转换 文件传输 文件下载",
+  "其他收藏":"其他 收藏 其他网站"
+};
+function fxSearchNormalizeV192(value){
+  return String(value||"").normalize("NFKC").toLowerCase()
+    .replace(/^https?:\/\//," ").replace(/^www\./," ")
+    .replace(/[^\w\u3400-\u9fff]+/g," ").trim().replace(/\s+/g," ");
+}
+function fxEditDistanceAtMostOneV192(a,b){
+  if(a===b)return true;
+  if(Math.abs(a.length-b.length)>1)return false;
+  let i=0,j=0,edits=0;
+  while(i<a.length&&j<b.length){
+    if(a[i]===b[j]){i++;j++;continue;}
+    if(++edits>1)return false;
+    if(a.length>b.length)i++;
+    else if(b.length>a.length)j++;
+    else{i++;j++;}
+  }
+  if(i<a.length||j<b.length)edits++;
+  return edits<=1;
+}
+function fxSearchTokenScoreV192(token,fields){
+  let best=0;
+  for(const raw of fields){
+    const field=fxSearchNormalizeV192(raw);
+    if(!field)continue;
+    if(field===token)best=Math.max(best,34);
+    else if(field.startsWith(token))best=Math.max(best,26);
+    else if(field.includes(token))best=Math.max(best,19);
+    if(best>=34)continue;
+    // One-character typo tolerance is limited to Latin/digit words to avoid false Chinese matches.
+    if(/^[a-z0-9]{4,}$/i.test(token)){
+      for(const word of field.split(" ")){
+        if(word.length>=4&&fxEditDistanceAtMostOneV192(token,word))best=Math.max(best,10);
+      }
+    }
+  }
+  return best;
+}
+function fxSmartSearchScoreV192(site,query){
+  const usage=typeof getUsageStatsV157==="function"?(getUsageStatsV157()[site.id]||{}):{};
+  const recency=Array.isArray(state.recents)?state.recents.indexOf(site.id):-1;
+  let score=Math.log2((Number(usage.count)||0)+1)*4+(state.favorites?.has(site.id)?7:0)+(recency>=0?Math.max(0,8-recency*.35):0);
+  const q=fxSearchNormalizeV192(query);
+  if(!q)return score;
+  const category=effectiveCategory(site);
+  const alias=FX_SEARCH_CATEGORY_ALIASES_V192[category]||"";
+  const fields=[site.name,site.domain||safeDomain(site.url),site.fullTitle,category,site.url,alias];
+  const tokens=q.split(" ").filter(Boolean);
+  let tokenTotal=0;
+  for(const token of tokens){
+    const part=fxSearchTokenScoreV192(token,fields);
+    if(!part)return -9999;
+    tokenTotal+=part;
+  }
+  score+=tokenTotal;
+  const name=fxSearchNormalizeV192(site.name),domain=fxSearchNormalizeV192(site.domain||safeDomain(site.url)),title=fxSearchNormalizeV192(site.fullTitle);
+  if(name===q)score+=120;
+  else if(name.startsWith(q))score+=85;
+  else if(name.includes(q))score+=58;
+  if(domain.startsWith(q))score+=45;
+  else if(domain.includes(q))score+=28;
+  if(title.includes(q))score+=12;
+  if(category===q)score+=22;
+  return score;
+}
+function fxDirectUrlV192(value){
+  const raw=String(value||"").trim();
+  if(!raw||/\s/.test(raw)||raw.length>2048)return "";
+  let candidate=raw;
+  if(!/^https?:\/\//i.test(candidate)){
+    if(!/^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}(?::\d{1,5})?(?:[/?#][^\s]*)?$/i.test(candidate))return "";
+    candidate="https://"+candidate;
+  }
+  try{
+    const u=new URL(candidate);
+    if(!/^https?:$/.test(u.protocol)||!u.hostname||u.username||u.password)return "";
+    return u.href;
+  }catch{return "";}
+}
+
 function filteredSites(){
-  const map=new Map(allSites().map(s=>[s.id,s]));let arr=allSites();
-  if(state.filter==="favorite")arr=arr.filter(s=>state.favorites.has(s.id));
+  const map=new Map(allSites().map(site=>[site.id,site]));
+  let arr=allSites();
+  if(state.filter==="favorite")arr=arr.filter(site=>state.favorites.has(site.id));
   else if(state.filter==="recent")arr=state.recents.map(id=>map.get(id)).filter(Boolean);
-  else if(state.filter!=="all")arr=arr.filter(s=>effectiveCategory(s)===state.filter);
-  const tokens=state.query.trim().toLowerCase().split(/\s+/).filter(Boolean);
-  if(tokens.length)arr=arr.filter(s=>{
-    const hay=(`${s.name} ${s.domain} ${s.fullTitle||""} ${effectiveCategory(s)}`).toLowerCase();
-    return tokens.every(t=>hay.includes(t));
-  });
+  else if(state.filter!=="all")arr=arr.filter(site=>effectiveCategory(site)===state.filter);
+  const query=String(state.query||"").trim();
+  if(query){
+    arr=arr.map(site=>({site,score:fxSmartSearchScoreV192(site,query)}))
+      .filter(item=>item.score>-9000)
+      .sort((a,b)=>b.score-a.score)
+      .map(item=>item.site);
+  }
   return arr;
 }
 function sectionBlock(cat,items,icon){
@@ -12311,6 +12417,7 @@ function handleSearchKeydown(e){
   }else if(e.key==="Enter"){
     const results=filteredSites();
     if(results.length===1){recordRecent(results[0].id);window.open(results[0].url,"_blank","noopener")}
+    else if(!results.length){const direct=fxDirectUrlV192(e.currentTarget.value);if(direct)window.open(direct,"_blank","noopener,noreferrer")}
   }
 }
 $("#searchInput").addEventListener("keydown",handleSearchKeydown);
@@ -12908,41 +13015,24 @@ requestAnimationFrame(()=>{document.body.classList.add("page-ready");renderHeroR
 /* ===================== V15.7 · Command Launcher ===================== */
 let __commandIndex=0,__commandItems=[];
 
-function launcherScoreSite(site,q){
-  const query=q.trim().toLowerCase();
-  const usage=getUsageStatsV157()[site.id]||{};
-  const recency=state.recents.indexOf(site.id);
-  let score=Math.log2((Number(usage.count)||0)+1)*4+(state.favorites.has(site.id)?7:0)+(recency>=0?Math.max(0,8-recency*.35):0);
-  if(!query)return score;
-  const name=String(site.name||"").toLowerCase();
-  const domain=String(site.domain||safeDomain(site.url)||"").toLowerCase();
-  const title=String(site.fullTitle||"").toLowerCase();
-  const cat=effectiveCategory(site).toLowerCase();
-  const tokens=query.split(/\s+/).filter(Boolean);
-  if(!tokens.every(t=>(`${name} ${domain} ${title} ${cat}`).includes(t)))return -9999;
-  if(name===query)score+=120;
-  else if(name.startsWith(query))score+=85;
-  else if(name.includes(query))score+=58;
-  if(domain.startsWith(query))score+=45;
-  else if(domain.includes(query))score+=28;
-  if(cat.includes(query))score+=18;
-  if(title.includes(query))score+=12;
-  return score;
-}
-
+function launcherScoreSite(site,q){return fxSmartSearchScoreV192(site,q);}
 function getLauncherResults(q){
   const query=String(q||"").trim();
-  const sites=allSites()
-    .map(site=>({type:"site",site,score:launcherScoreSite(site,query)}))
-    .filter(x=>x.score>-9000)
-    .sort((a,b)=>b.score-a.score)
-    .slice(0,9);
-
-  const cats=query?allCategories()
-    .filter(c=>c.name.toLowerCase().includes(query.toLowerCase()))
-    .slice(0,3)
-    .map(c=>({type:"category",category:c,score:70})):[];
-  return [...cats,...sites];
+  const sites=allSites().map(site=>({type:"site",site,score:launcherScoreSite(site,query)}))
+    .filter(item=>item.score>-9000).sort((a,b)=>b.score-a.score).slice(0,9);
+  const normalized=fxSearchNormalizeV192(query);
+  const cats=query?allCategories().map(category=>{
+    const aliases=FX_SEARCH_CATEGORY_ALIASES_V192[category.name]||"";
+    const fields=[category.name,aliases];
+    const parts=normalized.split(" ").filter(Boolean).map(token=>fxSearchTokenScoreV192(token,fields));
+    return {type:"category",category,score:parts.length&&parts.every(Boolean)?70+parts.reduce((a,b)=>a+b,0): -9999};
+  }).filter(item=>item.score>-9000).sort((a,b)=>b.score-a.score).slice(0,3):[];
+  const results=[...cats,...sites];
+  if(query&&!results.length){
+    const direct=fxDirectUrlV192(query);
+    if(direct)results.push({type:"url",url:direct,score:1});
+  }
+  return results;
 }
 
 function ensureCommandLauncher(){
@@ -12953,7 +13043,7 @@ function ensureCommandLauncher(){
     <div class="command-panel" role="dialog" aria-modal="true" aria-label="快速启动">
       <div class="command-search">
         <span class="command-search-symbol">⌕</span>
-        <input id="commandInput" autocomplete="off" spellcheck="false" placeholder="搜索网站、分类或域名…" aria-label="快速搜索">
+        <input id="commandInput" autocomplete="off" spellcheck="false" placeholder="搜索名称、域名、用途关键词或网址…" aria-label="快速搜索">
         <span class="command-esc">ESC</span>
       </div>
       <div class="command-body" id="commandBody"></div>
@@ -12976,16 +13066,12 @@ function renderCommandLauncher(q=""){
   const body=$("#commandBody");body.innerHTML="";
   __commandItems=getLauncherResults(q);
   __commandIndex=Math.min(__commandIndex,Math.max(0,__commandItems.length-1));
-
   const groupTitle=document.createElement("div");groupTitle.className="command-group-title";
-  groupTitle.textContent=q.trim()?"搜索结果":"常用与最近";
-  body.append(groupTitle);
-
+  groupTitle.textContent=q.trim()?"搜索结果":"常用与最近";body.append(groupTitle);
   if(!__commandItems.length){
-    const empty=document.createElement("div");empty.className="command-empty";empty.textContent="没有找到匹配的网站或分类";
-    body.append(empty);return;
+    const empty=document.createElement("div");empty.className="command-empty";
+    empty.textContent="没有找到匹配的网站或分类。可尝试名称、域名或用途关键词。";body.append(empty);return;
   }
-
   __commandItems.forEach((item,index)=>{
     const btn=document.createElement("button");btn.type="button";btn.className="command-item"+(index===__commandIndex?" active":"");
     if(item.type==="category"){
@@ -12993,8 +13079,13 @@ function renderCommandLauncher(q=""){
       const copy=document.createElement("span");copy.className="command-copy";
       const name=document.createElement("span");name.className="command-name";name.textContent=item.category.name;
       const meta=document.createElement("span");meta.className="command-meta";meta.textContent=categoryDescription(item.category.name);
-      const kind=document.createElement("span");kind.className="command-kind";kind.textContent="分类";
-      copy.append(name,meta);btn.append(icon,copy,kind);
+      const kind=document.createElement("span");kind.className="command-kind";kind.textContent="分类";copy.append(name,meta);btn.append(icon,copy,kind);
+    }else if(item.type==="url"){
+      const icon=document.createElement("span");icon.className="section-badge";icon.textContent="↗";
+      const copy=document.createElement("span");copy.className="command-copy";
+      const name=document.createElement("span");name.className="command-name";name.textContent="直接打开网址";
+      const meta=document.createElement("span");meta.className="command-meta";meta.textContent=item.url;
+      const kind=document.createElement("span");kind.className="command-kind";kind.textContent="新标签页";copy.append(name,meta);btn.append(icon,copy,kind);
     }else{
       btn.append(createSiteIcon(item.site,"custom-mini-icon"));
       const copy=document.createElement("span");copy.className="command-copy";
@@ -13026,6 +13117,8 @@ function activateCommandSelection(){
     $("#searchInput").value="";$("#compactSearchInput").value="";
     document.body.classList.remove("searching");syncNavActive();render({animate:true});
     closeCommandLauncher();window.scrollTo({top:0,behavior:"smooth"});setTimeout(updateNavIndicator,30);
+  }else if(item.type==="url"){
+    window.open(item.url,"_blank","noopener,noreferrer");closeCommandLauncher();
   }else{
     recordRecent(item.site.id);window.open(item.site.url,"_blank","noopener");closeCommandLauncher();
   }
@@ -14383,7 +14476,7 @@ updateAccessUIV178();
   function exportSelectedSitesV1991(){
     const ids=[...managerSelection];if(!ids.length)return;
     const selected=rawSites().filter(site=>ids.includes(site.id)&&!state.hiddenSites.has(site.id));
-    const payload={format:"private-nav-selected-sites",formatVersion:1,exportedAt:new Date().toISOString(),appVersion:window.FXNAV_APP?.version||"19.91",sites:selected.map(site=>({id:site.id,name:site.name,url:site.url,domain:site.domain||safeDomain(site.url),category:displayCategory(effectiveCategory(site)),favorite:state.favorites.has(site.id),builtin:isBuiltinSite(site.id),iconUrl:site._sourceIconUrl||site.iconUrl||"",hasCustomIcon:!!site._customIcon}))};
+    const payload={format:"private-nav-selected-sites",formatVersion:1,exportedAt:new Date().toISOString(),appVersion:window.FXNAV_APP?.version||"19.92",sites:selected.map(site=>({id:site.id,name:site.name,url:site.url,domain:site.domain||safeDomain(site.url),category:displayCategory(effectiveCategory(site)),favorite:state.favorites.has(site.id),builtin:isBuiltinSite(site.id),iconUrl:site._sourceIconUrl||site.iconUrl||"",hasCustomIcon:!!site._customIcon}))};
     const stamp=new Date().toISOString().slice(0,10).replaceAll("-","");
     downloadJsonV1860(payload,`private-nav-selected-sites-${stamp}.json`);
     toast(`已导出 ${selected.length} 个网站信息；KV 图标文件不包含在此清单中`);
@@ -18143,5 +18236,6 @@ html[data-theme="liquid"] body #drawer .manager-live-card.wide .manager-activity
   #drawer .manager-batch-bar .btn{font-size:11px;}
 }
 </style>
+<!-- V19.92 Upgrade 01: unified smart search, category intent aliases, typo tolerance and safe direct URL opening. -->
 </body>
 </html>
