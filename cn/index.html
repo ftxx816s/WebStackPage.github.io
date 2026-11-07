@@ -18,7 +18,7 @@
 </style>
 <script  id="app-meta-v1891"  data-module="script-01.js">
 
-window.FXNAV_APP=Object.freeze({version:"19.94",build:"V19.94",schemaVersion:3,channel:"stable"});
+window.FXNAV_APP=Object.freeze({version:"19.96",build:"V19.96",schemaVersion:3,channel:"stable"});
 
 </script>
 <script  id="theme-boot-v1867"  data-module="script-02.js">
@@ -3946,8 +3946,8 @@ html[data-theme="neon"] .tool-cluster{border-radius:14px;}}
 <link rel="icon" type="image/png" sizes="64x64" href="/assets/runtime/favicon-985ed977.png">
 <link rel="shortcut icon" type="image/png" href="/assets/runtime/favicon-985ed977.png">
 
-<meta name="x-build" content="V19.94-20261107">
-<meta name="x-app-version" content="19.94">
+<meta name="x-build" content="V19.96-20261107">
+<meta name="x-app-version" content="19.96">
 
 <style data-module="style-03.css">
 :root{
@@ -8473,8 +8473,9 @@ html[data-theme] body .compact-actions #compactThemeBtn .theme-svg-v1825{color:i
 #drawer .mgr86-advanced-title{display:flex;gap:10px;align-items:center;min-width:0}
 #drawer .mgr86-advanced-title b{font-size:12px;font-weight:780;white-space:nowrap}
 #drawer .mgr86-advanced-title small{font-size:10px;color:var(--mgr-muted,var(--muted));overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#drawer .mgr86-advanced-chevron{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:8px;background:rgba(123,144,225,.1);color:var(--mgr-text,var(--text));font-size:18px;transition:transform .15s ease}
-#drawer .mgr86-advanced[open] .mgr86-advanced-chevron{transform:rotate(180deg)}
+#drawer .mgr86-advanced-chevron{display:inline-flex;align-items:center;justify-content:center;flex:0 0 24px;width:24px;height:24px;box-sizing:border-box;border-radius:8px;background:rgba(123,144,225,.1);color:var(--mgr-text,var(--text));line-height:0;vertical-align:middle;position:relative}
+#drawer .mgr86-advanced-chevron svg{display:block;flex:none;width:14px;height:14px;position:absolute;left:50%;top:50%;margin-left:-7px;margin-top:-7px;transform:rotate(0deg);transform-origin:center center;transition:transform .15s ease}
+#drawer .mgr86-advanced[open] .mgr86-advanced-chevron svg{transform:rotate(180deg)}
 #drawer .mgr86-advanced-state{font-size:10px;color:var(--mgr-muted,var(--muted));white-space:nowrap}
 #drawer .mgr86-advanced[open] .mgr86-advanced-state{font-size:0}
 #drawer .mgr86-advanced[open] .mgr86-advanced-state:after{content:"点击收起";font-size:10px}
@@ -8518,7 +8519,7 @@ html[data-theme="light"] #drawer .mgr86-current-indicator{color:#187f65}
  #drawer .mgr86-action-pair .btn{font-size:10px!important;padding:8px 6px}
  #drawer .mgr86-advanced-title small{display:none}
 }
-@media(prefers-reduced-motion:reduce){#drawer .mgr86-advanced-chevron{transition:none}}
+@media(prefers-reduced-motion:reduce){#drawer .mgr86-advanced-chevron svg{transition:none}}
 </style>
 
 <style id="fx-theme-completeness-v1989">
@@ -8759,6 +8760,8 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
 
 
 
+
+<link rel="stylesheet" href="/assets/runtime/manager-monitor-v1996.css?v=1996">
 </head>
 <body><div class="ambient-scene" aria-hidden="true"><i class="glass-capsule"></i><i class="glass-capsule"></i><i class="glass-capsule"></i><i class="glass-capsule"></i></div>
 <div class="fx-responsive-wallpaper" aria-hidden="true"></div>
@@ -8801,7 +8804,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
         <span class="console-divider"></span>
         <span class="console-item cache"><span class="k">CACHE</span><strong id="consoleCache">0 KB</strong></span>
         <span class="console-divider"></span>
-        <span class="console-item build"><span class="k">BUILD</span><strong>V19.94</strong></span>
+        <span class="console-item build"><span class="k">BUILD</span><strong>V19.96</strong></span>
         <span class="console-spacer"></span>
         <span class="console-activity">
           <span class="k">SYSTEM ACTIVITY</span>
@@ -8961,7 +8964,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
 
     <div id="fxD1LoadingV1946" class="fx-d1-loading-v1946" role="status">正在读取完整云端导航数据…</div>
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V19.94 版本</div>
+    <div class="footer">© 2026 私人导航工具箱 · V19.96 版本</div>
   </main>
 </div>
 
@@ -14237,7 +14240,7 @@ updateAccessUIV178();
       </section>
 
       <details class="mgr86-advanced" id="mgr86AdvancedTools">
-        <summary><span class="mgr86-advanced-title"><span class="mgr86-advanced-chevron" aria-hidden="true">⌄</span><b>高级工具</b><small>手动同步 · 配置 · 存储维护</small></span><span class="mgr86-advanced-state">点击展开</span></summary>
+        <summary><span class="mgr86-advanced-title"><span class="mgr86-advanced-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span><b>高级工具</b><small>手动同步 · 配置 · 存储维护</small></span><span class="mgr86-advanced-state">点击展开</span></summary>
         <div class="mgr86-advanced-grid">
           <section class="manager-data-card mgr86-advanced-card">
             <h4>云端与本机缓存</h4>
@@ -14476,7 +14479,7 @@ updateAccessUIV178();
   function exportSelectedSitesV1991(){
     const ids=[...managerSelection];if(!ids.length)return;
     const selected=rawSites().filter(site=>ids.includes(site.id)&&!state.hiddenSites.has(site.id));
-    const payload={format:"private-nav-selected-sites",formatVersion:1,exportedAt:new Date().toISOString(),appVersion:window.FXNAV_APP?.version||"19.94",sites:selected.map(site=>({id:site.id,name:site.name,url:site.url,domain:site.domain||safeDomain(site.url),category:displayCategory(effectiveCategory(site)),favorite:state.favorites.has(site.id),builtin:isBuiltinSite(site.id),iconUrl:site._sourceIconUrl||site.iconUrl||"",hasCustomIcon:!!site._customIcon}))};
+    const payload={format:"private-nav-selected-sites",formatVersion:1,exportedAt:new Date().toISOString(),appVersion:window.FXNAV_APP?.version||"19.96",sites:selected.map(site=>({id:site.id,name:site.name,url:site.url,domain:site.domain||safeDomain(site.url),category:displayCategory(effectiveCategory(site)),favorite:state.favorites.has(site.id),builtin:isBuiltinSite(site.id),iconUrl:site._sourceIconUrl||site.iconUrl||"",hasCustomIcon:!!site._customIcon}))};
     const stamp=new Date().toISOString().slice(0,10).replaceAll("-","");
     downloadJsonV1860(payload,`private-nav-selected-sites-${stamp}.json`);
     toast(`已导出 ${selected.length} 个网站信息；KV 图标文件不包含在此清单中`);
@@ -18282,5 +18285,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 #clockDateText{
 
 <!-- V19.92 Upgrade 01: unified smart search, category intent aliases, typo tolerance and safe direct URL opening. -->
 <!-- V19.94 Liquid Glass date typography: exact title gradient and stronger text contrast. -->
+
+<script src="/assets/runtime/manager-monitor-v1996.js?v=1996" defer></script>
 </body>
 </html>

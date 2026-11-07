@@ -1,0 +1,129 @@
+/* V19.96: compact, truthful live-monitor strip for the manager overview. */
+#drawer .manager-monitor-strip{
+  grid-column:1/-1!important;
+  display:grid!important;
+  grid-template-rows:auto minmax(0,1fr)!important;
+  gap:6px!important;
+  min-width:0!important;
+  min-height:84px!important;
+  padding:9px 12px 8px!important;
+  border:1px solid var(--mgr-line,var(--line))!important;
+  border-radius:14px!important;
+  background:linear-gradient(135deg,rgba(120,145,180,.105),rgba(35,48,65,.16))!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.045)!important;
+  overflow:hidden!important;
+}
+#drawer .manager-monitor-strip-head{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:8px!important;
+  min-width:0!important;
+  line-height:1!important;
+}
+#drawer .manager-monitor-strip-head b{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:6px!important;
+  min-width:0!important;
+  color:var(--mgr-text,var(--text))!important;
+  font-size:10px!important;
+  font-weight:760!important;
+}
+#drawer .manager-monitor-live-dot{
+  width:6px!important;height:6px!important;flex:0 0 6px!important;
+  border-radius:50%!important;background:#51d4a2!important;
+  box-shadow:0 0 0 3px rgba(81,212,162,.10),0 0 8px rgba(81,212,162,.34)!important;
+  animation:managerMonitorPulseV1996 2s ease-in-out infinite!important;
+}
+#drawer .manager-monitor-strip-head small{
+  min-width:0!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;
+  color:var(--mgr-muted2,var(--muted2))!important;font-size:7.5px!important;line-height:1.2!important;
+}
+#drawer .manager-monitor-grid{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  min-width:0!important;min-height:0!important;
+  align-items:stretch!important;
+}
+#drawer .manager-monitor-cell{
+  display:grid!important;grid-template-rows:auto 25px!important;gap:2px!important;
+  min-width:0!important;padding:0 12px!important;
+}
+#drawer .manager-monitor-cell:first-child{padding-left:0!important}
+#drawer .manager-monitor-cell:last-child{padding-right:0!important}
+#drawer .manager-monitor-cell+.manager-monitor-cell{
+  border-left:1px solid color-mix(in srgb,var(--mgr-line,var(--line)) 78%,transparent)!important;
+}
+#drawer .manager-monitor-meta{
+  display:flex!important;align-items:center!important;justify-content:space-between!important;
+  gap:6px!important;min-width:0!important;
+}
+#drawer .manager-monitor-name{
+  display:flex!important;align-items:center!important;gap:5px!important;min-width:0!important;
+  overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;
+  color:var(--mgr-muted,var(--muted))!important;font-size:9px!important;font-weight:680!important;
+}
+#drawer .manager-monitor-name i{
+  width:5px!important;height:5px!important;flex:0 0 5px!important;border-radius:50%!important;
+  background:var(--monitor-color,#59c9ff)!important;box-shadow:0 0 7px color-mix(in srgb,var(--monitor-color,#59c9ff) 45%,transparent)!important;
+}
+#drawer .manager-monitor-value{
+  min-width:0!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;
+  color:var(--mgr-text,var(--text))!important;font-size:10.5px!important;font-weight:780!important;
+  font-variant-numeric:tabular-nums!important;
+}
+#drawer .manager-monitor-sub{
+  min-width:0!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;
+  color:var(--mgr-muted2,var(--muted2))!important;font-size:7px!important;line-height:1.1!important;
+}
+#drawer .manager-monitor-spark{
+  display:block!important;width:100%!important;height:25px!important;min-width:0!important;
+  overflow:visible!important;opacity:.98!important;
+}
+#drawer .manager-monitor-gridline{fill:none!important;stroke:color-mix(in srgb,var(--mgr-muted2,var(--muted2)) 18%,transparent)!important;stroke-width:.7!important}
+#drawer .manager-monitor-line{
+  fill:none!important;stroke:var(--monitor-color,#59c9ff)!important;stroke-width:1.8!important;
+  stroke-linecap:round!important;stroke-linejoin:round!important;vector-effect:non-scaling-stroke!important;
+  filter:drop-shadow(0 0 3px color-mix(in srgb,var(--monitor-color,#59c9ff) 38%,transparent))!important;
+  stroke-dasharray:5 4!important;animation:managerMonitorFlowV1996 3.6s linear infinite!important;
+}
+#drawer .manager-monitor-endpoint{fill:var(--monitor-color,#59c9ff)!important;stroke:rgba(255,255,255,.88)!important;stroke-width:1!important}
+#drawer .manager-monitor-cell[data-series="d1"]{--monitor-color:#54caff}
+#drawer .manager-monitor-cell[data-series="sync"]{--monitor-color:#9b83ff}
+#drawer .manager-monitor-cell[data-series="lag"]{--monitor-color:#d77ce8}
+#drawer .manager-monitor-cell[data-state="warn"] .manager-monitor-name i{background:#e9b35d!important}
+#drawer .manager-monitor-cell[data-state="bad"] .manager-monitor-name i{background:#ff7187!important}
+@keyframes managerMonitorFlowV1996{to{stroke-dashoffset:-36}}
+@keyframes managerMonitorPulseV1996{50%{opacity:.55;box-shadow:0 0 0 4px rgba(81,212,162,.045),0 0 4px rgba(81,212,162,.16)}}
+html[data-theme="light"] body #drawer .manager-monitor-strip{
+  background:linear-gradient(135deg,rgba(255,255,255,.78),rgba(237,243,250,.72))!important;
+}
+html[data-theme="neon"] body #drawer .manager-monitor-strip{
+  background:linear-gradient(135deg,rgba(7,25,55,.32),rgba(25,10,39,.28))!important;
+  border-color:rgba(82,163,255,.18)!important;
+}
+html[data-theme="liquid"] body #drawer .manager-monitor-strip{
+  background:rgba(192,207,224,.065)!important;
+  border-color:rgba(255,255,255,.19)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.055)!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+@media(max-width:600px){
+  #drawer .manager-monitor-strip{min-height:78px!important;padding:8px 9px 7px!important;gap:5px!important}
+  #drawer .manager-monitor-cell{grid-template-rows:auto 22px!important;padding:0 7px!important}
+  #drawer .manager-monitor-name{font-size:8px!important;gap:4px!important}
+  #drawer .manager-monitor-value{font-size:9px!important}
+  #drawer .manager-monitor-sub{font-size:6.5px!important}
+  #drawer .manager-monitor-spark{height:22px!important}
+  #drawer .manager-monitor-strip-head small{font-size:6.5px!important}
+}
+@media(max-width:360px){
+  #drawer .manager-monitor-strip{padding-left:7px!important;padding-right:7px!important}
+  #drawer .manager-monitor-cell{padding:0 5px!important}
+  #drawer .manager-monitor-name{font-size:7.5px!important}
+  #drawer .manager-monitor-value{font-size:8.5px!important}
+}
+@media(prefers-reduced-motion:reduce){
+  #drawer .manager-monitor-live-dot,#drawer .manager-monitor-line{animation:none!important}
+}
