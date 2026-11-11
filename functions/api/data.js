@@ -1,4 +1,4 @@
-const API_VERSION="19.98";
+const API_VERSION="19.99";
 import {V17_CATEGORIES,V17_SITES} from "../_data/v17-seed.js";
 import {json,requireAuth,sameOrigin,verifySession,normalizeUsername} from "../_shared/auth.js";
 
