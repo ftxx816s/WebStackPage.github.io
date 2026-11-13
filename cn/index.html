@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>私人导航工具箱 · V20.04</title>
+<title>私人导航工具箱 · V20.05</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: blob: https: http:; connect-src 'self' https:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -18,7 +18,7 @@
 </style>
 <script  id="app-meta-v1891"  data-module="script-01.js">
 
-window.FXNAV_APP=Object.freeze({version:"20.04",build:"V20.04",schemaVersion:3,channel:"stable"});
+window.FXNAV_APP=Object.freeze({version:"20.05",build:"V20.05",schemaVersion:3,channel:"stable"});
 
 </script>
 <script  id="theme-boot-v1867"  data-module="script-02.js">
@@ -3967,8 +3967,8 @@ html[data-theme="neon"] .tool-cluster{border-radius:14px;}}
 <link rel="icon" type="image/png" sizes="64x64" href="/assets/runtime/favicon-985ed977.png">
 <link rel="shortcut icon" type="image/png" href="/assets/runtime/favicon-985ed977.png">
 
-<meta name="x-build" content="V20.04-20261113">
-<meta name="x-app-version" content="20.04">
+<meta name="x-build" content="V20.05-20261113">
+<meta name="x-app-version" content="20.05">
 
 <style data-module="style-03.css">
 :root{
@@ -8828,7 +8828,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
         <span class="console-divider"></span>
         <span class="console-item cache"><span class="k">CACHE</span><strong id="consoleCache">0 KB</strong></span>
         <span class="console-divider"></span>
-        <span class="console-item build"><span class="k">BUILD</span><strong id="consoleBuildVersion">V20.04</strong></span>
+        <span class="console-item build"><span class="k">BUILD</span><strong id="consoleBuildVersion">V20.05</strong></span>
         <span class="console-spacer"></span>
         <span class="console-activity">
           <span class="k">SYSTEM ACTIVITY</span>
@@ -8988,7 +8988,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
 
     <div id="fxD1LoadingV1946" class="fx-d1-loading-v1946" role="status">正在读取完整云端导航数据…</div>
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V20.04 版本</div>
+    <div class="footer">© 2026 私人导航工具箱 · V20.05 版本</div>
   </main>
 </div>
 
@@ -12889,7 +12889,7 @@ async function exportDisasterBackupV1860(){
     toast("正在生成完整备份…");
     const payload=await v17Request("disaster-backup");
     payload.schemaVersion=window.FXNAV_APP?.schemaVersion||3;
-    payload.appVersion=window.FXNAV_APP?.version||"20.04";
+    payload.appVersion=window.FXNAV_APP?.version||"20.05";
     payload.client={
       theme:document.documentElement.dataset.theme||"dark",
       density:STORE.get(V157_DENSITY_KEY)||"comfortable",
@@ -12898,7 +12898,7 @@ async function exportDisasterBackupV1860(){
     };
     const d=new Date(),pad=n=>String(n).padStart(2,"0");
     const stamp=`${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}`;
-    downloadJsonV1860(payload,`private-nav-backup-v${window.FXNAV_APP?.version||"20.04"}-${stamp}.json`);
+    downloadJsonV1860(payload,`private-nav-backup-v${window.FXNAV_APP?.version||"20.05"}-${stamp}.json`);
     const sites=Array.isArray(payload?.d1?.sites)?payload.d1.sites.length:0;
     const cats=Array.isArray(payload?.d1?.categories)?payload.d1.categories.length:0;
     const icons=Number(payload?.kv?.customIconCount)||0;
@@ -12928,7 +12928,7 @@ async function restoreDisasterBackupFileV1971(file){
     const currentIconCount=(safetyBackup.d1?.sites||[]).filter(site=>!!site.has_custom_icon).length;
     if(Number(safetyBackup.kv?.missingCustomIcons)>0||(!safetyBackup.kv?.enabled&&currentIconCount>0))throw new Error("恢复前备份检测到 KV 自定义图标缺失或 KV 未连接。为避免无法回滚，已取消恢复。");
     const now=new Date(),pad=n=>String(n).padStart(2,"0"),stamp=`${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
-    downloadJsonV1860(safetyBackup,`private-nav-pre-restore-v${window.FXNAV_APP?.version||"20.04"}-${stamp}.json`);
+    downloadJsonV1860(safetyBackup,`private-nav-pre-restore-v${window.FXNAV_APP?.version||"20.05"}-${stamp}.json`);
     const result=await v17Request("disaster-restore","POST",{...payload,baseRevision:V17.revision});
     const refreshed=await refreshV17FromServer({quiet:true,acceptRemote:true});if(!refreshed)throw new Error("服务端已完成恢复，但当前页面未能刷新；请重新加载页面核对 D1 数据");
     const theme=payload.client?.theme;if(["dark","light","liquid","neon","frosted"].includes(theme)){STORE.set(KEYS.theme,theme);document.documentElement.dataset.theme=theme;applyTheme()}
@@ -12952,8 +12952,8 @@ $("#disasterBackupBtn").onclick=exportDisasterBackupV1860;
 $("#exportBookmarksBtn").onclick=exportBrowserBookmarksV1852;
 
 $("#exportBtn").onclick=()=>{
-  const payload={schemaVersion:window.FXNAV_APP?.schemaVersion||3,appVersion:window.FXNAV_APP?.version||"20.04",version:window.FXNAV_APP?.version||"20.04",favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides,iconOverrides:state.iconOverrides,hiddenSites:[...state.hiddenSites],siteEdits:state.siteEdits,customCategories:state.customCategories,categoryOrder:state.categoryOrder,categoryIconOverrides:state.categoryIconOverrides,siteOrder:state.siteOrder,categoryTitleOverrides:{...(state.categoryTitleOverrides||{})},duplicateIgnoreKeys:[...(state.duplicateIgnoreKeys||new Set())],usageStats:getUsageStatsV157(),density:STORE.get(V157_DENSITY_KEY)||"comfortable",theme:document.documentElement.dataset.theme||"dark",cloudRevision:V17.revision};
-  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);const ds=new Date().toISOString().slice(0,10).replaceAll("-","");a.download=`private-nav-v${window.FXNAV_APP?.version||"20.04"}-${ds}.json`;a.click();URL.revokeObjectURL(a.href);
+  const payload={schemaVersion:window.FXNAV_APP?.schemaVersion||3,appVersion:window.FXNAV_APP?.version||"20.05",version:window.FXNAV_APP?.version||"20.05",favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides,iconOverrides:state.iconOverrides,hiddenSites:[...state.hiddenSites],siteEdits:state.siteEdits,customCategories:state.customCategories,categoryOrder:state.categoryOrder,categoryIconOverrides:state.categoryIconOverrides,siteOrder:state.siteOrder,categoryTitleOverrides:{...(state.categoryTitleOverrides||{})},duplicateIgnoreKeys:[...(state.duplicateIgnoreKeys||new Set())],usageStats:getUsageStatsV157(),density:STORE.get(V157_DENSITY_KEY)||"comfortable",theme:document.documentElement.dataset.theme||"dark",cloudRevision:V17.revision};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);const ds=new Date().toISOString().slice(0,10).replaceAll("-","");a.download=`private-nav-v${window.FXNAV_APP?.version||"20.05"}-${ds}.json`;a.click();URL.revokeObjectURL(a.href);
 };
 $("#importBtn").onclick=()=>$("#importFile").click();
 $("#importFile").addEventListener("change",async e=>{
@@ -14706,7 +14706,7 @@ updateAccessUIV178();
   function exportSelectedSitesV1991(){
     const ids=[...managerSelection];if(!ids.length)return;
     const selected=rawSites().filter(site=>ids.includes(site.id)&&!state.hiddenSites.has(site.id));
-    const payload={format:"private-nav-selected-sites",formatVersion:1,exportedAt:new Date().toISOString(),appVersion:window.FXNAV_APP?.version||"20.04",sites:selected.map(site=>({id:site.id,name:site.name,url:site.url,domain:site.domain||safeDomain(site.url),category:displayCategory(effectiveCategory(site)),favorite:state.favorites.has(site.id),builtin:isBuiltinSite(site.id),iconUrl:site._sourceIconUrl||site.iconUrl||"",hasCustomIcon:!!site._customIcon}))};
+    const payload={format:"private-nav-selected-sites",formatVersion:1,exportedAt:new Date().toISOString(),appVersion:window.FXNAV_APP?.version||"20.05",sites:selected.map(site=>({id:site.id,name:site.name,url:site.url,domain:site.domain||safeDomain(site.url),category:displayCategory(effectiveCategory(site)),favorite:state.favorites.has(site.id),builtin:isBuiltinSite(site.id),iconUrl:site._sourceIconUrl||site.iconUrl||"",hasCustomIcon:!!site._customIcon}))};
     const stamp=new Date().toISOString().slice(0,10).replaceAll("-","");
     downloadJsonV1860(payload,`private-nav-selected-sites-${stamp}.json`);
     toast(`已导出 ${selected.length} 个网站信息；KV 图标文件不包含在此清单中`);
@@ -16519,11 +16519,12 @@ html[data-theme="light"] .nav-btn.scroll-active .nav-count{
   try{const saved=localStorage.getItem(TINT_KEY);if(saved!==null&&saved!==''&&Number.isFinite(Number(saved)))tint=clampTint(saved)}catch{}
   try{const saved=localStorage.getItem(BLUR_KEY);if(saved!==null&&saved!==''&&Number.isFinite(Number(saved)))blurClarity=clampBlur(saved)}catch{}
   function applyBlurMaterial(){
-    const blurPx=Math.round((100-blurClarity)*.20);
+    const blurPx=Math.max(0,Math.round((100-blurClarity)*.16));
     root.style.setProperty('--lg-blur',`${blurPx}px`);
-    root.style.setProperty('--lg-blur-soft',`${Math.round(blurPx*.8)}px`);
-    root.style.setProperty('--lg-blur-medium',`${Math.round(blurPx*1.35)}px`);
-    root.style.setProperty('--lg-blur-strong',`${Math.round(blurPx*1.65)}px`);
+    root.style.setProperty('--lg-blur-soft',`${Math.round(blurPx*.75)}px`);
+    root.style.setProperty('--lg-blur-medium',`${Math.round(blurPx*1.15)}px`);
+    root.style.setProperty('--lg-blur-strong',`${Math.round(blurPx*1.4)}px`);
+    root.dataset.liquidClear=String(blurPx===0?'1':'0');
     const range=$('liquidBlurRange'),value=$('liquidBlurValue');
     if(range){range.value=String(blurClarity);range.style.setProperty('--blur-fill',`${blurClarity}%`)}
     if(value)value.textContent=`${blurClarity}%`;
@@ -16539,11 +16540,11 @@ html[data-theme="light"] .nav-btn.scroll-active .nav-count{
   }
   function applyMaterial(){
     root.dataset.glassRecipe='notification';
-    root.style.setProperty('--lg-pane-alpha',(0.10+tint*.0038).toFixed(3));
-    root.style.setProperty('--lg-calendar-alpha',(0.075+tint*.00395).toFixed(3));
-    root.style.setProperty('--lg-side-alpha',(0.25+tint*.0044).toFixed(3));
-    root.style.setProperty('--lg-card-alpha',(0.12+tint*.0036).toFixed(3));
-    root.style.setProperty('--lg-float-alpha',(0.20+tint*.0051).toFixed(3));
+    root.style.setProperty('--lg-pane-alpha',(0.07+tint*.0028).toFixed(3));
+    root.style.setProperty('--lg-calendar-alpha',(0.065+tint*.00265).toFixed(3));
+    root.style.setProperty('--lg-side-alpha',(0.12+tint*.0030).toFixed(3));
+    root.style.setProperty('--lg-card-alpha',(0.085+tint*.00265).toFixed(3));
+    root.style.setProperty('--lg-float-alpha',(0.17+tint*.0036).toFixed(3));
     applyBlurMaterial();
     const range=$('liquidTintRange'),value=$('liquidTintValue');
     if(range){range.value=String(tint);range.style.setProperty('--tint-fill',`${tint}%`)}
@@ -16973,7 +16974,7 @@ html[data-theme="liquid"]{
   --lg-sheen:radial-gradient(100% 110% at 5% -37%,rgba(255,255,255,.052) 0%,rgba(255,255,255,.014) 43%,transparent 78%);
   --lg-surface:linear-gradient(151deg,rgba(32,38,47,var(--lg-pane-alpha,.271)),rgba(27,34,43,var(--lg-pane-alpha,.271)) 57%,rgba(28,36,44,var(--lg-pane-alpha,.271)));
   --lg-depth:0 9px 24px rgba(5,11,18,.135),0 2px 6px rgba(4,8,15,.035),inset 0 1px 0 rgba(255,255,255,.075),inset 0 -1px 0 rgba(2,7,14,.115);
-  --lg-blur:11px;--lg-blur-soft:9px;--lg-blur-medium:15px;--lg-blur-strong:18px;
+  --lg-blur:9px;--lg-blur-soft:7px;--lg-blur-medium:10px;--lg-blur-strong:13px;
 
 }
 html[data-theme="liquid"] body{
@@ -17344,7 +17345,7 @@ html:not([data-theme="liquid"]) body .compact-actions #compactLiquidBgBtn{displa
 
 /* V19.38 · one continuous Transparent ⇄ Tinted glass control */
 html[data-theme="liquid"]{
- --lg-pane-alpha:.271;--lg-calendar-alpha:.253;--lg-side-alpha:.448;--lg-card-alpha:.282;--lg-float-alpha:.430;
+ --lg-pane-alpha:.196;--lg-calendar-alpha:.184;--lg-side-alpha:.255;--lg-card-alpha:.204;--lg-float-alpha:.332;
 }
 .liquid-glass-tuning{padding:11px 11px 9px;margin-bottom:10px;border:1px solid rgba(255,255,255,.19);border-radius:15px;background:rgba(13,21,30,.22);}
 .liquid-glass-tuning-title{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px;font-size:12px;color:#f7fbff;}
@@ -18584,6 +18585,93 @@ html[data-theme="liquid"] body .calendar-ref-v1838 #clockDateText{
 
 <!-- V19.92 Upgrade 01: unified smart search, category intent aliases, typo tolerance and safe direct URL opening. -->
 <!-- V19.94 Liquid Glass date typography: exact title gradient and stronger text contrast. -->
+
+
+<style id="v2005-unified-responsive-liquid-material">
+/* V20.05: One material recipe for all Liquid Glass modules. Applies across
+   desktop, iPad and phone. Other four themes remain untouched. */
+html[data-theme="liquid"]:not(.fx-glass-fallback) body :is(
+  .sidebar,#hero,.system-console,.tool-cluster,.home-layout>.hero-datetime,
+  .calendar-ref-v1838 .calendar-ref-monthbox,.calendar-ref-progress,.calendar-ref-selected
+){
+  backdrop-filter:blur(var(--lg-blur)) saturate(118%)!important;
+  -webkit-backdrop-filter:blur(var(--lg-blur)) saturate(118%)!important;
+}
+/* Do not blur the same hero pixels a second time inside the search surface. */
+html[data-theme="liquid"] body #hero .search-panel{
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+}
+/* Previous version explicitly disabled card blur for performance. We now apply
+   it only to cards near the viewport using IntersectionObserver. */
+html[data-theme="liquid"]:not(.fx-glass-fallback) body #content .card.glass.fx-lg-near{
+  backdrop-filter:blur(var(--lg-blur-soft)) saturate(112%)!important;
+  -webkit-backdrop-filter:blur(var(--lg-blur-soft)) saturate(112%)!important;
+}
+html[data-theme="liquid"] body #content .card.glass:not(.fx-lg-near){
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+}
+/* The preview follows the identical variables instead of its older fixed blue fill. */
+html[data-theme="liquid"]:not(.fx-glass-fallback) body .liquid-glass-tuning-preview-card{
+  background:var(--lg-sheen) padding-box,
+   rgba(25,32,40,var(--lg-pane-alpha,.196)) padding-box,
+   var(--lg-edge) border-box!important;
+  backdrop-filter:blur(var(--lg-blur-soft)) saturate(112%)!important;
+  -webkit-backdrop-filter:blur(var(--lg-blur-soft)) saturate(112%)!important;
+}
+/* Older versions locked settings panel to ~92% opacity, much darker than the
+   surrounding glass even with the transparency slider at zero. */
+html[data-theme="liquid"]:not(.fx-glass-fallback) body .liquid-glass-settings{
+  background:var(--lg-sheen) padding-box,
+    linear-gradient(145deg,rgba(37,44,55,clamp(.42,calc(var(--lg-float-alpha,.332) + .22),.78)),rgba(25,32,42,clamp(.42,calc(var(--lg-float-alpha,.332) + .22),.78))) padding-box,
+    var(--lg-edge) border-box!important;
+  backdrop-filter:blur(var(--lg-blur-strong)) saturate(118%)!important;
+  -webkit-backdrop-filter:blur(var(--lg-blur-strong)) saturate(118%)!important;
+}
+/* At full clarity remove compositing filters rather than leaving a costly zero-px layer. */
+html[data-theme="liquid"]:not(.fx-glass-fallback)[data-liquid-clear="1"] body :is(
+ .sidebar,#hero,.system-console,.tool-cluster,.home-layout>.hero-datetime,
+ .calendar-ref-v1838 .calendar-ref-monthbox,.calendar-ref-progress,.calendar-ref-selected,
+ .liquid-glass-settings,.liquid-glass-tuning-preview-card,#content .card.glass.fx-lg-near
+){backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
+/* Avoid an opaque fallback when blur works, but leave the original unsupported
+   browser fallback alone for reduced-transparency and low-end environments. */
+@media (max-width:760px){
+  html[data-theme="liquid"]:not(.fx-glass-fallback) body #content .card.glass.fx-lg-near{
+    backdrop-filter:blur(var(--lg-blur-soft)) saturate(110%)!important;
+    -webkit-backdrop-filter:blur(var(--lg-blur-soft)) saturate(110%)!important;
+  }
+}
+</style>
+<script id="v2005-viewport-glass-cards">
+(()=>{
+  'use strict';
+  // A large number of per-card backdrop layers is especially expensive on old
+  // CPUs/iPads. Only near-screen cards receive the blur; all cards use the same
+  // tint variables so the slider never affects just the search box.
+  const init=()=>{
+    const area=document.getElementById('content');
+    if(!area)return;
+    const cards=new WeakSet();
+    let scheduled=false;
+    const io='IntersectionObserver' in window?new IntersectionObserver(items=>{
+      for(const item of items)item.target.classList.toggle('fx-lg-near',item.isIntersecting);
+    },{root:null,rootMargin:'240px 0px 240px 0px',threshold:0}):null;
+    const scan=()=>{
+      scheduled=false;
+      for(const el of area.querySelectorAll('.card.glass')){
+        if(cards.has(el))continue;
+        cards.add(el);
+        if(io)io.observe(el);else el.classList.add('fx-lg-near');
+      }
+    };
+    const queue=()=>{if(!scheduled){scheduled=true;requestAnimationFrame(scan)}};
+    new MutationObserver(queue).observe(area,{childList:true,subtree:true});
+    scan();
+  };
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
+  else init();
+})();
+</script>
 
 <script id="fxnav-manager-assets-loader-v2000">
 (()=>{
