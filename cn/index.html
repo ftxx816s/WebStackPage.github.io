@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>私人导航工具箱 · V20.00</title>
+<title>私人导航工具箱 · V20.01</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: blob: https: http:; connect-src 'self' https:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -18,7 +18,7 @@
 </style>
 <script  id="app-meta-v1891"  data-module="script-01.js">
 
-window.FXNAV_APP=Object.freeze({version:"20.00",build:"V20.00",schemaVersion:3,channel:"stable"});
+window.FXNAV_APP=Object.freeze({version:"20.01",build:"V20.01",schemaVersion:3,channel:"stable"});
 
 </script>
 <script  id="theme-boot-v1867"  data-module="script-02.js">
@@ -51,7 +51,26 @@ window.FXNAV_APP=Object.freeze({version:"20.00",build:"V20.00",schemaVersion:3,c
     if(!supportsBackdrop)root.classList.add("fx-glass-fallback");
   }catch(e){root.classList.add("fx-glass-fallback");}
   root.classList.add("theme-booting");
-  // V20.00: theme is applied before paint; local wallpaper restoration never gates the interface.
+  // V20.01: before the first paint, restore the *confirmed cloud selection*, not an
+  // unrelated legacy IndexedDB image. The pointer contains no image bytes or credentials.
+  try{
+    var wallpaperPointer=JSON.parse(localStorage.getItem('fxnav_active_wallpaper_v2001')||'null');
+    if(wallpaperPointer&&typeof wallpaperPointer==='object'&&
+       (wallpaperPointer.id==='default'||/^[0-9a-f-]{36}$/.test(String(wallpaperPointer.id||'')))){
+      var savedId=String(wallpaperPointer.id),savedVersion=String(wallpaperPointer.version||'1');
+      if(!/^[0-9a-zA-Z._-]{1,80}$/.test(savedVersion))savedVersion='1';
+      window.__FXNAV_WALLPAPER_BOOT__={id:savedId,version:savedVersion};
+      if(theme==='liquid'&&savedId!=='default'){
+        root.style.setProperty('--liquid-bg-image',
+          'url("/api/wallpaper-image?id='+encodeURIComponent(savedId)+'&v='+encodeURIComponent(savedVersion)+'")');
+      }
+    }else if(theme==='liquid'){
+      // First-time browser: do not paint the unrelated bundled wallpaper while
+      // asking Cloudflare which wallpaper is actually selected.
+      root.classList.add('liquid-wallpaper-pending');
+    }
+  }catch(e){if(theme==='liquid')root.classList.add('liquid-wallpaper-pending');}
+  // V20.01: theme is applied before paint; cloud reconciliation never gates navigation.
   root.style.colorScheme=(theme==="light"||theme==="liquid")?"light":"dark";
   var colors={dark:"#07101d",light:"#edf3ff",liquid:"#747678",neon:"#020713",frosted:"#1b1b1d"};
   root.style.backgroundColor=colors[theme]||colors.dark;
@@ -3942,8 +3961,8 @@ html[data-theme="neon"] .tool-cluster{border-radius:14px;}}
 <link rel="icon" type="image/png" sizes="64x64" href="/assets/runtime/favicon-985ed977.png">
 <link rel="shortcut icon" type="image/png" href="/assets/runtime/favicon-985ed977.png">
 
-<meta name="x-build" content="V20.00-20261113">
-<meta name="x-app-version" content="20.00">
+<meta name="x-build" content="V20.01-20261113">
+<meta name="x-app-version" content="20.01">
 
 <style data-module="style-03.css">
 :root{
@@ -8800,7 +8819,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
         <span class="console-divider"></span>
         <span class="console-item cache"><span class="k">CACHE</span><strong id="consoleCache">0 KB</strong></span>
         <span class="console-divider"></span>
-        <span class="console-item build"><span class="k">BUILD</span><strong>V20.00</strong></span>
+        <span class="console-item build"><span class="k">BUILD</span><strong>V20.01</strong></span>
         <span class="console-spacer"></span>
         <span class="console-activity">
           <span class="k">SYSTEM ACTIVITY</span>
@@ -8960,7 +8979,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
 
     <div id="fxD1LoadingV1946" class="fx-d1-loading-v1946" role="status">正在读取完整云端导航数据…</div>
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V20.00 版本</div>
+    <div class="footer">© 2026 私人导航工具箱 · V20.01 版本</div>
   </main>
 </div>
 
@@ -12802,7 +12821,7 @@ async function exportDisasterBackupV1860(){
     toast("正在生成完整备份…");
     const payload=await v17Request("disaster-backup");
     payload.schemaVersion=window.FXNAV_APP?.schemaVersion||3;
-    payload.appVersion=window.FXNAV_APP?.version||"20.00";
+    payload.appVersion=window.FXNAV_APP?.version||"20.01";
     payload.client={
       theme:document.documentElement.dataset.theme||"dark",
       density:STORE.get(V157_DENSITY_KEY)||"comfortable",
@@ -12811,7 +12830,7 @@ async function exportDisasterBackupV1860(){
     };
     const d=new Date(),pad=n=>String(n).padStart(2,"0");
     const stamp=`${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}`;
-    downloadJsonV1860(payload,`private-nav-backup-v${window.FXNAV_APP?.version||"20.00"}-${stamp}.json`);
+    downloadJsonV1860(payload,`private-nav-backup-v${window.FXNAV_APP?.version||"20.01"}-${stamp}.json`);
     const sites=Array.isArray(payload?.d1?.sites)?payload.d1.sites.length:0;
     const cats=Array.isArray(payload?.d1?.categories)?payload.d1.categories.length:0;
     const icons=Number(payload?.kv?.customIconCount)||0;
@@ -12841,7 +12860,7 @@ async function restoreDisasterBackupFileV1971(file){
     const currentIconCount=(safetyBackup.d1?.sites||[]).filter(site=>!!site.has_custom_icon).length;
     if(Number(safetyBackup.kv?.missingCustomIcons)>0||(!safetyBackup.kv?.enabled&&currentIconCount>0))throw new Error("恢复前备份检测到 KV 自定义图标缺失或 KV 未连接。为避免无法回滚，已取消恢复。");
     const now=new Date(),pad=n=>String(n).padStart(2,"0"),stamp=`${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
-    downloadJsonV1860(safetyBackup,`private-nav-pre-restore-v${window.FXNAV_APP?.version||"20.00"}-${stamp}.json`);
+    downloadJsonV1860(safetyBackup,`private-nav-pre-restore-v${window.FXNAV_APP?.version||"20.01"}-${stamp}.json`);
     const result=await v17Request("disaster-restore","POST",{...payload,baseRevision:V17.revision});
     const refreshed=await refreshV17FromServer({quiet:true,acceptRemote:true});if(!refreshed)throw new Error("服务端已完成恢复，但当前页面未能刷新；请重新加载页面核对 D1 数据");
     const theme=payload.client?.theme;if(["dark","light","liquid","neon","frosted"].includes(theme)){STORE.set(KEYS.theme,theme);document.documentElement.dataset.theme=theme;applyTheme()}
@@ -12865,8 +12884,8 @@ $("#disasterBackupBtn").onclick=exportDisasterBackupV1860;
 $("#exportBookmarksBtn").onclick=exportBrowserBookmarksV1852;
 
 $("#exportBtn").onclick=()=>{
-  const payload={schemaVersion:window.FXNAV_APP?.schemaVersion||3,appVersion:window.FXNAV_APP?.version||"20.00",version:window.FXNAV_APP?.version||"20.00",favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides,iconOverrides:state.iconOverrides,hiddenSites:[...state.hiddenSites],siteEdits:state.siteEdits,customCategories:state.customCategories,categoryOrder:state.categoryOrder,categoryIconOverrides:state.categoryIconOverrides,siteOrder:state.siteOrder,categoryTitleOverrides:{...(state.categoryTitleOverrides||{})},duplicateIgnoreKeys:[...(state.duplicateIgnoreKeys||new Set())],usageStats:getUsageStatsV157(),density:STORE.get(V157_DENSITY_KEY)||"comfortable",theme:document.documentElement.dataset.theme||"dark",cloudRevision:V17.revision};
-  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);const ds=new Date().toISOString().slice(0,10).replaceAll("-","");a.download=`private-nav-v${window.FXNAV_APP?.version||"20.00"}-${ds}.json`;a.click();URL.revokeObjectURL(a.href);
+  const payload={schemaVersion:window.FXNAV_APP?.schemaVersion||3,appVersion:window.FXNAV_APP?.version||"20.01",version:window.FXNAV_APP?.version||"20.01",favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides,iconOverrides:state.iconOverrides,hiddenSites:[...state.hiddenSites],siteEdits:state.siteEdits,customCategories:state.customCategories,categoryOrder:state.categoryOrder,categoryIconOverrides:state.categoryIconOverrides,siteOrder:state.siteOrder,categoryTitleOverrides:{...(state.categoryTitleOverrides||{})},duplicateIgnoreKeys:[...(state.duplicateIgnoreKeys||new Set())],usageStats:getUsageStatsV157(),density:STORE.get(V157_DENSITY_KEY)||"comfortable",theme:document.documentElement.dataset.theme||"dark",cloudRevision:V17.revision};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);const ds=new Date().toISOString().slice(0,10).replaceAll("-","");a.download=`private-nav-v${window.FXNAV_APP?.version||"20.01"}-${ds}.json`;a.click();URL.revokeObjectURL(a.href);
 };
 $("#importBtn").onclick=()=>$("#importFile").click();
 $("#importFile").addEventListener("change",async e=>{
@@ -14619,7 +14638,7 @@ updateAccessUIV178();
   function exportSelectedSitesV1991(){
     const ids=[...managerSelection];if(!ids.length)return;
     const selected=rawSites().filter(site=>ids.includes(site.id)&&!state.hiddenSites.has(site.id));
-    const payload={format:"private-nav-selected-sites",formatVersion:1,exportedAt:new Date().toISOString(),appVersion:window.FXNAV_APP?.version||"20.00",sites:selected.map(site=>({id:site.id,name:site.name,url:site.url,domain:site.domain||safeDomain(site.url),category:displayCategory(effectiveCategory(site)),favorite:state.favorites.has(site.id),builtin:isBuiltinSite(site.id),iconUrl:site._sourceIconUrl||site.iconUrl||"",hasCustomIcon:!!site._customIcon}))};
+    const payload={format:"private-nav-selected-sites",formatVersion:1,exportedAt:new Date().toISOString(),appVersion:window.FXNAV_APP?.version||"20.01",sites:selected.map(site=>({id:site.id,name:site.name,url:site.url,domain:site.domain||safeDomain(site.url),category:displayCategory(effectiveCategory(site)),favorite:state.favorites.has(site.id),builtin:isBuiltinSite(site.id),iconUrl:site._sourceIconUrl||site.iconUrl||"",hasCustomIcon:!!site._customIcon}))};
     const stamp=new Date().toISOString().slice(0,10).replaceAll("-","");
     downloadJsonV1860(payload,`private-nav-selected-sites-${stamp}.json`);
     toast(`已导出 ${selected.length} 个网站信息；KV 图标文件不包含在此清单中`);
@@ -16484,13 +16503,23 @@ html[data-theme="light"] .nav-btn.scroll-active .nav-count{
     }else root.style.removeProperty('--liquid-bg-image');
   }
   async function localWallpaperFallback(){
-    try{const old=await readBgRecord();if(old?.size&&String(old.type).startsWith('image/')){applyBackgroundBlob(old);return}}catch{}
-    try{const data=localStorage.getItem(BG_KEY);if(data?.startsWith('data:image/')){applyBackgroundBlob(dataUrlToBlob(data));return}}catch{}
-    applyBackgroundBlob(null);
+    // Only for a first visit with no confirmed cloud pointer, and only if cloud
+    // state cannot be fetched. Never override a known cloud wallpaper.
+    try{const old=await readBgRecord();if(old?.size&&String(old.type).startsWith('image/')){applyBackgroundBlob(old);return true}}catch{}
+    try{const data=localStorage.getItem(BG_KEY);if(data?.startsWith('data:image/')){applyBackgroundBlob(dataUrlToBlob(data));return true}}catch{}
+    applyBackgroundBlob(null);return false;
   }
   const WP_API='/api/wallpapers',WP_IMAGE='/api/wallpaper-image',WP_MAX_BYTES=1900000,WP_MAX_COUNT=10;
   const WP_DEFAULT='/assets/liquid-default-v20.00.webp?v=2000';
-  let galleryBusy=false,wallpapers=[],activeWallpaper='default',wallpaperVersion='',cloudOnline=false;
+  const WP_POINTER_KEY='fxnav_active_wallpaper_v2001';
+  const bootPointer=window.__FXNAV_WALLPAPER_BOOT__||null;
+  let galleryBusy=false,wallpapers=[],activeWallpaper=bootPointer?.id||'default',wallpaperVersion=bootPointer?.version||'',cloudOnline=false;
+  let wallpaperRequestBusy=false,wallpaperGeneration=0;
+  function saveConfirmedPointer(id,version){
+    const clean={id:String(id||'default'),version:String(version||'1')};
+    try{localStorage.setItem(WP_POINTER_KEY,JSON.stringify(clean))}catch{}
+    window.__FXNAV_WALLPAPER_BOOT__=clean;
+  }
   const gallery=()=>$('fxWallpaperOverlay');
   function wallpaperUrl(id,version){return id==='default'?WP_DEFAULT:`${WP_IMAGE}?id=${encodeURIComponent(id)}&v=${encodeURIComponent(version||'1')}`}
   function readableSize(bytes){return bytes>=1048576?`${(bytes/1048576).toFixed(2)} MB`:`${Math.round(bytes/1024)} KB`}
@@ -16524,58 +16553,64 @@ html[data-theme="light"] .nav-btn.scroll-active .nav-count{
       if(img.complete)done();
     });
   }
-  async function applyCloudWallpaper(id,version){
-    const url=wallpaperUrl(id,version);
-    // Do not replace the active visual with a broken image.
-    if(await preloadWallpaper(url)){
-      if(id==='default')applyBackgroundBlob(null);else showWallpaperUrl(url);
-      activeWallpaper=id;wallpaperVersion=version||'';
+  async function applyCloudWallpaper(id,version,expectedGeneration=wallpaperGeneration){
+    id=String(id||'default');version=String(version||'1');
+    if(expectedGeneration!==wallpaperGeneration)return false;
+    // A wallpaper's UUID identifies immutable bytes. A new D1 revision for the
+    // same UUID must not repaint the image or make the page flicker.
+    if(id===activeWallpaper && (bootPointer||wallpaperVersion)){
+      wallpaperVersion=version;saveConfirmedPointer(id,version);
+      window.__FXNAV_WALLPAPER_NOTIFY__?.();
       return true;
     }
-    if(id==='default')applyBackgroundBlob(null);
-    return false;
+    const url=wallpaperUrl(id,version);
+    // Decode before switching: never reveal the default, a stale legacy image,
+    // or an unvalidated new file as an intermediate visual frame.
+    if(!(await preloadWallpaper(url)))return false;
+    if(expectedGeneration!==wallpaperGeneration)return false;
+    if(id==='default')applyBackgroundBlob(null);else showWallpaperUrl(url);
+    activeWallpaper=id;wallpaperVersion=version;
+    saveConfirmedPointer(id,version);
+    window.__FXNAV_WALLPAPER_NOTIFY__?.();
+    return true;
   }
   async function applySavedBackground(){
-    // V20.00: paint the last device-local wallpaper first. Cloud state is reconciled
-    // in the background and may replace it only after the remote image has decoded.
-    await localWallpaperFallback();
-    window.__FXNAV_WALLPAPER_NOTIFY__?.();
-    void (async()=>{
-      try{
-        const remote=await wpRequest(`${WP_API}?mode=active`,{timeoutMs:6500});
-        cloudOnline=true;
-        const id=remote.active||'default',version=remote.version||'';
-        if(id==='default'){
-          if(activeWallpaper!=='default'||currentObjectUrl)applyBackgroundBlob(null);
-          activeWallpaper='default';wallpaperVersion=version;
-        }else if(id!==activeWallpaper||version!==wallpaperVersion){
-          await applyCloudWallpaper(id,version);
-        }
-      }catch(err){cloudOnline=false;}
-    })();
+    // A previously confirmed pointer is restored synchronously in the head.
+    // Do NOT replay the obsolete IndexedDB wallpaper before contacting D1.
+    if(bootPointer)window.__FXNAV_WALLPAPER_NOTIFY__?.();
+    await pollCloudWallpaper(true);
   }
-  // Wallpaper selection is stored in the dedicated WALLPAPER_DB. Poll its
-  // lightweight active pointer so another device's change appears without a
-  // manual reload. Image bytes remain immutable and are fetched by versioned URL.
-  let wallpaperPollBusy=false,wallpaperFailures=0,wallpaperNextRetryAt=0;
-  async function pollCloudWallpaper(){
-    if(wallpaperPollBusy||galleryBusy||!navigator.onLine||document.visibilityState==='hidden')return false;
-    if(Date.now()<wallpaperNextRetryAt)return false;
-    wallpaperPollBusy=true;
+  // Only one D1 selection request may be in flight. Selecting/deleting an image
+  // increments an epoch so a delayed poll cannot overwrite the user's choice.
+  let wallpaperFailures=0,wallpaperNextRetryAt=0;
+  async function pollCloudWallpaper(startup=false){
+    if(wallpaperRequestBusy||galleryBusy||(!startup&&(!navigator.onLine||document.visibilityState==='hidden')))return false;
+    if(!startup&&Date.now()<wallpaperNextRetryAt)return false;
+    wallpaperRequestBusy=true;
+    const epoch=wallpaperGeneration;
+    let applied=false;
     try{
-      const remote=await wpRequest(`${WP_API}?mode=active`);
-      wallpaperFailures=0;wallpaperNextRetryAt=0;cloudOnline=true;
-      const id=remote.active||'default',version=remote.version||'';
-      if(id!==activeWallpaper||version!==wallpaperVersion){
-        const applied=await applyCloudWallpaper(id,version);
-        if(applied&&gallery()&&!gallery().hidden)await refreshGallery();
-      }
-      return true;
+      const remote=await wpRequest(`${WP_API}?mode=active`,{timeoutMs:startup?6500:10000});
+      cloudOnline=true;wallpaperFailures=0;wallpaperNextRetryAt=0;
+      if(epoch!==wallpaperGeneration)return false;
+      const id=remote.active||'default',version=remote.version||'1';
+      applied=await applyCloudWallpaper(id,version,epoch);
+      if(applied&&gallery()&&!gallery().hidden&&!galleryBusy)await refreshGallery();
+      return applied;
     }catch{
+      cloudOnline=false;
       wallpaperFailures=Math.min(5,wallpaperFailures+1);
       wallpaperNextRetryAt=Date.now()+Math.min(60000,5000*Math.pow(2,wallpaperFailures-1));
       return false;
-    }finally{wallpaperPollBusy=false}
+    }finally{
+      wallpaperRequestBusy=false;
+      if(startup&&!bootPointer&&root.classList.contains('liquid-wallpaper-pending')){
+        // No prior confirmed selection (new browser). Only use a legacy local
+        // fallback after a failed remote read, never before a successful one.
+        if(!applied)await localWallpaperFallback();
+        window.__FXNAV_WALLPAPER_NOTIFY__?.();
+      }
+    }
   }
   function wpTile(id,title,details,url,isDefault){
     const selected=id===activeWallpaper;
@@ -16612,7 +16647,11 @@ html[data-theme="light"] .nav-btn.scroll-active .nav-count{
     try{
       const data=await wpRequest(`${WP_API}?mode=list`);
       cloudOnline=true;wallpapers=Array.isArray(data.items)?data.items:[];
-      activeWallpaper=data.active||'default';wallpaperVersion=data.version||'';
+      // Gallery refresh never changes the selection variables without changing
+      // the actual image. Otherwise its selected badge could disagree with CSS.
+      if(!galleryBusy&&(data.active!==activeWallpaper||String(data.version||'1')!==wallpaperVersion)){
+        await applyCloudWallpaper(data.active||'default',data.version||'1');
+      }
       galleryStatus('D1 已连接','ok');
     }catch(err){
       wallpapers=[];galleryStatus(err.status===401?'需要管理员登录':'未连接独立 D1 壁纸数据库','error');
@@ -16629,10 +16668,12 @@ html[data-theme="light"] .nav-btn.scroll-active .nav-count{
   }
   function closeGallery(){if(deleteDecision){finishDeleteConfirmation(false);return}const el=gallery();if(el)el.hidden=true;document.body.classList.remove('fx-wp-open')}
   async function selectWallpaper(id){
-    if(galleryBusy)return;galleryBusy=true;drawGallery();galleryStatus('正在同步…');
+    if(galleryBusy)return;galleryBusy=true;
+    const epoch=++wallpaperGeneration;
+    drawGallery();galleryStatus('正在同步…');
     try{
       const result=await wpRequest(`${WP_API}?action=select`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})});
-      const applied=await applyCloudWallpaper(id,result.version||'');
+      const applied=await applyCloudWallpaper(id,result.version||'',epoch);
       if(!applied)throw new Error('图片加载失败，请刷新后重试');
       galleryStatus('已同步','ok');toastSafe('壁纸已云端保存；其他设备刷新后同步');
     }catch(err){galleryStatus(err.message,'error');toastSafe(err.message)}
@@ -16660,10 +16701,10 @@ html[data-theme="light"] .nav-btn.scroll-active .nav-count{
   async function deleteWallpaper(id,title){
     if(galleryBusy||!(await askDeleteConfirmation(id,title)))return;
     if(galleryBusy)return;
-    galleryBusy=true;drawGallery();galleryStatus('正在删除…');
+    galleryBusy=true;const epoch=++wallpaperGeneration;drawGallery();galleryStatus('正在删除…');
     try{
       const response=await wpRequest(`${WP_API}?id=${encodeURIComponent(id)}`,{method:'DELETE'});
-      await applyCloudWallpaper(response.active||'default',response.version||'');
+      await applyCloudWallpaper(response.active||'default',response.version||'',epoch);
       toastSafe('壁纸已删除');
     }catch(err){galleryStatus(err.message,'error');toastSafe(err.message)}
     finally{galleryBusy=false;await refreshGallery()}
@@ -16751,21 +16792,11 @@ html[data-theme="light"] .nav-btn.scroll-active .nav-count{
     });
     /* Keep original background bytes: packaged 1920×1080 PNG stays untouched; custom files use IndexedDB. */
     try{localStorage.removeItem('fxnav_liquid_background_v1912')}catch{}
-    const wallpaperRestore=applySavedBackground();
+    void applySavedBackground();
     window.addEventListener('focus',()=>void pollCloudWallpaper(),{passive:true});
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')void pollCloudWallpaper()},{passive:true});
     setInterval(()=>{void pollCloudWallpaper()},30000);
-    if(root.dataset.theme==='liquid'){
-      const readyImage=Promise.resolve(wallpaperRestore).then(()=>{
-        const url=currentObjectUrl||(activeWallpaper==='default'?WP_DEFAULT:wallpaperUrl(activeWallpaper,wallpaperVersion));
-        const img=new Image();img.src=url;
-        if(typeof img.decode==='function')return img.decode().catch(()=>{});
-        return new Promise(resolve=>{img.onload=resolve;img.onerror=resolve;if(img.complete)resolve();});
-      });
-      readyImage.then(()=>window.__FXNAV_WALLPAPER_NOTIFY__?.(),()=>window.__FXNAV_WALLPAPER_NOTIFY__?.());
-    }else{
-      window.__FXNAV_WALLPAPER_NOTIFY__?.();
-    }
+    if(root.dataset.theme!=='liquid')window.__FXNAV_WALLPAPER_NOTIFY__?.();
     applyMaterial();
     bindTrigger($('liquidBgBtn'));
     bindTrigger($('compactLiquidBgBtn'));

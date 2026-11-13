@@ -1,5 +1,5 @@
-/* Private Navigation Toolbox V20.00 · local-first application shell cache. */
-const SW_VERSION = 'fxnav-shell-v2000';
+/* Private Navigation Toolbox V20.01 · local-first application shell cache. */
+const SW_VERSION = 'fxnav-shell-v2001';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const STATIC_CACHE = `${SW_VERSION}-static`;
 const CORE_SHELL_URLS = ['/', '/cn/'];
@@ -30,13 +30,25 @@ async function cacheCoreResource(cache, path) {
   } catch (_) {}
 }
 
+// Never activate a new worker with a missing or older application shell.
+// A partial response is not a safe offline fallback.
+const APP_SIGNATURE='version:"20.01",build:"V20.01"';
+async function validatedShell(response, key){
+  if(!response||!response.ok||response.type!=='basic')return null;
+  const html=await response.clone().text();
+  const valid=key==='/cn/'?html.includes(APP_SIGNATURE):html.includes('V20.01');
+  return valid?response:null;
+}
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
-    const shell = await caches.open(SHELL_CACHE);
-    const statics = await caches.open(STATIC_CACHE);
+    const shell=await caches.open(SHELL_CACHE);
+    const response=await boundedFetch('/cn/', 20000);
+    if(!await validatedShell(response,'/cn/'))throw new Error('V20.01 app shell not fully available');
+    await shell.put('/cn/',response);
+    const statics=await caches.open(STATIC_CACHE);
     await Promise.all([
-      ...CORE_SHELL_URLS.map(path => cacheCoreResource(shell, path)),
-      ...CORE_STATIC_URLS.map(path => cacheCoreResource(statics, path))
+      cacheCoreResource(shell,'/'),
+      ...CORE_STATIC_URLS.map(path=>cacheCoreResource(statics,path))
     ]);
     await self.skipWaiting();
   })());
@@ -69,7 +81,7 @@ async function updateNavigation(request, key) {
   const timer = setTimeout(() => controller.abort(), 5000);
   try {
     const response = await fetch(request, { signal: controller.signal });
-    if (response && response.ok && response.type === 'basic') {
+    if (await validatedShell(response, new URL(key).pathname)) {
       const cache = await caches.open(SHELL_CACHE);
       await cache.put(key, response.clone());
     }
