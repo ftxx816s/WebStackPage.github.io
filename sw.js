@@ -1,5 +1,5 @@
 /* Private Navigation Toolbox V20.06 · local-first application shell cache. */
-const SW_VERSION = 'fxnav-shell-v2006';
+const SW_VERSION = 'fxnav-shell-v2006-outerframe-corrected';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const STATIC_CACHE = `${SW_VERSION}-static`;
 const CORE_SHELL_URLS = ['/', '/cn/'];
@@ -8,7 +8,7 @@ const CORE_STATIC_URLS = [
   '/assets/runtime/favicon-985ed977.png',
   '/assets/runtime/fontawesome-2adefcbc.woff2',
   '/assets/runtime/neon-reference-bg-1fb3c28a.webp',
-  '/assets/runtime/manager-ui-v1998.css?v=2006',
+  '/assets/runtime/manager-ui-v1998.css?v=2006-corrected-frame',
   '/assets/runtime/manager-ui-v1998.js?v=1998'
 ];
 

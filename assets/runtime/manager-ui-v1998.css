@@ -212,3 +212,12 @@ html[data-theme="light"] #drawer .category-manager-item .category-drag{color:#68
 @media(prefers-reduced-motion:reduce){
   #drawer :is(.manager-site-row,.category-manager-item,.liquid-select-trigger,.manager-site-actions .mini-btn,.category-manager-actions .cat-mini),.liquid-select-menu{transition:none!important;animation:none!important}
 }
+
+/* V20.06 corrected: admin-surface is not applied to category grid.
+   Keep as backup if another script accidentally restores the legacy class. */
+#drawer #categoryManagerList.category-manager-grid,
+#drawer #categoryManagerList.category-manager-grid.admin-surface {
+  margin:0!important;padding:0!important;border:0!important;outline:0!important;
+  border-radius:0!important;background:none!important;box-shadow:none!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;overflow:visible!important;
+}

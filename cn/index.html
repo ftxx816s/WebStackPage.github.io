@@ -13538,7 +13538,13 @@ const FX_SYNC={
     document.getElementById('movePreview')?.classList.add('admin-surface');
     document.getElementById('customList')?.classList.add('admin-surface');
     document.getElementById('deletedList')?.classList.add('admin-surface');
-    document.getElementById('categoryManagerList')?.classList.add('admin-surface');
+    // V20.06 corrected: the category list is a layout-only grid, NOT a framed admin surface.
+    // The old admin-surface assignment reintroduced the large outer frame after initialization.
+    const categoryGrid = document.getElementById('categoryManagerList');
+    if (categoryGrid) {
+      categoryGrid.classList.remove('admin-surface', 'category-manager-list');
+      categoryGrid.classList.add('category-manager-grid');
+    }
   }
   function renderManagerMetrics(){
     const box=document.getElementById('managerMetrics');
@@ -18719,7 +18725,7 @@ html[data-theme="liquid"]:not(.fx-glass-fallback)[data-liquid-clear="1"] body :i
     if(document.querySelector('link[data-fxnav-manager-style="v1998"]')){loadScript();return;}
     const link=document.createElement('link');
     link.rel='stylesheet';
-    link.href='/assets/runtime/manager-ui-v1998.css?v=2006';
+    link.href='/assets/runtime/manager-ui-v1998.css?v=2006-corrected-frame';
     link.dataset.fxnavManagerStyle='v1998';
     link.onload=loadScript;
     link.onerror=loadScript;
@@ -18749,5 +18755,33 @@ html[data-theme="liquid"]:not(.fx-glass-fallback)[data-liquid-clear="1"] body :i
   else schedule();
 })();
 </script>
+
+<style id="v2006-category-grid-outer-frame-correction">
+/* V20.06 corrected: only independent category tiles have a glass surface. */
+html body #drawer #categoryManagerList.category-manager-grid,
+html[data-theme="liquid"] body #drawer #categoryManagerList.category-manager-grid,
+html[data-theme="frosted"] body #drawer #categoryManagerList.category-manager-grid {
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:7px!important;
+  width:100%!important;min-width:0!important;max-width:100%!important;
+  margin:0!important;padding:0!important;
+  border:0!important;outline:0!important;border-radius:0!important;
+  background:none!important;background-color:transparent!important;
+  box-shadow:none!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  overflow:visible!important;
+}
+html body #drawer #categoryManagerList.category-manager-grid > .category-manager-item {
+  margin:0!important;min-width:0!important;
+}
+@media(max-width:720px){
+  html body #drawer #categoryManagerList.category-manager-grid,
+  html[data-theme="liquid"] body #drawer #categoryManagerList.category-manager-grid,
+  html[data-theme="frosted"] body #drawer #categoryManagerList.category-manager-grid {
+    grid-template-columns:minmax(0,1fr)!important;
+  }
+}
+</style>
 </body>
 </html>
