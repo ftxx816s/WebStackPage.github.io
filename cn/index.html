@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>私人导航工具箱 · V20.05</title>
+<title>私人导航工具箱 · V20.06</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: blob: https: http:; connect-src 'self' https:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -18,7 +18,7 @@
 </style>
 <script  id="app-meta-v1891"  data-module="script-01.js">
 
-window.FXNAV_APP=Object.freeze({version:"20.05",build:"V20.05",schemaVersion:3,channel:"stable"});
+window.FXNAV_APP=Object.freeze({version:"20.06",build:"V20.06",schemaVersion:3,channel:"stable"});
 
 </script>
 <script  id="theme-boot-v1867"  data-module="script-02.js">
@@ -3967,7 +3967,7 @@ html[data-theme="neon"] .tool-cluster{border-radius:14px;}}
 <link rel="icon" type="image/png" sizes="64x64" href="/assets/runtime/favicon-985ed977.png">
 <link rel="shortcut icon" type="image/png" href="/assets/runtime/favicon-985ed977.png">
 
-<meta name="x-build" content="V20.05-20261113">
+<meta name="x-build" content="V20.06-20261113">
 <meta name="x-app-version" content="20.05">
 
 <style data-module="style-03.css">
@@ -8786,6 +8786,33 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
 
 
 <!-- V20.00: manager-only CSS is loaded on demand; it must not block the first paint. -->
+
+<style id="v2006-category-manager-unframed-layout">
+/* V20.06: Category rows are independent tiles. The grid is ONLY a layout holder.
+   Deliberately avoid the legacy .category-manager-list class, which inherited
+   several generic framed-panel styles including a translucent bordered box. */
+#drawer #categoryManagerList.category-manager-grid {
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:7px!important;
+  box-sizing:border-box!important;
+  width:100%!important;min-width:0!important;max-width:100%!important;
+  margin:0!important;padding:0!important;
+  border:0!important;outline:0!important;border-radius:0!important;
+  background:none!important;background-color:transparent!important;
+  box-shadow:none!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  overflow:visible!important;
+}
+#drawer #categoryManagerList.category-manager-grid > .category-manager-item {
+  margin:0!important;min-width:0!important;
+}
+@media(max-width:720px){
+  #drawer #categoryManagerList.category-manager-grid{
+    grid-template-columns:minmax(0,1fr)!important;
+  }
+}
+</style>
 </head>
 <body><div class="ambient-scene" aria-hidden="true"><i class="glass-capsule"></i><i class="glass-capsule"></i><i class="glass-capsule"></i><i class="glass-capsule"></i></div>
 <div class="fx-responsive-wallpaper" aria-hidden="true"></div>
@@ -8828,7 +8855,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
         <span class="console-divider"></span>
         <span class="console-item cache"><span class="k">CACHE</span><strong id="consoleCache">0 KB</strong></span>
         <span class="console-divider"></span>
-        <span class="console-item build"><span class="k">BUILD</span><strong id="consoleBuildVersion">V20.05</strong></span>
+        <span class="console-item build"><span class="k">BUILD</span><strong id="consoleBuildVersion">V20.06</strong></span>
         <span class="console-spacer"></span>
         <span class="console-activity">
           <span class="k">SYSTEM ACTIVITY</span>
@@ -8988,7 +9015,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
 
     <div id="fxD1LoadingV1946" class="fx-d1-loading-v1946" role="status">正在读取完整云端导航数据…</div>
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V20.05 版本</div>
+    <div class="footer">© 2026 私人导航工具箱 · V20.06 版本</div>
   </main>
 </div>
 
@@ -9127,7 +9154,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
       <button class="btn" type="button" id="resetSiteOrderBtn">恢复网站排序</button>
       <button type="button" class="btn fx-glyph-select fx-glyph-select-compact" id="openNewCategoryIconLibraryBtn" title="从图标库直接选择分类图标">▦ 选择图标</button>
     </div>
-    <div class="category-manager-list" id="categoryManagerList"></div>
+    <div class="category-manager-grid" id="categoryManagerList"></div>
 
     <div class="admin-divider"></div>
 
@@ -18588,7 +18615,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 #clockDateText{
 
 
 <style id="v2005-unified-responsive-liquid-material">
-/* V20.05: One material recipe for all Liquid Glass modules. Applies across
+/* V20.06: One material recipe for all Liquid Glass modules. Applies across
    desktop, iPad and phone. Other four themes remain untouched. */
 html[data-theme="liquid"]:not(.fx-glass-fallback) body :is(
   .sidebar,#hero,.system-console,.tool-cluster,.home-layout>.hero-datetime,
@@ -18692,7 +18719,7 @@ html[data-theme="liquid"]:not(.fx-glass-fallback)[data-liquid-clear="1"] body :i
     if(document.querySelector('link[data-fxnav-manager-style="v1998"]')){loadScript();return;}
     const link=document.createElement('link');
     link.rel='stylesheet';
-    link.href='/assets/runtime/manager-ui-v1998.css?v=1998';
+    link.href='/assets/runtime/manager-ui-v1998.css?v=2006';
     link.dataset.fxnavManagerStyle='v1998';
     link.onload=loadScript;
     link.onerror=loadScript;

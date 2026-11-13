@@ -1,5 +1,5 @@
-/* Private Navigation Toolbox V20.05 · local-first application shell cache. */
-const SW_VERSION = 'fxnav-shell-v2005';
+/* Private Navigation Toolbox V20.06 · local-first application shell cache. */
+const SW_VERSION = 'fxnav-shell-v2006';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const STATIC_CACHE = `${SW_VERSION}-static`;
 const CORE_SHELL_URLS = ['/', '/cn/'];
@@ -8,7 +8,7 @@ const CORE_STATIC_URLS = [
   '/assets/runtime/favicon-985ed977.png',
   '/assets/runtime/fontawesome-2adefcbc.woff2',
   '/assets/runtime/neon-reference-bg-1fb3c28a.webp',
-  '/assets/runtime/manager-ui-v1998.css?v=1998',
+  '/assets/runtime/manager-ui-v1998.css?v=2006',
   '/assets/runtime/manager-ui-v1998.js?v=1998'
 ];
 
@@ -31,18 +31,18 @@ async function cacheCoreResource(cache, path) {
 
 // Never activate a new worker with a missing or older application shell.
 // A partial response is not a safe offline fallback.
-const APP_SIGNATURE='version:"20.05",build:"V20.05"';
+const APP_SIGNATURE='version:"20.06",build:"V20.06"';
 async function validatedShell(response, key){
   if(!response||!response.ok||response.type!=='basic')return null;
   const html=await response.clone().text();
-  const valid=key==='/cn/'?html.includes(APP_SIGNATURE):html.includes('V20.05');
+  const valid=key==='/cn/'?html.includes(APP_SIGNATURE):html.includes('V20.06');
   return valid?response:null;
 }
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
     const shell=await caches.open(SHELL_CACHE);
     const response=await boundedFetch('/cn/', 20000);
-    if(!await validatedShell(response,'/cn/'))throw new Error('V20.05 app shell not fully available');
+    if(!await validatedShell(response,'/cn/'))throw new Error('V20.06 app shell not fully available');
     await shell.put('/cn/',response);
     const statics=await caches.open(STATIC_CACHE);
     await Promise.all([

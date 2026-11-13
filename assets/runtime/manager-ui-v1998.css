@@ -133,10 +133,10 @@ html[data-theme="light"] .liquid-select-option[aria-selected="true"]{color:#1b2b
 #drawer .manager-category-tools .btn{min-height:31px!important;padding:0 10px!important;border:1px solid rgba(255,255,255,.16)!important;border-radius:9px!important;background:rgba(194,211,231,.08)!important;color:#eaf2fc!important;font-size:9px!important}
 #drawer .manager-category-tools .btn:hover{background:rgba(128,160,219,.16)!important;border-color:rgba(151,179,255,.32)!important}
 html[data-theme="light"] #drawer .manager-category-tools .btn{background:rgba(255,255,255,.76)!important;color:#344760!important;border-color:rgba(91,111,145,.2)!important}
-#drawer #categoryManagerList.category-manager-list{
+#drawer #categoryManagerList.category-manager-grid{
   display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important;
   min-width:0!important;max-width:100%!important;margin:0!important;padding:0!important;
-  border:0!important;border-radius:0!important;background:transparent!important;overflow:visible!important;
+  border:0!important;border-radius:0!important;outline:0!important;background:transparent!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;overflow:visible!important;
 }
 #drawer .category-manager-item{
   display:grid!important;grid-template-columns:17px 29px minmax(0,1fr) auto!important;gap:7px!important;align-items:center!important;
@@ -183,7 +183,7 @@ html[data-theme="light"] #drawer .category-manager-item .category-drag{color:#68
   #drawer #managerSiteSearch{grid-column:1/-1!important}
   #drawer #managerToggleAdd{width:100%!important}
   #drawer .manager-category-toolbar{grid-template-columns:minmax(0,1fr) auto auto!important}
-  #drawer #categoryManagerList.category-manager-list{grid-template-columns:minmax(0,1fr)!important}
+  #drawer #categoryManagerList.category-manager-grid{grid-template-columns:minmax(0,1fr)!important}
   #drawer .manager-site-row{grid-template-columns:16px 28px minmax(0,1fr) auto!important;gap:6px!important;padding:7px 8px!important}
   #drawer .manager-site-kind{display:none!important}
   #drawer .manager-site-actions .mini-btn{min-width:38px!important;height:29px!important;padding:0 7px!important;font-size:9px!important}
