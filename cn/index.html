@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>私人导航工具箱 · V20.06</title>
+<title>私人导航工具箱 · V20.07</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: blob: https: http:; connect-src 'self' https:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -18,7 +18,7 @@
 </style>
 <script  id="app-meta-v1891"  data-module="script-01.js">
 
-window.FXNAV_APP=Object.freeze({version:"20.06",build:"V20.06",schemaVersion:3,channel:"stable"});
+window.FXNAV_APP=Object.freeze({version:"20.07",build:"V20.07",schemaVersion:3,channel:"stable"});
 
 </script>
 <script  id="theme-boot-v1867"  data-module="script-02.js">
@@ -3967,8 +3967,8 @@ html[data-theme="neon"] .tool-cluster{border-radius:14px;}}
 <link rel="icon" type="image/png" sizes="64x64" href="/assets/runtime/favicon-985ed977.png">
 <link rel="shortcut icon" type="image/png" href="/assets/runtime/favicon-985ed977.png">
 
-<meta name="x-build" content="V20.06-20261113">
-<meta name="x-app-version" content="20.05">
+<meta name="x-build" content="V20.07-20261113">
+<meta name="x-app-version" content="20.07">
 
 <style data-module="style-03.css">
 :root{
@@ -8787,8 +8787,8 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
 
 <!-- V20.00: manager-only CSS is loaded on demand; it must not block the first paint. -->
 
-<style id="v2006-category-manager-unframed-layout">
-/* V20.06: Category rows are independent tiles. The grid is ONLY a layout holder.
+<style id="v2007-category-manager-unframed-layout">
+/* V20.07: Category rows are independent tiles. The grid is ONLY a layout holder.
    Deliberately avoid the legacy .category-manager-list class, which inherited
    several generic framed-panel styles including a translucent bordered box. */
 #drawer #categoryManagerList.category-manager-grid {
@@ -8855,7 +8855,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
         <span class="console-divider"></span>
         <span class="console-item cache"><span class="k">CACHE</span><strong id="consoleCache">0 KB</strong></span>
         <span class="console-divider"></span>
-        <span class="console-item build"><span class="k">BUILD</span><strong id="consoleBuildVersion">V20.06</strong></span>
+        <span class="console-item build"><span class="k">BUILD</span><strong id="consoleBuildVersion">V20.07</strong></span>
         <span class="console-spacer"></span>
         <span class="console-activity">
           <span class="k">SYSTEM ACTIVITY</span>
@@ -9015,7 +9015,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
 
     <div id="fxD1LoadingV1946" class="fx-d1-loading-v1946" role="status">正在读取完整云端导航数据…</div>
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V20.06 版本</div>
+    <div class="footer">© 2026 私人导航工具箱 · V20.07 版本</div>
   </main>
 </div>
 
@@ -11233,11 +11233,39 @@ function categoryDescription(cat){
     "生活·出行":"地图、物流、汽车与生活服务",
     "社交·社区":"社交平台、社区与内容交流",
     "文件·下载·传输":"文件传输、临时网盘与下载工具",
+    // V20.07 修正：后续添加的分类同样需要与用途对应的说明。
+    "VPS服务器·主机":"云服务器、VPS 管理与主机控制台",
+    "VPS服务器":"云服务器、VPS 管理与主机控制台",
+    "电商网站":"电商平台、店铺管理与购物服务",
+    "视频·剪辑·转换":"视频剪辑、格式转换与媒体处理",
     "搜索结果":"按名称、域名、标题与分类匹配",
     "我的收藏":"你手动收藏的常用网站",
     "最近访问":"按最近打开顺序排列"
   };
-  return map[cat]||"自定义收藏分类";
+  const internal=String(cat||"").trim();
+  if(Object.prototype.hasOwnProperty.call(map,internal))return map[internal];
+  // 自定义标题和原始分类键都可参与匹配；没有预设规则时显示该分类的名称，
+  // 而不是把所有新增分类都写成没有信息量的“自定义收藏分类”。
+  const display=String(typeof window.categoryDisplayNameV18==="function"
+    ?(window.categoryDisplayNameV18(internal)||internal):internal).trim()||internal;
+  const candidates=[display,internal];
+  const rules=[
+    [/VPS|云服务器|服务器|主机|运维|云主机|控制台/i,"云服务器、VPS 管理与主机控制台"],
+    [/电商|店铺|商城|网购|购物/i,"电商平台、店铺管理与购物服务"],
+    [/视频|剪辑|转码|转格式|格式转换|录屏|压制/i,"视频剪辑、格式转换与媒体处理"],
+    [/AI|人工智能|模型|大模型/i,"AI 服务、模型应用与智能工具"],
+    [/设计|素材|图片|字体|绘图/i,"设计素材、视觉创作与效率工具"],
+    [/学习|课程|知识|笔记/i,"学习课程、知识资料与实用工具"],
+    [/社交|社区|社群|论坛/i,"社交平台、社区与内容交流"],
+    [/软件|系统|应用|下载/i,"软件应用、系统工具与下载服务"],
+    [/网络|测速|IP|DNS|代理/i,"网络诊断、测速、IP 与连接工具"],
+    [/办公|文档|PPT|表格/i,"办公文档、演示和效率工具"],
+    [/游戏|娱乐|影音|直播/i,"游戏娱乐、视频音乐与直播资源"]
+  ];
+  for(const [pattern,description] of rules){
+    if(candidates.some(name=>pattern.test(name)))return description;
+  }
+  return display?`与「${display}」相关的网站和工具`:"分类网站与常用工具";
 }
 function sectionBlock(cat,items,icon){
   const isRealCategory=!!categoryByName(cat),sorted=isRealCategory?orderedSites(items,cat):items;
@@ -11347,7 +11375,7 @@ function renderCategoryManager(){
   const box=$("#categoryManagerList");if(!box)return;
   box.innerHTML="";
   const q=String($("#managerCategorySearch")?.value||"").trim().toLowerCase();
-  const cats=allCategories().filter(cat=>!q||String(cat.name).toLowerCase().includes(q));
+  const cats=allCategories().filter(cat=>!q||String(cat.name).toLowerCase().includes(q)||String(state.categoryTitleOverrides?.[cat.name]||"").toLowerCase().includes(q));
   const count=$("#categoryManageCount");if(count)count.textContent=allCategories().length+" 个分类";
   const total=$("#managerCategoryTotal");if(total)total.textContent=`${cats.length} / ${allCategories().length} 个分类`;
   cats.forEach((cat,index)=>{
@@ -11361,21 +11389,6 @@ function renderCategoryManager(){
     const actions=document.createElement("div");actions.className="category-manager-actions";
     const iconBtn=document.createElement("button");iconBtn.type="button";iconBtn.className="cat-mini";iconBtn.textContent="图标";iconBtn.title="修改分类图标";iconBtn.onclick=()=>editCategoryIcon(cat);
     actions.append(iconBtn);
-    if(!cat.builtin){
-      const rename=document.createElement("button");rename.type="button";rename.className="cat-mini";rename.textContent="改名";rename.onclick=()=>{
-        const next=prompt("输入新的分类名称",cat.name)?.trim().slice(0,24);
-        if(!next||next===cat.name)return;
-        if(categoryByName(next)){alert("该分类名称已存在");return}
-        const old=cat.name;const item=state.customCategories.find(x=>x.name===old);
-        if(!item)return;
-        item.name=next;
-        state.categoryOrder=state.categoryOrder.map(x=>x===old?next:x);
-        Object.keys(state.categoryOverrides||{}).forEach(id=>{if(state.categoryOverrides[id]===old)state.categoryOverrides[id]=next});
-        Object.keys(state.categoryTitleOverrides||{}).forEach(id=>{if(state.categoryTitleOverrides[id]===old)delete state.categoryTitleOverrides[id]});
-        if(!save())return;refreshCategoryUI();toast(`分类已改名为「${next}」`);
-      };
-      actions.append(rename);
-    }
     const del=document.createElement("button");del.type="button";del.className="cat-mini danger";del.textContent="删除";del.title="先迁移该分类下的网站，不会删除网站";del.onclick=()=>deleteCategorySafelyV1932(cat.name);
     actions.append(del);
     row.append(drag,icon,copy,actions);bindCategoryDrag(row);box.append(row);
@@ -12916,7 +12929,7 @@ async function exportDisasterBackupV1860(){
     toast("正在生成完整备份…");
     const payload=await v17Request("disaster-backup");
     payload.schemaVersion=window.FXNAV_APP?.schemaVersion||3;
-    payload.appVersion=window.FXNAV_APP?.version||"20.05";
+    payload.appVersion=window.FXNAV_APP?.version||"20.07";
     payload.client={
       theme:document.documentElement.dataset.theme||"dark",
       density:STORE.get(V157_DENSITY_KEY)||"comfortable",
@@ -12925,7 +12938,7 @@ async function exportDisasterBackupV1860(){
     };
     const d=new Date(),pad=n=>String(n).padStart(2,"0");
     const stamp=`${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}`;
-    downloadJsonV1860(payload,`private-nav-backup-v${window.FXNAV_APP?.version||"20.05"}-${stamp}.json`);
+    downloadJsonV1860(payload,`private-nav-backup-v${window.FXNAV_APP?.version||"20.07"}-${stamp}.json`);
     const sites=Array.isArray(payload?.d1?.sites)?payload.d1.sites.length:0;
     const cats=Array.isArray(payload?.d1?.categories)?payload.d1.categories.length:0;
     const icons=Number(payload?.kv?.customIconCount)||0;
@@ -12955,7 +12968,7 @@ async function restoreDisasterBackupFileV1971(file){
     const currentIconCount=(safetyBackup.d1?.sites||[]).filter(site=>!!site.has_custom_icon).length;
     if(Number(safetyBackup.kv?.missingCustomIcons)>0||(!safetyBackup.kv?.enabled&&currentIconCount>0))throw new Error("恢复前备份检测到 KV 自定义图标缺失或 KV 未连接。为避免无法回滚，已取消恢复。");
     const now=new Date(),pad=n=>String(n).padStart(2,"0"),stamp=`${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
-    downloadJsonV1860(safetyBackup,`private-nav-pre-restore-v${window.FXNAV_APP?.version||"20.05"}-${stamp}.json`);
+    downloadJsonV1860(safetyBackup,`private-nav-pre-restore-v${window.FXNAV_APP?.version||"20.07"}-${stamp}.json`);
     const result=await v17Request("disaster-restore","POST",{...payload,baseRevision:V17.revision});
     const refreshed=await refreshV17FromServer({quiet:true,acceptRemote:true});if(!refreshed)throw new Error("服务端已完成恢复，但当前页面未能刷新；请重新加载页面核对 D1 数据");
     const theme=payload.client?.theme;if(["dark","light","liquid","neon","frosted"].includes(theme)){STORE.set(KEYS.theme,theme);document.documentElement.dataset.theme=theme;applyTheme()}
@@ -12979,8 +12992,8 @@ $("#disasterBackupBtn").onclick=exportDisasterBackupV1860;
 $("#exportBookmarksBtn").onclick=exportBrowserBookmarksV1852;
 
 $("#exportBtn").onclick=()=>{
-  const payload={schemaVersion:window.FXNAV_APP?.schemaVersion||3,appVersion:window.FXNAV_APP?.version||"20.05",version:window.FXNAV_APP?.version||"20.05",favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides,iconOverrides:state.iconOverrides,hiddenSites:[...state.hiddenSites],siteEdits:state.siteEdits,customCategories:state.customCategories,categoryOrder:state.categoryOrder,categoryIconOverrides:state.categoryIconOverrides,siteOrder:state.siteOrder,categoryTitleOverrides:{...(state.categoryTitleOverrides||{})},duplicateIgnoreKeys:[...(state.duplicateIgnoreKeys||new Set())],usageStats:getUsageStatsV157(),density:STORE.get(V157_DENSITY_KEY)||"comfortable",theme:document.documentElement.dataset.theme||"dark",cloudRevision:V17.revision};
-  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);const ds=new Date().toISOString().slice(0,10).replaceAll("-","");a.download=`private-nav-v${window.FXNAV_APP?.version||"20.05"}-${ds}.json`;a.click();URL.revokeObjectURL(a.href);
+  const payload={schemaVersion:window.FXNAV_APP?.schemaVersion||3,appVersion:window.FXNAV_APP?.version||"20.07",version:window.FXNAV_APP?.version||"20.07",favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides,iconOverrides:state.iconOverrides,hiddenSites:[...state.hiddenSites],siteEdits:state.siteEdits,customCategories:state.customCategories,categoryOrder:state.categoryOrder,categoryIconOverrides:state.categoryIconOverrides,siteOrder:state.siteOrder,categoryTitleOverrides:{...(state.categoryTitleOverrides||{})},duplicateIgnoreKeys:[...(state.duplicateIgnoreKeys||new Set())],usageStats:getUsageStatsV157(),density:STORE.get(V157_DENSITY_KEY)||"comfortable",theme:document.documentElement.dataset.theme||"dark",cloudRevision:V17.revision};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);const ds=new Date().toISOString().slice(0,10).replaceAll("-","");a.download=`private-nav-v${window.FXNAV_APP?.version||"20.07"}-${ds}.json`;a.click();URL.revokeObjectURL(a.href);
 };
 $("#importBtn").onclick=()=>$("#importFile").click();
 $("#importFile").addEventListener("change",async e=>{
@@ -13538,7 +13551,7 @@ const FX_SYNC={
     document.getElementById('movePreview')?.classList.add('admin-surface');
     document.getElementById('customList')?.classList.add('admin-surface');
     document.getElementById('deletedList')?.classList.add('admin-surface');
-    // V20.06 corrected: the category list is a layout-only grid, NOT a framed admin surface.
+    // V20.07 corrected: the category list is a layout-only grid, NOT a framed admin surface.
     // The old admin-surface assignment reintroduced the large outer frame after initialization.
     const categoryGrid = document.getElementById('categoryManagerList');
     if (categoryGrid) {
@@ -14111,7 +14124,7 @@ updateAccessUIV178();
   }
 
   function saveCategoryTitlesLocal(){
-    STORE.set(CAT_TITLE_KEY,JSON.stringify(state.categoryTitleOverrides||{}));
+    return STORE.set(CAT_TITLE_KEY,JSON.stringify(state.categoryTitleOverrides||{}));
   }
 
   // D1 sync: category titles are public-safe UI metadata.
@@ -14186,7 +14199,8 @@ updateAccessUIV178();
     return r;
   };
 
-  // Category manager: every category gets a "标题" button without changing its internal key.
+  // V20.07 统一分类管理：内置和新增分类都只用「标题」修改显示名称，
+  // 分类内部键与网站归属不改变；categoryTitleOverrides 经现有 D1 settings 同步。
   const __renderCategoryManagerV18=renderCategoryManager;
   renderCategoryManager=function(){
     const r=__renderCategoryManagerV18();
@@ -14197,32 +14211,45 @@ updateAccessUIV178();
       const b=copy?.querySelector("b");
       if(b)b.textContent=displayCategory(key);
       const actions=row.querySelector(".category-manager-actions");
-      if(actions&&!actions.querySelector(".manager-category-title-btn")){
-        const btn=document.createElement("button");
-        btn.type="button";
-        btn.className="cat-mini manager-category-title-btn";
-        btn.textContent="标题";
-        btn.title="修改前台显示标题，不改变分类内部键和网站归属";
-        btn.onclick=async()=>{
-          const current=displayCategory(key);
-          const next=await uiPromptV1821(`自定义分类标题\n\n内部分类：${key}\n留空或输入原名称可恢复默认标题。`,current);
-          if(next===null)return;
-          const clean=String(next).trim().slice(0,28);
-          if(!clean||clean===key)delete state.categoryTitleOverrides[key];
-          else state.categoryTitleOverrides[key]=clean;
-          saveCategoryTitlesLocal();
-          save();
-          buildNav();
-          render();
-          renderCategoryManager();
-          buildCategorySelect();
-          buildMoveCategorySelect();
-          buildMoveSiteOptions();
-          renderManagerSites();
-          toast(clean&&clean!==key?`分类标题已改为「${clean}」`:"分类标题已恢复默认");
-        };
-        const firstAction=actions.children[1]||null;
-        actions.insertBefore(btn,firstAction);
+      if(actions){
+        if(!actions.querySelector(".manager-category-title-btn")){
+          const btn=document.createElement("button");
+          btn.type="button";
+          btn.className="cat-mini manager-category-title-btn";
+          btn.textContent="标题";
+          btn.title="修改分类标题，网站和分类归属不变；修改会同步到 D1";
+          btn.onclick=async()=>{
+            const current=displayCategory(key);
+            const next=await uiPromptV1821(`修改分类标题\n\n当前分类：${key}\n留空可恢复默认标题。`,current);
+            if(next===null)return;
+            const clean=String(next).trim().slice(0,28);
+            if(clean&&allCategories().some(c=>c.name!==key&&displayCategory(c.name)===clean)){
+              toast("已有同名分类，请使用其他名称");return;
+            }
+            const before={...(state.categoryTitleOverrides||{})};
+            if(!clean||clean===key)delete state.categoryTitleOverrides[key];
+            else state.categoryTitleOverrides[key]=clean;
+            if(!saveCategoryTitlesLocal()){
+              state.categoryTitleOverrides=before;
+              toast("本地保存失败，分类标题未更改");return;
+            }
+            if(!save()){
+              state.categoryTitleOverrides=before;
+              saveCategoryTitlesLocal();
+              toast("保存失败，分类标题未更改");return;
+            }
+            buildNav();
+            render();
+            renderCategoryManager();
+            buildCategorySelect();
+            buildMoveCategorySelect();
+            buildMoveSiteOptions();
+            renderManagerSites();
+            toast(clean&&clean!==key?`分类标题已修改为「${clean}」`:"分类标题已恢复默认");
+          };
+          const firstAction=actions.children[1]||null;
+          actions.insertBefore(btn,firstAction);
+        }
       }
     });
     patchCategoryLabels();
@@ -14739,7 +14766,7 @@ updateAccessUIV178();
   function exportSelectedSitesV1991(){
     const ids=[...managerSelection];if(!ids.length)return;
     const selected=rawSites().filter(site=>ids.includes(site.id)&&!state.hiddenSites.has(site.id));
-    const payload={format:"private-nav-selected-sites",formatVersion:1,exportedAt:new Date().toISOString(),appVersion:window.FXNAV_APP?.version||"20.05",sites:selected.map(site=>({id:site.id,name:site.name,url:site.url,domain:site.domain||safeDomain(site.url),category:displayCategory(effectiveCategory(site)),favorite:state.favorites.has(site.id),builtin:isBuiltinSite(site.id),iconUrl:site._sourceIconUrl||site.iconUrl||"",hasCustomIcon:!!site._customIcon}))};
+    const payload={format:"private-nav-selected-sites",formatVersion:1,exportedAt:new Date().toISOString(),appVersion:window.FXNAV_APP?.version||"20.07",sites:selected.map(site=>({id:site.id,name:site.name,url:site.url,domain:site.domain||safeDomain(site.url),category:displayCategory(effectiveCategory(site)),favorite:state.favorites.has(site.id),builtin:isBuiltinSite(site.id),iconUrl:site._sourceIconUrl||site.iconUrl||"",hasCustomIcon:!!site._customIcon}))};
     const stamp=new Date().toISOString().slice(0,10).replaceAll("-","");
     downloadJsonV1860(payload,`private-nav-selected-sites-${stamp}.json`);
     toast(`已导出 ${selected.length} 个网站信息；KV 图标文件不包含在此清单中`);
@@ -18621,7 +18648,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 #clockDateText{
 
 
 <style id="v2005-unified-responsive-liquid-material">
-/* V20.06: One material recipe for all Liquid Glass modules. Applies across
+/* V20.07: One material recipe for all Liquid Glass modules. Applies across
    desktop, iPad and phone. Other four themes remain untouched. */
 html[data-theme="liquid"]:not(.fx-glass-fallback) body :is(
   .sidebar,#hero,.system-console,.tool-cluster,.home-layout>.hero-datetime,
@@ -18725,7 +18752,7 @@ html[data-theme="liquid"]:not(.fx-glass-fallback)[data-liquid-clear="1"] body :i
     if(document.querySelector('link[data-fxnav-manager-style="v1998"]')){loadScript();return;}
     const link=document.createElement('link');
     link.rel='stylesheet';
-    link.href='/assets/runtime/manager-ui-v1998.css?v=2006-corrected-frame';
+    link.href='/assets/runtime/manager-ui-v1998.css?v=2007-category-unified';
     link.dataset.fxnavManagerStyle='v1998';
     link.onload=loadScript;
     link.onerror=loadScript;
@@ -18756,8 +18783,8 @@ html[data-theme="liquid"]:not(.fx-glass-fallback)[data-liquid-clear="1"] body :i
 })();
 </script>
 
-<style id="v2006-category-grid-outer-frame-correction">
-/* V20.06 corrected: only independent category tiles have a glass surface. */
+<style id="v2007-category-grid-outer-frame-correction">
+/* V20.07 corrected: only independent category tiles have a glass surface. */
 html body #drawer #categoryManagerList.category-manager-grid,
 html[data-theme="liquid"] body #drawer #categoryManagerList.category-manager-grid,
 html[data-theme="frosted"] body #drawer #categoryManagerList.category-manager-grid {
