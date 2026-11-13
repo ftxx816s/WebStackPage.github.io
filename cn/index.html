@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>私人导航工具箱 · V20.01</title>
+<title>私人导航工具箱 · V20.02</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: blob: https: http:; connect-src 'self' https:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -18,7 +18,7 @@
 </style>
 <script  id="app-meta-v1891"  data-module="script-01.js">
 
-window.FXNAV_APP=Object.freeze({version:"20.01",build:"V20.01",schemaVersion:3,channel:"stable"});
+window.FXNAV_APP=Object.freeze({version:"20.02",build:"V20.02",schemaVersion:3,channel:"stable"});
 
 </script>
 <script  id="theme-boot-v1867"  data-module="script-02.js">
@@ -1918,6 +1918,8 @@ body.density-compact .grid{
   background:#55cf9c;
   box-shadow:0 0 0 3px rgba(85,207,156,.10);
 }
+.cloud-status[data-state="stale"]{color:#e7bb78;border-color:rgba(229,174,91,.18);}
+.cloud-status[data-state="stale"] i{background:#e6ad59;box-shadow:0 0 0 3px rgba(230,173,89,.09)}
 .cloud-status[data-state="offline"]{color:#e7bb78;border-color:rgba(229,174,91,.18);}
 .cloud-status[data-state="offline"] i{
   background:#e6ad59;
@@ -1941,6 +1943,7 @@ body.density-compact .grid{
 }
 .compact-cloud-status[data-state="syncing"]{color:#8292ff;}
 .compact-cloud-status[data-state="synced"]{color:#55cf9c;}
+.compact-cloud-status[data-state="stale"]{color:#e6ad59;}
 .compact-cloud-status[data-state="offline"]{color:#e6ad59;}
 .compact-cloud-status[data-state="error"]{color:#ff7187;}
 .cloud-first-sync{
@@ -3961,8 +3964,8 @@ html[data-theme="neon"] .tool-cluster{border-radius:14px;}}
 <link rel="icon" type="image/png" sizes="64x64" href="/assets/runtime/favicon-985ed977.png">
 <link rel="shortcut icon" type="image/png" href="/assets/runtime/favicon-985ed977.png">
 
-<meta name="x-build" content="V20.01-20261113">
-<meta name="x-app-version" content="20.01">
+<meta name="x-build" content="V20.02-20261113">
+<meta name="x-app-version" content="20.02">
 
 <style data-module="style-03.css">
 :root{
@@ -5058,6 +5061,9 @@ html[data-theme="neon"] #compactCloudStatus{
 }
 #compactCloudStatus[data-state="synced"] .compact-cloud-dot{
   background:#55cf9c!important;
+}
+#compactCloudStatus[data-state="stale"] .compact-cloud-dot{
+  background:#e6ad59!important;
 }
 #compactCloudStatus[data-state="offline"] .compact-cloud-dot{
   background:#e6ad59!important;
@@ -8819,7 +8825,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
         <span class="console-divider"></span>
         <span class="console-item cache"><span class="k">CACHE</span><strong id="consoleCache">0 KB</strong></span>
         <span class="console-divider"></span>
-        <span class="console-item build"><span class="k">BUILD</span><strong>V20.01</strong></span>
+        <span class="console-item build"><span class="k">BUILD</span><strong>V20.02</strong></span>
         <span class="console-spacer"></span>
         <span class="console-activity">
           <span class="k">SYSTEM ACTIVITY</span>
@@ -8979,7 +8985,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
 
     <div id="fxD1LoadingV1946" class="fx-d1-loading-v1946" role="status">正在读取完整云端导航数据…</div>
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V20.01 版本</div>
+    <div class="footer">© 2026 私人导航工具箱 · V20.02 版本</div>
   </main>
 </div>
 
@@ -11607,6 +11613,7 @@ function v17TimeoutFor(mode,method){
 function noteV17NetworkFailure(err){
   const status=Number(err?.status)||0;
   V17.lastFailureAt=Date.now();V17.lastError=String(err?.message||"网络请求失败").slice(0,240);
+  window.__fxnavNotifyD1StatusV2002?.();
   if(status&&status<500&&status!==408&&status!==429)return 0;
   V17.networkFailures=Math.min(6,(Number(V17.networkFailures)||0)+1);
   const retryAfter=Math.max(0,Number(err?.retryAfter)||0)*1000;
@@ -11617,6 +11624,7 @@ function noteV17NetworkFailure(err){
 function noteV17NetworkSuccess(){
   V17.networkFailures=0;V17.nextRetryAt=0;V17.lastSuccessAt=Date.now();V17.lastError="";
   if(V17.retryTimer){clearTimeout(V17.retryTimer);V17.retryTimer=0;}
+  window.__fxnavNotifyD1StatusV2002?.();
 }
 function isV17TransientFailure(err){const s=Number(err?.status)||0;return !s||s===408||s===429||s>=500;}
 function scheduleV17RetryV206(){
@@ -12024,6 +12032,9 @@ async function pushV17({force=false}={}){
         V17.pushTimer=setTimeout(()=>pushV17({force:queuedForce}),wait);
       }
     }
+    // The completion event above fired while V17.syncing was still true.
+    // Emit again after clearing it so the indicator turns green immediately.
+    window.__fxnavNotifyD1StatusV2002?.();
   }
 }
 function scheduleDataSyncV17(){if(!V17.ready||V17.suppress||V17.conflict)return;
@@ -12413,6 +12424,54 @@ $("#logoutBtn")?.addEventListener("click",async()=>{
 });
 
 /* ===================== V18.7 · Cloud Status ===================== */
+/* V20.02: one verified D1 state drives every status indicator. These events
+ * never send requests; the existing bounded 15s D1 health check does that. */
+function notifyD1StatusV2002(){
+  window.dispatchEvent(new Event("fxnav:d1-status-change"));
+}
+function getD1SignalV2002(){
+  const v=V17,mode=String(v.lastStatus||""),now=Date.now();
+  const lastOk=Number(v.lastSuccessAt)||0,lastFail=Number(v.lastFailureAt)||0;
+  const base={code:"connecting",label:"PRIVATE NAV · CONNECTING",healthy:false,lastOk,mode};
+  if(!navigator.onLine)return {...base,code:"offline",label:"PRIVATE NAV · OFFLINE"};
+  if(v.conflict||mode==="conflict")return {...base,code:"conflict",label:"PRIVATE NAV · CONFLICT"};
+  if(mode==="auth-required")return {...base,code:"auth",label:"PRIVATE NAV · LOGIN"};
+  if(mode==="error")return {...base,code:"error",label:"PRIVATE NAV · ERROR"};
+  if(mode==="offline")return {...base,code:"retrying",label:"PRIVATE NAV · RETRYING"};
+  if(v.syncing||v.pushTimer||mode==="syncing")return {...base,code:"syncing",label:"PRIVATE NAV · SYNCING"};
+  if(v.cachedOffline)return {...base,code:"cached",label:"PRIVATE NAV · CACHED"};
+  // Three health-check periods. A successful old request is not a live connection.
+  // Health-check completion immediately emits an event, so no refresh is required.
+  if(v.ready&&mode==="synced"&&lastOk>0&&lastOk>=lastFail&&now-lastOk<45000)
+    return {...base,code:"healthy",label:"PRIVATE NAV · HEALTHY",healthy:true};
+  if(lastOk>0&&lastOk>=lastFail)return {...base,code:"stale",label:"PRIVATE NAV · VERIFYING"};
+  return base;
+}
+window.__fxnavGetD1SignalV2002=getD1SignalV2002;
+window.__fxnavNotifyD1StatusV2002=notifyD1StatusV2002;
+// A stale verification must not leave the top-right badge green while the
+// system console has already switched to amber. Preserve V17.lastStatus so
+// the next real health-check can restore its server-confirmed state.
+function reconcileD1BadgeV2002(signal){
+  const badge=document.getElementById('cloudStatus');
+  const compact=document.getElementById('compactCloudStatus');
+  const caption=document.getElementById('cloudStatusText');
+  if(!badge||!signal)return;
+  if(signal.code==='stale'&&badge.dataset.state==='synced'){
+    badge.dataset.state='stale';
+    if(compact)compact.dataset.state='stale';
+    if(caption)caption.textContent='D1 待验证';
+    badge.title='上次连接验证已过期，等待自动健康检查；未断定网络离线';
+    if(compact)compact.title=badge.title;
+  }else if(signal.healthy&&badge.dataset.state==='stale'){
+    badge.dataset.state='synced';
+    if(compact)compact.dataset.state='synced';
+    if(caption)caption.textContent=AUTH_V161.authenticated?'D1 已同步':'访客只读';
+    badge.title='Cloudflare D1 最近一次请求验证成功';
+    if(compact)compact.title=badge.title;
+  }
+}
+window.__fxnavReconcileD1BadgeV2002=reconcileD1BadgeV2002;
 function setCloudStatus(mode,text,title=""){
   if(window.V17)window.V17.lastStatus=mode||"";
   const el=$("#cloudStatus"),txt=$("#cloudStatusText"),compact=$("#compactCloudStatus");
@@ -12426,6 +12485,7 @@ function setCloudStatus(mode,text,title=""){
     compact.dataset.state=mode||"";
     compact.title=detail;
   }
+  notifyD1StatusV2002();
 }
 
 /* V19.46 · Hydrate a COMPLETE D1 snapshot before first render. No cloud write; V17.ready stays false. */
@@ -12821,7 +12881,7 @@ async function exportDisasterBackupV1860(){
     toast("正在生成完整备份…");
     const payload=await v17Request("disaster-backup");
     payload.schemaVersion=window.FXNAV_APP?.schemaVersion||3;
-    payload.appVersion=window.FXNAV_APP?.version||"20.01";
+    payload.appVersion=window.FXNAV_APP?.version||"20.02";
     payload.client={
       theme:document.documentElement.dataset.theme||"dark",
       density:STORE.get(V157_DENSITY_KEY)||"comfortable",
@@ -12830,7 +12890,7 @@ async function exportDisasterBackupV1860(){
     };
     const d=new Date(),pad=n=>String(n).padStart(2,"0");
     const stamp=`${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}`;
-    downloadJsonV1860(payload,`private-nav-backup-v${window.FXNAV_APP?.version||"20.01"}-${stamp}.json`);
+    downloadJsonV1860(payload,`private-nav-backup-v${window.FXNAV_APP?.version||"20.02"}-${stamp}.json`);
     const sites=Array.isArray(payload?.d1?.sites)?payload.d1.sites.length:0;
     const cats=Array.isArray(payload?.d1?.categories)?payload.d1.categories.length:0;
     const icons=Number(payload?.kv?.customIconCount)||0;
@@ -12860,7 +12920,7 @@ async function restoreDisasterBackupFileV1971(file){
     const currentIconCount=(safetyBackup.d1?.sites||[]).filter(site=>!!site.has_custom_icon).length;
     if(Number(safetyBackup.kv?.missingCustomIcons)>0||(!safetyBackup.kv?.enabled&&currentIconCount>0))throw new Error("恢复前备份检测到 KV 自定义图标缺失或 KV 未连接。为避免无法回滚，已取消恢复。");
     const now=new Date(),pad=n=>String(n).padStart(2,"0"),stamp=`${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
-    downloadJsonV1860(safetyBackup,`private-nav-pre-restore-v${window.FXNAV_APP?.version||"20.01"}-${stamp}.json`);
+    downloadJsonV1860(safetyBackup,`private-nav-pre-restore-v${window.FXNAV_APP?.version||"20.02"}-${stamp}.json`);
     const result=await v17Request("disaster-restore","POST",{...payload,baseRevision:V17.revision});
     const refreshed=await refreshV17FromServer({quiet:true,acceptRemote:true});if(!refreshed)throw new Error("服务端已完成恢复，但当前页面未能刷新；请重新加载页面核对 D1 数据");
     const theme=payload.client?.theme;if(["dark","light","liquid","neon","frosted"].includes(theme)){STORE.set(KEYS.theme,theme);document.documentElement.dataset.theme=theme;applyTheme()}
@@ -12884,8 +12944,8 @@ $("#disasterBackupBtn").onclick=exportDisasterBackupV1860;
 $("#exportBookmarksBtn").onclick=exportBrowserBookmarksV1852;
 
 $("#exportBtn").onclick=()=>{
-  const payload={schemaVersion:window.FXNAV_APP?.schemaVersion||3,appVersion:window.FXNAV_APP?.version||"20.01",version:window.FXNAV_APP?.version||"20.01",favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides,iconOverrides:state.iconOverrides,hiddenSites:[...state.hiddenSites],siteEdits:state.siteEdits,customCategories:state.customCategories,categoryOrder:state.categoryOrder,categoryIconOverrides:state.categoryIconOverrides,siteOrder:state.siteOrder,categoryTitleOverrides:{...(state.categoryTitleOverrides||{})},duplicateIgnoreKeys:[...(state.duplicateIgnoreKeys||new Set())],usageStats:getUsageStatsV157(),density:STORE.get(V157_DENSITY_KEY)||"comfortable",theme:document.documentElement.dataset.theme||"dark",cloudRevision:V17.revision};
-  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);const ds=new Date().toISOString().slice(0,10).replaceAll("-","");a.download=`private-nav-v${window.FXNAV_APP?.version||"20.01"}-${ds}.json`;a.click();URL.revokeObjectURL(a.href);
+  const payload={schemaVersion:window.FXNAV_APP?.schemaVersion||3,appVersion:window.FXNAV_APP?.version||"20.02",version:window.FXNAV_APP?.version||"20.02",favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides,iconOverrides:state.iconOverrides,hiddenSites:[...state.hiddenSites],siteEdits:state.siteEdits,customCategories:state.customCategories,categoryOrder:state.categoryOrder,categoryIconOverrides:state.categoryIconOverrides,siteOrder:state.siteOrder,categoryTitleOverrides:{...(state.categoryTitleOverrides||{})},duplicateIgnoreKeys:[...(state.duplicateIgnoreKeys||new Set())],usageStats:getUsageStatsV157(),density:STORE.get(V157_DENSITY_KEY)||"comfortable",theme:document.documentElement.dataset.theme||"dark",cloudRevision:V17.revision};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);const ds=new Date().toISOString().slice(0,10).replaceAll("-","");a.download=`private-nav-v${window.FXNAV_APP?.version||"20.02"}-${ds}.json`;a.click();URL.revokeObjectURL(a.href);
 };
 $("#importBtn").onclick=()=>$("#importFile").click();
 $("#importFile").addEventListener("change",async e=>{
@@ -14638,7 +14698,7 @@ updateAccessUIV178();
   function exportSelectedSitesV1991(){
     const ids=[...managerSelection];if(!ids.length)return;
     const selected=rawSites().filter(site=>ids.includes(site.id)&&!state.hiddenSites.has(site.id));
-    const payload={format:"private-nav-selected-sites",formatVersion:1,exportedAt:new Date().toISOString(),appVersion:window.FXNAV_APP?.version||"20.01",sites:selected.map(site=>({id:site.id,name:site.name,url:site.url,domain:site.domain||safeDomain(site.url),category:displayCategory(effectiveCategory(site)),favorite:state.favorites.has(site.id),builtin:isBuiltinSite(site.id),iconUrl:site._sourceIconUrl||site.iconUrl||"",hasCustomIcon:!!site._customIcon}))};
+    const payload={format:"private-nav-selected-sites",formatVersion:1,exportedAt:new Date().toISOString(),appVersion:window.FXNAV_APP?.version||"20.02",sites:selected.map(site=>({id:site.id,name:site.name,url:site.url,domain:site.domain||safeDomain(site.url),category:displayCategory(effectiveCategory(site)),favorite:state.favorites.has(site.id),builtin:isBuiltinSite(site.id),iconUrl:site._sourceIconUrl||site.iconUrl||"",hasCustomIcon:!!site._customIcon}))};
     const stamp=new Date().toISOString().slice(0,10).replaceAll("-","");
     downloadJsonV1860(payload,`private-nav-selected-sites-${stamp}.json`);
     toast(`已导出 ${selected.length} 个网站信息；KV 图标文件不包含在此清单中`);
@@ -15005,7 +15065,7 @@ updateAccessUIV178();
     else if(!admin){label="访客只读";detail="当前浏览器未处于管理员会话；访客数据不会写入 D1。"}
     else if(syncing){label="正在同步";detail="正在向 Cloudflare D1 提交或核对数据。"}
     else if(hasPending){label="有待同步修改";detail="检测到本机修改或待写入快照；不会用旧云端数据覆盖本机内容。"}
-    else if(V17?.lastStatus==="synced"&&V17?.lastSuccessAt&&Date.now()-V17.lastSuccessAt<60000){label="连接已验证";detail="最近一次 D1 请求已成功；连接状态会随下一次请求更新。"}
+    else if(window.__fxnavGetD1SignalV2002?.().healthy){label="连接已验证";detail="最近一次 D1 请求已成功；连接状态会在请求完成时立即更新。"}
     else if(V17?.lastSuccessAt){label="最近连接成功";detail="上次请求成功，但当前连接尚未重新验证。点击“检查连接”执行实时验证。"}
     else if(V17?.lastError){label="连接待检查";detail=String(V17.lastError)}
     stateEl.textContent=label;stateEl.dataset.state=conflict||conflictRecord?"conflict":!online?"offline":hasPending?"pending":admin&&V17?.lastStatus==="synced"?"ok":"idle";
@@ -15963,9 +16023,13 @@ updateAccessUIV178();
     const syncAt=Number(localStorage.getItem(SYNC_KEY)||0),backupAt=Number(localStorage.getItem(BACKUP_KEY)||0),rows=dashboardActivityRows(),days=sevenDays(rows),weekTotal=days.reduce((a,b)=>a+b.count,0),recent=rows.slice(-6).reverse();
     const activityCaption=!AUTH_V161?.authenticated?"管理员登录后查看 D1 云端记录":!cloudActivityLoaded?(cloudActivityError?"D1 读取失败 · 未使用本机数据":"正在读取 D1 云端记录"):cloudActivityError?"D1 最近成功读取 · 待同步操作已保留":!online?"最近一次 D1 云端记录 · 当前离线":"D1 云端记录 · 多设备共享";
     const activityEmpty=!AUTH_V161?.authenticated?"请先登录管理员账号，查看 D1 云端活动记录。":!cloudActivityLoaded?(cloudActivityError?"D1 云端活动读取失败。恢复网络或重新登录后会自动重试；本机缓存不会冒充云端记录。":"正在读取 D1 云端活动记录…"):"D1 云端近 7 天暂无管理操作记录。";
-    const lastOk=Number(V17?.lastSuccessAt)||0;
-    const d1Fresh=online&&!!lastOk&&Date.now()-lastOk<20000&&!V17?.cachedOffline&&!V17?.syncing&&!V17?.pushTimer&&!V17?.conflict&&V17?.lastStatus==="synced";
-    const d1State=!online?['当前离线','warn']:d1Fresh?['D1 已连接','ok']:V17?.lastStatus==="syncing"?['正在验证 D1','warn']:['D1 待验证','warn'];
+    const d1Signal=window.__fxnavGetD1SignalV2002?.()||{code:'connecting',healthy:false};
+    const d1State=d1Signal.healthy?['D1 已连接','ok']:
+      d1Signal.code==='offline'?['当前离线','warn']:
+      d1Signal.code==='syncing'?['正在同步 D1','warn']:
+      d1Signal.code==='retrying'?['正在重连 D1','warn']:
+      d1Signal.code==='stale'?['D1 待验证','warn']:
+      d1Signal.code==='conflict'?['同步冲突','warn']:['正在验证 D1','warn'];
     const kvState=maint?.kv?.enabled===false?'未绑定':maint?.kv?.enabled===true?'正常':'未扫描';
     box.innerHTML=`
       <section class="manager-live-card">
@@ -15998,6 +16062,16 @@ updateAccessUIV178();
     scheduleActivitySync(false);
   }
   window.renderManagerOverviewV1831=render;
+  function updateOverviewD1V2002(){
+    const card=document.querySelector('#managerOverviewDashboard .manager-live-card');
+    if(!card)return;
+    const line=card.querySelector('.manager-status-line'),signal=window.__fxnavGetD1SignalV2002?.();
+    if(!line||!signal)return;
+    const dot=line.querySelector('.manager-status-dot'),title=line.querySelector('strong');
+    if(dot)dot.classList.toggle('warn',!signal.healthy);
+    if(title)title.textContent=signal.healthy?'D1 已连接':signal.code==='offline'?'当前离线':signal.code==='retrying'?'正在重连 D1':signal.code==='syncing'?'正在同步 D1':signal.code==='conflict'?'同步冲突':signal.code==='stale'?'D1 待验证':'正在验证 D1';
+  }
+  window.addEventListener('fxnav:d1-status-change',updateOverviewD1V2002,{passive:true});
   // Cache maintenance results only when the existing maintenance flow actually runs.
   if(typeof window.updateManagerMaintenanceTrendV1821==='function'){
     const old=window.updateManagerMaintenanceTrendV1821;
@@ -16069,18 +16143,33 @@ updateAccessUIV178();
   const render=()=>{
     const rev=Math.max(0,Number(window.V17?.revision)||0);
     const sync=Number(localStorage.getItem(SYNC_KEY)||window.V17?.lastPullAt||0);
-    const cloud=$('cloudStatusText')?.textContent?.trim()||'';
-    const lastOk=Number(window.V17?.lastSuccessAt)||0;
-    const freshD1=!!(lastOk&&Date.now()-lastOk<20000&&!window.V17?.cachedOffline);
-    const healthy=navigator.onLine&&freshD1&&!window.V17?.syncing&&!window.V17?.pushTimer&&!window.V17?.conflict&&window.V17?.lastStatus==="synced"&&/D1 已同步|访客只读/.test(cloud);
+    const signal=window.__fxnavGetD1SignalV2002?.()||{healthy:false,label:"PRIVATE NAV · CONNECTING",code:"connecting"};
+    window.__fxnavReconcileD1BadgeV2002?.(signal);
+    const healthy=signal.healthy;
     if($('consoleRevision'))$('consoleRevision').textContent=window.V17?.ready?String(rev):'—';
     if($('consoleSync'))$('consoleSync').textContent=fmtTime(sync);
     if($('consoleCache'))$('consoleCache').textContent=cacheKB()+' KB';
-    if($('consoleHealthText'))$('consoleHealthText').textContent=healthy?'PRIVATE NAV · HEALTHY':(navigator.onLine?'PRIVATE NAV · CONNECTING':'PRIVATE NAV · OFFLINE');
+    const health=$('consoleHealthText');
+    if(health){
+      health.textContent=signal.label;
+      health.title=healthy?`D1 最近验证成功：${new Date(signal.lastOk).toLocaleTimeString()}`
+        :signal.code==='stale'?'最近一次 D1 验证已过期，等待自动检查':
+        'D1 状态与右侧云同步指示灯来自同一份连接结果';
+    }
     if($('consolePulse')){$('consolePulse').style.background=healthy?'var(--good)':'#ffb86b';$('consolePulse').style.boxShadow=healthy?'0 0 0 3px rgba(85,214,166,.10)':'0 0 0 3px rgba(255,184,107,.10)'}
     drawWave();
   };
-  const bind=()=>{render();const cloud=$('cloudStatusText');if(cloud)new MutationObserver(render).observe(cloud,{childList:true,subtree:true,characterData:true});window.addEventListener('online',render,{passive:true});window.addEventListener('offline',render,{passive:true});window.addEventListener('fxnav:activity-cloud-updated',render,{passive:true});setInterval(render,30000)};
+  const bind=()=>{
+    render();
+    window.addEventListener('fxnav:d1-status-change',render,{passive:true});
+    window.addEventListener('online',render,{passive:true});
+    window.addEventListener('offline',render,{passive:true});
+    window.addEventListener('pageshow',render,{passive:true});
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden)render()},{passive:true});
+    window.addEventListener('fxnav:activity-cloud-updated',render,{passive:true});
+    // Rendering only. Existing D1 live poll performs bounded 15s network checks.
+    setInterval(()=>{if(!document.hidden)render()},5000);
+  };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
 })();
 
