@@ -14,3 +14,21 @@
 
 /assets/liquid-default-v19.57.png
   Cache-Control: public, max-age=31536000, immutable
+
+
+/
+  Cache-Control: public, max-age=0, must-revalidate
+
+/cn/
+  Cache-Control: public, max-age=0, must-revalidate
+
+/cn/*
+  Cache-Control: public, max-age=0, must-revalidate
+
+/sw.js
+  Cache-Control: no-cache, no-store, must-revalidate
+  Service-Worker-Allowed: /
+  X-Content-Type-Options: nosniff
+
+/assets/liquid-default-v20.00.webp
+  Cache-Control: public, max-age=31536000, immutable
