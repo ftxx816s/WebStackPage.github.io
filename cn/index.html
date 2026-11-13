@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>私人导航工具箱 · V20.02</title>
+<title>私人导航工具箱 · V20.03</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: blob: https: http:; connect-src 'self' https:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -18,7 +18,7 @@
 </style>
 <script  id="app-meta-v1891"  data-module="script-01.js">
 
-window.FXNAV_APP=Object.freeze({version:"20.02",build:"V20.02",schemaVersion:3,channel:"stable"});
+window.FXNAV_APP=Object.freeze({version:"20.03",build:"V20.03",schemaVersion:3,channel:"stable"});
 
 </script>
 <script  id="theme-boot-v1867"  data-module="script-02.js">
@@ -60,7 +60,7 @@ window.FXNAV_APP=Object.freeze({version:"20.02",build:"V20.02",schemaVersion:3,c
       var savedId=String(wallpaperPointer.id),savedVersion=String(wallpaperPointer.version||'1');
       if(!/^[0-9a-zA-Z._-]{1,80}$/.test(savedVersion))savedVersion='1';
       window.__FXNAV_WALLPAPER_BOOT__={id:savedId,version:savedVersion};
-      if(theme==='liquid'&&savedId!=='default'){
+      if(savedId!=='default'){
         root.style.setProperty('--liquid-bg-image',
           'url("/api/wallpaper-image?id='+encodeURIComponent(savedId)+'&v='+encodeURIComponent(savedVersion)+'")');
       }
@@ -8985,7 +8985,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
 
     <div id="fxD1LoadingV1946" class="fx-d1-loading-v1946" role="status">正在读取完整云端导航数据…</div>
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V20.02 版本</div>
+    <div class="footer">© 2026 私人导航工具箱 · V20.03 版本</div>
   </main>
 </div>
 
@@ -9026,7 +9026,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
   </div>
   <div class="liquid-glass-actions">
     <button type="button" id="liquidGlassUpload">壁纸库 · 选择/上传</button>
-    <button type="button" id="liquidGlassReset">恢复默认背景</button>
+    <button type="button" id="liquidGlassReset">关闭壁纸</button>
   </div>
 </div>
 
@@ -9039,7 +9039,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
     <div class="fx-wp-toolbar"><div class="fx-wp-count"><span id="fxWallpaperCount">1 / 10 张</span><span class="fx-wp-track" aria-hidden="true"><i id="fxWallpaperMeter"></i></span></div><span class="fx-wp-inline-state" id="fxWallpaperState" role="status" aria-live="polite">正在连接…</span></div>
     <div class="fx-wp-grid" id="fxWallpaperGrid" aria-label="壁纸列表" aria-live="polite"></div>
     <div class="fx-wp-bottom"><p id="fxWallpaperHint">壁纸切换后，其他设备刷新即可同步。</p>
-      <div class="fx-wp-bottom-actions"><button type="button" class="fx-wp-secondary" id="fxWallpaperDefault">恢复默认</button><button type="button" class="fx-wp-main" id="fxWallpaperAdd">＋ 上传壁纸</button></div>
+      <div class="fx-wp-bottom-actions"><button type="button" class="fx-wp-secondary" id="fxWallpaperDefault">关闭壁纸</button><button type="button" class="fx-wp-main" id="fxWallpaperAdd">＋ 上传壁纸</button></div>
     </div>
     <div class="fx-wp-confirm-layer" id="fxWallpaperConfirmLayer" hidden>
       <div class="fx-wp-confirm" role="alertdialog" aria-modal="true" aria-labelledby="fxWallpaperConfirmTitle" aria-describedby="fxWallpaperConfirmNote">
@@ -9047,7 +9047,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
           <img class="fx-wp-confirm-preview" id="fxWallpaperConfirmPreview" alt="待删除壁纸预览">
           <div class="fx-wp-confirm-title"><h3 id="fxWallpaperConfirmTitle">删除这张壁纸？</h3><p id="fxWallpaperConfirmName"></p></div>
         </div>
-        <p class="fx-wp-confirm-note" id="fxWallpaperConfirmNote">删除后将从 D1 壁纸库移除，无法恢复。默认壁纸不会受到影响。</p>
+        <p class="fx-wp-confirm-note" id="fxWallpaperConfirmNote">删除后将从 D1 壁纸库移除且无法恢复。如果正在使用这张图，页面将切换为纯色背景。</p>
         <div class="fx-wp-confirm-actions">
           <button type="button" class="fx-wp-confirm-cancel" id="fxWallpaperCancelDelete">取消</button>
           <button type="button" class="fx-wp-confirm-delete" id="fxWallpaperConfirmDelete">确认删除</button>
@@ -12424,7 +12424,8 @@ $("#logoutBtn")?.addEventListener("click",async()=>{
 });
 
 /* ===================== V18.7 · Cloud Status ===================== */
-/* V20.02: one verified D1 state drives every status indicator. These events
+/* V20.03: connection health is independent of pending background writes.
+ * V20.02: one verified D1 state drives every status indicator. These events
  * never send requests; the existing bounded 15s D1 health check does that. */
 function notifyD1StatusV2002(){
   window.dispatchEvent(new Event("fxnav:d1-status-change"));
@@ -12438,12 +12439,17 @@ function getD1SignalV2002(){
   if(mode==="auth-required")return {...base,code:"auth",label:"PRIVATE NAV · LOGIN"};
   if(mode==="error")return {...base,code:"error",label:"PRIVATE NAV · ERROR"};
   if(mode==="offline")return {...base,code:"retrying",label:"PRIVATE NAV · RETRYING"};
-  if(v.syncing||v.pushTimer||mode==="syncing")return {...base,code:"syncing",label:"PRIVATE NAV · SYNCING"};
+  // Connection health is distinct from a queued theme/bookmark write.
+  // Do not turn the connectivity light amber merely because a save is pending.
+  const recentVerified=!!(v.ready&&lastOk>0&&lastOk>=lastFail&&now-lastOk<45000);
+  if(recentVerified){
+    const saving=!!(v.syncing||v.pushTimer||mode==="syncing");
+    return {...base,code:saving?"healthy-saving":"healthy",
+      label:saving?"PRIVATE NAV · CONNECTED · SYNCING":"PRIVATE NAV · HEALTHY",healthy:true,saving};
+  }
   if(v.cachedOffline)return {...base,code:"cached",label:"PRIVATE NAV · CACHED"};
-  // Three health-check periods. A successful old request is not a live connection.
-  // Health-check completion immediately emits an event, so no refresh is required.
-  if(v.ready&&mode==="synced"&&lastOk>0&&lastOk>=lastFail&&now-lastOk<45000)
-    return {...base,code:"healthy",label:"PRIVATE NAV · HEALTHY",healthy:true};
+  if(v.syncing||v.pushTimer||mode==="syncing")return {...base,code:"syncing",label:"PRIVATE NAV · SYNCING"};
+  // An old successful request does not prove ongoing connectivity.
   if(lastOk>0&&lastOk>=lastFail)return {...base,code:"stale",label:"PRIVATE NAV · VERIFYING"};
   return base;
 }
@@ -16599,7 +16605,6 @@ html[data-theme="light"] .nav-btn.scroll-active .nav-count{
     applyBackgroundBlob(null);return false;
   }
   const WP_API='/api/wallpapers',WP_IMAGE='/api/wallpaper-image',WP_MAX_BYTES=1900000,WP_MAX_COUNT=10;
-  const WP_DEFAULT='/assets/liquid-default-v20.00.webp?v=2000';
   const WP_POINTER_KEY='fxnav_active_wallpaper_v2001';
   const bootPointer=window.__FXNAV_WALLPAPER_BOOT__||null;
   let galleryBusy=false,wallpapers=[],activeWallpaper=bootPointer?.id||'default',wallpaperVersion=bootPointer?.version||'',cloudOnline=false;
@@ -16610,7 +16615,7 @@ html[data-theme="light"] .nav-btn.scroll-active .nav-count{
     window.__FXNAV_WALLPAPER_BOOT__=clean;
   }
   const gallery=()=>$('fxWallpaperOverlay');
-  function wallpaperUrl(id,version){return id==='default'?WP_DEFAULT:`${WP_IMAGE}?id=${encodeURIComponent(id)}&v=${encodeURIComponent(version||'1')}`}
+  function wallpaperUrl(id,version){return id==='default'?'':`${WP_IMAGE}?id=${encodeURIComponent(id)}&v=${encodeURIComponent(version||'1')}`}
   function readableSize(bytes){return bytes>=1048576?`${(bytes/1048576).toFixed(2)} MB`:`${Math.round(bytes/1024)} KB`}
   function galleryStatus(message,kind=''){const el=$('fxWallpaperState');if(el){el.textContent=message;el.dataset.kind=kind}}
   function galleryHint(message){const el=$('fxWallpaperHint');if(el)el.textContent=message}
@@ -16655,7 +16660,7 @@ html[data-theme="light"] .nav-btn.scroll-active .nav-count{
     const url=wallpaperUrl(id,version);
     // Decode before switching: never reveal the default, a stale legacy image,
     // or an unvalidated new file as an intermediate visual frame.
-    if(!(await preloadWallpaper(url)))return false;
+    if(id!=='default'&&!(await preloadWallpaper(url)))return false;
     if(expectedGeneration!==wallpaperGeneration)return false;
     if(id==='default')applyBackgroundBlob(null);else showWallpaperUrl(url);
     activeWallpaper=id;wallpaperVersion=version;
@@ -16723,9 +16728,8 @@ html[data-theme="light"] .nav-btn.scroll-active .nav-count{
   }
   function drawGallery(){
     const grid=$('fxWallpaperGrid');if(!grid)return;grid.replaceChildren();
-    grid.append(wpTile('default','初始默认壁纸','固定保留 · 不可删除',WP_DEFAULT,true));
     for(const item of wallpapers)grid.append(wpTile(item.id,item.name||'自定义壁纸',`${readableSize(item.size)} · 原图`,wallpaperUrl(item.id,item.version),false));
-    const count=wallpapers.length+1;$('fxWallpaperCount').textContent=`${count} / ${WP_MAX_COUNT} 张`;
+    const count=wallpapers.length;$('fxWallpaperCount').textContent=`${count} / ${WP_MAX_COUNT} 张`;
     const meter=$('fxWallpaperMeter');if(meter)meter.style.width=`${count/WP_MAX_COUNT*100}%`;
     const add=$('fxWallpaperAdd');if(add){add.disabled=galleryBusy||!cloudOnline||count>=WP_MAX_COUNT;add.title=count>=WP_MAX_COUNT?'壁纸库已满，请删除自定义壁纸后再上传':''}
     if(count>=WP_MAX_COUNT)galleryHint('壁纸库已满（10/10）。先删除一张自定义壁纸，才能继续上传。');
@@ -16764,7 +16768,7 @@ html[data-theme="light"] .nav-btn.scroll-active .nav-count{
       const result=await wpRequest(`${WP_API}?action=select`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})});
       const applied=await applyCloudWallpaper(id,result.version||'',epoch);
       if(!applied)throw new Error('图片加载失败，请刷新后重试');
-      galleryStatus('已同步','ok');toastSafe('壁纸已云端保存；其他设备刷新后同步');
+      galleryStatus('已同步','ok');toastSafe(id==='default'?'已关闭壁纸，纯色背景设置已同步':'壁纸已云端保存；其他设备刷新后同步');
     }catch(err){galleryStatus(err.message,'error');toastSafe(err.message)}
     finally{galleryBusy=false;await refreshGallery()}
   }
@@ -16819,7 +16823,7 @@ html[data-theme="light"] .nav-btn.scroll-active .nav-count{
     if(!['image/png','image/jpeg','image/webp'].includes(file.type)){galleryStatus('只支持 PNG、JPG、WebP 原图','error');return}
     if(file.size>WP_MAX_BYTES){galleryStatus(`文件 ${readableSize(file.size)} 超出 1.9 MB 限制；不压缩原图，请换一张较小的图片`,'error');return}
     if(!file.size){galleryStatus('不能上传空文件','error');return}
-    if(wallpapers.length>=9){galleryStatus('已满 10 张，请先删除一张自定义壁纸再上传','error');return}
+    if(wallpapers.length>=WP_MAX_COUNT){galleryStatus('已满 10 张，请先删除一张自定义壁纸再上传','error');return}
     galleryBusy=true;drawGallery();galleryStatus('正在上传原始文件…');
     try{
       await validateWallpaperDecodeV1968(file);
@@ -16954,7 +16958,8 @@ html[data-theme="light"] .nav-btn.scroll-active .nav-count{
 
 
 <style data-module="style-34.css">
-html[data-theme="liquid"]{--liquid-default-bg:url("/assets/liquid-default-v20.00.webp?v=2000");}
+html[data-theme="liquid"]{--liquid-default-bg:none;}
+/* V20.03: no bundled placeholder photo; when the account has no selected wall, use solid graphite. */
 
 /* V19.48 CANONICAL OPTICAL LIQUID GLASS — separate tint and frost controls; only theme 3. */
 html[data-theme="liquid"]{

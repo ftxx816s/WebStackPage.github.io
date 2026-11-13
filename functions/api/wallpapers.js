@@ -2,7 +2,7 @@
 // Authentication reuses the site's existing signed HttpOnly fxnav_session cookie.
 import {json,requireAuth,sameOrigin} from '../_shared/auth.js';
 const MAX_FILE_BYTES=1_900_000; // under D1 2,000,000-byte BLOB/row limit
-const MAX_USER_FILES=9; // 1 protected packaged default + 9 uploads = 10
+const MAX_USER_FILES=10; // V20.03: no packaged default photo; 10 D1 original images
 const MIME=['image/png','image/jpeg','image/webp'];
 let initialized=null;
 function dbOf(env){return env.WALLPAPER_DB}
