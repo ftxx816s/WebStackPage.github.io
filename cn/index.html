@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>私人导航工具箱 · V20.03</title>
+<title>私人导航工具箱 · V20.04</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: blob: https: http:; connect-src 'self' https:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -18,7 +18,7 @@
 </style>
 <script  id="app-meta-v1891"  data-module="script-01.js">
 
-window.FXNAV_APP=Object.freeze({version:"20.03",build:"V20.03",schemaVersion:3,channel:"stable"});
+window.FXNAV_APP=Object.freeze({version:"20.04",build:"V20.04",schemaVersion:3,channel:"stable"});
 
 </script>
 <script  id="theme-boot-v1867"  data-module="script-02.js">
@@ -80,6 +80,9 @@ window.FXNAV_APP=Object.freeze({version:"20.03",build:"V20.03",schemaVersion:3,c
   if(meta)meta.setAttribute("content",colors[theme]||colors.dark);
   window.__FXNAV_BOOT_THEME__=theme;
   window.addEventListener("DOMContentLoaded",function(){
+    // Single runtime version source: top-bar BUILD follows FXNAV_APP rather than an older hardcoded badge.
+    var buildNode=document.getElementById('consoleBuildVersion');
+    if(buildNode&&window.FXNAV_APP?.build)buildNode.textContent=window.FXNAV_APP.build;
     /* The complete single HTML (all style/script blocks) is parsed by this point.
        Keep content hidden through one stable layout frame, then reveal the actual theme. */
     try{
@@ -3964,8 +3967,8 @@ html[data-theme="neon"] .tool-cluster{border-radius:14px;}}
 <link rel="icon" type="image/png" sizes="64x64" href="/assets/runtime/favicon-985ed977.png">
 <link rel="shortcut icon" type="image/png" href="/assets/runtime/favicon-985ed977.png">
 
-<meta name="x-build" content="V20.02-20261113">
-<meta name="x-app-version" content="20.02">
+<meta name="x-build" content="V20.04-20261113">
+<meta name="x-app-version" content="20.04">
 
 <style data-module="style-03.css">
 :root{
@@ -8825,7 +8828,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
         <span class="console-divider"></span>
         <span class="console-item cache"><span class="k">CACHE</span><strong id="consoleCache">0 KB</strong></span>
         <span class="console-divider"></span>
-        <span class="console-item build"><span class="k">BUILD</span><strong>V20.02</strong></span>
+        <span class="console-item build"><span class="k">BUILD</span><strong id="consoleBuildVersion">V20.04</strong></span>
         <span class="console-spacer"></span>
         <span class="console-activity">
           <span class="k">SYSTEM ACTIVITY</span>
@@ -8985,7 +8988,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
 
     <div id="fxD1LoadingV1946" class="fx-d1-loading-v1946" role="status">正在读取完整云端导航数据…</div>
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V20.03 版本</div>
+    <div class="footer">© 2026 私人导航工具箱 · V20.04 版本</div>
   </main>
 </div>
 
@@ -9026,7 +9029,6 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
   </div>
   <div class="liquid-glass-actions">
     <button type="button" id="liquidGlassUpload">壁纸库 · 选择/上传</button>
-    <button type="button" id="liquidGlassReset">关闭壁纸</button>
   </div>
 </div>
 
@@ -9039,7 +9041,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
     <div class="fx-wp-toolbar"><div class="fx-wp-count"><span id="fxWallpaperCount">1 / 10 张</span><span class="fx-wp-track" aria-hidden="true"><i id="fxWallpaperMeter"></i></span></div><span class="fx-wp-inline-state" id="fxWallpaperState" role="status" aria-live="polite">正在连接…</span></div>
     <div class="fx-wp-grid" id="fxWallpaperGrid" aria-label="壁纸列表" aria-live="polite"></div>
     <div class="fx-wp-bottom"><p id="fxWallpaperHint">壁纸切换后，其他设备刷新即可同步。</p>
-      <div class="fx-wp-bottom-actions"><button type="button" class="fx-wp-secondary" id="fxWallpaperDefault">关闭壁纸</button><button type="button" class="fx-wp-main" id="fxWallpaperAdd">＋ 上传壁纸</button></div>
+      <div class="fx-wp-bottom-actions"><button type="button" class="fx-wp-secondary" id="fxWallpaperDefault">使用纯色背景</button><button type="button" class="fx-wp-main" id="fxWallpaperAdd">＋ 上传壁纸</button></div>
     </div>
     <div class="fx-wp-confirm-layer" id="fxWallpaperConfirmLayer" hidden>
       <div class="fx-wp-confirm" role="alertdialog" aria-modal="true" aria-labelledby="fxWallpaperConfirmTitle" aria-describedby="fxWallpaperConfirmNote">
@@ -12887,7 +12889,7 @@ async function exportDisasterBackupV1860(){
     toast("正在生成完整备份…");
     const payload=await v17Request("disaster-backup");
     payload.schemaVersion=window.FXNAV_APP?.schemaVersion||3;
-    payload.appVersion=window.FXNAV_APP?.version||"20.02";
+    payload.appVersion=window.FXNAV_APP?.version||"20.04";
     payload.client={
       theme:document.documentElement.dataset.theme||"dark",
       density:STORE.get(V157_DENSITY_KEY)||"comfortable",
@@ -12896,7 +12898,7 @@ async function exportDisasterBackupV1860(){
     };
     const d=new Date(),pad=n=>String(n).padStart(2,"0");
     const stamp=`${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}`;
-    downloadJsonV1860(payload,`private-nav-backup-v${window.FXNAV_APP?.version||"20.02"}-${stamp}.json`);
+    downloadJsonV1860(payload,`private-nav-backup-v${window.FXNAV_APP?.version||"20.04"}-${stamp}.json`);
     const sites=Array.isArray(payload?.d1?.sites)?payload.d1.sites.length:0;
     const cats=Array.isArray(payload?.d1?.categories)?payload.d1.categories.length:0;
     const icons=Number(payload?.kv?.customIconCount)||0;
@@ -12926,7 +12928,7 @@ async function restoreDisasterBackupFileV1971(file){
     const currentIconCount=(safetyBackup.d1?.sites||[]).filter(site=>!!site.has_custom_icon).length;
     if(Number(safetyBackup.kv?.missingCustomIcons)>0||(!safetyBackup.kv?.enabled&&currentIconCount>0))throw new Error("恢复前备份检测到 KV 自定义图标缺失或 KV 未连接。为避免无法回滚，已取消恢复。");
     const now=new Date(),pad=n=>String(n).padStart(2,"0"),stamp=`${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
-    downloadJsonV1860(safetyBackup,`private-nav-pre-restore-v${window.FXNAV_APP?.version||"20.02"}-${stamp}.json`);
+    downloadJsonV1860(safetyBackup,`private-nav-pre-restore-v${window.FXNAV_APP?.version||"20.04"}-${stamp}.json`);
     const result=await v17Request("disaster-restore","POST",{...payload,baseRevision:V17.revision});
     const refreshed=await refreshV17FromServer({quiet:true,acceptRemote:true});if(!refreshed)throw new Error("服务端已完成恢复，但当前页面未能刷新；请重新加载页面核对 D1 数据");
     const theme=payload.client?.theme;if(["dark","light","liquid","neon","frosted"].includes(theme)){STORE.set(KEYS.theme,theme);document.documentElement.dataset.theme=theme;applyTheme()}
@@ -12950,8 +12952,8 @@ $("#disasterBackupBtn").onclick=exportDisasterBackupV1860;
 $("#exportBookmarksBtn").onclick=exportBrowserBookmarksV1852;
 
 $("#exportBtn").onclick=()=>{
-  const payload={schemaVersion:window.FXNAV_APP?.schemaVersion||3,appVersion:window.FXNAV_APP?.version||"20.02",version:window.FXNAV_APP?.version||"20.02",favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides,iconOverrides:state.iconOverrides,hiddenSites:[...state.hiddenSites],siteEdits:state.siteEdits,customCategories:state.customCategories,categoryOrder:state.categoryOrder,categoryIconOverrides:state.categoryIconOverrides,siteOrder:state.siteOrder,categoryTitleOverrides:{...(state.categoryTitleOverrides||{})},duplicateIgnoreKeys:[...(state.duplicateIgnoreKeys||new Set())],usageStats:getUsageStatsV157(),density:STORE.get(V157_DENSITY_KEY)||"comfortable",theme:document.documentElement.dataset.theme||"dark",cloudRevision:V17.revision};
-  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);const ds=new Date().toISOString().slice(0,10).replaceAll("-","");a.download=`private-nav-v${window.FXNAV_APP?.version||"20.02"}-${ds}.json`;a.click();URL.revokeObjectURL(a.href);
+  const payload={schemaVersion:window.FXNAV_APP?.schemaVersion||3,appVersion:window.FXNAV_APP?.version||"20.04",version:window.FXNAV_APP?.version||"20.04",favorites:[...state.favorites],recents:state.recents,custom:state.custom,categoryOverrides:state.categoryOverrides,iconOverrides:state.iconOverrides,hiddenSites:[...state.hiddenSites],siteEdits:state.siteEdits,customCategories:state.customCategories,categoryOrder:state.categoryOrder,categoryIconOverrides:state.categoryIconOverrides,siteOrder:state.siteOrder,categoryTitleOverrides:{...(state.categoryTitleOverrides||{})},duplicateIgnoreKeys:[...(state.duplicateIgnoreKeys||new Set())],usageStats:getUsageStatsV157(),density:STORE.get(V157_DENSITY_KEY)||"comfortable",theme:document.documentElement.dataset.theme||"dark",cloudRevision:V17.revision};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);const ds=new Date().toISOString().slice(0,10).replaceAll("-","");a.download=`private-nav-v${window.FXNAV_APP?.version||"20.04"}-${ds}.json`;a.click();URL.revokeObjectURL(a.href);
 };
 $("#importBtn").onclick=()=>$("#importFile").click();
 $("#importFile").addEventListener("change",async e=>{
@@ -14704,7 +14706,7 @@ updateAccessUIV178();
   function exportSelectedSitesV1991(){
     const ids=[...managerSelection];if(!ids.length)return;
     const selected=rawSites().filter(site=>ids.includes(site.id)&&!state.hiddenSites.has(site.id));
-    const payload={format:"private-nav-selected-sites",formatVersion:1,exportedAt:new Date().toISOString(),appVersion:window.FXNAV_APP?.version||"20.02",sites:selected.map(site=>({id:site.id,name:site.name,url:site.url,domain:site.domain||safeDomain(site.url),category:displayCategory(effectiveCategory(site)),favorite:state.favorites.has(site.id),builtin:isBuiltinSite(site.id),iconUrl:site._sourceIconUrl||site.iconUrl||"",hasCustomIcon:!!site._customIcon}))};
+    const payload={format:"private-nav-selected-sites",formatVersion:1,exportedAt:new Date().toISOString(),appVersion:window.FXNAV_APP?.version||"20.04",sites:selected.map(site=>({id:site.id,name:site.name,url:site.url,domain:site.domain||safeDomain(site.url),category:displayCategory(effectiveCategory(site)),favorite:state.favorites.has(site.id),builtin:isBuiltinSite(site.id),iconUrl:site._sourceIconUrl||site.iconUrl||"",hasCustomIcon:!!site._customIcon}))};
     const stamp=new Date().toISOString().slice(0,10).replaceAll("-","");
     downloadJsonV1860(payload,`private-nav-selected-sites-${stamp}.json`);
     toast(`已导出 ${selected.length} 个网站信息；KV 图标文件不包含在此清单中`);
@@ -16840,11 +16842,9 @@ html[data-theme="light"] .nav-btn.scroll-active .nav-count{
   function placePanel(){
     const p=panel();if(!p||p.hidden)return;
     const r=lastPanelAnchor?.getBoundingClientRect?.();
-    const gap=12, fullHeight=p.offsetHeight||380, fullWidth=p.offsetWidth||318;
-    const scale=Math.min(1,Math.max(.62,(window.innerHeight-2*gap)/fullHeight));
-    p.style.transformOrigin='top left';
-    p.style.transform=scale<1?`scale(${scale})`:'';
-    const w=fullWidth*scale,h=fullHeight*scale;
+    const gap=12, w=p.offsetWidth||318,h=p.offsetHeight||380;
+    // The popover scrolls within the viewport; never shrink the UI controls or labels.
+    p.style.transform='';
     const preferredRight=r?r.right:window.innerWidth-gap;
     const left=Math.max(gap,Math.min(window.innerWidth-w-gap,preferredRight-w));
     const preferredTop=r?r.bottom+9:gap;
@@ -16902,7 +16902,6 @@ html[data-theme="light"] .nav-btn.scroll-active .nav-count{
     $('liquidBlurFrosted')?.addEventListener('click',()=>setBlur(0));
     $('liquidBlurClear')?.addEventListener('click',()=>setBlur(100));
     $('liquidGlassUpload')?.addEventListener('click',()=>void openGallery());
-    $('liquidGlassReset')?.addEventListener('click',()=>{void resetBackground()});
     $('fxWallpaperClose')?.addEventListener('click',closeGallery);
     $('fxWallpaperAdd')?.addEventListener('click',()=>bgInput()?.click());
     $('fxWallpaperDefault')?.addEventListener('click',()=>void resetBackground());
@@ -17189,7 +17188,7 @@ html[data-theme="liquid"] body .category-icon-editor{background:var(--lg-sheen) 
 html[data-theme="liquid"] body .category-icon-editor :is(h2,p,label,small){color:#eff8ff!important;}
 html[data-theme="liquid"] body .category-icon-editor input{color:#f7fbff!important;background:rgba(255,255,255,.10)!important;border:1px solid rgba(255,255,255,.21)!important;}
 /* The only settings surface: wallpaper picker, no experimental sliders or stale presets. */
-.liquid-glass-settings{position:fixed;z-index:10080;width:min(318px,calc(100vw - 24px));max-height:none;overflow:visible;overscroll-behavior:initial;scrollbar-width:none;padding:15px 14px 14px;border-radius:21px;background:linear-gradient(145deg,rgba(44,49,57,var(--lg-float-alpha,.430)),rgba(25,29,36,var(--lg-float-alpha,.430))) padding-box,var(--lg-edge) border-box;border:1px solid transparent;color:#f8fcff;box-shadow:0 16px 44px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.18),inset 0 -1px 0 rgba(0,0,0,.06);backdrop-filter:blur(var(--lg-blur-strong,17px)) saturate(135%);-webkit-backdrop-filter:blur(var(--lg-blur-strong,17px)) saturate(135%);}
+.liquid-glass-settings{position:fixed;z-index:10080;width:min(318px,calc(100vw - 24px));max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;padding:15px 14px 14px;border-radius:21px;background:linear-gradient(145deg,rgba(44,49,57,var(--lg-float-alpha,.430)),rgba(25,29,36,var(--lg-float-alpha,.430))) padding-box,var(--lg-edge) border-box;border:1px solid transparent;color:#f8fcff;box-shadow:0 16px 44px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.18),inset 0 -1px 0 rgba(0,0,0,.06);backdrop-filter:blur(var(--lg-blur-strong,17px)) saturate(135%);-webkit-backdrop-filter:blur(var(--lg-blur-strong,17px)) saturate(135%);}
 .liquid-glass-settings[hidden]{display:none!important;}
 @media(max-height:560px){.liquid-glass-settings{padding:10px 12px 11px;}.liquid-glass-settings-head{margin-bottom:8px;}.liquid-glass-preset-info{padding:6px 8px;margin-bottom:7px;}.liquid-glass-tuning{padding:8px 9px 7px;margin-bottom:7px;}.liquid-glass-tuning-preview{height:45px;}.liquid-glass-blur-control{margin-top:6px;padding-top:6px;}.liquid-glass-actions button{height:31px;}.liquid-glass-tuning-title{margin-bottom:4px;}}
 @media(max-height:420px){.liquid-glass-tuning-preview,.liquid-glass-preset-info{display:none;}.liquid-glass-settings{padding:8px 10px;}.liquid-glass-tuning{padding:7px 9px;}}
@@ -17201,7 +17200,7 @@ html[data-theme="liquid"] body .category-icon-editor input{color:#f7fbff!importa
 .liquid-glass-preset-info span:nth-child(2){flex:1;min-width:0;}
 .liquid-glass-preset-info strong{display:block;font-size:12px;color:#f9fcff;font-weight:650;}
 .liquid-glass-preset-info .lg-preset-tick{font-size:16px;color:#7af0c0;}
-.liquid-glass-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.liquid-glass-actions{display:grid;grid-template-columns:minmax(0,1fr);gap:9px;}
 .liquid-glass-actions button{height:36px;border:1px solid rgba(255,255,255,.19);border-radius:11px;color:#f7fbff;background:rgba(249,253,255,.10);box-shadow:inset 0 1px rgba(255,255,255,.1);cursor:pointer;font-size:11px;font-weight:550;}
 .liquid-glass-actions button:hover{background:rgba(255,255,255,.18);}
 @media(max-width:760px){html[data-theme="liquid"] body #drawer.drawer,html[data-theme="liquid"] body #drawer .drawer-head{border-radius:0!important;}}
@@ -17248,7 +17247,7 @@ html[data-theme="liquid"] body .command-body{scrollbar-color:rgba(240,248,255,.2
 
 
 /* notification glass background picker: keep text and buttons readable over photographs */
-html[data-theme="liquid"] body .liquid-glass-settings{background:var(--lg-sheen) padding-box,linear-gradient(145deg,rgba(44,49,57,var(--lg-float-alpha,.430)),rgba(25,29,36,var(--lg-float-alpha,.430))) padding-box,var(--lg-edge) border-box;}
+html[data-theme="liquid"] body .liquid-glass-settings{background:linear-gradient(145deg,rgba(33,40,52,.92),rgba(21,28,40,.94)) padding-box,var(--lg-edge) border-box;backdrop-filter:blur(22px) saturate(126%);-webkit-backdrop-filter:blur(22px) saturate(126%);}
 html[data-theme="liquid"] body .liquid-glass-settings .liquid-glass-preset-info{background:rgba(232,242,252,.085);border-color:rgba(255,255,255,.20);backdrop-filter:blur(var(--lg-blur-soft,9px));-webkit-backdrop-filter:blur(var(--lg-blur-soft,9px));}
 @media(max-width:700px){
  html[data-theme="liquid"] body .command-backdrop{padding:62px 10px 85px;}
