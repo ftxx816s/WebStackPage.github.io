@@ -4,14 +4,14 @@ import {json,requireAuth,sameOrigin} from '../_shared/auth.js';
 const MAX_FILE_BYTES=1_900_000; // under D1 2,000,000-byte BLOB/row limit
 const MAX_USER_FILES=10; // V20.03: no packaged default photo; 10 D1 original images
 const MIME=['image/png','image/jpeg','image/webp'];
-let initialized=null;
+let schemaReadyV2009=false;
 function dbOf(env){return env.WALLPAPER_DB}
 function unavailable(){return json({ok:false,error:'缺少 WALLPAPER_DB 绑定，请先配置独立 D1 数据库。'},503)}
 function headers(request){return {"Vary":"Cookie","X-Content-Type-Options":"nosniff"}}
 async function init(env){
   const db=dbOf(env);
   if(!db)throw new Error('WALLPAPER_DB not configured');
-  if(!initialized){initialized=(async()=>{
+  if(schemaReadyV2009)return;
     await db.prepare(`CREATE TABLE IF NOT EXISTS wallpaper_items (
       id TEXT PRIMARY KEY,name TEXT NOT NULL,mime TEXT NOT NULL,
       size_bytes INTEGER NOT NULL CHECK (size_bytes>0 AND size_bytes<=1900000),
@@ -22,8 +22,7 @@ async function init(env){
       name TEXT PRIMARY KEY,value TEXT NOT NULL,
       updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
     )`).run();
-  })().catch(e=>{initialized=null;throw e})}
-  return initialized;
+  schemaReadyV2009=true;
 }
 async function current(db){
   const p=await db.prepare("SELECT value,updated_at FROM wallpaper_state WHERE name='active' LIMIT 1").first();

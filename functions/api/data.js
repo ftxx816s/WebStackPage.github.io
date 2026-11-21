@@ -1,4 +1,4 @@
-const API_VERSION="19.99";
+const API_VERSION="20.09";
 import {V17_CATEGORIES,V17_SITES} from "../_data/v17-seed.js";
 import {json,requireAuth,sameOrigin,verifySession,normalizeUsername} from "../_shared/auth.js";
 
@@ -7,11 +7,11 @@ const BACKUP_KEEP=20,MAX_ICON_BYTES=1024*1024,AUTO_MAINTENANCE_MS=7*24*60*60*100
 function normalizeUrl(value){try{const u=new URL(String(value));if(!/^https?:$/.test(u.protocol))return "";u.hash="";u.hostname=u.hostname.toLowerCase();if(u.pathname!=="/")u.pathname=u.pathname.replace(/\/+$/,"");return u.href}catch{return ""}}
 function domainOf(value){try{return new URL(value).hostname.toLowerCase().replace(/^www\./,"")}catch{return ""}}
 function rootDomain(host){const clean=String(host||"").toLowerCase().replace(/^www\./,"");const p=clean.split(".").filter(Boolean);if(p.length<=2)return clean;const s=p.slice(-2).join("."),special=new Set(["com.cn","net.cn","org.cn","gov.cn","edu.cn","ac.cn","co.uk","org.uk","gov.uk","ac.uk","com.au","net.au","org.au","co.jp","ne.jp","or.jp","com.hk","com.tw","com.sg","com.br"]);return special.has(s)&&p.length>=3?p.slice(-3).join("."):p.slice(-2).join(".")}
-let __schemaReadyPromiseV186=null;
+// Only a completed synchronous flag is retained; never retain a request-owned Promise.
+let schemaReadyV2009=false;
 async function ensureSchema(env){
   if(!env?.DB)throw new Error("Missing D1 binding: DB");
-  if(!__schemaReadyPromiseV186){
-    __schemaReadyPromiseV186=(async()=>{
+  if(schemaReadyV2009)return;
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS categories_v17(name TEXT PRIMARY KEY,icon TEXT NOT NULL DEFAULT '•',sort_order INTEGER NOT NULL DEFAULT 0,is_builtin INTEGER NOT NULL DEFAULT 0,updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`).run();
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS sites_v17(id TEXT PRIMARY KEY,name TEXT NOT NULL,url TEXT NOT NULL,normalized_url TEXT NOT NULL UNIQUE,domain TEXT NOT NULL,root_domain TEXT NOT NULL,full_title TEXT,category_name TEXT NOT NULL,sort_order INTEGER NOT NULL DEFAULT 0,is_favorite INTEGER NOT NULL DEFAULT 0,is_deleted INTEGER NOT NULL DEFAULT 0,is_custom INTEGER NOT NULL DEFAULT 0,icon_url TEXT,icon_key TEXT,icon_cache_version TEXT,visit_count INTEGER NOT NULL DEFAULT 0,last_visited_at TEXT,updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`).run();
   // Additive-only migration for existing D1 databases; never rebuild or clear user tables.
@@ -33,9 +33,7 @@ async function ensureSchema(env){
   // V19.68: CHECK constraint turns a stale revision into a SQL failure inside the atomic D1 batch.
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS sync_revision_guard_v1968(owner TEXT PRIMARY KEY,expected INTEGER NOT NULL,actual INTEGER NOT NULL,CONSTRAINT sync_revision_guard_v1968 CHECK(expected=actual))`).run();
 
-    })().catch(err=>{__schemaReadyPromiseV186=null;throw err});
-  }
-  return __schemaReadyPromiseV186;
+  schemaReadyV2009=true;
 }
 async function getSetting(env,owner,key,db=env.DB){const r=await db.prepare(`SELECT value FROM settings_v17 WHERE owner=? AND key=?`).bind(owner,key).first();return r?.value??null}
 async function setSetting(env,owner,key,value){await env.DB.prepare(`INSERT INTO settings_v17(owner,key,value,updated_at) VALUES(?,?,?,CURRENT_TIMESTAMP) ON CONFLICT(owner,key) DO UPDATE SET value=excluded.value,updated_at=CURRENT_TIMESTAMP`).bind(owner,key,String(value)).run()}
@@ -200,11 +198,12 @@ function backupToSyncBody(snapshot,currentRevision){
   }));
   return {baseRevision:currentRevision,force:true,categories:cats,sites,settings:(snapshot?.settings&&typeof snapshot.settings==="object")?snapshot.settings:{}};
 }
-async function restoreBackup(env,owner,id){
+async function restoreBackup(env,owner,id,expectedRevision){
   const row=await env.DB.prepare(`SELECT snapshot FROM backups_v17 WHERE owner=? AND id=? LIMIT 1`).bind(owner,id).first();
   if(!row?.snapshot)return json({ok:false,error:"Backup not found."},404);
   let snap=null;try{snap=JSON.parse(row.snapshot)}catch{return json({ok:false,error:"Backup is corrupted."},500)}
   const current=await getRevision(env,owner);
+  if(!Number.isSafeInteger(expectedRevision)||expectedRevision!==current)return json({ok:false,error:"Revision conflict. Refresh D1 before restoring this backup.",revision:current},409);
   return await syncSnapshot(env,owner,backupToSyncBody(snap,current),{allowSiteDeletes:true});
 }
 // V19.72: reject loopback, private, link-local, reserved IPv4 and all literal IPv6
@@ -393,7 +392,11 @@ async function planSnapshotDiff(env,owner,cats,sites,ui,options={}){
   const siteUpserts=inSites.filter(r=>!sameSite(siteMap.get(r.id),r));
   const siteDeletes=options.allowSiteDeletes===true?dbSites.filter(r=>Number(r.is_custom)!==0&&!inSiteIds.has(String(r.id))):[];
   const uiJson=JSON.stringify(ui||{}),oldUi=await getSetting(env,owner,"ui");
-  return {categoryUpserts,categoryDeletes,siteUpserts,siteDeletes,forbiddenIds,uiJson,settingsChanged:String(oldUi??"")!==uiJson,structuralChanged:categoryUpserts.length>0||categoryDeletes.length>0||siteUpserts.length>0||siteDeletes.length>0};
+  // Key ordering is not an actual settings modification. Array order remains meaningful.
+  const stable=v=>Array.isArray(v)?v.map(stable):v&&typeof v==="object"?Object.fromEntries(Object.keys(v).sort().map(k=>[k,stable(v[k])])):v;
+  let settingsChanged=true;try{settingsChanged=JSON.stringify(stable(JSON.parse(oldUi||"null")))!==JSON.stringify(stable(ui||{}));}catch{}
+  const urlReleases=siteUpserts.filter(r=>siteMap.has(r.id)&&String(siteMap.get(r.id).normalized_url)!==r.normalized_url);
+  return {categoryUpserts,categoryDeletes,siteUpserts,siteDeletes,urlReleases,forbiddenIds,uiJson,settingsChanged,structuralChanged:categoryUpserts.length>0||categoryDeletes.length>0||siteUpserts.length>0||siteDeletes.length>0};
 }
 async function syncSnapshot(env,owner,body,{allowSiteDeletes=false}={}){
   const {cats,sites,dups,error:validationError}=validateSnapshot(body);if(validationError)return json({ok:false,error:validationError},400);if(dups.length)return json({ok:false,error:"Duplicate URL detected.",duplicates:dups},409);
@@ -426,6 +429,9 @@ async function syncSnapshot(env,owner,body,{allowSiteDeletes=false}={}){
   for(const c of plan.categoryUpserts){
     stmts.push(env.DB.prepare(`INSERT INTO categories_v17(name,icon,sort_order,is_builtin,updated_at) VALUES(?,?,?,?,CURRENT_TIMESTAMP) ON CONFLICT(name) DO UPDATE SET icon=excluded.icon,sort_order=excluded.sort_order,is_builtin=excluded.is_builtin,updated_at=CURRENT_TIMESTAMP`).bind(c.name,c.icon,c.sort_order,c.is_builtin));
   }
+  // Release old URL claims for rows whose URL/soft-delete state changes.
+  // Temporary keys exist only inside the atomic revision-gated transaction.
+  for(const r of plan.urlReleases)stmts.push(env.DB.prepare(`UPDATE sites_v17 SET normalized_url='pending:'||id WHERE id=? AND normalized_url<>?`).bind(r.id,r.normalized_url));
   for(const s of plan.siteUpserts){
     stmts.push(env.DB.prepare(`INSERT INTO sites_v17(id,name,url,normalized_url,domain,root_domain,full_title,category_name,sort_order,is_favorite,is_deleted,is_custom,icon_url,updated_at) SELECT ?,?,?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP WHERE NOT EXISTS (SELECT 1 FROM purged_sites_v1964 WHERE owner=? AND id=?) ON CONFLICT(id) DO UPDATE SET name=excluded.name,url=excluded.url,normalized_url=excluded.normalized_url,domain=excluded.domain,root_domain=excluded.root_domain,full_title=excluded.full_title,category_name=excluded.category_name,sort_order=excluded.sort_order,is_favorite=excluded.is_favorite,is_deleted=excluded.is_deleted,is_custom=excluded.is_custom,icon_url=excluded.icon_url,updated_at=CURRENT_TIMESTAMP`).bind(s.id,s.name,s.url,s.normalized_url,s.domain,s.root_domain,s.full_title,s.category_name,s.sort_order,s.is_favorite,s.is_deleted,s.is_custom,s.icon_url,owner,s.id));
   }
@@ -870,7 +876,8 @@ export async function onRequest(context){const {request,env}=context;try{const u
   if(mode==="healthz"&&request.method==="GET"){
     if(!env?.DB)return json({ok:false,db:false,kv:!!env?.KV,error:"Missing D1 binding: DB"},500);
     await ensureSchema(env);
-    let revision=0;try{revision=await getRevision(env,normalizeUsername(env.NAV_USERNAME||"admin"))}catch{}
+    const db=typeof env.DB.withSession==="function"?env.DB.withSession("first-primary"):env.DB;
+    const revision=await getRevision(env,normalizeUsername(env.NAV_USERNAME||"admin"),db);
     return json({ok:true,db:true,kv:!!env.KV,revision,apiVersion:API_VERSION});
   }
   await ensureSchema(env);const owner=normalizeUsername(env.NAV_USERNAME||"admin");
@@ -901,7 +908,7 @@ export async function onRequest(context){const {request,env}=context;try{const u
   if(mode==="maintenance"&&request.method==="GET"){return json(await maintenanceReport(env,auth.owner,{clean:false}))}
   if(mode==="maintenance"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);return json(await maintenanceReport(env,auth.owner,{clean:true}))}
   if(mode==="backup-now"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);const rev=await backupSnapshot(env,auth.owner);return json({ok:true,revision:rev})}
-  if(mode==="restore-backup"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);const body=await readBoundedJsonV1972(request,512*1024);return await restoreBackup(env,auth.owner,Number(body?.id)||0)}
+  if(mode==="restore-backup"&&request.method==="POST"){if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);const body=await readBoundedJsonV1972(request,512*1024);return await restoreBackup(env,auth.owner,Number(body?.id)||0,body?.baseRevision)}
   if(mode==="disaster-restore"&&request.method==="POST"){
     if(!sameOrigin(request))return json({ok:false,error:"Invalid origin."},403);
     const body=await readBoundedJsonV1972(request,MAX_DISASTER_IMPORT_BYTES_V1971);
