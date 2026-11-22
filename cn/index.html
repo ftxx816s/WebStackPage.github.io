@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>私人导航工具箱 · V20.14</title>
+<title>私人导航工具箱 · V20.15</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: blob: https: http:; connect-src 'self' https:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -18,7 +18,7 @@
 </style>
 <script  id="app-meta-v1891"  data-module="script-01.js">
 
-window.FXNAV_APP=Object.freeze({version:"20.14",build:"V20.14",schemaVersion:3,channel:"stable"});
+window.FXNAV_APP=Object.freeze({version:"20.15",build:"V20.15",schemaVersion:3,channel:"stable"});
 
 </script>
 <script  id="theme-boot-v1867"  data-module="script-02.js">
@@ -3967,7 +3967,7 @@ html[data-theme="neon"] .tool-cluster{border-radius:14px;}}
 <link rel="icon" type="image/png" sizes="64x64" href="/assets/runtime/favicon-985ed977.png">
 <link rel="shortcut icon" type="image/png" href="/assets/runtime/favicon-985ed977.png">
 
-<meta name="x-build" content="V20.14-20261122">
+<meta name="x-build" content="V20.15-20261122">
 <meta name="x-app-version" content="20.08">
 
 <style data-module="style-03.css">
@@ -8855,7 +8855,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
         <span class="console-divider"></span>
         <span class="console-item cache"><span class="k">CACHE</span><strong id="consoleCache">0 KB</strong></span>
         <span class="console-divider"></span>
-        <span class="console-item build"><span class="k">BUILD</span><strong id="consoleBuildVersion">V20.14</strong></span>
+        <span class="console-item build"><span class="k">BUILD</span><strong id="consoleBuildVersion">V20.15</strong></span>
         <span class="console-spacer"></span>
         <span class="console-activity">
           <span class="k">SYSTEM ACTIVITY</span>
@@ -9015,7 +9015,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
 
     <div id="fxD1LoadingV1946" class="fx-d1-loading-v1946" role="status">正在读取完整云端导航数据…</div>
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V20.14 版本</div>
+    <div class="footer">© 2026 私人导航工具箱 · V20.15 版本</div>
   </main>
 </div>
 
@@ -18973,6 +18973,24 @@ html[data-theme="liquid"]:not(.fx-glass-fallback)[data-liquid-clear="1"] body :i
 @media(prefers-reduced-transparency:reduce){
  html[data-theme="liquid"]:not(.fx-glass-fallback) body :is(.sidebar,#hero,.system-console,.tool-cluster,.home-layout>.hero-datetime,.compact-bar,#content .card.glass,#content .card.glass:hover,#hero .search-row,.compact-search,.calendar-ref-v1838 .calendar-ref-monthbox,.calendar-ref-progress,.calendar-ref-selected,#liquidGlassSettings .liquid-glass-tuning-preview-card){background:#282828!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
 }
+</style>
+
+<style id="v2015-liquid-search-controls">
+/* V20.15: search icons only. Preserve V20.14 glass, geometry and all handlers. */
+html[data-theme="liquid"] body #hero .search-row .search-symbol{
+ align-self:center!important;place-self:center!important;line-height:0!important;font-size:0!important;
+ background:transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f8f8f8' stroke-width='1.8' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5'/%3E%3Cpath d='M15.5 15.5 20 20'/%3E%3C/svg%3E") center center / 20px 20px no-repeat!important;
+ border-color:transparent!important;box-shadow:none!important;
+}
+html[data-theme="liquid"] body #hero .search-row #liquidSearchBtn,
+html[data-theme="liquid"] body #hero .search-row #liquidSearchBtn:is(:hover,:focus-visible,:active){
+ background:linear-gradient(130deg,#47c1ff,#6b77ed 56%,#bf5acb)!important;
+ border:0!important;border-radius:12px!important;color:#fff!important;
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.30),0 5px 15px rgba(32,43,100,.22)!important;
+ cursor:pointer!important;
+}
+html[data-theme="liquid"] body #hero .search-row #liquidSearchBtn:focus-visible{outline:2px solid #b9dfff!important;outline-offset:2px!important;}
+html[data-theme="liquid"] body #hero .search-row #liquidSearchBtn .liquid-search-svg{display:block!important;stroke-width:1.8!important;stroke-linecap:round!important;}
 </style>
 
 </body>
