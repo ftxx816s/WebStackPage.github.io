@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>私人导航工具箱 · V20.10</title>
+<title>私人导航工具箱 · V20.11</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: blob: https: http:; connect-src 'self' https:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -18,7 +18,7 @@
 </style>
 <script  id="app-meta-v1891"  data-module="script-01.js">
 
-window.FXNAV_APP=Object.freeze({version:"20.10",build:"V20.10",schemaVersion:3,channel:"stable"});
+window.FXNAV_APP=Object.freeze({version:"20.11",build:"V20.11",schemaVersion:3,channel:"stable"});
 
 </script>
 <script  id="theme-boot-v1867"  data-module="script-02.js">
@@ -3967,7 +3967,7 @@ html[data-theme="neon"] .tool-cluster{border-radius:14px;}}
 <link rel="icon" type="image/png" sizes="64x64" href="/assets/runtime/favicon-985ed977.png">
 <link rel="shortcut icon" type="image/png" href="/assets/runtime/favicon-985ed977.png">
 
-<meta name="x-build" content="V20.10-20261122">
+<meta name="x-build" content="V20.11-20261122">
 <meta name="x-app-version" content="20.08">
 
 <style data-module="style-03.css">
@@ -8855,7 +8855,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
         <span class="console-divider"></span>
         <span class="console-item cache"><span class="k">CACHE</span><strong id="consoleCache">0 KB</strong></span>
         <span class="console-divider"></span>
-        <span class="console-item build"><span class="k">BUILD</span><strong id="consoleBuildVersion">V20.10</strong></span>
+        <span class="console-item build"><span class="k">BUILD</span><strong id="consoleBuildVersion">V20.11</strong></span>
         <span class="console-spacer"></span>
         <span class="console-activity">
           <span class="k">SYSTEM ACTIVITY</span>
@@ -9015,7 +9015,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
 
     <div id="fxD1LoadingV1946" class="fx-d1-loading-v1946" role="status">正在读取完整云端导航数据…</div>
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V20.10 版本</div>
+    <div class="footer">© 2026 私人导航工具箱 · V20.11 版本</div>
   </main>
 </div>
 
@@ -9035,10 +9035,10 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
     <div class="liquid-glass-tuning-preview" aria-hidden="true">
       <div class="liquid-glass-tuning-preview-card"><span class="liquid-glass-tuning-spark">✦</span><span><b>液态玻璃</b><small>内容清晰，背景可见</small></span></div>
     </div>
-    <input id="liquidTintRange" class="liquid-glass-tuning-range" type="range" min="0" max="100" step="1" value="45" aria-label="玻璃黑度：左侧透明，右侧黑色">
+    <input id="liquidTintRange" class="liquid-glass-tuning-range" type="range" min="0" max="100" step="1" value="45" aria-label="玻璃黑度：左侧透明，右侧深色玻璃（保留透光）">
     <div class="liquid-glass-tuning-ends">
       <button type="button" id="liquidTintClear" class="liquid-glass-tuning-end"><b>透明</b></button>
-      <button type="button" id="liquidTintTone" class="liquid-glass-tuning-end"><b>黑色</b></button>
+      <button type="button" id="liquidTintTone" class="liquid-glass-tuning-end"><b>深色</b></button>
     </div>
     <div class="liquid-glass-blur-control" aria-label="玻璃透明与磨砂程度调节">
       <div class="liquid-glass-blur-title"><b>玻璃磨砂度</b><span id="liquidBlurValue" aria-live="polite">55%</span></div>
@@ -16598,11 +16598,11 @@ html[data-theme="light"] .nav-btn.scroll-active .nav-count{
   }
   function applyMaterial(){
     root.dataset.glassRecipe='notification';
-    root.style.setProperty('--lg-pane-alpha',(0.025+tint*.00845).toFixed(3));
-    root.style.setProperty('--lg-calendar-alpha',(0.035+tint*.00855).toFixed(3));
-    root.style.setProperty('--lg-side-alpha',(0.045+tint*.00845).toFixed(3));
-    root.style.setProperty('--lg-card-alpha',(0.025+tint*.00865).toFixed(3));
-    root.style.setProperty('--lg-float-alpha',(0.18+tint*.0072).toFixed(3));
+    root.style.setProperty('--lg-pane-alpha',(0.035+tint*.00285).toFixed(3));
+    root.style.setProperty('--lg-calendar-alpha',(0.04+tint*.00285).toFixed(3));
+    root.style.setProperty('--lg-side-alpha',(0.07+tint*.00290).toFixed(3));
+    root.style.setProperty('--lg-card-alpha',(0.045+tint*.00275).toFixed(3));
+    root.style.setProperty('--lg-float-alpha',(0.19+tint*.0028).toFixed(3));
     applyBlurMaterial();
     const range=$('liquidTintRange'),value=$('liquidTintValue');
     if(range){range.value=String(tint);range.style.setProperty('--tint-fill',`${tint}%`)}
@@ -18810,71 +18810,74 @@ html body #drawer #categoryManagerList.category-manager-grid > .category-manager
 }
 </style>
 
-<style id="v2010-neutral-liquid-material">
-/* V20.10 · Neutral glass. Preserve layout, stacking, clicks and the V20.09 sync contract. */
+<style id="v2011-optical-liquid-material">
+/* V20.11: optical edge paint; no positioning, child layers, geometry or sync changes. */
 html[data-theme="liquid"]{
-  --lg-edge:linear-gradient(165deg,rgba(255,255,255,.28),rgba(255,255,255,.10) 36%,rgba(0,0,0,.22) 67%,rgba(255,255,255,.26));
-  --lg-sheen:linear-gradient(180deg,rgba(255,255,255,.025),transparent 18%,transparent 90%,rgba(255,255,255,.018));
-  --lg-depth:0 5px 16px rgba(0,0,0,.13),inset 0 1px 0 rgba(255,255,255,.27),inset 0 -1px 0 rgba(255,255,255,.15),inset 1px 0 0 rgba(255,255,255,.055),inset -1px 0 0 rgba(0,0,0,.15);
-  --lg-small-depth:0 3px 9px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.23),inset 0 -1px 0 rgba(255,255,255,.12),inset 1px 0 0 rgba(255,255,255,.055);
-  --lg-pane-alpha:.405;--lg-calendar-alpha:.420;--lg-side-alpha:.425;--lg-card-alpha:.414;
+  --lg-pane-alpha:.163;--lg-calendar-alpha:.168;--lg-side-alpha:.201;--lg-card-alpha:.169;--lg-float-alpha:.316;
+  --lg-sheen:linear-gradient(163deg,rgba(255,255,255,.045),rgba(255,255,255,.018) 28%,transparent 58%,rgba(255,255,255,.018));
+  --lg-edge:linear-gradient(155deg,rgba(255,255,255,.40),rgba(255,255,255,.09) 32%,rgba(0,0,0,.19) 59%,rgba(255,255,255,.27) 92%);
+  --lg-depth:0 5px 16px rgba(0,0,0,.12),inset 0 1px 1px rgba(255,255,255,.14),inset 1px 0 1px rgba(255,255,255,.045),inset 0 -1px 1px rgba(0,0,0,.20);
+  --lg-small-depth:0 3px 9px rgba(0,0,0,.12),inset 0 1px 1px rgba(255,255,255,.13),inset 0 -1px 1px rgba(0,0,0,.16);
+  --lg-rim:conic-gradient(from 225deg at 50% 50%,rgba(255,255,255,.25),rgba(255,255,255,.08) 12%,rgba(0,0,0,.20) 25%,rgba(255,255,255,.44) 40%,rgba(255,255,255,.25) 51%,rgba(0,0,0,.24) 65%,rgba(255,255,255,.07) 77%,rgba(255,255,255,.38) 90%,rgba(255,255,255,.25));
 }
-/* A real backdrop blur and a separate neutral black fill, not a blue coating. */
 html[data-theme="liquid"]:not(.fx-glass-fallback) body :is(.sidebar,#hero,.system-console,.tool-cluster,.home-layout>.hero-datetime,.compact-bar){
   background:var(--lg-sheen),rgba(0,0,0,var(--lg-pane-alpha))!important;
-  border-color:rgba(255,255,255,.23) rgba(255,255,255,.13) rgba(255,255,255,.19) rgba(255,255,255,.13)!important;
+  border-color:rgba(255,255,255,.16) rgba(255,255,255,.065) rgba(0,0,0,.18) rgba(255,255,255,.10)!important;
   box-shadow:var(--lg-depth)!important;
-  backdrop-filter:blur(var(--lg-blur))!important;
-  -webkit-backdrop-filter:blur(var(--lg-blur))!important;
+  backdrop-filter:blur(var(--lg-blur))!important;-webkit-backdrop-filter:blur(var(--lg-blur))!important;
 }
 html[data-theme="liquid"]:not(.fx-glass-fallback) body .sidebar{background:var(--lg-sheen),rgba(0,0,0,var(--lg-side-alpha))!important;}
 html[data-theme="liquid"]:not(.fx-glass-fallback) body .home-layout>.hero-datetime{background:var(--lg-sheen),rgba(0,0,0,var(--lg-calendar-alpha))!important;}
-/* Nested glass intentionally uses a lighter tint and no repeated backdrop blur. */
-html[data-theme="liquid"]:not(.fx-glass-fallback) body :is(.calendar-ref-v1838 .calendar-ref-monthbox,.calendar-ref-progress,.calendar-ref-selected,#hero .search-panel){
-  background:var(--lg-sheen),rgba(0,0,0,calc(var(--lg-pane-alpha) * .28))!important;
-  border-color:rgba(255,255,255,.20)!important;box-shadow:var(--lg-small-depth)!important;
-  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+html[data-theme="liquid"]:not(.fx-glass-fallback) body :is(.calendar-ref-v1838 .calendar-ref-monthbox,.calendar-ref-progress,.calendar-ref-selected){
+  background:var(--lg-sheen),rgba(0,0,0,calc(var(--lg-pane-alpha) * .22))!important;
+  border-color:rgba(255,255,255,.13) rgba(255,255,255,.06) rgba(0,0,0,.16)!important;
+  box-shadow:var(--lg-small-depth)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
 }
+/* Search wrapper retains its dimensions; only the input row reads as a glass capsule. */
+html[data-theme="liquid"]:not(.fx-glass-fallback) body #hero .search-panel{background:transparent!important;border-color:transparent!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
 html[data-theme="liquid"]:not(.fx-glass-fallback) body :is(#hero .search-row,.compact-search){
-  background:var(--lg-sheen),rgba(0,0,0,calc(var(--lg-pane-alpha) * .38))!important;
-  border-color:rgba(255,255,255,.24)!important;box-shadow:var(--lg-small-depth)!important;
+  background:linear-gradient(165deg,rgba(255,255,255,.065),rgba(255,255,255,.015) 35%,transparent 60%,rgba(255,255,255,.035)),rgba(0,0,0,calc(var(--lg-pane-alpha) * .32))!important;
+  border-color:rgba(255,255,255,.16) rgba(255,255,255,.07) rgba(0,0,0,.20)!important;box-shadow:var(--lg-small-depth)!important;
 }
-html[data-theme="liquid"]:not(.fx-glass-fallback) body #hero .search-row:focus-within{border-color:rgba(255,255,255,.48)!important;box-shadow:var(--lg-small-depth)!important;}
+html[data-theme="liquid"]:not(.fx-glass-fallback) body #hero .search-row{border-radius:999px!important;}
+html[data-theme="liquid"]:not(.fx-glass-fallback) body #hero .search-row:focus-within{outline:1px solid rgba(255,255,255,.34)!important;outline-offset:2px!important;}
 html[data-theme="liquid"]:not(.fx-glass-fallback) body #hero .search-info .pill{background:rgba(0,0,0,calc(var(--lg-pane-alpha) * .35))!important;}
 html[data-theme="liquid"]:not(.fx-glass-fallback) body #content .card.glass,
 html[data-theme="liquid"]:not(.fx-glass-fallback) body #content .card.glass:hover{
   background:var(--lg-sheen),rgba(0,0,0,var(--lg-card-alpha))!important;
-  border-color:rgba(255,255,255,.23) rgba(255,255,255,.13) rgba(255,255,255,.18) rgba(255,255,255,.13)!important;
-  box-shadow:var(--lg-small-depth)!important;
+  border-color:rgba(255,255,255,.13) rgba(255,255,255,.045) rgba(0,0,0,.18)!important;box-shadow:var(--lg-small-depth)!important;
 }
-html[data-theme="liquid"]:not(.fx-glass-fallback) body #content .card.glass.fx-lg-near{
-  backdrop-filter:blur(var(--lg-blur-soft))!important;-webkit-backdrop-filter:blur(var(--lg-blur-soft))!important;
+/* Only already-positioned elements with unused liquid-mode ::after receive a rim.
+   The mask removes the ENTIRE interior; the ring never covers text or intercepts input. */
+@supports (mask-composite:exclude) or (-webkit-mask-composite:xor){
+ html[data-theme="liquid"]:not(.fx-glass-fallback) body :is(#hero,#content .card.glass,#hero .search-row,.system-console)::after{
+  content:""!important;display:block!important;position:absolute!important;inset:0!important;width:auto!important;height:auto!important;
+  border-radius:inherit!important;padding:1.5px;pointer-events:none!important;background:var(--lg-rim)!important;
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;
+  mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask-composite:exclude;
+  opacity:.82!important;transform:none!important;box-shadow:none!important;filter:none!important;
+ }
+ html[data-theme="liquid"]:not(.fx-glass-fallback) body #hero .search-row::after{padding:2px;opacity:1!important;}
 }
+html[data-theme="liquid"]:not(.fx-glass-fallback) body #content .card.glass.fx-lg-near{backdrop-filter:blur(var(--lg-blur-soft))!important;-webkit-backdrop-filter:blur(var(--lg-blur-soft))!important;}
 html[data-theme="liquid"]:not(.fx-glass-fallback)[data-liquid-clear="1"] body :is(.sidebar,#hero,.system-console,.tool-cluster,.home-layout>.hero-datetime,.compact-bar,#content .card.glass.fx-lg-near,.liquid-glass-tuning-preview-card){backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
-/* Keep the adjustment popover legible even with both material sliders at zero. */
-html[data-theme="liquid"] body #liquidGlassSettings{
-  background:rgba(27,27,27,.96)!important;border-color:rgba(255,255,255,.22)!important;
-  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
-}
-html[data-theme="liquid"] body #liquidGlassSettings .liquid-glass-tuning{background:rgba(0,0,0,.22);border-color:rgba(255,255,255,.17);}
-/* Neutral, high-contrast test pattern reveals blur and black tint independently. */
+/* Neutral controls; the preview uses the current wallpaper when available. */
+html[data-theme="liquid"] body #liquidGlassSettings{background:#272727!important;border-color:rgba(255,255,255,.16)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
+html[data-theme="liquid"] body #liquidGlassSettings .liquid-glass-tuning{background:rgba(0,0,0,.16);border-color:rgba(255,255,255,.13);}
 html[data-theme="liquid"] body #liquidGlassSettings .liquid-glass-tuning-preview{
-  background:repeating-linear-gradient(125deg,#2d2d2d 0px,#2d2d2d 20px,#b3b3b3 20px,#b3b3b3 36px,#666 36px,#666 61px,#dedede 61px,#dedede 67px)!important;
+ background-image:var(--liquid-bg-image,linear-gradient(132deg,#383838 0%,#858585 23%,#555 38%,#bdbdbd 44%,#454545 64%,#777 77%,#292929 100%))!important;
+ background-size:cover!important;background-position:center!important;
 }
 html[data-theme="liquid"] body #liquidGlassSettings .liquid-glass-tuning-preview::before{display:none;}
 html[data-theme="liquid"] body #liquidGlassSettings .liquid-glass-tuning-preview-card{
-  background:var(--lg-sheen),rgba(0,0,0,var(--lg-card-alpha))!important;
-  border-color:rgba(255,255,255,.40) rgba(255,255,255,.20) rgba(255,255,255,.34)!important;
-  box-shadow:var(--lg-small-depth)!important;
-  backdrop-filter:blur(var(--lg-blur-soft))!important;-webkit-backdrop-filter:blur(var(--lg-blur-soft))!important;
+ background:var(--lg-sheen),rgba(0,0,0,var(--lg-card-alpha))!important;
+ border-color:rgba(255,255,255,.34) rgba(255,255,255,.09) rgba(255,255,255,.22) rgba(255,255,255,.15)!important;
+ box-shadow:var(--lg-small-depth)!important;backdrop-filter:blur(var(--lg-blur-soft))!important;-webkit-backdrop-filter:blur(var(--lg-blur-soft))!important;
 }
 html[data-theme="liquid"][data-liquid-clear="1"] body #liquidGlassSettings .liquid-glass-tuning-preview-card{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
-html[data-theme="liquid"] body #liquidGlassSettings .liquid-glass-tuning-preview-card :is(b,small){text-shadow:0 1px 3px rgba(0,0,0,.8);}
+html[data-theme="liquid"] body #liquidGlassSettings .liquid-glass-tuning-preview-card :is(b,small){text-shadow:0 1px 3px rgba(0,0,0,.65);}
 html[data-theme="liquid"] body #liquidGlassSettings :is(#liquidTintValue,#liquidBlurValue){color:#ededed;}
-/* Dialogs keep a readable minimum tint; no change to existing positioning. */
-html[data-theme="liquid"]:not(.fx-glass-fallback) body :is(#drawer.drawer,.category-context,.category-icon-editor,.command-panel,.login-card,.site-editor,.fx-icon-library,.fx-wallpaper-dialog,.fx-wp-confirm){
-  background:var(--lg-sheen),rgba(0,0,0,max(.64,var(--lg-float-alpha)))!important;
-}
+html[data-theme="liquid"]:not(.fx-glass-fallback) body :is(#drawer.drawer,.category-context,.category-icon-editor,.command-panel,.login-card,.site-editor,.fx-icon-library,.fx-wallpaper-dialog,.fx-wp-confirm){background:var(--lg-sheen),rgba(0,0,0,max(.64,var(--lg-float-alpha)))!important;}
 @media(prefers-reduced-transparency:reduce){
  html[data-theme="liquid"]:not(.fx-glass-fallback) body :is(.sidebar,#hero,.system-console,.tool-cluster,.home-layout>.hero-datetime,.compact-bar,#content .card.glass,#content .card.glass.fx-lg-near,.calendar-ref-v1838 .calendar-ref-monthbox,.calendar-ref-progress,.calendar-ref-selected,#hero .search-panel,#hero .search-row,.compact-search,#liquidGlassSettings .liquid-glass-tuning-preview-card){background:#282828!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
 }
