@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>私人导航工具箱 · V20.17</title>
+<title>私人导航工具箱 · V20.18</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: blob: https: http:; connect-src 'self' https:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -18,7 +18,7 @@
 </style>
 <script  id="app-meta-v1891"  data-module="script-01.js">
 
-window.FXNAV_APP=Object.freeze({version:"20.17",build:"V20.17",schemaVersion:3,channel:"stable"});
+window.FXNAV_APP=Object.freeze({version:"20.18",build:"V20.18",schemaVersion:3,channel:"stable"});
 
 </script>
 <script  id="theme-boot-v1867"  data-module="script-02.js">
@@ -3967,7 +3967,7 @@ html[data-theme="neon"] .tool-cluster{border-radius:14px;}}
 <link rel="icon" type="image/png" sizes="64x64" href="/assets/runtime/favicon-985ed977.png">
 <link rel="shortcut icon" type="image/png" href="/assets/runtime/favicon-985ed977.png">
 
-<meta name="x-build" content="V20.17-20261122">
+<meta name="x-build" content="V20.18-20261122">
 <meta name="x-app-version" content="20.08">
 
 <style data-module="style-03.css">
@@ -8855,7 +8855,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
         <span class="console-divider"></span>
         <span class="console-item cache"><span class="k">CACHE</span><strong id="consoleCache">0 KB</strong></span>
         <span class="console-divider"></span>
-        <span class="console-item build"><span class="k">BUILD</span><strong id="consoleBuildVersion">V20.17</strong></span>
+        <span class="console-item build"><span class="k">BUILD</span><strong id="consoleBuildVersion">V20.18</strong></span>
         <span class="console-spacer"></span>
         <span class="console-activity">
           <span class="k">SYSTEM ACTIVITY</span>
@@ -9015,7 +9015,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
 
     <div id="fxD1LoadingV1946" class="fx-d1-loading-v1946" role="status">正在读取完整云端导航数据…</div>
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V20.17 版本</div>
+    <div class="footer">© 2026 私人导航工具箱 · V20.18 版本</div>
   </main>
 </div>
 
@@ -19069,7 +19069,7 @@ html[data-theme="liquid"].fx-glass-fallback body :is(.login-card,.site-editor,.c
 </style>
 
 <style id="v2017-refined-sidebar">
-/* V20.17: liquid sidebar only. One surface per row, no duplicate rim or clip-path. */
+/* V20.18: liquid sidebar only. One surface per row, no duplicate rim or clip-path. */
 html[data-theme="liquid"] body #sidebar.sidebar :is(.sidebar-pinned,#categoryNav) .nav-btn{
  gap:9px!important;padding-inline:9px!important;
  background:transparent!important;background-clip:border-box!important;
@@ -19121,6 +19121,86 @@ html[data-theme="liquid"] body.scroll-spy-active #sidebar.sidebar :is(.sidebar-p
 html[data-theme="liquid"] body.scroll-spy-active #sidebar.sidebar :is(.sidebar-pinned,#categoryNav) .nav-btn[data-filter="all"].active:not(.scroll-active) .nav-icon{background:linear-gradient(150deg,rgba(255,255,255,.105),rgba(255,255,255,.025))!important;border-color:rgba(255,255,255,.075)!important;}
 html[data-theme="liquid"] body #sidebar.sidebar .sidebar-categories{margin-top:4px;}
 html[data-theme="liquid"] body #sidebar.sidebar .sidebar-categories::before{padding:8px 10px 3px;font-size:10px;line-height:13px;}
+</style>
+<style id="v2018-cross-theme-controls">
+/* V20.18: shared sidebar design system. Palette varies with the existing theme. */
+html[data-theme="dark"]{
+ --nav18-name:#e5eaf6;--nav18-count:#a7b5ce;--nav18-icon:#d7e3f8;
+ --nav18-tile:linear-gradient(150deg,#ffffff13,#ffffff04);--nav18-line:#b8c9f51a;--nav18-hover:#8b9df213;
+ --nav18-active:linear-gradient(105deg,#253e72,#3b2f68);--nav18-active-text:#f3f6ff;--nav18-active-tile:#ffffff19;--nav18-focus:#9dadff;
+ --nav18-divider:#a5b8e31e;--nav18-section:#9aabc6;
+}
+html[data-theme="light"]{
+ --nav18-name:#26334b;--nav18-count:#65748d;--nav18-icon:#435577;
+ --nav18-tile:linear-gradient(150deg,#ffffffb8,#dce5f477);--nav18-line:#516a9f22;--nav18-hover:#6d83d810;
+ --nav18-active:linear-gradient(105deg,#d9e9ff,#e7dffc);--nav18-active-text:#253664;--nav18-active-tile:#ffffff64;--nav18-focus:#576ac5;
+ --nav18-divider:#516a9f20;--nav18-section:#63738d;
+}
+html[data-theme="neon"]{
+ --nav18-name:#e5eeff;--nav18-count:#a1b3d5;--nav18-icon:#bedaff;
+ --nav18-tile:linear-gradient(150deg,#57b7ff17,#9764f609);--nav18-line:#72b0ff23;--nav18-hover:#609bff17;
+ --nav18-active:linear-gradient(105deg,#216eab,#4b53b9 52%,#87499d);--nav18-active-text:#fff;--nav18-active-tile:#ffffff19;--nav18-focus:#77d5ff;
+ --nav18-divider:#7aa3ee27;--nav18-section:#9aafd6;
+}
+html[data-theme="frosted"]{
+ --nav18-name:#ededed;--nav18-count:#acacaf;--nav18-icon:#ddd;
+ --nav18-tile:linear-gradient(150deg,#ffffff13,#ffffff04);--nav18-line:#ffffff13;--nav18-hover:#ffffff0e;
+ --nav18-active:linear-gradient(105deg,#343638,#242527);--nav18-active-text:#fff;--nav18-active-tile:#ffffff13;--nav18-focus:#d5d5d5;
+ --nav18-divider:#ffffff17;--nav18-section:#a4a4a7;
+}
+
+html[data-theme]:not([data-theme="liquid"]) body #sidebar.sidebar :is(.sidebar-pinned,#categoryNav) .nav-btn{
+ gap:9px!important;padding-inline:9px!important;
+ background:transparent!important;background-clip:border-box!important;
+ border:1px solid transparent!important;border-radius:14px!important;
+ clip-path:none!important;overflow:hidden!important;box-shadow:none!important;
+ transform:none!important;filter:none!important;
+ transition:background-color .14s ease,color .14s ease!important;
+}
+html[data-theme]:not([data-theme="liquid"]) body #sidebar.sidebar :is(.sidebar-pinned,#categoryNav) .nav-btn:is(.active,.scroll-active){background:var(--nav18-active) border-box!important;border-color:transparent!important;box-shadow:inset 0 1px 0 #ffffff14!important;}
+html[data-theme]:not([data-theme="liquid"]) body.scroll-spy-active #sidebar.sidebar :is(.sidebar-pinned,#categoryNav) .nav-btn[data-filter="all"].active:not(.scroll-active){background:transparent!important;border-color:transparent!important;box-shadow:none!important;}
+html[data-theme]:not([data-theme="liquid"]) body #sidebar.sidebar :is(.sidebar-pinned,#categoryNav) .nav-btn::before,html[data-theme]:not([data-theme="liquid"]) body #sidebar.sidebar :is(.sidebar-pinned,#categoryNav) .nav-btn::after,html[data-theme]:not([data-theme="liquid"]) body #sidebar.sidebar :is(.sidebar-pinned,#categoryNav) .nav-btn .nav-count::after{content:none!important;display:none!important;}
+html[data-theme]:not([data-theme="liquid"]) body #sidebar.sidebar #navActiveIndicator{display:none!important;}
+html[data-theme]:not([data-theme="liquid"]) body #sidebar.sidebar :is(.sidebar-pinned,#categoryNav) .nav-btn .nav-icon{
+ box-sizing:border-box!important;display:grid!important;place-items:center!important;
+ width:29px!important;height:29px!important;flex:0 0 29px!important;
+ border:1px solid var(--nav18-line)!important;border-radius:9px!important;
+ background:var(--nav18-tile)!important;box-shadow:inset 0 1px 2px #ffffff0c!important;
+ color:var(--nav18-icon)!important;-webkit-text-fill-color:currentColor!important;
+ font-size:14px!important;line-height:1!important;transform:none!important;filter:none!important;
+}
+html[data-theme]:not([data-theme="liquid"]) body #sidebar.sidebar :is(.sidebar-pinned,#categoryNav) .nav-btn .nav-name{font-size:13px!important;font-weight:550!important;letter-spacing:0!important;color:var(--nav18-name)!important;text-shadow:none!important;transform:none!important;-webkit-text-fill-color:currentColor!important;}
+html[data-theme]:not([data-theme="liquid"]) body #sidebar.sidebar :is(.sidebar-pinned,#categoryNav) .nav-btn .nav-count{
+ display:grid!important;place-items:center end!important;box-sizing:border-box!important;
+ width:28px!important;min-width:28px!important;flex:0 0 28px!important;height:22px!important;
+ padding:0 2px 0 0!important;border:0!important;border-radius:0!important;
+ background:none!important;box-shadow:none!important;text-shadow:none!important;
+ color:var(--nav18-count)!important;-webkit-text-fill-color:currentColor!important;
+ font-size:11px!important;font-weight:500!important;font-variant-numeric:tabular-nums;
+ opacity:1!important;transform:none!important;
+}
+html[data-theme]:not([data-theme="liquid"]) body #sidebar.sidebar :is(.sidebar-pinned,#categoryNav) .nav-btn:is(.active,.scroll-active) :is(.nav-icon,.nav-name,.nav-count){color:var(--nav18-active-text)!important;-webkit-text-fill-color:currentColor!important;}
+html[data-theme]:not([data-theme="liquid"]) body #sidebar.sidebar :is(.sidebar-pinned,#categoryNav) .nav-btn:is(.active,.scroll-active) .nav-icon{background:var(--nav18-active-tile)!important;border-color:transparent!important;}
+html[data-theme]:not([data-theme="liquid"]) body.scroll-spy-active #sidebar.sidebar :is(.sidebar-pinned,#categoryNav) .nav-btn[data-filter="all"].active:not(.scroll-active) .nav-icon{background:var(--nav18-tile)!important;border-color:var(--nav18-line)!important;color:var(--nav18-icon)!important;}
+html[data-theme]:not([data-theme="liquid"]) body.scroll-spy-active #sidebar.sidebar :is(.sidebar-pinned,#categoryNav) .nav-btn[data-filter="all"].active:not(.scroll-active) .nav-name{color:var(--nav18-name)!important;}
+html[data-theme]:not([data-theme="liquid"]) body.scroll-spy-active #sidebar.sidebar :is(.sidebar-pinned,#categoryNav) .nav-btn[data-filter="all"].active:not(.scroll-active) .nav-count{color:var(--nav18-count)!important;background:none!important;border:0!important;}
+html[data-theme]:not([data-theme="liquid"]) body #sidebar.sidebar :is(.sidebar-pinned,#categoryNav) .nav-btn:focus-visible{outline:2px solid var(--nav18-focus)!important;outline-offset:-3px!important;}
+@media(hover:hover) and (pointer:fine){
+ html[data-theme]:not([data-theme="liquid"]) body #sidebar.sidebar :is(.sidebar-pinned,#categoryNav) .nav-btn:not(.active):not(.scroll-active):hover,html[data-theme]:not([data-theme="liquid"]) body.scroll-spy-active #sidebar.sidebar :is(.sidebar-pinned,#categoryNav) .nav-btn[data-filter="all"].active:not(.scroll-active):hover{background:var(--nav18-hover)!important;border-color:transparent!important;box-shadow:none!important;}
+ html[data-theme]:not([data-theme="liquid"]) body #sidebar.sidebar :is(.sidebar-pinned,#categoryNav) .nav-btn:is(.active,.scroll-active):hover{background:var(--nav18-active) border-box!important;border-color:transparent!important;box-shadow:inset 0 1px 0 #ffffff14!important;}
+ html[data-theme]:not([data-theme="liquid"]) body.scroll-spy-active #sidebar.sidebar :is(.sidebar-pinned,#categoryNav) .nav-btn[data-filter="all"].active:not(.scroll-active):hover{background:var(--nav18-hover)!important;box-shadow:none!important;}
+}
+html[data-theme]:not([data-theme="liquid"]) body #sidebar.sidebar .sidebar-categories{border-top:1px solid var(--nav18-divider);margin-top:4px;padding-top:0!important;}
+html[data-theme]:not([data-theme="liquid"]) body #sidebar.sidebar .sidebar-categories::before{content:"网站分类";display:block;padding:8px 10px 3px;font-size:10px;line-height:13px;letter-spacing:.08em;color:var(--nav18-section);font-weight:500;}
+/* Use an optical-center vector icon without changing the existing input/button footprint. */
+html[data-theme]:not([data-theme="liquid"]) body #hero .search-row .search-symbol{align-self:center!important;place-self:center!important;line-height:0!important;font-size:0!important;display:grid!important;place-items:center!important;}
+html[data-theme]:not([data-theme="liquid"]) body #hero .search-row .search-symbol::before{content:" ";display:block;width:20px;height:20px;background:currentColor;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5'/%3E%3Cpath d='M15.5 15.5 20 20'/%3E%3C/svg%3E") center / contain no-repeat;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5'/%3E%3Cpath d='M15.5 15.5 20 20'/%3E%3C/svg%3E") center / contain no-repeat;}
+/* The other four login palettes already use dedicated theme tokens. Keep those
+   colors and share the rounded close control and restrained input bevel. */
+html[data-theme]:not([data-theme="liquid"]) body .login-card .login-close{border-radius:50%!important;box-shadow:inset 0 1px 2px #ffffff12!important;}
+html[data-theme]:not([data-theme="liquid"]) body .login-card .login-form input{box-shadow:inset 0 1px 2px #ffffff12,inset 0 -1px 2px #0000000b!important;}
+html[data-theme]:not([data-theme="liquid"]) body .login-card .login-form input:focus{border-color:var(--login-focus)!important;box-shadow:0 0 0 2px color-mix(in srgb,var(--login-focus) 24%,transparent)!important;}
+@media(prefers-reduced-motion:reduce){html[data-theme]:not([data-theme="liquid"]) body #sidebar.sidebar :is(.sidebar-pinned,#categoryNav) .nav-btn{transition:none!important;}}
 </style>
 </body>
 </html>
