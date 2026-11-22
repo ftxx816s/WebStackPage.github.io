@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>私人导航工具箱 · V20.09</title>
+<title>私人导航工具箱 · V20.10</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: blob: https: http:; connect-src 'self' https:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -18,7 +18,7 @@
 </style>
 <script  id="app-meta-v1891"  data-module="script-01.js">
 
-window.FXNAV_APP=Object.freeze({version:"20.09",build:"V20.09",schemaVersion:3,channel:"stable"});
+window.FXNAV_APP=Object.freeze({version:"20.10",build:"V20.10",schemaVersion:3,channel:"stable"});
 
 </script>
 <script  id="theme-boot-v1867"  data-module="script-02.js">
@@ -3967,7 +3967,7 @@ html[data-theme="neon"] .tool-cluster{border-radius:14px;}}
 <link rel="icon" type="image/png" sizes="64x64" href="/assets/runtime/favicon-985ed977.png">
 <link rel="shortcut icon" type="image/png" href="/assets/runtime/favicon-985ed977.png">
 
-<meta name="x-build" content="V20.09-20261121">
+<meta name="x-build" content="V20.10-20261122">
 <meta name="x-app-version" content="20.08">
 
 <style data-module="style-03.css">
@@ -8855,7 +8855,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
         <span class="console-divider"></span>
         <span class="console-item cache"><span class="k">CACHE</span><strong id="consoleCache">0 KB</strong></span>
         <span class="console-divider"></span>
-        <span class="console-item build"><span class="k">BUILD</span><strong id="consoleBuildVersion">V20.09</strong></span>
+        <span class="console-item build"><span class="k">BUILD</span><strong id="consoleBuildVersion">V20.10</strong></span>
         <span class="console-spacer"></span>
         <span class="console-activity">
           <span class="k">SYSTEM ACTIVITY</span>
@@ -9015,7 +9015,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
 
     <div id="fxD1LoadingV1946" class="fx-d1-loading-v1946" role="status">正在读取完整云端导航数据…</div>
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V20.09 版本</div>
+    <div class="footer">© 2026 私人导航工具箱 · V20.10 版本</div>
   </main>
 </div>
 
@@ -9031,21 +9031,21 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
     <span class="lg-preset-tick" aria-hidden="true">✓</span>
   </div>
   <div class="liquid-glass-tuning" aria-label="液态玻璃通透程度调节">
-    <div class="liquid-glass-tuning-title"><b>玻璃显示效果</b><span id="liquidTintValue" aria-live="polite">45%</span></div>
+    <div class="liquid-glass-tuning-title"><b>玻璃黑度</b><span id="liquidTintValue" aria-live="polite">45%</span></div>
     <div class="liquid-glass-tuning-preview" aria-hidden="true">
       <div class="liquid-glass-tuning-preview-card"><span class="liquid-glass-tuning-spark">✦</span><span><b>液态玻璃</b><small>内容清晰，背景可见</small></span></div>
     </div>
-    <input id="liquidTintRange" class="liquid-glass-tuning-range" type="range" min="0" max="100" step="1" value="45" aria-label="玻璃透明与色调调节：左侧透明，右侧色调">
+    <input id="liquidTintRange" class="liquid-glass-tuning-range" type="range" min="0" max="100" step="1" value="45" aria-label="玻璃黑度：左侧透明，右侧黑色">
     <div class="liquid-glass-tuning-ends">
       <button type="button" id="liquidTintClear" class="liquid-glass-tuning-end"><b>透明</b></button>
-      <button type="button" id="liquidTintTone" class="liquid-glass-tuning-end"><b>色调</b></button>
+      <button type="button" id="liquidTintTone" class="liquid-glass-tuning-end"><b>黑色</b></button>
     </div>
-    <div class="liquid-glass-blur-control" aria-label="玻璃磨砂与透明程度调节">
-      <div class="liquid-glass-blur-title"><b>玻璃清晰度</b><span id="liquidBlurValue" aria-live="polite">45%</span></div>
-      <input id="liquidBlurRange" class="liquid-glass-tuning-range" type="range" min="0" max="100" step="1" value="45" aria-label="玻璃磨砂与透明调节：左侧磨砂，右侧透明">
+    <div class="liquid-glass-blur-control" aria-label="玻璃透明与磨砂程度调节">
+      <div class="liquid-glass-blur-title"><b>玻璃磨砂度</b><span id="liquidBlurValue" aria-live="polite">55%</span></div>
+      <input id="liquidBlurRange" class="liquid-glass-tuning-range" type="range" min="0" max="100" step="1" value="55" aria-label="玻璃磨砂度：左侧透明，右侧磨砂">
       <div class="liquid-glass-tuning-ends">
-        <button type="button" id="liquidBlurFrosted" class="liquid-glass-tuning-end"><b>磨砂</b></button>
         <button type="button" id="liquidBlurClear" class="liquid-glass-tuning-end"><b>透明</b></button>
+        <button type="button" id="liquidBlurFrosted" class="liquid-glass-tuning-end"><b>磨砂</b></button>
       </div>
     </div>
   </div>
@@ -16575,15 +16575,17 @@ html[data-theme="light"] .nav-btn.scroll-active .nav-count{
   try{const saved=localStorage.getItem(TINT_KEY);if(saved!==null&&saved!==''&&Number.isFinite(Number(saved)))tint=clampTint(saved)}catch{}
   try{const saved=localStorage.getItem(BLUR_KEY);if(saved!==null&&saved!==''&&Number.isFinite(Number(saved)))blurClarity=clampBlur(saved)}catch{}
   function applyBlurMaterial(){
-    const blurPx=Math.max(0,Math.round((100-blurClarity)*.16));
+    // Keep the saved/cloud blurClarity meaning (100 = clear); only reverse the visible slider.
+    const frost=100-blurClarity;
+    const blurPx=frost*.28;
     root.style.setProperty('--lg-blur',`${blurPx}px`);
     root.style.setProperty('--lg-blur-soft',`${Math.round(blurPx*.75)}px`);
     root.style.setProperty('--lg-blur-medium',`${Math.round(blurPx*1.15)}px`);
     root.style.setProperty('--lg-blur-strong',`${Math.round(blurPx*1.4)}px`);
     root.dataset.liquidClear=String(blurPx===0?'1':'0');
     const range=$('liquidBlurRange'),value=$('liquidBlurValue');
-    if(range){range.value=String(blurClarity);range.style.setProperty('--blur-fill',`${blurClarity}%`)}
-    if(value)value.textContent=`${blurClarity}%`;
+    if(range){range.value=String(frost);range.style.setProperty('--blur-fill',`${frost}%`)}
+    if(value)value.textContent=`${frost}%`;
     const a=$('liquidBlurFrosted'),b=$('liquidBlurClear');
     if(a)a.setAttribute('aria-pressed',String(blurClarity===0));
     if(b)b.setAttribute('aria-pressed',String(blurClarity===100));
@@ -16596,11 +16598,11 @@ html[data-theme="light"] .nav-btn.scroll-active .nav-count{
   }
   function applyMaterial(){
     root.dataset.glassRecipe='notification';
-    root.style.setProperty('--lg-pane-alpha',(0.07+tint*.0028).toFixed(3));
-    root.style.setProperty('--lg-calendar-alpha',(0.065+tint*.00265).toFixed(3));
-    root.style.setProperty('--lg-side-alpha',(0.12+tint*.0030).toFixed(3));
-    root.style.setProperty('--lg-card-alpha',(0.085+tint*.00265).toFixed(3));
-    root.style.setProperty('--lg-float-alpha',(0.17+tint*.0036).toFixed(3));
+    root.style.setProperty('--lg-pane-alpha',(0.025+tint*.00845).toFixed(3));
+    root.style.setProperty('--lg-calendar-alpha',(0.035+tint*.00855).toFixed(3));
+    root.style.setProperty('--lg-side-alpha',(0.045+tint*.00845).toFixed(3));
+    root.style.setProperty('--lg-card-alpha',(0.025+tint*.00865).toFixed(3));
+    root.style.setProperty('--lg-float-alpha',(0.18+tint*.0072).toFixed(3));
     applyBlurMaterial();
     const range=$('liquidTintRange'),value=$('liquidTintValue');
     if(range){range.value=String(tint);range.style.setProperty('--tint-fill',`${tint}%`)}
@@ -16956,7 +16958,7 @@ html[data-theme="light"] .nav-btn.scroll-active .nav-count{
     $('liquidTintRange')?.addEventListener('input',e=>setTint(e.target.value));
     $('liquidTintClear')?.addEventListener('click',()=>setTint(0));
     $('liquidTintTone')?.addEventListener('click',()=>setTint(100));
-    $('liquidBlurRange')?.addEventListener('input',e=>setBlur(e.target.value));
+    $('liquidBlurRange')?.addEventListener('input',e=>setBlur(100-clampBlur(e.target.value)));
     $('liquidBlurFrosted')?.addEventListener('click',()=>setBlur(0));
     $('liquidBlurClear')?.addEventListener('click',()=>setBlur(100));
     $('liquidGlassUpload')?.addEventListener('click',()=>void openGallery());
@@ -18807,5 +18809,76 @@ html body #drawer #categoryManagerList.category-manager-grid > .category-manager
   }
 }
 </style>
+
+<style id="v2010-neutral-liquid-material">
+/* V20.10 · Neutral glass. Preserve layout, stacking, clicks and the V20.09 sync contract. */
+html[data-theme="liquid"]{
+  --lg-edge:linear-gradient(165deg,rgba(255,255,255,.28),rgba(255,255,255,.10) 36%,rgba(0,0,0,.22) 67%,rgba(255,255,255,.26));
+  --lg-sheen:linear-gradient(180deg,rgba(255,255,255,.025),transparent 18%,transparent 90%,rgba(255,255,255,.018));
+  --lg-depth:0 5px 16px rgba(0,0,0,.13),inset 0 1px 0 rgba(255,255,255,.27),inset 0 -1px 0 rgba(255,255,255,.15),inset 1px 0 0 rgba(255,255,255,.055),inset -1px 0 0 rgba(0,0,0,.15);
+  --lg-small-depth:0 3px 9px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.23),inset 0 -1px 0 rgba(255,255,255,.12),inset 1px 0 0 rgba(255,255,255,.055);
+  --lg-pane-alpha:.405;--lg-calendar-alpha:.420;--lg-side-alpha:.425;--lg-card-alpha:.414;
+}
+/* A real backdrop blur and a separate neutral black fill, not a blue coating. */
+html[data-theme="liquid"]:not(.fx-glass-fallback) body :is(.sidebar,#hero,.system-console,.tool-cluster,.home-layout>.hero-datetime,.compact-bar){
+  background:var(--lg-sheen),rgba(0,0,0,var(--lg-pane-alpha))!important;
+  border-color:rgba(255,255,255,.23) rgba(255,255,255,.13) rgba(255,255,255,.19) rgba(255,255,255,.13)!important;
+  box-shadow:var(--lg-depth)!important;
+  backdrop-filter:blur(var(--lg-blur))!important;
+  -webkit-backdrop-filter:blur(var(--lg-blur))!important;
+}
+html[data-theme="liquid"]:not(.fx-glass-fallback) body .sidebar{background:var(--lg-sheen),rgba(0,0,0,var(--lg-side-alpha))!important;}
+html[data-theme="liquid"]:not(.fx-glass-fallback) body .home-layout>.hero-datetime{background:var(--lg-sheen),rgba(0,0,0,var(--lg-calendar-alpha))!important;}
+/* Nested glass intentionally uses a lighter tint and no repeated backdrop blur. */
+html[data-theme="liquid"]:not(.fx-glass-fallback) body :is(.calendar-ref-v1838 .calendar-ref-monthbox,.calendar-ref-progress,.calendar-ref-selected,#hero .search-panel){
+  background:var(--lg-sheen),rgba(0,0,0,calc(var(--lg-pane-alpha) * .28))!important;
+  border-color:rgba(255,255,255,.20)!important;box-shadow:var(--lg-small-depth)!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+}
+html[data-theme="liquid"]:not(.fx-glass-fallback) body :is(#hero .search-row,.compact-search){
+  background:var(--lg-sheen),rgba(0,0,0,calc(var(--lg-pane-alpha) * .38))!important;
+  border-color:rgba(255,255,255,.24)!important;box-shadow:var(--lg-small-depth)!important;
+}
+html[data-theme="liquid"]:not(.fx-glass-fallback) body #hero .search-row:focus-within{border-color:rgba(255,255,255,.48)!important;box-shadow:var(--lg-small-depth)!important;}
+html[data-theme="liquid"]:not(.fx-glass-fallback) body #hero .search-info .pill{background:rgba(0,0,0,calc(var(--lg-pane-alpha) * .35))!important;}
+html[data-theme="liquid"]:not(.fx-glass-fallback) body #content .card.glass,
+html[data-theme="liquid"]:not(.fx-glass-fallback) body #content .card.glass:hover{
+  background:var(--lg-sheen),rgba(0,0,0,var(--lg-card-alpha))!important;
+  border-color:rgba(255,255,255,.23) rgba(255,255,255,.13) rgba(255,255,255,.18) rgba(255,255,255,.13)!important;
+  box-shadow:var(--lg-small-depth)!important;
+}
+html[data-theme="liquid"]:not(.fx-glass-fallback) body #content .card.glass.fx-lg-near{
+  backdrop-filter:blur(var(--lg-blur-soft))!important;-webkit-backdrop-filter:blur(var(--lg-blur-soft))!important;
+}
+html[data-theme="liquid"]:not(.fx-glass-fallback)[data-liquid-clear="1"] body :is(.sidebar,#hero,.system-console,.tool-cluster,.home-layout>.hero-datetime,.compact-bar,#content .card.glass.fx-lg-near,.liquid-glass-tuning-preview-card){backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
+/* Keep the adjustment popover legible even with both material sliders at zero. */
+html[data-theme="liquid"] body #liquidGlassSettings{
+  background:rgba(27,27,27,.96)!important;border-color:rgba(255,255,255,.22)!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+}
+html[data-theme="liquid"] body #liquidGlassSettings .liquid-glass-tuning{background:rgba(0,0,0,.22);border-color:rgba(255,255,255,.17);}
+/* Neutral, high-contrast test pattern reveals blur and black tint independently. */
+html[data-theme="liquid"] body #liquidGlassSettings .liquid-glass-tuning-preview{
+  background:repeating-linear-gradient(125deg,#2d2d2d 0px,#2d2d2d 20px,#b3b3b3 20px,#b3b3b3 36px,#666 36px,#666 61px,#dedede 61px,#dedede 67px)!important;
+}
+html[data-theme="liquid"] body #liquidGlassSettings .liquid-glass-tuning-preview::before{display:none;}
+html[data-theme="liquid"] body #liquidGlassSettings .liquid-glass-tuning-preview-card{
+  background:var(--lg-sheen),rgba(0,0,0,var(--lg-card-alpha))!important;
+  border-color:rgba(255,255,255,.40) rgba(255,255,255,.20) rgba(255,255,255,.34)!important;
+  box-shadow:var(--lg-small-depth)!important;
+  backdrop-filter:blur(var(--lg-blur-soft))!important;-webkit-backdrop-filter:blur(var(--lg-blur-soft))!important;
+}
+html[data-theme="liquid"][data-liquid-clear="1"] body #liquidGlassSettings .liquid-glass-tuning-preview-card{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
+html[data-theme="liquid"] body #liquidGlassSettings .liquid-glass-tuning-preview-card :is(b,small){text-shadow:0 1px 3px rgba(0,0,0,.8);}
+html[data-theme="liquid"] body #liquidGlassSettings :is(#liquidTintValue,#liquidBlurValue){color:#ededed;}
+/* Dialogs keep a readable minimum tint; no change to existing positioning. */
+html[data-theme="liquid"]:not(.fx-glass-fallback) body :is(#drawer.drawer,.category-context,.category-icon-editor,.command-panel,.login-card,.site-editor,.fx-icon-library,.fx-wallpaper-dialog,.fx-wp-confirm){
+  background:var(--lg-sheen),rgba(0,0,0,max(.64,var(--lg-float-alpha)))!important;
+}
+@media(prefers-reduced-transparency:reduce){
+ html[data-theme="liquid"]:not(.fx-glass-fallback) body :is(.sidebar,#hero,.system-console,.tool-cluster,.home-layout>.hero-datetime,.compact-bar,#content .card.glass,#content .card.glass.fx-lg-near,.calendar-ref-v1838 .calendar-ref-monthbox,.calendar-ref-progress,.calendar-ref-selected,#hero .search-panel,#hero .search-row,.compact-search,#liquidGlassSettings .liquid-glass-tuning-preview-card){background:#282828!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
+}
+</style>
+
 </body>
 </html>
