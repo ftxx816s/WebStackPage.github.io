@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>私人导航工具箱 · V20.12</title>
+<title>私人导航工具箱 · V20.13</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: blob: https: http:; connect-src 'self' https:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -18,7 +18,7 @@
 </style>
 <script  id="app-meta-v1891"  data-module="script-01.js">
 
-window.FXNAV_APP=Object.freeze({version:"20.12",build:"V20.12",schemaVersion:3,channel:"stable"});
+window.FXNAV_APP=Object.freeze({version:"20.13",build:"V20.13",schemaVersion:3,channel:"stable"});
 
 </script>
 <script  id="theme-boot-v1867"  data-module="script-02.js">
@@ -3967,7 +3967,7 @@ html[data-theme="neon"] .tool-cluster{border-radius:14px;}}
 <link rel="icon" type="image/png" sizes="64x64" href="/assets/runtime/favicon-985ed977.png">
 <link rel="shortcut icon" type="image/png" href="/assets/runtime/favicon-985ed977.png">
 
-<meta name="x-build" content="V20.12-20261122">
+<meta name="x-build" content="V20.13-20261122">
 <meta name="x-app-version" content="20.08">
 
 <style data-module="style-03.css">
@@ -8855,7 +8855,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
         <span class="console-divider"></span>
         <span class="console-item cache"><span class="k">CACHE</span><strong id="consoleCache">0 KB</strong></span>
         <span class="console-divider"></span>
-        <span class="console-item build"><span class="k">BUILD</span><strong id="consoleBuildVersion">V20.12</strong></span>
+        <span class="console-item build"><span class="k">BUILD</span><strong id="consoleBuildVersion">V20.13</strong></span>
         <span class="console-spacer"></span>
         <span class="console-activity">
           <span class="k">SYSTEM ACTIVITY</span>
@@ -9015,7 +9015,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
 
     <div id="fxD1LoadingV1946" class="fx-d1-loading-v1946" role="status">正在读取完整云端导航数据…</div>
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V20.12 版本</div>
+    <div class="footer">© 2026 私人导航工具箱 · V20.13 版本</div>
   </main>
 </div>
 
@@ -16578,6 +16578,9 @@ html[data-theme="light"] .nav-btn.scroll-active .nav-count{
     // Keep the saved/cloud blurClarity meaning (100 = clear); only reverse the visible slider.
     const frost=100-blurClarity;
     const blurPx=frost*.28;
+    const opticalBlur=18*Math.pow(frost/100,1.35);
+    root.style.setProperty('--lg-lens-blur',`${opticalBlur.toFixed(2)}px`);
+    root.style.setProperty('--lg-card-blur',`${(opticalBlur*.64).toFixed(2)}px`);
     root.style.setProperty('--lg-blur',`${blurPx}px`);
     root.style.setProperty('--lg-blur-soft',`${Math.round(blurPx*.75)}px`);
     root.style.setProperty('--lg-blur-medium',`${Math.round(blurPx*1.15)}px`);
@@ -18884,75 +18887,70 @@ html[data-theme="liquid"]:not(.fx-glass-fallback) body :is(#drawer.drawer,.categ
 </style>
 
 
-<style id="v2012-wallpaper-optics">
-/* Paint only. Never alter layout, stacking, hit targets or shared theme/sync state. */
+<style id="v2013-notification-glass">
+/* Neutral notification glass: one edge, soft inner bevel, no geometry changes. */
 html[data-theme="liquid"]:not(.fx-glass-fallback){
- --lg-sheen:linear-gradient(162deg,rgba(255,255,255,.035),transparent 25%,transparent 76%,rgba(255,255,255,.023));
- --lg-depth:0 5px 16px #0002,inset 0 1px 1px #fff2,inset 0 -2px 2px #0002;
- --lg-small-depth:0 3px 10px #0002,inset 0 1px 1px #fff1,inset 0 -1px 1px #0002;
- --lg-rim:linear-gradient(110deg,#fff4 0%,#fff1 19%,#fff0 46%,#0002 70%,#fff4 95%,#fff2);
- --lg-lens-rim:linear-gradient(128deg,#fff7 0%,#fff2 13%,#fff0 33%,#0002 58%,#fff1 78%,#fff6 99%);
+ --ng-rim:radial-gradient(ellipse 32% 110% at 0% 0%,rgba(255,255,255,.78),rgba(255,255,255,.27) 26%,transparent 76%),radial-gradient(ellipse 32% 110% at 100% 100%,rgba(255,255,255,.68),rgba(255,255,255,.16) 34%,transparent 76%),linear-gradient(155deg,rgba(255,255,255,.21),rgba(255,255,255,.045) 43%,rgba(0,0,0,.17) 64%,rgba(255,255,255,.12));
+ --ng-major-rim:radial-gradient(ellipse 20% 34% at 0% 0%,rgba(255,255,255,.56),rgba(255,255,255,.13) 30%,transparent 80%),radial-gradient(ellipse 20% 34% at 100% 100%,rgba(255,255,255,.48),rgba(255,255,255,.12) 30%,transparent 80%),linear-gradient(155deg,#ffffff26,#ffffff08 44%,#00000020 66%,#ffffff16);
+ --ng-pane-film:linear-gradient(rgba(255,255,255,.027),rgba(255,255,255,.027));
+ --ng-card-film:linear-gradient(rgba(255,255,255,.075),rgba(255,255,255,.075));
+ --ng-pane-depth:0 4px 15px #0002,inset 0 5px 12px -7px #ffffff25,inset 0 -5px 12px -7px #ffffff18;
+ --ng-card-depth:0 3px 9px #0002,inset 0 5px 10px -6px #ffffff35,inset 0 -5px 10px -6px #ffffff26,inset 5px 0 10px -8px #ffffff20,inset -5px 0 10px -8px #ffffff20;
 }
 html[data-theme="liquid"]:not(.fx-glass-fallback) body :is(.sidebar,#hero,.system-console,.tool-cluster,.home-layout>.hero-datetime,.compact-bar){
- border-color:#ffffff20 #ffffff0e #00000025 #ffffff14!important;
- box-shadow:var(--lg-depth)!important;
+ background:var(--ng-pane-film),rgba(0,0,0,var(--lg-pane-alpha))!important;
+ border-color:#ffffff16 #ffffff09 #00000024 #ffffff0d!important;box-shadow:var(--ng-pane-depth)!important;
+ backdrop-filter:blur(var(--lg-lens-blur,5px))!important;-webkit-backdrop-filter:blur(var(--lg-lens-blur,5px))!important;
 }
-html[data-theme="liquid"]:not(.fx-glass-fallback) body #hero{background:var(--lg-sheen),rgba(0,0,0,calc(var(--lg-pane-alpha) + var(--lg-local-shade,0)))!important;}
+html[data-theme="liquid"]:not(.fx-glass-fallback) body .sidebar{background:var(--ng-pane-film),rgba(0,0,0,var(--lg-side-alpha))!important;}
+html[data-theme="liquid"]:not(.fx-glass-fallback) body .home-layout>.hero-datetime{background:var(--ng-pane-film),rgba(0,0,0,var(--lg-calendar-alpha))!important;}
 html[data-theme="liquid"]:not(.fx-glass-fallback) body #content .card.glass,
 html[data-theme="liquid"]:not(.fx-glass-fallback) body #content .card.glass:hover{
- background:var(--lg-sheen),rgba(0,0,0,calc(var(--lg-card-alpha) + var(--lg-local-shade,0)))!important;
- border-color:#ffffff16 #ffffff09 #00000025 #ffffff12!important;
- box-shadow:0 3px 10px #0002,inset 0 1px 1px #fff1,inset 0 -1px 1px #0002!important;
+ background:var(--ng-card-film),rgba(0,0,0,calc(var(--lg-card-alpha) + var(--lg-local-shade,0)))!important;
+ border-color:#ffffff17 #ffffff0a #00000020 #ffffff0e!important;box-shadow:var(--ng-card-depth)!important;
 }
 html[data-theme="liquid"]:not(.fx-glass-fallback) body #content .card.glass:not(.fx-lg-near){--lg-local-shade:0!important;}
-html[data-theme="liquid"] body #content .card.glass .site-name{color:#fff!important;text-shadow:0 1px 3px #0009!important;}
-html[data-theme="liquid"] body #content .card.glass .site-domain{color:#eef0f2!important;text-shadow:0 1px 2px #000a,0 0 5px #0006!important;}
+html[data-theme="liquid"]:not(.fx-glass-fallback) body #content .card.glass.fx-lg-near{backdrop-filter:blur(var(--lg-card-blur,3px))!important;-webkit-backdrop-filter:blur(var(--lg-card-blur,3px))!important;}
+html[data-theme="liquid"] body #content .card.glass :is(.card-title,.site-name){color:#fff!important;text-shadow:0 1px 3px #000b!important;}
+html[data-theme="liquid"] body #content .card.glass :is(.card-url,.site-domain){color:#ededed!important;text-shadow:0 1px 2px #000c,0 0 5px #0007!important;}
 html[data-theme="liquid"]:not(.fx-glass-fallback) body :is(.calendar-ref-v1838 .calendar-ref-monthbox,.calendar-ref-progress,.calendar-ref-selected){
- background:rgba(0,0,0,calc(var(--lg-pane-alpha)*.16))!important;border-color:#ffffff0c #ffffff05 #00000019 #ffffff0a!important;
- box-shadow:inset 0 1px 0 #ffffff0b!important;
+ background:rgba(0,0,0,calc(var(--lg-pane-alpha)*.13))!important;border-color:#ffffff0b #ffffff05 #00000015 #ffffff08!important;box-shadow:inset 0 1px 0 #ffffff0b!important;
 }
 html[data-theme="liquid"]:not(.fx-glass-fallback) body #hero .search-row{
- background:linear-gradient(165deg,#ffffff0e,transparent 45%,#ffffff05),rgba(0,0,0,calc(var(--lg-pane-alpha)*.40 + .045 + var(--lg-local-shade,0)))!important;
- border-color:#ffffff29 #ffffff12 #00000030 #ffffff1c!important;
- box-shadow:0 5px 13px #0002,inset 0 1px 1px #fff2,inset 0 -1px 1px #0003!important;
+ background:var(--ng-card-film),rgba(0,0,0,calc(var(--lg-pane-alpha)*.38 + .035))!important;
+ border-color:#ffffff19 #ffffff0b #00000022 #ffffff10!important;box-shadow:var(--ng-card-depth)!important;
 }
-html[data-theme="liquid"]:not(.fx-glass-fallback) body #hero .search-symbol{
- background:transparent!important;border-color:transparent!important;box-shadow:none!important;color:#f8f8f8!important;font-size:20px!important;
-}
-html[data-theme="liquid"]:not(.fx-glass-fallback) body #hero .liquid-search-btn{
- border-radius:999px!important;border:1px solid #ffffff25!important;background:linear-gradient(160deg,#ffffff16,#ffffff04)!important;
- box-shadow:inset 0 1px 1px #fff2!important;color:#fff!important;
-}
-html[data-theme="liquid"]:not(.fx-glass-fallback) body #hero .liquid-search-btn:is(:hover,:focus-visible){background:#ffffff26!important;border-color:#aab7ff88!important;}
-html[data-theme="liquid"]:not(.fx-glass-fallback) body #hero .search-input::placeholder{color:#eeeeee!important;text-shadow:0 1px 2px #0009;}
+html[data-theme="liquid"]:not(.fx-glass-fallback) body #hero .search-symbol{background:transparent!important;border-color:transparent!important;box-shadow:none!important;color:#f8f8f8!important;font-size:20px!important;}
+html[data-theme="liquid"]:not(.fx-glass-fallback) body #hero .liquid-search-btn{border-radius:999px!important;border:1px solid transparent!important;background:transparent!important;box-shadow:none!important;color:#fff!important;}
+html[data-theme="liquid"]:not(.fx-glass-fallback) body #hero .liquid-search-btn:is(:hover,:focus-visible){background:#ffffff19!important;border-color:#ffffff30!important;}
+html[data-theme="liquid"]:not(.fx-glass-fallback) body #hero .search-input::placeholder{color:#eee!important;text-shadow:0 1px 2px #0009;}
 @supports (mask-composite:exclude) or (-webkit-mask-composite:xor){
- html[data-theme="liquid"]:not(.fx-glass-fallback) body #content .card.glass::after{padding:1px;opacity:.72!important;background:var(--lg-rim)!important;}
- html[data-theme="liquid"]:not(.fx-glass-fallback) body :is(#hero,#hero .search-row):is(#hero,.search-row)::after{
-  padding:3px;opacity:.85!important;background-image:var(--lg-lens-rim),var(--lg-refraction-image,none)!important;
-  background-size:100% 100%!important;background-position:center!important;background-repeat:no-repeat!important;
- }
- html[data-theme="liquid"]:not(.fx-glass-fallback) body #hero .search-row:is(.search-row)::after{padding:4px;opacity:1!important;}
- html[data-theme="liquid"].fx-optics-moving:not(.fx-glass-fallback) body :is(#hero,#hero .search-row):is(#hero,.search-row)::after{background-image:var(--lg-lens-rim)!important;}
+ html[data-theme="liquid"]:not(.fx-glass-fallback) body :is(#hero,#content .card.glass,#hero .search-row,.system-console){border-color:transparent!important;}
+ html[data-theme="liquid"]:not(.fx-glass-fallback) body :is(#hero,#content .card.glass,#hero .search-row,.system-console)::after{padding:1px!important;opacity:.94!important;background:var(--ng-rim)!important;pointer-events:none!important;}
+ html[data-theme="liquid"]:not(.fx-glass-fallback) body #hero::after{background:var(--ng-major-rim)!important;opacity:.85!important;}
 }
+html[data-theme="liquid"]:not(.fx-glass-fallback)[data-liquid-clear="1"] body :is(.sidebar,#hero,.system-console,.tool-cluster,.home-layout>.hero-datetime,.compact-bar,#content .card.glass.fx-lg-near){backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
+html[data-theme="liquid"]:not(.fx-glass-fallback) body #liquidGlassSettings .liquid-glass-tuning-preview-card{background:var(--ng-card-film),rgba(0,0,0,var(--lg-card-alpha))!important;box-shadow:var(--ng-card-depth)!important;border-color:#ffffff38 #ffffff13 #ffffff28 #ffffff22!important;backdrop-filter:blur(var(--lg-card-blur,3px))!important;-webkit-backdrop-filter:blur(var(--lg-card-blur,3px))!important;}
+html[data-theme="liquid"]:not(.fx-glass-fallback)[data-liquid-clear="1"] body #liquidGlassSettings .liquid-glass-tuning-preview-card{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
 @media(prefers-reduced-transparency:reduce){
- html[data-theme="liquid"]:not(.fx-glass-fallback) body :is(#hero,#content .card.glass,#hero .search-row,.calendar-ref-v1838 .calendar-ref-monthbox,.calendar-ref-progress,.calendar-ref-selected){background:#282828!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
- html[data-theme="liquid"]:not(.fx-glass-fallback) body :is(#hero,#hero .search-row):is(#hero,.search-row)::after{background-image:none!important;}
+ html[data-theme="liquid"]:not(.fx-glass-fallback) body :is(.sidebar,#hero,.system-console,.tool-cluster,.home-layout>.hero-datetime,.compact-bar,#content .card.glass,#content .card.glass.fx-lg-near,#hero .search-row,.calendar-ref-v1838 .calendar-ref-monthbox,.calendar-ref-progress,.calendar-ref-selected){background:#282828!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
+ html[data-theme="liquid"]:not(.fx-glass-fallback) body :is(#hero,#content .card.glass,#hero .search-row,.system-console)::after{background:none!important;}
 }
 </style>
-<script id="v2012-wallpaper-sampling">
+<script id="v2013-wallpaper-luminance">
 (()=>{
  'use strict';
- // Sample only the selected wallpaper, never the page or user content. Two edge textures maximum.
+ // Sample only wallpaper luminance for visible site cards; no edge bitmap generation.
  // No requests to third parties, no persistence, no D1 calls, no continuous animation.
- const root=document.documentElement,sel='#hero,#hero .search-row',reduce=matchMedia('(prefers-reduced-transparency: reduce)');
+ const root=document.documentElement,reduce=matchMedia('(prefers-reduced-transparency: reduce)');
  let source='',image=null,loading=false,timer=0,epoch=0;
  let lastCards=new Set();
  const allowed=()=>root.dataset.theme==='liquid'&&!root.classList.contains('fx-glass-fallback')&&!reduce.matches;
- const clear=()=>{for(const el of document.querySelectorAll(sel)) {el.style.removeProperty('--lg-refraction-image');el.style.removeProperty('--lg-local-shade');}for(const c of lastCards)c.style.removeProperty('--lg-local-shade');lastCards.clear();};
+ const clear=()=>{for(const c of lastCards)c.style.removeProperty('--lg-local-shade');lastCards.clear();};
  function getSource(){const v=getComputedStyle(root).getPropertyValue('--liquid-bg-image').trim();const m=v.match(/^url\(["']?(.*?)["']?\)$/);if(!m)return '';try{const u=new URL(m[1],location.href);if(u.protocol==='data:'&&/^data:image\//i.test(u.href)||u.protocol==='blob:'||u.origin===location.origin&&/^https?:$/.test(u.protocol))return u.href;}catch{}return '';}
  function drawFit(ctx,img,w,h,cover){const s=(cover?Math.max:Math.min)(w/img.naturalWidth,h/img.naturalHeight);const iw=img.naturalWidth*s,ih=img.naturalHeight*s;ctx.drawImage(img,(w-iw)/2,(h-ih)/2,iw,ih);}
  function render(){
-  root.classList.remove('fx-optics-moving');if(!allowed()){clear();return;}
+  if(!allowed()){clear();return;}
   const next=getSource();if(next!==source){source=next;image=null;loading=false;const seq=++epoch;clear();if(next){const im=new Image();loading=true;im.onload=()=>{if(seq!==epoch)return;image=im;loading=false;queue(0);};im.onerror=()=>{if(seq===epoch){loading=false;image=null;}};im.src=next;}return;}
   if(!image||loading||!image.naturalWidth){clear();return;}
   try{
@@ -18966,27 +18964,9 @@ html[data-theme="liquid"]:not(.fx-glass-fallback) body #hero .search-input::plac
    if(!cover){ctx.save();ctx.filter=`blur(${Math.max(1,23*scale)}px) brightness(.85)`;drawFit(ctx,image,w,h,true);ctx.restore();}
    drawFit(ctx,image,w,h,cover);const pixels=ctx.getImageData(0,0,w,h).data;
    const sample=(x,y)=>4*(Math.max(0,Math.min(h-1,Math.round(y*scale)))*w+Math.max(0,Math.min(w-1,Math.round(x*scale))));
-   function shade(rect){let lum=0,n=0;for(const fx of [.25,.5,.75])for(const fy of [.3,.6,.8]){const i=sample(rect.x+rect.width*fx,rect.y+rect.height*fy);lum+=.2126*pixels[i]+.7152*pixels[i+1]+.0722*pixels[i+2];n++;}return Math.max(0,Math.min(.16,(lum/n-115)/140*.16)).toFixed(3);}
+   function shade(rect){let lum=0,n=0;for(const fx of [.25,.5,.75])for(const fy of [.3,.6,.8]){const i=sample(rect.x+rect.width*fx,rect.y+rect.height*fy);lum+=.2126*pixels[i]+.7152*pixels[i+1]+.0722*pixels[i+2];n++;}return Math.max(0,Math.min(.09,(lum/n-115)/140*.09)).toFixed(3);}
    const visible=r=>r.width>0&&r.height>0&&r.bottom>0&&r.top<vh&&r.right>0&&r.left<vw;
    const cards=new Set();for(const el of document.querySelectorAll('#content .card.glass.fx-lg-near')){const r=el.getBoundingClientRect();if(!visible(r))continue;cards.add(el);el.style.setProperty('--lg-local-shade',shade(r));}for(const el of lastCards)if(!cards.has(el))el.style.removeProperty('--lg-local-shade');lastCards=cards;
-   for(const el of document.querySelectorAll(sel)){
-    const r=el.getBoundingClientRect();if(!visible(r)){el.style.removeProperty('--lg-refraction-image');continue;}
-    const search=el.classList.contains('search-row');el.style.setProperty('--lg-local-shade',shade(r));
-    // Trace the rounded rectangle bevel and displace each sampled pixel along its local normal.
-    // Interior remains completely transparent: CSS mask is an additional safeguard.
-    const cw=Math.round(r.width-2),ch=Math.round(r.height-2);if(cw<8||ch<8||cw*ch>1300000)continue;
-    const radius=Math.min(cw/2,ch/2,Math.max(1,parseFloat(getComputedStyle(el).borderTopLeftRadius)||20));
-    const out=document.createElement('canvas');out.width=cw;out.height=ch;const oc=out.getContext('2d');const d=oc.createImageData(cw,ch),a=d.data,band=search?5:4;
-    for(let y=0;y<ch;y++)for(let x=0;x<cw;x++){
-      const px=x+.5-cw/2,py=y+.5-ch/2,ax=Math.abs(px)-(cw/2-radius),ay=Math.abs(py)-(ch/2-radius);
-      const ox=Math.max(ax,0),oy=Math.max(ay,0),len=Math.hypot(ox,oy),sd=len+Math.min(Math.max(ax,ay),0)-radius;
-      if(sd>0||sd < -band)continue;
-      let nx=0,ny=0;if(len>.001){nx=ox/len*Math.sign(px);ny=oy/len*Math.sign(py);}else if(ax>ay)nx=Math.sign(px);else ny=Math.sign(py);
-      const k=(1+sd/band),shift=(search?8:5)*k;const i=sample(r.x+1+x-nx*shift,r.y+1+y-ny*shift),j=(y*cw+x)*4;
-      a[j]=pixels[i];a[j+1]=pixels[i+1];a[j+2]=pixels[i+2];a[j+3]=Math.round(145*k+36);
-    }
-    oc.putImageData(d,0,0);el.style.setProperty('--lg-refraction-image',`url("${out.toDataURL('image/png')}")`);
-   }
   }catch{clear();}
  }
  function queue(delay=110){clearTimeout(timer);timer=setTimeout(render,delay);}
@@ -18996,9 +18976,8 @@ html[data-theme="liquid"]:not(.fx-glass-fallback) body #hero .search-input::plac
   // Only root attributes changed by theme/wallpaper/slider controllers; child paint writes are not observed.
   new MutationObserver(()=>queue()).observe(root,{attributes:true,attributeFilter:['data-theme','style','data-fx-wallpaper-fit']});
   window.addEventListener('resize',()=>queue(140),{passive:true});
-  document.addEventListener('scroll',()=>{if(!allowed())return;root.classList.add('fx-optics-moving');queue(150);},{passive:true,capture:true});
+  document.addEventListener('scroll',()=>{if(!allowed())return;queue(150);},{passive:true,capture:true});
   reduce.addEventListener?.('change',()=>queue(0));
-  if('ResizeObserver' in window){const ro=new ResizeObserver(()=>queue());for(const el of document.querySelectorAll(sel))ro.observe(el);}
   queue(0);
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
