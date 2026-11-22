@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>私人导航工具箱 · V20.18</title>
+<title>私人导航工具箱 · V20.19</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: blob: https: http:; connect-src 'self' https:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -18,7 +18,7 @@
 </style>
 <script  id="app-meta-v1891"  data-module="script-01.js">
 
-window.FXNAV_APP=Object.freeze({version:"20.18",build:"V20.18",schemaVersion:3,channel:"stable"});
+window.FXNAV_APP=Object.freeze({version:"20.19",build:"V20.19",schemaVersion:3,channel:"stable"});
 
 </script>
 <script  id="theme-boot-v1867"  data-module="script-02.js">
@@ -3967,7 +3967,7 @@ html[data-theme="neon"] .tool-cluster{border-radius:14px;}}
 <link rel="icon" type="image/png" sizes="64x64" href="/assets/runtime/favicon-985ed977.png">
 <link rel="shortcut icon" type="image/png" href="/assets/runtime/favicon-985ed977.png">
 
-<meta name="x-build" content="V20.18-20261122">
+<meta name="x-build" content="V20.19-20261122">
 <meta name="x-app-version" content="20.08">
 
 <style data-module="style-03.css">
@@ -8855,7 +8855,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
         <span class="console-divider"></span>
         <span class="console-item cache"><span class="k">CACHE</span><strong id="consoleCache">0 KB</strong></span>
         <span class="console-divider"></span>
-        <span class="console-item build"><span class="k">BUILD</span><strong id="consoleBuildVersion">V20.18</strong></span>
+        <span class="console-item build"><span class="k">BUILD</span><strong id="consoleBuildVersion">V20.19</strong></span>
         <span class="console-spacer"></span>
         <span class="console-activity">
           <span class="k">SYSTEM ACTIVITY</span>
@@ -9015,7 +9015,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
 
     <div id="fxD1LoadingV1946" class="fx-d1-loading-v1946" role="status">正在读取完整云端导航数据…</div>
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V20.18 版本</div>
+    <div class="footer">© 2026 私人导航工具箱 · V20.19 版本</div>
   </main>
 </div>
 
@@ -19201,6 +19201,65 @@ html[data-theme]:not([data-theme="liquid"]) body .login-card .login-close{border
 html[data-theme]:not([data-theme="liquid"]) body .login-card .login-form input{box-shadow:inset 0 1px 2px #ffffff12,inset 0 -1px 2px #0000000b!important;}
 html[data-theme]:not([data-theme="liquid"]) body .login-card .login-form input:focus{border-color:var(--login-focus)!important;box-shadow:0 0 0 2px color-mix(in srgb,var(--login-focus) 24%,transparent)!important;}
 @media(prefers-reduced-motion:reduce){html[data-theme]:not([data-theme="liquid"]) body #sidebar.sidebar :is(.sidebar-pinned,#categoryNav) .nav-btn{transition:none!important;}}
+</style>
+
+<style id="v2019-unified-hero-search-geometry">
+/* V20.19 — one left alignment axis, one search surface, shared geometry across all five themes.
+   Preserve every theme's existing row paint, border colors, shadows and button palette. */
+html[data-theme] body .home-layout #hero .hero-primary .search-wrap{
+ margin-inline:0!important;padding-inline:0!important;box-sizing:border-box!important;
+}
+html[data-theme] body .home-layout #hero .hero-primary .search-wrap .search-panel{
+ margin:0!important;padding:0!important;border:0!important;
+ background:transparent!important;box-shadow:none!important;
+ backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+ overflow:visible!important;
+}
+html[data-theme] body .home-layout #hero .hero-primary .search-wrap .search-panel::before,
+html[data-theme] body .home-layout #hero .hero-primary .search-wrap .search-panel::after{
+ content:none!important;display:none!important;
+}
+html[data-theme] body .home-layout #hero .hero-primary .search-wrap .search-panel .search-row{
+ --v19-button-w:54px;--v19-button-h:42px;--v19-icon-w:36px;
+ display:flex!important;align-items:center!important;justify-content:flex-start!important;
+ box-sizing:border-box!important;min-width:0!important;width:100%!important;
+ height:54px!important;margin:0!important;padding:5px!important;gap:8px!important;
+ border-width:1px!important;border-style:solid!important;border-radius:16px!important;
+}
+html[data-theme] body .home-layout #hero .hero-primary .search-wrap .search-panel .search-row .search-symbol{
+ box-sizing:border-box!important;flex:0 0 var(--v19-icon-w)!important;
+ width:var(--v19-icon-w)!important;height:var(--v19-icon-w)!important;
+ display:grid!important;place-items:center!important;align-self:center!important;
+ margin:0!important;border-radius:10px!important;
+}
+html[data-theme] body .home-layout #hero .hero-primary .search-wrap .search-panel .search-row #searchInput{
+ flex:1 1 0%!important;width:0!important;min-width:0!important;max-width:none!important;
+ box-sizing:border-box!important;height:42px!important;line-height:normal!important;
+ padding:0!important;margin:0!important;align-self:center!important;
+}
+html[data-theme] body .home-layout #hero .hero-primary .search-wrap .search-panel .search-row #clearSearch{
+ position:static!important;inset:auto!important;transform:none!important;flex:0 0 24px!important;
+ width:24px!important;height:24px!important;align-self:center!important;margin:0!important;
+}
+html[data-theme] body .home-layout #hero .hero-primary .search-wrap .search-panel .search-row #liquidSearchBtn,
+html[data-theme] body .home-layout #hero .hero-primary .search-wrap .search-panel .search-row #liquidSearchBtn:is(:hover,:active,:focus-visible){
+ position:static!important;inset:auto!important;transform:none!important;
+ display:grid!important;place-items:center!important;align-self:center!important;
+ box-sizing:border-box!important;flex:0 0 var(--v19-button-w)!important;
+ width:var(--v19-button-w)!important;min-width:var(--v19-button-w)!important;max-width:var(--v19-button-w)!important;
+ height:var(--v19-button-h)!important;margin:0!important;padding:0!important;
+ border-radius:11px!important;
+}
+html[data-theme] body .home-layout #hero .hero-primary .search-wrap .search-panel .search-info{
+ margin:10px 0 0!important;padding:0!important;min-width:0!important;flex-wrap:wrap!important;
+}
+@media(max-width:700px){
+ html[data-theme] body .home-layout #hero .hero-primary .search-wrap .search-panel .search-row{--v19-button-w:42px;--v19-icon-w:32px;gap:6px!important;}
+}
+@media(max-width:360px){
+ html[data-theme] body .home-layout #hero .hero-primary .search-wrap .search-panel .search-row{--v19-button-w:38px;--v19-button-h:38px;--v19-icon-w:28px;height:50px!important;gap:5px!important;}
+ html[data-theme] body .home-layout #hero .hero-primary .search-wrap .search-panel .search-row #searchInput{height:38px!important;}
+}
 </style>
 </body>
 </html>
