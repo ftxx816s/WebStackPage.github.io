@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>私人导航工具箱 · V20.19</title>
+<title>私人导航工具箱 · V20.20</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: blob: https: http:; connect-src 'self' https:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -18,7 +18,7 @@
 </style>
 <script  id="app-meta-v1891"  data-module="script-01.js">
 
-window.FXNAV_APP=Object.freeze({version:"20.19",build:"V20.19",schemaVersion:3,channel:"stable"});
+window.FXNAV_APP=Object.freeze({version:"20.20",build:"V20.20",schemaVersion:3,channel:"stable"});
 
 </script>
 <script  id="theme-boot-v1867"  data-module="script-02.js">
@@ -3967,8 +3967,8 @@ html[data-theme="neon"] .tool-cluster{border-radius:14px;}}
 <link rel="icon" type="image/png" sizes="64x64" href="/assets/runtime/favicon-985ed977.png">
 <link rel="shortcut icon" type="image/png" href="/assets/runtime/favicon-985ed977.png">
 
-<meta name="x-build" content="V20.19-20261122">
-<meta name="x-app-version" content="20.08">
+<meta name="x-build" content="V20.20-20261123">
+<meta name="x-app-version" content="20.20">
 
 <style data-module="style-03.css">
 :root{
@@ -8855,7 +8855,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
         <span class="console-divider"></span>
         <span class="console-item cache"><span class="k">CACHE</span><strong id="consoleCache">0 KB</strong></span>
         <span class="console-divider"></span>
-        <span class="console-item build"><span class="k">BUILD</span><strong id="consoleBuildVersion">V20.19</strong></span>
+        <span class="console-item build"><span class="k">BUILD</span><strong id="consoleBuildVersion">V20.20</strong></span>
         <span class="console-spacer"></span>
         <span class="console-activity">
           <span class="k">SYSTEM ACTIVITY</span>
@@ -9015,7 +9015,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
 
     <div id="fxD1LoadingV1946" class="fx-d1-loading-v1946" role="status">正在读取完整云端导航数据…</div>
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V20.19 版本</div>
+    <div class="footer">© 2026 私人导航工具箱 · V20.20 版本</div>
   </main>
 </div>
 
@@ -11072,6 +11072,8 @@ function updateNavIndicator(){
   const indicator=$("#navActiveIndicator"),sidebar=$("#sidebar"),list=$("#sidebarCategories");
   const active=(state.filter==="all"&&!state.query.trim()?$(".nav-btn.scroll-active")||$(".nav-btn.active"):$(".nav-btn.active"));
   if(!indicator||!active||!sidebar)return;
+  // V20.20: all current themes hide the legacy rail; skip its layout work.
+  if(getComputedStyle(indicator).display==="none")return;
   const outer=sidebar.getBoundingClientRect(),r=active.getBoundingClientRect();
   if(list&&list.contains(active)){
     const clip=list.getBoundingClientRect();
@@ -11112,12 +11114,12 @@ function syncCompactControls(){
 
 /* ===================== V19.33 左右分类联动（取代旧 IntersectionObserver） ===================== */
 let __sectionSpyTimer=0, __sectionSpyRAF=0, __sectionSpyBound=false;
-let __lastSidebarAutoCategory="";
+let __lastSidebarAutoCategory="", __lastSidebarAutoButton=null;
 function clearSectionSpy(){
   const wasFollowing=document.body.classList.contains("scroll-spy-active");
   if(wasFollowing)$$(".nav-btn.scroll-active").forEach(btn=>btn.classList.remove("scroll-active"));
   document.body.classList.remove("scroll-spy-active");
-  __lastSidebarAutoCategory="";
+  __lastSidebarAutoCategory="";__lastSidebarAutoButton=null;
   if(wasFollowing)requestAnimationFrame(updateNavIndicator);
 }
 function revealSidebarCategory(btn){
@@ -11139,6 +11141,11 @@ function revealSidebarCategory(btn){
 
 function setScrollSpyCategory(cat){
   if(state.filter!=="all"||state.query.trim())return clearSectionSpy();
+  // Repeated scrolling within one category needs no class writes or nav scan.
+  const previous=__lastSidebarAutoButton;
+  if(cat===__lastSidebarAutoCategory&&previous?.isConnected&&previous.classList.contains("scroll-active")&&document.body.classList.contains("scroll-spy-active")){
+    revealSidebarCategory(previous);return;
+  }
   let selected=null;
   $$(".nav-btn").forEach(btn=>{
     const on=btn.dataset.filter===cat;
@@ -11146,6 +11153,7 @@ function setScrollSpyCategory(cat){
     if(on)selected=btn;
   });
   document.body.classList.toggle("scroll-spy-active",!!selected);
+  __lastSidebarAutoButton=selected;
   if(selected){
     const changed=cat!==__lastSidebarAutoCategory;
     __lastSidebarAutoCategory=cat;
@@ -11163,11 +11171,15 @@ function updateSectionSpyByScroll(){
   // The three pinned shortcuts are never moved; only the category pane scrolls.
   const marker=Math.min(window.innerHeight*.34,290);
   const maxScroll=Math.max(0,document.documentElement.scrollHeight-window.innerHeight);
-  let selected=sections[0];
-  for(const sec of sections){
-    if(sec.getBoundingClientRect().top<=marker)selected=sec;
-    else break;
+  // Sections are in document order. Binary search preserves the same marker
+  // rule while avoiding up to one layout query per category on every frame.
+  let low=0,high=sections.length-1;
+  while(low<high){
+    const mid=Math.ceil((low+high)/2);
+    if(sections[mid].getBoundingClientRect().top<=marker)low=mid;
+    else high=mid-1;
   }
+  let selected=sections[low];
   if(maxScroll>50&&window.scrollY>=maxScroll-12)selected=sections[sections.length-1];
   const list=document.getElementById("sidebarCategories");
   // Return the scrolling CATEGORY region to its natural top at the page top.
@@ -13156,8 +13168,9 @@ function handleWindowScroll(){
     const compactBar=$("#compactBar");
     const compactShouldShow=window.scrollY>getCompactThresholdV171();
     if(compactBar){
-      compactBar.classList.toggle("show",compactShouldShow);
-      compactBar.setAttribute("aria-hidden",compactShouldShow?"false":"true");
+      if(compactBar.classList.contains("show")!==compactShouldShow)compactBar.classList.toggle("show",compactShouldShow);
+      const hidden=compactShouldShow?"false":"true";
+      if(compactBar.getAttribute("aria-hidden")!==hidden)compactBar.setAttribute("aria-hidden",hidden);
     }
 
     const menu=$("#categoryContext");
@@ -18713,13 +18726,16 @@ html[data-theme="liquid"]:not(.fx-glass-fallback)[data-liquid-clear="1"] body :i
   const init=()=>{
     const area=document.getElementById('content');
     if(!area)return;
-    const cards=new WeakSet();
+    const cards=new Set();
     let scheduled=false;
     const io='IntersectionObserver' in window?new IntersectionObserver(items=>{
-      for(const item of items)item.target.classList.toggle('fx-lg-near',item.isIntersecting);
+      for(const item of items)if(cards.has(item.target)&&area.contains(item.target))item.target.classList.toggle('fx-lg-near',item.isIntersecting);
     },{root:null,rootMargin:'240px 0px 240px 0px',threshold:0}):null;
     const scan=()=>{
       scheduled=false;
+      // IntersectionObserver holds observed nodes even after render() replaces them.
+      // Release detached cards; retain exactly the original near-viewport blur policy.
+      for(const el of cards)if(!area.contains(el)){io?.unobserve(el);cards.delete(el);}
       for(const el of area.querySelectorAll('.card.glass')){
         if(cards.has(el))continue;
         cards.add(el);
@@ -18727,7 +18743,23 @@ html[data-theme="liquid"]:not(.fx-glass-fallback)[data-liquid-clear="1"] body :i
       }
     };
     const queue=()=>{if(!scheduled){scheduled=true;requestAnimationFrame(scan)}};
-    new MutationObserver(queue).observe(area,{childList:true,subtree:true});
+    new MutationObserver(records=>{
+      let cardTreeChanged=false;
+      const containsCard=node=>node.nodeType===1&&(node.matches('.card.glass')||!!node.querySelector('.card.glass'));
+      for(const record of records){
+        // Icon loading and text updates inside a card do not change the card set.
+        for(const node of record.addedNodes)if(containsCard(node))cardTreeChanged=true;
+        for(const node of record.removedNodes){
+          if(containsCard(node))cardTreeChanged=true;
+          if(node.nodeType!==1||node.isConnected)continue;
+          if(typeof __iconUpgradeObserver!=="undefined"&&__iconUpgradeObserver){
+            if(node.__startIconUpgrade)__iconUpgradeObserver.unobserve(node);
+            for(const el of node.querySelectorAll('.site-icon'))if(el.__startIconUpgrade)__iconUpgradeObserver.unobserve(el);
+          }
+        }
+      }
+      if(cardTreeChanged)queue();
+    }).observe(area,{childList:true,subtree:true});
     scan();
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
