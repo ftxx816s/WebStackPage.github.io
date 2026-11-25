@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>私人导航工具箱 · V20.20</title>
+<title>私人导航工具箱 · V20.21</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: blob: https: http:; connect-src 'self' https:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -18,7 +18,7 @@
 </style>
 <script  id="app-meta-v1891"  data-module="script-01.js">
 
-window.FXNAV_APP=Object.freeze({version:"20.20",build:"V20.20",schemaVersion:3,channel:"stable"});
+window.FXNAV_APP=Object.freeze({version:"20.21",build:"V20.21",schemaVersion:3,channel:"stable"});
 
 </script>
 <script  id="theme-boot-v1867"  data-module="script-02.js">
@@ -3967,7 +3967,7 @@ html[data-theme="neon"] .tool-cluster{border-radius:14px;}}
 <link rel="icon" type="image/png" sizes="64x64" href="/assets/runtime/favicon-985ed977.png">
 <link rel="shortcut icon" type="image/png" href="/assets/runtime/favicon-985ed977.png">
 
-<meta name="x-build" content="V20.20-20261123">
+<meta name="x-build" content="V20.21-20261125">
 <meta name="x-app-version" content="20.20">
 
 <style data-module="style-03.css">
@@ -8855,7 +8855,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
         <span class="console-divider"></span>
         <span class="console-item cache"><span class="k">CACHE</span><strong id="consoleCache">0 KB</strong></span>
         <span class="console-divider"></span>
-        <span class="console-item build"><span class="k">BUILD</span><strong id="consoleBuildVersion">V20.20</strong></span>
+        <span class="console-item build"><span class="k">BUILD</span><strong id="consoleBuildVersion">V20.21</strong></span>
         <span class="console-spacer"></span>
         <span class="console-activity">
           <span class="k">SYSTEM ACTIVITY</span>
@@ -9015,7 +9015,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
 
     <div id="fxD1LoadingV1946" class="fx-d1-loading-v1946" role="status">正在读取完整云端导航数据…</div>
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V20.20 版本</div>
+    <div class="footer">© 2026 私人导航工具箱 · V20.21 版本</div>
   </main>
 </div>
 
@@ -19293,5 +19293,198 @@ html[data-theme] body .home-layout #hero .hero-primary .search-wrap .search-pane
  html[data-theme] body .home-layout #hero .hero-primary .search-wrap .search-panel .search-row #searchInput{height:38px!important;}
 }
 </style>
+<style id="fx2021-shared-wallpaper-glass-style">
+/* V20.21: one preblurred wallpaper plane, masked under site cards only.
+   Tints, borders, glints, depth shadows, card layout and hover effects stay identical.
+   All non-desktop or unsupported environments keep V20.20's original rendering. */
+@media(min-width:1101px) and (hover:hover) and (pointer:fine){
+  html[data-theme="liquid"].fx2021-card-cache-ready:not(.fx-glass-fallback) body>.app{
+    position:relative;z-index:1;
+  }
+  html[data-theme="liquid"].fx2021-card-cache-ready:not(.fx-glass-fallback) body #content .card.glass,
+  html[data-theme="liquid"].fx2021-card-cache-ready:not(.fx-glass-fallback) body #content .card.glass.fx-lg-near{
+    backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  }
+}
+</style>
+
+<script id="fx2021-shared-wallpaper-glass">
+/* V20.21 · One cached, viewport-aligned blur plane for visible card glass.
+   Keep exact tints, rims, shadows and focus/hover styles; fallback to native
+   backdrop-filter whenever the source cannot be sampled safely. */
+(()=>{
+  'use strict';
+  const root=document.documentElement;
+  const mq=window.matchMedia?.('(min-width:1101px) and (hover:hover) and (pointer:fine)');
+  if(!mq||!('MutationObserver' in window)||!('URL' in window)||!('createObjectURL' in URL))return;
+  const NS='http://www.w3.org/2000/svg';
+  const make=(tag)=>document.createElementNS(NS,tag);
+  let overlay=null,maskGroup=null,wallImage=null,content=null;
+  let activeURL='',sourceURL='',decoded=null,activeSignature='';
+  let generation=0,buildTimer=0,scrollRAF=0,geometryRAF=0,resizeObserver=null;
+  let lastCheck='',lastGeometryCount=0;
+  const discardCache=()=>{
+    root.classList.remove('fx2021-card-cache-ready');
+    if(overlay)overlay.style.visibility='hidden';
+  };
+  const isEligible=()=>mq.matches&&root.dataset.theme==='liquid'&&
+     !root.classList.contains('fx-glass-fallback')&&!root.classList.contains('liquid-wallpaper-pending')&&
+     root.dataset.liquidClear!=='1';
+  const readImageURL=()=>{
+    const text=getComputedStyle(root).getPropertyValue('--liquid-bg-image').trim();
+    const match=/^url\(\s*(?:"([^"]*)"|'([^']*)'|([^)]*))\s*\)$/.exec(text);
+    return match?(match[1]||match[2]||match[3]||'').trim():'';
+  };
+  function signature(){
+    if(!isEligible())return '';
+    const url=readImageURL(),blur=parseFloat(getComputedStyle(root).getPropertyValue('--lg-card-blur'));
+    if(!url||!Number.isFinite(blur)||blur<=.05)return '';
+    return `${url}|${blur}|${innerWidth}x${innerHeight}|${window.devicePixelRatio||1}`;
+  }
+  function ensureOverlay(){
+    if(overlay||!document.body||!document.querySelector('.app'))return;
+    overlay=make('svg');overlay.id='fx2021-glass-cache';
+    overlay.setAttribute('aria-hidden','true');overlay.setAttribute('focusable','false');
+    overlay.setAttribute('preserveAspectRatio','none');
+    Object.assign(overlay.style,{position:'fixed',inset:'0',width:'100vw',height:'100vh',
+      zIndex:'0',pointerEvents:'none',visibility:'hidden',overflow:'hidden'});
+    const defs=make('defs'),clip=make('clipPath');
+    clip.id='fx2021-card-mask';clip.setAttribute('clipPathUnits','userSpaceOnUse');
+    maskGroup=make('g');clip.append(maskGroup);defs.append(clip);overlay.append(defs);
+    wallImage=make('image');wallImage.setAttribute('clip-path','url(#fx2021-card-mask)');
+    wallImage.setAttribute('preserveAspectRatio','none');overlay.append(wallImage);
+    document.body.insertBefore(overlay,document.querySelector('.app'));
+    content=document.getElementById('content');
+  }
+  function updateMaskTransform(){
+    scrollRAF=0;
+    if(maskGroup&&overlay&&overlay.style.visibility==='visible')
+      maskGroup.setAttribute('transform',`translate(${-scrollX} ${-scrollY})`);
+  }
+  function updateGeometry(){
+    geometryRAF=0;
+    if(!maskGroup||!content||!content.isConnected)return;
+    const fragment=document.createDocumentFragment();
+    const cards=content.querySelectorAll('.card.glass');
+    for(const card of cards){
+      const rect=card.getBoundingClientRect();
+      if(!rect.width||!rect.height)continue;
+      const item=make('rect');
+      item.setAttribute('x',(rect.left+scrollX).toFixed(2));
+      item.setAttribute('y',(rect.top+scrollY).toFixed(2));
+      item.setAttribute('width',rect.width.toFixed(2));
+      item.setAttribute('height',rect.height.toFixed(2));
+      const corners=parseFloat(getComputedStyle(card).borderTopLeftRadius)||0;
+      item.setAttribute('rx',corners.toFixed(2));
+      fragment.appendChild(item);
+    }
+    maskGroup.replaceChildren(fragment);
+    lastGeometryCount=cards.length;
+    maskGroup.setAttribute('transform',`translate(${-scrollX} ${-scrollY})`);
+  }
+  function queueGeometry(){
+    if(!geometryRAF)geometryRAF=requestAnimationFrame(updateGeometry);
+  }
+  async function loadImage(url){
+    if(sourceURL===url&&decoded)return decoded;
+    const img=new Image();img.decoding='async';img.src=url;
+    if(typeof img.decode==='function')await img.decode();
+    else await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;});
+    if(!img.naturalWidth||!img.naturalHeight)throw new Error('wallpaper-image-empty');
+    sourceURL=url;decoded=img;return img;
+  }
+  async function makeBitmap(img,blur){
+    const vw=innerWidth,vh=innerHeight,dpr=Math.min(window.devicePixelRatio||1,2);
+    // Keep the cached image within a predictable memory budget on 4K displays.
+    const scale=Math.min(dpr,Math.sqrt(8000000/(vw*vh)));
+    if(scale<.8)throw new Error('wallpaper-cache-too-large');
+    const canvas=document.createElement('canvas');
+    canvas.width=Math.max(1,Math.round(vw*scale));
+    canvas.height=Math.max(1,Math.round(vh*scale));
+    const ctx=canvas.getContext('2d');
+    if(!ctx||!('filter' in ctx))throw new Error('canvas-filter-unsupported');
+    ctx.setTransform(scale,0,0,scale,0,0);
+    const r=Math.max(vw/img.naturalWidth,vh/img.naturalHeight),
+      iw=img.naturalWidth*r,ih=img.naturalHeight*r;
+    ctx.filter=`blur(${blur}px)`;
+    if(!String(ctx.filter).startsWith('blur('))throw new Error('canvas-filter-unsupported');
+    ctx.drawImage(img,(vw-iw)/2,(vh-ih)/2,iw,ih);
+    const blob=await new Promise((res,rej)=>canvas.toBlob(b=>b?res(b):rej(new Error('canvas-export-failed')),'image/png'));
+    canvas.width=1;canvas.height=1;
+    return URL.createObjectURL(blob);
+  }
+  async function applyCache(token){
+    try{
+      const sig=signature();if(!sig||token!==generation)return;
+      const src=readImageURL();
+      const blur=parseFloat(getComputedStyle(root).getPropertyValue('--lg-card-blur'));
+      ensureOverlay();if(!overlay||!maskGroup||!wallImage)return;
+      const image=await loadImage(src);
+      if(token!==generation||!isEligible())return;
+      const blobURL=await makeBitmap(image,blur);
+      if(token!==generation||!isEligible()){URL.revokeObjectURL(blobURL);return;}
+      const tester=new Image();tester.src=blobURL;
+      try{await tester.decode();}catch{URL.revokeObjectURL(blobURL);return;}
+      if(token!==generation||!isEligible()){URL.revokeObjectURL(blobURL);return;}
+      overlay.setAttribute('viewBox',`0 0 ${innerWidth} ${innerHeight}`);
+      wallImage.setAttribute('width',innerWidth);
+      wallImage.setAttribute('height',innerHeight);
+      wallImage.setAttribute('href',blobURL);
+      updateGeometry();
+      // Decode the bitmap before switching off the original native card blur.
+      await new Promise(requestAnimationFrame);
+      if(token!==generation||!isEligible()){URL.revokeObjectURL(blobURL);return;}
+      overlay.style.visibility='visible';
+      root.classList.add('fx2021-card-cache-ready');
+      activeSignature=sig;
+      const old=activeURL;activeURL=blobURL;
+      if(old&&old!==activeURL)URL.revokeObjectURL(old);
+    }catch(_err){
+      // A failed wallpaper download, canvas taint, or unsupported browser is safe:
+      // original per-card backdrop blur remains in effect.
+      if(token===generation)discardCache();
+    }
+  }
+  function queueBuild(delay=180){
+    const sig=signature();
+    if(sig===activeSignature&&root.classList.contains('fx2021-card-cache-ready'))return;
+    generation++;clearTimeout(buildTimer);discardCache();
+    if(!sig)return;
+    const token=generation;buildTimer=setTimeout(()=>applyCache(token),delay);
+  }
+  function check(){
+    const now=signature();
+    if(now===lastCheck)return;
+    lastCheck=now;queueBuild();
+  }
+  function init(){
+    content=document.getElementById('content');if(!content)return;
+    // On phones, tablets and non-glass themes there is no extra SVG or bitmap.
+    const rootObserver=new MutationObserver(check);
+    rootObserver.observe(root,{attributes:true,attributeFilter:['style','class','data-theme','data-liquid-clear']});
+    const contentObserver=new MutationObserver(records=>{
+      for(const r of records){
+        if(r.type!=='childList')continue;
+        const changesCard=node=>node.nodeType===1&&(node.matches?.('.card,.section,.grid')||node.querySelector?.('.card,.section'));
+        if([...r.addedNodes,...r.removedNodes].some(changesCard)){queueGeometry();break;}
+      }
+    });
+    contentObserver.observe(content,{childList:true,subtree:true});
+    if('ResizeObserver' in window){
+      resizeObserver=new ResizeObserver(queueGeometry);resizeObserver.observe(content);
+    }
+    window.addEventListener('scroll',()=>{
+      if(!scrollRAF)scrollRAF=requestAnimationFrame(updateMaskTransform);
+    },{passive:true});
+    window.addEventListener('resize',()=>{activeSignature='';queueBuild(260);queueGeometry();},{passive:true});
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden)check();},{passive:true});
+    // The confirmed wallpaper may be restored asynchronously by D1.
+    check();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
+  else init();
+})();
+</script>
+
 </body>
 </html>
