@@ -1,5 +1,5 @@
-/* Private Navigation Toolbox V20.21 · local-first application shell cache. */
-const SW_VERSION = 'fxnav-shell-v2021-shared-wallglass';
+/* Private Navigation Toolbox V20.22 · local-first application shell cache. */
+const SW_VERSION = 'fxnav-shell-v2022-stable-card-frost';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const STATIC_CACHE = `${SW_VERSION}-static`;
 const CORE_SHELL_URLS = ['/', '/cn/'];
@@ -31,18 +31,18 @@ async function cacheCoreResource(cache, path) {
 
 // Never activate a new worker with a missing or older application shell.
 // A partial response is not a safe offline fallback.
-const APP_SIGNATURE='version:"20.21",build:"V20.21"';
+const APP_SIGNATURE='version:"20.22",build:"V20.22"';
 async function validatedShell(response, key){
   if(!response||!response.ok||response.type!=='basic')return null;
   const html=await response.clone().text();
-  const valid=key==='/cn/'?html.includes(APP_SIGNATURE):html.includes('V20.21');
+  const valid=key==='/cn/'?html.includes(APP_SIGNATURE):html.includes('V20.22');
   return valid?response:null;
 }
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
     const shell=await caches.open(SHELL_CACHE);
     const response=await boundedFetch('/cn/', 20000);
-    if(!await validatedShell(response,'/cn/'))throw new Error('V20.21 app shell not fully available');
+    if(!await validatedShell(response,'/cn/'))throw new Error('V20.22 app shell not fully available');
     await shell.put('/cn/',response);
     const statics=await caches.open(STATIC_CACHE);
     await Promise.all([
