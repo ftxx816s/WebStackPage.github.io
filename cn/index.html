@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>私人导航工具箱 · V20.24</title>
+<title>私人导航工具箱 · V20.25</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: blob: https: http:; connect-src 'self' https:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -18,7 +18,7 @@
 </style>
 <script  id="app-meta-v1891"  data-module="script-01.js">
 
-window.FXNAV_APP=Object.freeze({version:"20.24",build:"V20.24",schemaVersion:3,channel:"stable"});
+window.FXNAV_APP=Object.freeze({version:"20.25",build:"V20.25",schemaVersion:3,channel:"stable"});
 
 </script>
 <script  id="theme-boot-v1867"  data-module="script-02.js">
@@ -3967,8 +3967,8 @@ html[data-theme="neon"] .tool-cluster{border-radius:14px;}}
 <link rel="icon" type="image/png" sizes="64x64" href="/assets/runtime/favicon-985ed977.png">
 <link rel="shortcut icon" type="image/png" href="/assets/runtime/favicon-985ed977.png">
 
-<meta name="x-build" content="V20.24-20261126">
-<meta name="x-app-version" content="20.20">
+<meta name="x-build" content="V20.25-20261126">
+<meta name="x-app-version" content="20.25">
 
 <style data-module="style-03.css">
 :root{
@@ -8855,7 +8855,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
         <span class="console-divider"></span>
         <span class="console-item cache"><span class="k">CACHE</span><strong id="consoleCache">0 KB</strong></span>
         <span class="console-divider"></span>
-        <span class="console-item build"><span class="k">BUILD</span><strong id="consoleBuildVersion">V20.24</strong></span>
+        <span class="console-item build"><span class="k">BUILD</span><strong id="consoleBuildVersion">V20.25</strong></span>
         <span class="console-spacer"></span>
         <span class="console-activity">
           <span class="k">SYSTEM ACTIVITY</span>
@@ -9015,7 +9015,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
 
     <div id="fxD1LoadingV1946" class="fx-d1-loading-v1946" role="status">正在读取完整云端导航数据…</div>
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V20.24 版本</div>
+    <div class="footer">© 2026 私人导航工具箱 · V20.25 版本</div>
   </main>
 </div>
 
@@ -19293,163 +19293,5 @@ html[data-theme] body .home-layout #hero .hero-primary .search-wrap .search-pane
  html[data-theme] body .home-layout #hero .hero-primary .search-wrap .search-panel .search-row #searchInput{height:38px!important;}
 }
 </style>
-<style id="fx2024-stable-card-material-css">
-/* V20.24: one stable cached material throughout hover, pointer movement and
-   focus. Never replace the card background or native-filter mode on hover.
-   A transformed card would change the containing block for fixed wallpaper;
-   retain the existing hover glow/shadow but avoid that background-coordinate jump. */
-@media (min-width:1101px) and (hover:hover) and (pointer:fine){
-  html[data-theme="liquid"].fx-card-cache-ready:not(.fx-glass-fallback) body #content .card.glass{
-    backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
-  }
-  html[data-theme="liquid"].fx-card-cache-ready:not(.fx-glass-fallback) body #content .card.glass:hover{
-    transform:none!important;
-  }
-}
-</style>
-<script id="fx2024-stable-card-material-js">
-(()=>{
-  'use strict';
-  const root=document.documentElement;
-  const mq=window.matchMedia?.('(min-width:1101px) and (hover:hover) and (pointer:fine)');
-  if(!mq||!('MutationObserver' in window)||!('URL' in window)||!URL.createObjectURL)return;
-  const content=document.getElementById('content');
-  const reduced=window.matchMedia?.('(prefers-reduced-transparency: reduce)');
-  if(!content)return;
-  let generation=0,timer=0,activeURL='',activeSignature='',sourceURL='',decoded=null;
-  let activeSource='',ready=false;
-  const urlPattern=/^url\(\s*(?:"([^"]*)"|'([^']*)'|([^)]*))\s*\)$/;
-  const readURL=()=>{
-    const raw=getComputedStyle(root).getPropertyValue('--liquid-bg-image').trim();
-    const m=urlPattern.exec(raw);
-    return m?(m[1]||m[2]||m[3]||'').trim():'';
-  };
-  const eligible=()=>mq.matches&&!reduced?.matches&&root.dataset.theme==='liquid'&&
-    !root.classList.contains('fx-glass-fallback')&&
-    !root.classList.contains('liquid-wallpaper-pending')&&root.dataset.liquidClear!=='1';
-  function signature(){
-    if(!eligible())return '';
-    const url=readURL();
-    const blur=Number.parseFloat(getComputedStyle(root).getPropertyValue('--lg-card-blur'));
-    if(!url||!Number.isFinite(blur)||blur<=.05)return '';
-    const fit=root.dataset.fxWallpaperFit==='contain'?'contain':'cover';
-    // The cached image must have the same source, viewport, fit and blur.
-    return JSON.stringify([url,blur,innerWidth,innerHeight,Math.min(devicePixelRatio||1,2),fit]);
-  }
-  const props=['background-image','background-color','background-attachment','background-size','background-position','background-repeat'];
-  function revert(card){for(const p of props)card.style.removeProperty(p);}
-  function clear(){
-    if(ready){
-      // One rendering transaction: native backdrop blur is enabled BEFORE
-      // the optimized backgrounds are removed, so no sharp intermediate frame.
-      root.classList.remove('fx-card-cache-ready');
-      for(const c of content.querySelectorAll('.card.glass')){
-        revert(c);
-      }
-    }
-    ready=false;activeSignature='';activeSource='';
-    const url=activeURL;activeURL='';
-    if(url)requestAnimationFrame(()=>URL.revokeObjectURL(url));
-  }
-  function applyCard(card,blob){
-    // Keep the same neutral tint and 7.5% internal light used in V20.14–21.
-    // All rim/shadow/radius/hover CSS continues to come from the old styles.
-    card.style.setProperty('background-image',
-      'linear-gradient(rgba(255,255,255,.075),rgba(255,255,255,.075)),'+
-      'linear-gradient(rgba(0,0,0,var(--lg-card-alpha,.169)),rgba(0,0,0,var(--lg-card-alpha,.169))),'+
-      'url("'+blob+'")','important');
-    card.style.setProperty('background-color','transparent','important');
-    card.style.setProperty('background-size','auto,auto,100vw 100vh','important');
-    card.style.setProperty('background-attachment','scroll,scroll,fixed','important');
-    card.style.setProperty('background-position','center center,center center,center center','important');
-    card.style.setProperty('background-repeat','no-repeat','important');
-  }
-  async function getImage(url){
-    if(url===sourceURL&&decoded)return decoded;
-    const img=new Image();img.decoding='async';img.src=url;
-    if(img.decode)await img.decode();
-    else await new Promise((ok,err)=>{img.onload=ok;img.onerror=err;});
-    if(!img.naturalWidth||!img.naturalHeight)throw Error('empty-wallpaper');
-    sourceURL=url;decoded=img;return img;
-  }
-  async function bitmap(img,blur,fit){
-    const vw=innerWidth,vh=innerHeight,dpr=Math.min(devicePixelRatio||1,2);
-    const scale=Math.min(dpr,Math.sqrt(8000000/(vw*vh)));
-    if(scale<.8)throw Error('viewport-too-large');
-    const canvas=document.createElement('canvas');
-    canvas.width=Math.round(vw*scale);canvas.height=Math.round(vh*scale);
-    const ctx=canvas.getContext('2d');
-    if(!ctx||!('filter' in ctx))throw Error('canvas-blur-unavailable');
-    ctx.setTransform(scale,0,0,scale,0,0);
-    const ratio=fit==='contain'?Math.min(vw/img.naturalWidth,vh/img.naturalHeight):Math.max(vw/img.naturalWidth,vh/img.naturalHeight);
-    const w=img.naturalWidth*ratio,h=img.naturalHeight*ratio;
-    ctx.filter='blur('+blur+'px)';
-    if(!ctx.filter.startsWith('blur('))throw Error('canvas-blur-unsupported');
-    ctx.drawImage(img,(vw-w)/2,(vh-h)/2,w,h);
-    const blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(Error('bitmap-export-failed')),'image/png'));
-    canvas.width=1;canvas.height=1;
-    return URL.createObjectURL(blob);
-  }
-  async function build(token,requested){
-    let next='';
-    try{
-      if(token!==generation||requested!==signature())return;
-      const [url,blur,, , ,fit]=JSON.parse(requested);
-      const source=await getImage(url);
-      if(token!==generation||requested!==signature())return;
-      next=await bitmap(source,blur,fit);
-      if(token!==generation||requested!==signature())return;
-      // Decode + paint the actual bitmap BEFORE switching the native blur off.
-      const test=new Image();test.src=next;await test.decode();
-      if(token!==generation||requested!==signature())return;
-      const cards=content.querySelectorAll('.card.glass');
-      if(!cards.length)return;
-      for(const card of cards)applyCard(card,next);
-      root.classList.add('fx-card-cache-ready');
-      ready=true;activeSignature=requested;activeSource=url;
-      const previous=activeURL;activeURL=next;next='';
-      if(previous&&previous!==activeURL)requestAnimationFrame(()=>URL.revokeObjectURL(previous));
-    }catch(_error){
-      // Unsupported sources keep the original, correctly blurred card.
-      if(token===generation&&!ready)clear();
-    }finally{if(next)URL.revokeObjectURL(next);}
-  }
-  let lastCheck='';
-  function check(){
-    const now=signature();
-    if(now===lastCheck)return;
-    lastCheck=now;generation++;clearTimeout(timer);
-    if(!now){clear();return;}
-    let target;
-    try{target=JSON.parse(now);}catch{clear();return;}
-    const url=target[0],sameSize=JSON.parse(activeSignature||'null');
-    // When only the frost amount changes, keep the previous valid blur visibly
-    // in place until the next bitmap is painted, avoiding slider flashes.
-    if(ready&&(url!==activeSource||!sameSize||target[2]!==sameSize[2]||target[3]!==sameSize[3]||target[5]!==sameSize[5]))clear();
-    if(now===activeSignature&&ready)return;
-    const token=generation;timer=setTimeout(()=>build(token,now),160);
-  }
-  function applyAdded(nodes){
-    if(!ready||!activeURL)return;
-    const applyNew=card=>applyCard(card,activeURL);
-    for(const n of nodes){
-      if(n.nodeType!==1)continue;
-      if(n.matches?.('.card.glass'))applyNew(n);
-      n.querySelectorAll?.('.card.glass').forEach(applyNew);
-    }
-  }
-  // Hover is presentation-only. No card-entry or card-exit DOM mutations,
-  // backdrop-filter flips, cache rebuilds or background URL swaps.
-  const rootObserver=new MutationObserver(check);
-  rootObserver.observe(root,{attributes:true,attributeFilter:['style','class','data-theme','data-liquid-clear','data-fx-wallpaper-fit']});
-  new MutationObserver(records=>{
-    for(const record of records){if(record.type==='childList'&&record.addedNodes.length)applyAdded(record.addedNodes);}
-  }).observe(content,{childList:true,subtree:true});
-  window.addEventListener('resize',()=>{lastCheck='';check();},{passive:true});
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden)check();},{passive:true});
-  check();
-})();
-</script>
-
 </body>
 </html>
