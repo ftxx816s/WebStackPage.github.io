@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>私人导航工具箱 · V20.23</title>
+<title>私人导航工具箱 · V20.24</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: blob: https: http:; connect-src 'self' https:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -18,7 +18,7 @@
 </style>
 <script  id="app-meta-v1891"  data-module="script-01.js">
 
-window.FXNAV_APP=Object.freeze({version:"20.23",build:"V20.23",schemaVersion:3,channel:"stable"});
+window.FXNAV_APP=Object.freeze({version:"20.24",build:"V20.24",schemaVersion:3,channel:"stable"});
 
 </script>
 <script  id="theme-boot-v1867"  data-module="script-02.js">
@@ -3967,7 +3967,7 @@ html[data-theme="neon"] .tool-cluster{border-radius:14px;}}
 <link rel="icon" type="image/png" sizes="64x64" href="/assets/runtime/favicon-985ed977.png">
 <link rel="shortcut icon" type="image/png" href="/assets/runtime/favicon-985ed977.png">
 
-<meta name="x-build" content="V20.23-20261125">
+<meta name="x-build" content="V20.24-20261126">
 <meta name="x-app-version" content="20.20">
 
 <style data-module="style-03.css">
@@ -8855,7 +8855,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
         <span class="console-divider"></span>
         <span class="console-item cache"><span class="k">CACHE</span><strong id="consoleCache">0 KB</strong></span>
         <span class="console-divider"></span>
-        <span class="console-item build"><span class="k">BUILD</span><strong id="consoleBuildVersion">V20.23</strong></span>
+        <span class="console-item build"><span class="k">BUILD</span><strong id="consoleBuildVersion">V20.24</strong></span>
         <span class="console-spacer"></span>
         <span class="console-activity">
           <span class="k">SYSTEM ACTIVITY</span>
@@ -9015,7 +9015,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
 
     <div id="fxD1LoadingV1946" class="fx-d1-loading-v1946" role="status">正在读取完整云端导航数据…</div>
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V20.23 版本</div>
+    <div class="footer">© 2026 私人导航工具箱 · V20.24 版本</div>
   </main>
 </div>
 
@@ -19293,24 +19293,21 @@ html[data-theme] body .home-layout #hero .hero-primary .search-wrap .search-pane
  html[data-theme] body .home-layout #hero .hero-primary .search-wrap .search-panel .search-row #searchInput{height:38px!important;}
 }
 </style>
-<style id="fx2022-stable-card-frost">
-/* V20.23: Card cache is painted ON the actual card, beneath its original
-   translucent tint. The old body-level SVG sat below the app stacking context,
-   so switching off the native backdrop filter made the frost disappear.
-   Only disable native backdrop when a decoded cache has been applied. */
+<style id="fx2024-stable-card-material-css">
+/* V20.24: one stable cached material throughout hover, pointer movement and
+   focus. Never replace the card background or native-filter mode on hover.
+   A transformed card would change the containing block for fixed wallpaper;
+   retain the existing hover glow/shadow but avoid that background-coordinate jump. */
 @media (min-width:1101px) and (hover:hover) and (pointer:fine){
-  html[data-theme="liquid"].fx2022-card-cache-ready:not(.fx-glass-fallback) body #content .card.glass{
+  html[data-theme="liquid"].fx-card-cache-ready:not(.fx-glass-fallback) body #content .card.glass{
     backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
   }
-  /* V20.23: transformed fixed cached wallpaper can jump to a different crop on hover.
-     Render exactly one hovered card with its original native frost and glow. */
-  html[data-theme="liquid"].fx2022-card-cache-ready:not(.fx-glass-fallback) body #content .card.glass.fx2023-native-hover{
-    backdrop-filter:blur(var(--lg-card-blur,3px))!important;
-    -webkit-backdrop-filter:blur(var(--lg-card-blur,3px))!important;
+  html[data-theme="liquid"].fx-card-cache-ready:not(.fx-glass-fallback) body #content .card.glass:hover{
+    transform:none!important;
   }
 }
 </style>
-<script id="fx2022-stable-card-frost">
+<script id="fx2024-stable-card-material-js">
 (()=>{
   'use strict';
   const root=document.documentElement;
@@ -19320,7 +19317,7 @@ html[data-theme] body .home-layout #hero .hero-primary .search-wrap .search-pane
   const reduced=window.matchMedia?.('(prefers-reduced-transparency: reduce)');
   if(!content)return;
   let generation=0,timer=0,activeURL='',activeSignature='',sourceURL='',decoded=null;
-  let activeSource='',cachedBlur=-1,ready=false;
+  let activeSource='',ready=false;
   const urlPattern=/^url\(\s*(?:"([^"]*)"|'([^']*)'|([^)]*))\s*\)$/;
   const readURL=()=>{
     const raw=getComputedStyle(root).getPropertyValue('--liquid-bg-image').trim();
@@ -19341,28 +19338,16 @@ html[data-theme] body .home-layout #hero .hero-primary .search-wrap .search-pane
   }
   const props=['background-image','background-color','background-attachment','background-size','background-position','background-repeat'];
   function revert(card){for(const p of props)card.style.removeProperty(p);}
-  const hoverClass='fx2023-native-hover';
-  function nativeHover(card){
-    if(!ready||!activeURL||!card)return;
-    card.classList.add(hoverClass);
-    revert(card);
-  }
-  function cachedLeave(card){
-    if(!card||!card.classList.contains(hoverClass))return;
-    if(ready&&activeURL)applyCard(card,activeURL);
-    card.classList.remove(hoverClass);
-  }
   function clear(){
     if(ready){
       // One rendering transaction: native backdrop blur is enabled BEFORE
       // the optimized backgrounds are removed, so no sharp intermediate frame.
-      root.classList.remove('fx2022-card-cache-ready');
+      root.classList.remove('fx-card-cache-ready');
       for(const c of content.querySelectorAll('.card.glass')){
         revert(c);
-        c.classList.remove(hoverClass);
       }
     }
-    ready=false;activeSignature='';activeSource='';cachedBlur=-1;
+    ready=false;activeSignature='';activeSource='';
     const url=activeURL;activeURL='';
     if(url)requestAnimationFrame(()=>URL.revokeObjectURL(url));
   }
@@ -19419,17 +19404,9 @@ html[data-theme] body .home-layout #hero .hero-primary .search-wrap .search-pane
       if(token!==generation||requested!==signature())return;
       const cards=content.querySelectorAll('.card.glass');
       if(!cards.length)return;
-      for(const card of cards){
-        if(card.matches(':hover')){
-          card.classList.add(hoverClass);
-          revert(card);
-        }else{
-          card.classList.remove(hoverClass);
-          applyCard(card,next);
-        }
-      }
-      root.classList.add('fx2022-card-cache-ready');
-      ready=true;activeSignature=requested;activeSource=url;cachedBlur=blur;
+      for(const card of cards)applyCard(card,next);
+      root.classList.add('fx-card-cache-ready');
+      ready=true;activeSignature=requested;activeSource=url;
       const previous=activeURL;activeURL=next;next='';
       if(previous&&previous!==activeURL)requestAnimationFrame(()=>URL.revokeObjectURL(previous));
     }catch(_error){
@@ -19454,29 +19431,15 @@ html[data-theme] body .home-layout #hero .hero-primary .search-wrap .search-pane
   }
   function applyAdded(nodes){
     if(!ready||!activeURL)return;
-    const applyNew=card=>{
-      if(card.matches(':hover'))nativeHover(card);
-      else applyCard(card,activeURL);
-    };
+    const applyNew=card=>applyCard(card,activeURL);
     for(const n of nodes){
       if(n.nodeType!==1)continue;
       if(n.matches?.('.card.glass'))applyNew(n);
       n.querySelectorAll?.('.card.glass').forEach(applyNew);
     }
   }
-  // Delegate hover handling: constant listener count, including newly added sites.
-  // Native blur/glow is restored only on the active card; every other card keeps
-  // its cached frost, so scrolling does not reintroduce dozens of live filters.
-  content.addEventListener('pointerover',event=>{
-    const card=event.target.closest?.('.card.glass');
-    if(!card||!content.contains(card)||event.relatedTarget?.closest?.('.card.glass')===card)return;
-    nativeHover(card);
-  },{passive:true});
-  content.addEventListener('pointerout',event=>{
-    const card=event.target.closest?.('.card.glass');
-    if(!card||event.relatedTarget?.closest?.('.card.glass')===card)return;
-    cachedLeave(card);
-  },{passive:true});
+  // Hover is presentation-only. No card-entry or card-exit DOM mutations,
+  // backdrop-filter flips, cache rebuilds or background URL swaps.
   const rootObserver=new MutationObserver(check);
   rootObserver.observe(root,{attributes:true,attributeFilter:['style','class','data-theme','data-liquid-clear','data-fx-wallpaper-fit']});
   new MutationObserver(records=>{
