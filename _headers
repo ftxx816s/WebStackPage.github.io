@@ -28,3 +28,15 @@
   Service-Worker-Allowed: /
   X-Content-Type-Options: nosniff
 
+
+/assets/studio-v2100/*
+  Cache-Control: public, max-age=0, must-revalidate
+
+/time/*
+  Cache-Control: public, max-age=0, must-revalidate
+
+/colors/*
+  Cache-Control: public, max-age=0, must-revalidate
+
+/resource/*
+  Cache-Control: public, max-age=0, must-revalidate
