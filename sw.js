@@ -1,5 +1,5 @@
-/* Private Navigation Toolbox V21.08 · local-first application shell cache. */
-const SW_VERSION = 'fxnav-shell-v2108-theme-menu';
+/* Private Navigation Toolbox V21.10 · local-first application shell cache. */
+const SW_VERSION = 'fxnav-shell-v2110-studio-entry';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const STATIC_CACHE = `${SW_VERSION}-static`;
 const CORE_STATIC_URLS = [
@@ -8,14 +8,17 @@ const CORE_STATIC_URLS = [
   '/assets/runtime/fontawesome-2adefcbc.woff2',
   '/assets/runtime/neon-reference-bg-1fb3c28a.webp',
   '/assets/runtime/manager-ui-v1998.css?v=2008-official-glass-controls',
-  '/assets/runtime/manager-ui-v1998.js?v=1998'
+  '/assets/runtime/manager-ui-v1998.js?v=1998',
+  '/assets/studio-v2100/studio.css?v=2110',
+  '/assets/studio-v2100/studio.js?v=2110',
+  '/assets/studio-v2100/catalog.js?v=2110'
 ];
 
 async function boundedFetch(path, timeoutMs = 4000) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    return await fetch(path, { cache: 'default', credentials: 'same-origin', signal: controller.signal });
+    return await fetch(path, { cache: 'reload', credentials: 'same-origin', signal: controller.signal });
   } finally {
     clearTimeout(timer);
   }
@@ -24,30 +27,32 @@ async function boundedFetch(path, timeoutMs = 4000) {
 async function cacheCoreResource(cache, path) {
   try {
     const response = await boundedFetch(path, 4000);
-    if (response && response.ok && response.type === 'basic') await cache.put(path, response.clone());
+    if (response && response.ok && response.type === 'basic') {await cache.put(path, response.clone());return true;}
   } catch (_) {}
+  return false;
 }
 
 // Never activate a new worker with a missing or older application shell.
 // A partial response is not a safe offline fallback.
-const APP_SIGNATURE='version:"21.08",build:"V21.08"';
+const APP_SIGNATURE='version:"21.10",build:"V21.10"';
 async function validatedShell(response, key){
   if(!response||!response.ok||response.type!=='basic')return null;
   const html=await response.clone().text();
-  const valid=key==='/cn/'?html.includes(APP_SIGNATURE):html.includes('V21.08');
+  const valid=key==='/cn/'?html.includes(APP_SIGNATURE):html.includes('BUILD V21.10')&&html.includes('studio.js?v=2110');
   return valid?response:null;
 }
 self.addEventListener('install', event => {
   event.waitUntil((async () => {
     const shell=await caches.open(SHELL_CACHE);
-    const response=await boundedFetch('/cn/', 20000);
-    if(!await validatedShell(response,'/cn/'))throw new Error('V21.08 app shell not fully available');
-    await shell.put('/cn/',response);
+    // Both entry documents and the new workspace dependencies must exist before activation.
+    for(const path of ['/cn/','/']){
+      const response=await boundedFetch(path,20000);
+      if(!await validatedShell(response,path))throw new Error('V21.10 shell unavailable: '+path);
+      await shell.put(path,response);
+    }
     const statics=await caches.open(STATIC_CACHE);
-    await Promise.all([
-      cacheCoreResource(shell,'/'),
-      ...CORE_STATIC_URLS.map(path=>cacheCoreResource(statics,path))
-    ]);
+    const results=await Promise.all(CORE_STATIC_URLS.map(path=>cacheCoreResource(statics,path)));
+    if(results.some((ok,i)=>!ok&&CORE_STATIC_URLS[i].startsWith('/assets/studio-v2100/')))throw new Error('V21.10 studio assets not fully available');
     await self.skipWaiting();
   })());
 });
@@ -56,7 +61,7 @@ self.addEventListener('activate', event => {
   event.waitUntil((async () => {
     const shell = await caches.open(SHELL_CACHE);
     const statics = await caches.open(STATIC_CACHE);
-    const shellReady = !!(await shell.match('/cn/'));
+    const shellReady = !!(await shell.match('/cn/')) && !!(await shell.match('/'));
     const staticReady = (await Promise.all(CORE_STATIC_URLS.map(path => statics.match(path)))).every(Boolean);
     // Keep the previous working shell if this update could not fully precache its replacement.
     if (shellReady && staticReady) {
@@ -70,6 +75,7 @@ self.addEventListener('activate', event => {
 function canonicalNavigationKey(url) {
   const copy = new URL(url.href);
   copy.search = '';
+  if (copy.pathname === '/index.html') copy.pathname = '/';
   if (copy.pathname === '/cn' || copy.pathname === '/cn/index.html') copy.pathname = '/cn/';
   return copy.href;
 }
@@ -97,6 +103,21 @@ self.addEventListener('fetch', event => {
   // Authenticated and mutable APIs must always reach the server; never cache private D1 responses.
   if (url.pathname.startsWith('/api/')) return;
 
+  if (request.mode === 'navigate' && ['/', '/index.html'].includes(url.pathname)) {
+    event.respondWith((async()=>{
+      const key=canonicalNavigationKey(url);
+      try {
+        const fresh=await updateNavigation(request,key);
+        if(fresh.ok)return fresh;
+      }catch(_){}
+      const cache=await caches.open(SHELL_CACHE);
+      const cached=await cache.match(key);
+      if(cached&&await validatedShell(cached,'/'))return cached;
+      return new Response('创意工作台暂时无法联网，请联网后重新打开首页。',{status:503,headers:{'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store'}});
+    })());
+    return;
+  }
+
   if (request.mode === 'navigate' && ['/cn', '/cn/', '/cn/index.html'].includes(url.pathname)) {
     const key = canonicalNavigationKey(url);
     const currentCachePromise = caches.open(SHELL_CACHE);
@@ -111,7 +132,7 @@ self.addEventListener('fetch', event => {
       // No cached shell yet: allow the browser's normal network request to finish without an artificial timeout.
       try {
         const fresh = await fetch(request);
-        if (fresh && fresh.ok && fresh.type === 'basic') await cache.put(key, fresh.clone());
+        if (await validatedShell(fresh,'/cn/')) await cache.put(key, fresh.clone());
         return fresh;
       } catch (_) {
         const appShell = await caches.match(new URL('/cn/', self.location.origin).href);
