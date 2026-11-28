@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>私人导航工具箱 · V20.26</title>
+<title>私人导航工具箱 · V20.27</title>
 <meta name="description" content="私人导航工具箱">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: blob: https: http:; connect-src 'self' https:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; base-uri 'none'; object-src 'none'; form-action 'none'">
@@ -18,7 +18,7 @@
 </style>
 <script  id="app-meta-v1891"  data-module="script-01.js">
 
-window.FXNAV_APP=Object.freeze({version:"20.26",build:"V20.26",schemaVersion:3,channel:"stable"});
+window.FXNAV_APP=Object.freeze({version:"20.27",build:"V20.27",schemaVersion:3,channel:"stable"});
 
 </script>
 <script  id="theme-boot-v1867"  data-module="script-02.js">
@@ -3967,7 +3967,7 @@ html[data-theme="neon"] .tool-cluster{border-radius:14px;}}
 <link rel="icon" type="image/png" sizes="64x64" href="/assets/runtime/favicon-985ed977.png">
 <link rel="shortcut icon" type="image/png" href="/assets/runtime/favicon-985ed977.png">
 
-<meta name="x-build" content="V20.26-20261126">
+<meta name="x-build" content="V20.27-20261126">
 <meta name="x-app-version" content="20.26">
 
 <style data-module="style-03.css">
@@ -8855,7 +8855,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
         <span class="console-divider"></span>
         <span class="console-item cache"><span class="k">CACHE</span><strong id="consoleCache">0 KB</strong></span>
         <span class="console-divider"></span>
-        <span class="console-item build"><span class="k">BUILD</span><strong id="consoleBuildVersion">V20.26</strong></span>
+        <span class="console-item build"><span class="k">BUILD</span><strong id="consoleBuildVersion">V20.27</strong></span>
         <span class="console-spacer"></span>
         <span class="console-activity">
           <span class="k">SYSTEM ACTIVITY</span>
@@ -9015,7 +9015,7 @@ html[data-theme="liquid"] body .calendar-ref-v1838 .calendar-ref-titlewrap :is(#
 
     <div id="fxD1LoadingV1946" class="fx-d1-loading-v1946" role="status">正在读取完整云端导航数据…</div>
     <div id="content"></div>
-    <div class="footer">© 2026 私人导航工具箱 · V20.26 版本</div>
+    <div class="footer">© 2026 私人导航工具箱 · V20.27 版本</div>
   </main>
 </div>
 
@@ -19307,17 +19307,18 @@ html[data-theme="liquid"].fx-card-frost-canvas-v2026:not(.fx-glass-fallback) bod
 }
 </style>
 
-<script id="v2026-glass-card-renderer">
+<script id="v2027-glass-card-renderer">
 (()=>{
   'use strict';
+  // V20.27: keep the V20.27 glass canvas and exact material recipe; reduce
+  // work during scrolling. One geometry snapshot per layout, one clipped
+  // bitmap draw per frame, and one hover-card geometry read per animation.
   const root=document.documentElement;
   const area=document.getElementById('content');
   if(!area||!document.createElement('canvas').getContext)return;
   const canvas=document.createElement('canvas');
   canvas.id='fx-card-frost-plane-v2026';
   canvas.setAttribute('aria-hidden','true');
-  // The site rebuilds #content with innerHTML on category changes.
-  // Keep the plane outside that subtree so it can never be detached.
   const app=document.querySelector('body>.app');
   document.body.insertBefore(canvas,app||document.body.firstChild);
   const ctx=canvas.getContext('2d',{alpha:true});
@@ -19326,6 +19327,9 @@ html[data-theme="liquid"].fx-card-frost-canvas-v2026:not(.fx-glass-fallback) bod
   const enabled=()=>root.dataset.theme==='liquid'&&!root.classList.contains('fx-glass-fallback')&&desktop();
   let source='',image=null,blurred=null,ready=false,loadVersion=0;
   let width=0,height=0,ratio=1,usedBlur=-1,redrawPending=false,rebuildPending=false;
+  let geometry=[],geometryDirty=true,hovered=null,hoverUntil=0,hoverRunning=false;
+  let lastX=NaN,lastY=NaN,lastHover=null;
+
   const getSource=()=>{
     const value=getComputedStyle(document.body).backgroundImage;
     if(!value||value==='none'||!value.startsWith('url('))return '';
@@ -19338,50 +19342,69 @@ html[data-theme="liquid"].fx-card-frost-canvas-v2026:not(.fx-glass-fallback) bod
     const value=parseFloat(getComputedStyle(root).getPropertyValue('--lg-card-blur'));
     return Number.isFinite(value)?Math.max(0,Math.min(value,30)):3;
   };
+  function markGeometry(){geometryDirty=true;lastX=NaN;lastY=NaN;lastHover=null;}
   function disable(){
     ready=false;root.classList.remove('fx-card-frost-canvas-v2026');
+    geometry=[];markGeometry();
     if(canvas.width&&canvas.height)ctx.clearRect(0,0,canvas.width,canvas.height);
     canvas.style.display='none';
   }
+  function rebuildGeometry(){
+    // Geometry is stable between layout mutations. Scroll changes only the
+    // viewport offset, so don't force per-card layout on each scroll event.
+    const sx=window.scrollX,sy=window.scrollY;
+    geometry=Array.from(area.querySelectorAll('.card.glass'),card=>{
+      const r=card.getBoundingClientRect();
+      return {card,x:r.left+sx,y:r.top+sy,w:r.width,h:r.height};
+    }).filter(item=>item.w>0&&item.h>0).sort((a,b)=>a.y-b.y);
+    geometryDirty=false;
+  }
   function draw(){
     redrawPending=false;
-    if(!enabled()||!ready||!blurred){disable();return;}
+    if(!enabled()||!ready||!blurred){if(ready)disable();return;}
     const vw=window.innerWidth,vh=window.innerHeight;
-    if(Math.abs(vw-width)>.1||Math.abs(vh-height)>.1){scheduleRebuild();return;}
-    // Raster patches are in viewport coordinates, never local card coordinates.
+    if(vw!==width||vh!==height){scheduleRebuild();return;}
+    if(geometryDirty)rebuildGeometry();
+    const x=window.scrollX,y=window.scrollY;
+    // Render hover displacement from the *one* moving card; all other card
+    // rectangles use cached document positions without forced layout reads.
+    const animating=!!(hovered&&performance.now()<=hoverUntil);
+    if(x===lastX&&y===lastY&&hovered===lastHover&&!animating)return;
+    lastX=x;lastY=y;lastHover=hovered;
     ctx.setTransform(ratio,0,0,ratio,0,0);
     ctx.clearRect(0,0,vw,vh);
-    const sections=area.querySelectorAll(':scope > .section');
-    const paintCard=(card)=>{
-      const r=card.getBoundingClientRect();
-      if(r.bottom<=0||r.top>=vh||r.right<=0||r.left>=vw||!r.width||!r.height)return;
-      const left=Math.max(0,r.left),top=Math.max(0,r.top);
-      const right=Math.min(vw,r.right),bottom=Math.min(vh,r.bottom);
-      if(right<=left||bottom<=top)return;
-      ctx.save();ctx.beginPath();
-      if(ctx.roundRect)ctx.roundRect(r.left,r.top,r.width,r.height,18);
-      else ctx.rect(r.left,r.top,r.width,r.height);
-      ctx.clip();
-      const sx=Math.floor(left*ratio),sy=Math.floor(top*ratio);
-      const sw=Math.max(1,Math.ceil((right-left)*ratio)),sh=Math.max(1,Math.ceil((bottom-top)*ratio));
-      ctx.drawImage(blurred,sx,sy,Math.min(sw,blurred.width-sx),Math.min(sh,blurred.height-sy),left,top,right-left,bottom-top);
-      ctx.restore();
-    };
-    if(sections.length){
-      for(const section of sections){
-        const r=section.getBoundingClientRect();
-        if(r.bottom<0||r.top>vh)continue;
-        for(const card of section.querySelectorAll('.card.glass'))paintCard(card);
+    if(!geometry.length)return;
+    ctx.save();ctx.beginPath();
+    let painted=0;
+    for(const item of geometry){
+      if(item.y+item.h<y)continue;
+      if(item.y>y+vh)break;
+      let left=item.x-x,top=item.y-y,w=item.w,h=item.h;
+      if(item.card===hovered&&animating){
+        const r=item.card.getBoundingClientRect();
+        left=r.left;top=r.top;w=r.width;h=r.height;
       }
-    }else{
-      for(const card of area.querySelectorAll('.card.glass'))paintCard(card);
+      if(top+h<=0||top>=vh||left+w<=0||left>=vw)continue;
+      if(ctx.roundRect)ctx.roundRect(left,top,w,h,18);
+      else ctx.rect(left,top,w,h);
+      painted++;
     }
+    if(painted){
+      // One union clip and one drawImage replaces N clips/N image draws.
+      // The backdrop stays in viewport coordinates exactly as V20.27.
+      ctx.clip();
+      ctx.drawImage(blurred,0,0,vw,vh);
+    }
+    ctx.restore();
     if(!root.classList.contains('fx-card-frost-canvas-v2026')){
       canvas.style.display='block';
       root.classList.add('fx-card-frost-canvas-v2026');
     }
   }
-  function scheduleDraw(){if(!redrawPending){redrawPending=true;requestAnimationFrame(draw);}}
+  function scheduleDraw(){
+    if(!ready||!enabled()||document.hidden)return;
+    if(!redrawPending){redrawPending=true;requestAnimationFrame(draw);}
+  }
   function blurWallpaper(){
     if(!enabled()||!image||!image.complete||!image.naturalWidth){disable();return;}
     const vw=window.innerWidth,vh=window.innerHeight,dpr=Math.min(1.5,window.devicePixelRatio||1);
@@ -19392,7 +19415,6 @@ html[data-theme="liquid"].fx-card-frost-canvas-v2026:not(.fx-glass-fallback) bod
     const sc=scratch.getContext('2d',{alpha:false});
     if(!sc){disable();return;}
     sc.setTransform(dpr,0,0,dpr,0,0);
-    // CSS desktop background-size:cover;background-position:center center.
     const scale=Math.max(vw/image.naturalWidth,vh/image.naturalHeight);
     const iw=image.naturalWidth*scale,ih=image.naturalHeight*scale;
     const radius=blurValue();
@@ -19402,15 +19424,20 @@ html[data-theme="liquid"].fx-card-frost-canvas-v2026:not(.fx-glass-fallback) bod
     blurred=scratch;usedBlur=radius;
     canvas.width=scratch.width;canvas.height=scratch.height;
     canvas.style.width=vw+'px';canvas.style.height=vh+'px';
-    ready=true;scheduleDraw();
+    ready=true;markGeometry();scheduleDraw();
   }
-  function scheduleRebuild(){if(rebuildPending)return;rebuildPending=true;requestAnimationFrame(()=>{rebuildPending=false;sync();});}
+  function scheduleRebuild(){
+    if(rebuildPending)return;
+    rebuildPending=true;
+    requestAnimationFrame(()=>{rebuildPending=false;sync();});
+  }
   function sync(){
     if(!enabled()){disable();return;}
     const url=getSource();
     if(!url){disable();return;}
     if(url!==source){
-      source=url;image=null;blurred=null;ready=false;root.classList.remove('fx-card-frost-canvas-v2026');
+      source=url;image=null;blurred=null;ready=false;
+      root.classList.remove('fx-card-frost-canvas-v2026');
       const token=++loadVersion;
       const img=new Image();img.crossOrigin='anonymous';
       img.onload=()=>{if(token!==loadVersion)return;image=img;blurWallpaper();};
@@ -19421,38 +19448,53 @@ html[data-theme="liquid"].fx-card-frost-canvas-v2026:not(.fx-glass-fallback) bod
     if(!image)return;
     const radius=blurValue();
     if(!ready||!blurred||Math.abs(radius-usedBlur)>.05||window.innerWidth!==width||window.innerHeight!==height)blurWallpaper();
-    else scheduleDraw();
+    else{markGeometry();scheduleDraw();}
   }
   window.addEventListener('scroll',scheduleDraw,{passive:true});
-  window.addEventListener('resize',scheduleRebuild,{passive:true});
-  // Existing hover animation moves a card 2px during ~180ms. Update only the
-  // lightweight viewport cutouts while it settles; never re-blur the wallpaper.
-  let hoverUntil=0,hoverRunning=false;
-  const followHover=()=>{
+  window.addEventListener('resize',()=>{markGeometry();scheduleRebuild();},{passive:true});
+  window.addEventListener('load',()=>{markGeometry();scheduleDraw();},{once:true,passive:true});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)scheduleRebuild();});
+  if(typeof ResizeObserver==='function'){
+    const observer=new ResizeObserver(()=>{markGeometry();scheduleDraw();});
+    observer.observe(area);
+  }
+  document.fonts?.ready?.then(()=>{markGeometry();scheduleDraw();}).catch(()=>{});
+
+  // Only transitions between cards animate the one displaced rectangle.
+  function followHover(){
+    if(!enabled()||!ready)return;
     hoverUntil=performance.now()+240;
     if(hoverRunning)return;
     hoverRunning=true;
     const step=()=>{
-      if(performance.now()>hoverUntil){hoverRunning=false;return;}
+      if(performance.now()>hoverUntil){hoverRunning=false;markGeometry();scheduleDraw();return;}
       scheduleDraw();requestAnimationFrame(step);
     };
     requestAnimationFrame(step);
-  };
+  }
   area.addEventListener('pointerover',e=>{
-    if(e.target.closest?.('.card.glass'))followHover();
+    const card=e.target.closest?.('.card.glass');
+    const from=e.relatedTarget?.closest?.('.card.glass');
+    if(!card||card===from)return;
+    hovered=card;followHover();
   },{passive:true});
   area.addEventListener('pointerout',e=>{
-    if(e.target.closest?.('.card.glass'))followHover();
+    const card=e.target.closest?.('.card.glass');
+    const to=e.relatedTarget?.closest?.('.card.glass');
+    if(!card||card===to)return;
+    if(hovered===card)hovered=null;
+    followHover();
   },{passive:true});
   new MutationObserver(scheduleRebuild).observe(root,{attributes:true,attributeFilter:['data-theme','class','style','data-liquid-clear']});
+  const affectsCards=node=>node.nodeType===1&&(
+    node.matches('.card.glass,.section')||!!node.querySelector('.card.glass,.section')
+  );
   new MutationObserver(records=>{
-    const affectsCards=node=>node.nodeType===1&&(
-      node.matches('.card.glass,.section')||!!node.querySelector('.card.glass,.section')
-    );
     for(const record of records){
       if(record.type!=='childList')continue;
       if([...record.addedNodes,...record.removedNodes].some(affectsCards)){
-        scheduleDraw();break;
+        if(hovered&&!area.contains(hovered))hovered=null;
+        markGeometry();scheduleDraw();break;
       }
     }
   }).observe(area,{childList:true,subtree:true});
