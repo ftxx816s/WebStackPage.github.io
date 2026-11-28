@@ -1,5 +1,5 @@
-/* Private Navigation Toolbox V21.11 · local-first application shell cache. */
-const SW_VERSION = 'fxnav-shell-v2111-carousel-refine';
+/* Private Navigation Toolbox V21.12 · local-first application shell cache. */
+const SW_VERSION = 'fxnav-shell-v2112-studio-dialogs';
 const SHELL_CACHE = `${SW_VERSION}-shell`;
 const STATIC_CACHE = `${SW_VERSION}-static`;
 const CORE_STATIC_URLS = [
@@ -9,9 +9,9 @@ const CORE_STATIC_URLS = [
   '/assets/runtime/neon-reference-bg-1fb3c28a.webp',
   '/assets/runtime/manager-ui-v1998.css?v=2008-official-glass-controls',
   '/assets/runtime/manager-ui-v1998.js?v=1998',
-  '/assets/studio-v2100/studio.css?v=2111',
-  '/assets/studio-v2100/studio.js?v=2111',
-  '/assets/studio-v2100/catalog.js?v=2111'
+  '/assets/studio-v2100/studio.css?v=2112',
+  '/assets/studio-v2100/studio.js?v=2112',
+  '/assets/studio-v2100/catalog.js?v=2112'
 ];
 
 async function boundedFetch(path, timeoutMs = 4000) {
@@ -34,11 +34,11 @@ async function cacheCoreResource(cache, path) {
 
 // Never activate a new worker with a missing or older application shell.
 // A partial response is not a safe offline fallback.
-const APP_SIGNATURE='version:"21.11",build:"V21.11"';
+const APP_SIGNATURE='version:"21.12",build:"V21.12"';
 async function validatedShell(response, key){
   if(!response||!response.ok||response.type!=='basic')return null;
   const html=await response.clone().text();
-  const valid=key==='/cn/'?html.includes(APP_SIGNATURE):html.includes('BUILD V21.11')&&html.includes('studio.js?v=2111');
+  const valid=key==='/cn/'?html.includes(APP_SIGNATURE):html.includes('BUILD V21.12')&&html.includes('studio.js?v=2112');
   return valid?response:null;
 }
 self.addEventListener('install', event => {
@@ -47,12 +47,12 @@ self.addEventListener('install', event => {
     // Both entry documents and the new workspace dependencies must exist before activation.
     for(const path of ['/cn/','/']){
       const response=await boundedFetch(path,20000);
-      if(!await validatedShell(response,path))throw new Error('V21.11 shell unavailable: '+path);
+      if(!await validatedShell(response,path))throw new Error('V21.12 shell unavailable: '+path);
       await shell.put(path,response);
     }
     const statics=await caches.open(STATIC_CACHE);
     const results=await Promise.all(CORE_STATIC_URLS.map(path=>cacheCoreResource(statics,path)));
-    if(results.some((ok,i)=>!ok&&CORE_STATIC_URLS[i].startsWith('/assets/studio-v2100/')))throw new Error('V21.11 studio assets not fully available');
+    if(results.some((ok,i)=>!ok&&CORE_STATIC_URLS[i].startsWith('/assets/studio-v2100/')))throw new Error('V21.12 studio assets not fully available');
     await self.skipWaiting();
   })());
 });
